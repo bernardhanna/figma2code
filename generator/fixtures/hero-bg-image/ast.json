@@ -1,0 +1,132 @@
+{
+  "slug": "hero-bg-image",
+  "type": "flexi_block",
+  "frame": { "w": 1400, "h": 750 },
+  "tree": {
+    "id": "root-hero-bg-image",
+    "name": "Hero BG Image",
+    "type": "FRAME",
+    "w": 1400,
+    "h": 750,
+    "fills": [{ "kind": "none" }],
+    "auto": {
+      "layout": "VERTICAL",
+      "itemSpacing": 16,
+      "padT": 96,
+      "padR": 96,
+      "padB": 96,
+      "padL": 96,
+      "primaryAlign": "MIN",
+      "counterAlign": "MIN",
+      "primarySizing": "FIXED",
+      "counterSizing": "FIXED"
+    },
+    "children": [
+      {
+        "id": "eyebrow",
+        "name": "Eyebrow",
+        "type": "TEXT",
+        "w": 600,
+        "h": 24,
+        "text": {
+          "raw": "HERO WITH BACKGROUND IMAGE",
+          "fontSize": 14,
+          "fontWeight": 600,
+          "letterSpacingPx": 1.2,
+          "align": "left",
+          "uppercase": true,
+          "color": { "r": 1, "g": 1, "b": 1, "a": 0.92 }
+        }
+      },
+      {
+        "id": "headline",
+        "name": "H1: Headline",
+        "type": "TEXT",
+        "w": 900,
+        "h": 160,
+        "text": {
+          "raw": "Background image\nshould render correctly",
+          "fontSize": 64,
+          "fontWeight": 700,
+          "lineHeightPx": 72,
+          "letterSpacingPx": 0.5,
+          "align": "left",
+          "color": { "r": 1, "g": 1, "b": 1, "a": 1 }
+        }
+      },
+      {
+        "id": "subcopy",
+        "name": "elem: subcopy",
+        "type": "TEXT",
+        "w": 760,
+        "h": 56,
+        "text": {
+          "raw": "This fixture validates that the section-level background image uses the Fill image (not a rasterised frame).",
+          "fontSize": 18,
+          "fontWeight": 500,
+          "lineHeightPx": 28,
+          "letterSpacingPx": 0,
+          "align": "left",
+          "color": { "r": 1, "g": 1, "b": 1, "a": 0.9 }
+        }
+      },
+      {
+        "id": "cta-primary",
+        "name": "elem: cta_primary",
+        "type": "FRAME",
+        "w": 220,
+        "h": 56,
+        "fills": [{ "kind": "solid", "r": 0.035, "g": 0.008, "b": 0.643, "a": 1 }],
+        "r": { "tl": 10, "tr": 10, "br": 10, "bl": 10 },
+        "auto": {
+          "layout": "HORIZONTAL",
+          "itemSpacing": 8,
+          "padT": 16,
+          "padR": 22,
+          "padB": 16,
+          "padL": 22,
+          "primaryAlign": "CENTER",
+          "counterAlign": "CENTER",
+          "primarySizing": "FIXED",
+          "counterSizing": "FIXED"
+        },
+        "children": [
+          {
+            "id": "cta-primary-text",
+            "name": "Text",
+            "type": "TEXT",
+            "w": 120,
+            "h": 24,
+            "text": {
+              "raw": "CTA Button",
+              "fontSize": 16,
+              "fontWeight": 600,
+              "align": "left",
+              "color": { "r": 1, "g": 1, "b": 1, "a": 1 }
+            }
+          }
+        ],
+        "actions": { "isClickable": true }
+      }
+    ]
+  },
+  "slots": {
+    "heading": "headline",
+    "subcopy": "subcopy",
+    "cta_primary": "cta-primary",
+    "image_main": ""
+  },
+  "meta": {
+    "schema": "figma-ast",
+    "version": 1,
+    "exportedAt": "2026-01-03T00:00:00.000Z",
+    "figma": { "pageName": "Fixtures", "frameName": "Hero BG Image" }
+  },
+  "__bg": {
+    "enabled": true,
+    "sourceNodeId": "root-hero-bg-image",
+    "src": "https://images.placehold.co/1400x750/png?text=hero+bg+image",
+    "objectFit": "cover"
+  }
+}
+

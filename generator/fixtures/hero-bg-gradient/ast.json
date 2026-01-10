@@ -1,0 +1,52 @@
+{
+  "slug": "hero-bg-gradient",
+  "type": "flexi_block",
+  "frame": {
+    "w": 1440,
+    "h": 600
+  },
+  "tree": {
+    "id": "root",
+    "name": "Hero Gradient",
+    "type": "FRAME",
+    "w": 1440,
+    "h": 600,
+    "fills": [
+      {
+        "kind": "gradient",
+        "type": "LINEAR",
+        "angle": 90,
+        "stops": [
+          {
+            "r": 0.1,
+            "g": 0.2,
+            "b": 0.8,
+            "a": 1,
+            "pos": 0
+          },
+          {
+            "r": 0.9,
+            "g": 0.9,
+            "b": 1,
+            "a": 1,
+            "pos": 1
+          }
+        ]
+      }
+    ],
+    "children": [
+      {
+        "id": "heading",
+        "name": "Heading",
+        "type": "TEXT",
+        "w": 700,
+        "h": 96,
+        "text": {
+          "raw": "Gradient Background",
+          "fontSize": 56,
+          "fontWeight": 700
+        }
+      }
+    ]
+  }
+}

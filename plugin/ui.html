@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+<body style="font: 13px/1.4 ui-sans-serif, system-ui; padding:16px;">
+  <h3>Export Figma → WP Flexi (AI)</h3>
+
+  <label>
+    Slug
+    <input id="slug" placeholder="hero_demo" style="width:100%" />
+  </label>
+
+  <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+    <button id="previewOnly">Preview only</button>
+    <button id="generateWP">Generate WP</button>
+    <button id="exportPhase1" title="Export Phase-1 Raw AST + overlay proof">Export Phase-1</button>
+    <button id="setTheme" title="Open generator to set Theme Folder">Set Theme Folder</button>
+  </div>
+
+  <pre id="status" style="margin-top:12px;background:#f6f7f9;padding:8px;max-height:220px;overflow:auto;"></pre>
+
+  <script>
+    const status = document.getElementById("status");
+    const getSlug = () => document.getElementById("slug").value.trim();
+    const BASE = "http://127.0.0.1:5173";
+
+    async function postTo(endpoint, payload) {
+      const res = await fetch(BASE + endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const ct = res.headers.get("content-type") || "";
+      const text = await res.text();
+      if (!ct.includes("application/json")) {
+        throw new Error(
+          `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
+        );
+      }
+      return JSON.parse(text);
+    }
+
+    document.getElementById("setTheme").onclick = () => window.open(BASE + "/", "_blank");
+
+    document.getElementById("previewOnly").onclick = () => {
+      status.textContent = "Preparing AST (Preview)…";
+      window.__pendingEndpoint = "/api/preview-only";
+      parent.postMessage({ pluginMessage: { type: "EXPORT_SELECTION", slug: getSlug() } }, "*");
+    };
+
+    document.getElementById("generateWP").onclick = () => {
+      status.textContent = "Preparing AST (Generate)…";
+      window.__pendingEndpoint = "/api/generate";
+      parent.postMessage({ pluginMessage: { type: "EXPORT_SELECTION", slug: getSlug() } }, "*");
+    };
+
+    document.getElementById("exportPhase1").onclick = () => {
+      status.textContent = "Preparing Phase-1 Raw AST…";
+      window.__pendingEndpoint = "/api/phase1/export";
+      parent.postMessage({ pluginMessage: { type: "EXPORT_PHASE1", slug: getSlug() } }, "*");
+    };
+
+    window.onmessage = async (event) => {
+      const msg = event.data.pluginMessage || {};
+      const { type, ast, message } = msg;
+
+      if (type === "ERROR") {
+        status.textContent = "Error: " + message;
+        return;
+      }
+
+      if (type === "AST_READY" || type === "PHASE1_READY") {
+        try {
+          const endpoint = window.__pendingEndpoint || "/api/preview-only";
+          status.textContent = `Sending payload to ${endpoint}…`;
+
+          const out = await postTo(endpoint, ast);
+
+          if (!out || out.ok !== true) {
+            status.textContent = "Failed: " + (out?.error || out?.message || "unknown");
+            return;
+          }
+
+          const openUrl = out.overlayUrl || out.previewUrl;
+
+          status.textContent =
+            (out.overlayUrl ? "Overlay: " : "Preview: ") + (openUrl || "(none)") + "\n" +
+            (out.paths?.acf ? ("ACF: " + out.paths.acf + "\n") : "") +
+            (out.paths?.frontend ? ("Frontend: " + out.paths.frontend + "\n") : "") +
+            (out.paths?.raw ? ("Raw: " + out.paths.raw + "\n") : "") +
+            (out.paths?.overlay ? ("Overlay file: " + out.paths.overlay + "\n") : "");
+
+          if (openUrl) window.open(BASE + openUrl, "_blank");
+        } catch (e) {
+          status.textContent = String(e?.message || e);
+        }
+      }
+    };
+  </script>
+</body>
+
+</html>

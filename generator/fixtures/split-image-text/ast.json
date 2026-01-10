@@ -1,0 +1,59 @@
+{
+  "slug": "split-image-text",
+  "type": "flexi_block",
+  "frame": {
+    "w": 1200,
+    "h": 500
+  },
+  "tree": {
+    "id": "root",
+    "name": "Split",
+    "type": "FRAME",
+    "w": 1200,
+    "h": 500,
+    "auto": {
+      "layout": "HORIZONTAL",
+      "itemSpacing": 48
+    },
+    "children": [
+      {
+        "id": "image",
+        "name": "Image",
+        "type": "RECTANGLE",
+        "w": 500,
+        "h": 400,
+        "fills": [
+          {
+            "kind": "image",
+            "scaleMode": "FILL"
+          }
+        ]
+      },
+      {
+        "id": "content",
+        "name": "Content",
+        "type": "FRAME",
+        "w": 600,
+        "h": 400,
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 16
+        },
+        "children": [
+          {
+            "id": "heading",
+            "name": "Heading",
+            "type": "TEXT",
+            "w": 600,
+            "h": 64,
+            "text": {
+              "raw": "Split Layout",
+              "fontSize": 40,
+              "fontWeight": 700
+            }
+          }
+        ]
+      }
+    ]
+  }
+}

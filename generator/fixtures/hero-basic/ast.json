@@ -1,0 +1,307 @@
+{
+  "slug": "hero-basic",
+  "type": "flexi_block",
+  "frame": {
+    "w": 1200,
+    "h": 650
+  },
+  "tree": {
+    "id": "root-hero-basic",
+    "name": "Hero Basic",
+    "type": "FRAME",
+    "w": 1200,
+    "h": 650,
+    "auto": {
+      "layout": "HORIZONTAL",
+      "itemSpacing": 24,
+      "padT": 80,
+      "padR": 80,
+      "padB": 80,
+      "padL": 80,
+      "primaryAlign": "MIN",
+      "counterAlign": "CENTER",
+      "primarySizing": "FIXED",
+      "counterSizing": "FIXED"
+    },
+    "children": [
+      {
+        "id": "col-left",
+        "name": "Left Column",
+        "type": "FRAME",
+        "w": 620,
+        "h": 490,
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 16,
+          "padT": 0,
+          "padR": 0,
+          "padB": 0,
+          "padL": 0,
+          "primaryAlign": "MIN",
+          "counterAlign": "MIN",
+          "primarySizing": "FIXED",
+          "counterSizing": "FIXED"
+        },
+        "children": [
+          {
+            "id": "eyebrow",
+            "name": "Eyebrow",
+            "type": "TEXT",
+            "w": 400,
+            "h": 24,
+            "text": {
+              "raw": "WHITNEY MOORE",
+              "fontSize": 18,
+              "fontWeight": 500,
+              "letterSpacingPx": 1,
+              "align": "left",
+              "uppercase": true,
+              "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              }
+            }
+          },
+          {
+            "id": "headline",
+            "name": "H1: Headline",
+            "type": "TEXT",
+            "w": 560,
+            "h": 160,
+            "text": {
+              "raw": "Experience.\nClarity.\nResults.",
+              "fontSize": 68,
+              "fontWeight": 700,
+              "lineHeightPx": 78,
+              "letterSpacingPx": 1,
+              "align": "left",
+              "color": {
+                "r": 0.035,
+                "g": 0.008,
+                "b": 0.643,
+                "a": 1
+              }
+            }
+          },
+          {
+            "id": "subhead",
+            "name": "H3: Subhead",
+            "type": "TEXT",
+            "w": 520,
+            "h": 40,
+            "text": {
+              "raw": "Driven by values since 1882.",
+              "fontSize": 24,
+              "fontWeight": 500,
+              "letterSpacingPx": 1,
+              "align": "left",
+              "color": {
+                "r": 0,
+                "g": 0,
+                "b": 0,
+                "a": 1
+              }
+            }
+          },
+          {
+            "id": "cta-row",
+            "name": "CTA Row",
+            "type": "FRAME",
+            "w": 520,
+            "h": 60,
+            "auto": {
+              "layout": "HORIZONTAL",
+              "itemSpacing": 12,
+              "padT": 0,
+              "padR": 0,
+              "padB": 0,
+              "padL": 0,
+              "primaryAlign": "MIN",
+              "counterAlign": "CENTER",
+              "primarySizing": "FIXED",
+              "counterSizing": "FIXED"
+            },
+            "children": [
+              {
+                "id": "cta-primary",
+                "name": "elem: cta_primary",
+                "type": "FRAME",
+                "w": 240,
+                "h": 60,
+                "fills": [
+                  {
+                    "kind": "solid",
+                    "r": 0.035,
+                    "g": 0.008,
+                    "b": 0.643,
+                    "a": 1
+                  }
+                ],
+                "r": {
+                  "tl": 10,
+                  "tr": 10,
+                  "br": 10,
+                  "bl": 10
+                },
+                "auto": {
+                  "layout": "HORIZONTAL",
+                  "itemSpacing": 8,
+                  "padT": 16,
+                  "padR": 24,
+                  "padB": 16,
+                  "padL": 24,
+                  "primaryAlign": "CENTER",
+                  "counterAlign": "CENTER",
+                  "primarySizing": "FIXED",
+                  "counterSizing": "FIXED"
+                },
+                "children": [
+                  {
+                    "id": "cta-primary-text",
+                    "name": "Text",
+                    "type": "TEXT",
+                    "w": 120,
+                    "h": 24,
+                    "text": {
+                      "raw": "CTA Button",
+                      "fontSize": 16,
+                      "fontWeight": 600,
+                      "align": "left",
+                      "color": {
+                        "r": 1,
+                        "g": 1,
+                        "b": 1,
+                        "a": 1
+                      }
+                    }
+                  }
+                ],
+                "actions": {
+                  "isClickable": true
+                }
+              },
+              {
+                "id": "cta-secondary",
+                "name": "CTA Secondary",
+                "type": "FRAME",
+                "w": 180,
+                "h": 60,
+                "fills": [
+                  {
+                    "kind": "solid",
+                    "r": 0.859,
+                    "g": 0.918,
+                    "b": 0.996,
+                    "a": 1
+                  }
+                ],
+                "r": {
+                  "tl": 10,
+                  "tr": 10,
+                  "br": 10,
+                  "bl": 10
+                },
+                "auto": {
+                  "layout": "HORIZONTAL",
+                  "itemSpacing": 8,
+                  "padT": 16,
+                  "padR": 24,
+                  "padB": 16,
+                  "padL": 24,
+                  "primaryAlign": "CENTER",
+                  "counterAlign": "CENTER",
+                  "primarySizing": "FIXED",
+                  "counterSizing": "FIXED"
+                },
+                "children": [
+                  {
+                    "id": "cta-secondary-text",
+                    "name": "Text",
+                    "type": "TEXT",
+                    "w": 120,
+                    "h": 24,
+                    "text": {
+                      "raw": "CTA Button",
+                      "fontSize": 16,
+                      "fontWeight": 600,
+                      "align": "left",
+                      "color": {
+                        "r": 0.035,
+                        "g": 0.008,
+                        "b": 0.643,
+                        "a": 1
+                      }
+                    }
+                  }
+                ],
+                "actions": {
+                  "isClickable": true
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": "col-right",
+        "name": "Right Column",
+        "type": "FRAME",
+        "w": 420,
+        "h": 490,
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 0,
+          "padT": 0,
+          "padR": 0,
+          "padB": 0,
+          "padL": 0,
+          "primaryAlign": "CENTER",
+          "counterAlign": "CENTER",
+          "primarySizing": "FIXED",
+          "counterSizing": "FIXED"
+        },
+        "children": [
+          {
+            "id": "hero-image",
+            "name": "elem: image_main",
+            "type": "RECTANGLE",
+            "w": 420,
+            "h": 490,
+            "fills": [
+              {
+                "kind": "solid",
+                "r": 0.95,
+                "g": 0.95,
+                "b": 0.95,
+                "a": 1
+              }
+            ],
+            "r": {
+              "tl": 18,
+              "tr": 18,
+              "br": 18,
+              "bl": 18
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "slots": {
+    "heading": "headline",
+    "subcopy": "subhead",
+    "cta_primary": "cta-primary",
+    "image_main": "hero-image"
+  },
+  "meta": {
+    "schema": "figma-ast",
+    "version": 1,
+    "exportedAt": "2026-01-03T00:00:00.000Z",
+    "figma": {
+      "pageName": "Fixtures",
+      "frameName": "Hero Basic"
+    }
+  }
+}

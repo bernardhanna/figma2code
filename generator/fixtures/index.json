@@ -1,0 +1,20 @@
+{
+  "serverUrl": "http://127.0.0.1:5173",
+  "default": {
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "waitMs": 350,
+    "screenshot": {
+      "mode": "element",
+      "selector": "#cmp_root"
+    },
+    "compare": {
+      "threshold": 0.1,
+      "includeAA": true,
+      "passDiffRatio": 0.03
+    }
+  },
+  "fixtures": {}
+}

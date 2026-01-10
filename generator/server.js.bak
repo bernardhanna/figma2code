@@ -1,0 +1,286 @@
+import express from 'express';
+import fs from 'node:fs';
+import path from 'node:path';
+import OpenAI from 'openai';
+import { generateTailwindHtmlFromAST } from './ai/generateSection.js';
+
+const app = express();
+// CORS (dev)
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,DELETE,OPTIONS');
+  if (req.method === 'OPTIONS') return res.sendStatus(200);
+  next();
+});
+app.use(express.json({ limit: '15mb' }));
+
+// OpenAI client (set OPENAI_API_KEY)
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+// Config
+const CONFIG_PATH = path.resolve(process.cwd(), './config.json');
+function readConfig() {
+  if (fs.existsSync(CONFIG_PATH)) {
+    try { return JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf8')); }
+    catch {}
+  }
+  return { themeRoot: path.resolve(process.cwd(), '../theme') };
+}
+function writeConfig(cfg) { fs.writeFileSync(CONFIG_PATH, JSON.stringify(cfg, null, 2), 'utf8'); }
+let CONFIG = readConfig();
+
+// Paths
+function ensureDirs(themeRoot) {
+  const OUT_ACF    = path.join(themeRoot, 'acf-fields/partials/blocks');
+  const OUT_FLEXI  = path.join(themeRoot, 'template-parts/flexi');
+  const OUT_NAVBAR = path.join(themeRoot, 'template-parts/navbar');
+  const OUT_FOOTER = path.join(themeRoot, 'template-parts/footer');
+  for (const d of [OUT_ACF, OUT_FLEXI, OUT_NAVBAR, OUT_FOOTER]) fs.mkdirSync(d, { recursive: true });
+  return { OUT_ACF, OUT_FLEXI, OUT_NAVBAR, OUT_FOOTER };
+}
+
+const PREVIEW_DIR = path.resolve(process.cwd(), '../.preview');
+const ASSETS_DIR  = path.join(PREVIEW_DIR, 'assets');
+const STAGING_DIR = path.join(PREVIEW_DIR, 'staging');
+for (const d of [PREVIEW_DIR, ASSETS_DIR, STAGING_DIR]) fs.mkdirSync(d, { recursive: true });
+app.use('/assets', express.static(ASSETS_DIR));
+
+const classStrip = (s) => s.replace(/\bmin-w-\[\s*240px\s*\]\b/g,'').replace(/\baspect-\[[^\]]+\]\b/g,'');
+
+// Templates
+import { acfPhp } from './templates/acf.php.js';
+import { frontendPhp } from './templates/frontend.php.js';
+import { previewHtml } from './templates/preview.html.js';
+
+// Helper: write staged payload
+function writeStage(slug, ast, fragment) {
+  const payload = { slug, when: Date.now(), ast, fragment };
+  const out = path.join(STAGING_DIR, `${slug}.json`);
+  fs.writeFileSync(out, JSON.stringify(payload, null, 2), 'utf8');
+  return out;
+}
+
+// Homepage (Theme picker + staged table + manual preview-only)
+app.get('/', (req, res) => {
+  const cfg = readConfig();
+  const staged = fs.readdirSync(STAGING_DIR).filter(f => f.endsWith('.json')).map(f => {
+    try {
+      const data = JSON.parse(fs.readFileSync(path.join(STAGING_DIR, f), 'utf8'));
+      return { slug: data.slug, when: data.when, preview: `/preview/${data.slug}` };
+    } catch { return null; }
+  }).filter(Boolean);
+
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.end(`<!doctype html><html><body style="font-family:system-ui;padding:24px;max-width:1100px">
+    <h1>figma2wp generator (v3.1)</h1>
+    <section style="margin-top:8px;">
+      <h2 style="font-size:16px;">Theme Folder</h2>
+      <pre style="background:#f6f7f9;padding:8px;border-radius:6px;white-space:pre-wrap">${cfg.themeRoot}</pre>
+      <div>
+        <input id="pth" placeholder="/path/to/wp-content/themes/your-theme" style="width:100%;padding:8px;margin-top:6px"/>
+        <button id="save" style="margin-top:8px">Save</button>
+      </div>
+    </section>
+
+    <section style="margin-top:24px;">
+      <h2 style="font-size:16px;">Staged Previews</h2>
+      <table border="1" cellpadding="6" cellspacing="0" style="border-collapse:collapse;width:100%;">
+        <thead><tr><th>Slug</th><th>When</th><th>Preview</th><th>Actions</th></tr></thead>
+        <tbody>
+          ${staged.length ? staged.map(s => `
+            <tr>
+              <td><code>${s.slug}</code></td>
+              <td>${new Date(s.when).toLocaleString()}</td>
+              <td><a href="${s.preview}" target="_blank">Open</a></td>
+              <td>
+                <button onclick="convert('${s.slug}')">Convert</button>
+                <button onclick="delStage('${s.slug}')">Delete</button>
+              </td>
+            </tr>`).join('') :
+            '<tr><td colspan="4" style="text-align:center;color:#666">No staged previews yet</td></tr>'}
+        </tbody>
+      </table>
+    </section>
+
+    <section style="margin-top:24px;">
+      <h2 style="font-size:16px;">Preview-only (manual)</h2>
+      <p>Paste an AST JSON below to stage a preview without writing to your theme.</p>
+      <textarea id="astArea" rows="10" style="width:100%;font-family:monospace;"></textarea>
+      <div style="margin-top:8px;">
+        <button onclick="stagePreview()">Preview-only</button>
+      </div>
+    </section>
+
+    <script>
+      document.getElementById('save').addEventListener('click', async () => {
+        const path = (document.getElementById('pth').value || '').trim();
+        if (!path) return alert('Enter a path');
+        const r = await fetch('/api/config', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ themeRoot: path }) });
+        const out = await r.json();
+        alert(out.ok ? 'Saved.' : 'Failed: ' + (out.error || 'unknown'));
+        location.reload();
+      });
+
+      async function convert(slug) {
+        const r = await fetch('/api/convert', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ slug }) });
+        const out = await r.json();
+        if (out.ok) alert('Converted to theme files:\\n' + JSON.stringify(out.paths, null, 2));
+        else alert('Convert failed: ' + (out.error || 'unknown'));
+      }
+
+      async function delStage(slug) {
+        const r = await fetch('/api/staging/' + encodeURIComponent(slug), { method: 'DELETE' });
+        const out = await r.json();
+        if (out.ok) location.reload();
+        else alert('Delete failed: ' + (out.error || 'unknown'));
+      }
+
+      async function stagePreview() {
+        const text = document.getElementById('astArea').value.trim();
+        if (!text) return alert('Paste AST JSON first');
+        try { JSON.parse(text); } catch(e) { return alert('Invalid JSON: ' + e.message); }
+        const r = await fetch('/api/preview-only', { method: 'POST', headers: {'Content-Type':'application/json'}, body: text });
+        const out = await r.json();
+        if (out.ok) { alert('Staged preview at ' + out.previewUrl); location.reload(); }
+        else alert('Preview-only failed: ' + (out.error || 'unknown'));
+      }
+    </script>
+  </body></html>`);
+});
+
+// Config API
+app.get('/api/config', (req, res) => res.json(readConfig()));
+app.post('/api/config', (req, res) => {
+  try {
+    const { themeRoot } = req.body || {};
+    if (!themeRoot) return res.status(400).json({ error: 'themeRoot required' });
+    if (!fs.existsSync(themeRoot)) return res.status(400).json({ error: 'Path does not exist' });
+    CONFIG = { themeRoot: path.resolve(themeRoot) };
+    writeConfig(CONFIG);
+    ensureDirs(CONFIG.themeRoot);
+    res.json({ ok: true, themeRoot: CONFIG.themeRoot });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Failed to save themeRoot' });
+  }
+});
+
+// Upload images from plugin
+app.post('/api/upload', (req, res) => {
+  try {
+    const { slug, data } = req.body || {};
+    if (!data?.startsWith('data:image/')) return res.status(400).json({ error: 'Bad data URI' });
+    const base64 = data.split(',')[1];
+    const safe = (slug || 'img').toLowerCase().replace(/\W+/g,'-');
+    const name = `${safe}-${Date.now()}.png`;
+    const filePath = path.join(ASSETS_DIR, name);
+    fs.writeFileSync(filePath, Buffer.from(base64, 'base64'));
+    return res.json({ url: `/assets/${name}` });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Upload failed' });
+  }
+});
+
+app.get('/api/staging', (req, res) => {
+  const items = fs.readdirSync(STAGING_DIR).filter(f => f.endsWith('.json')).map(f => {
+    try { return JSON.parse(fs.readFileSync(path.join(STAGING_DIR, f), 'utf8')); } catch { return null; }
+  }).filter(Boolean).map(({ slug, when }) => ({ slug, when }));
+  res.json({ ok: true, items });
+});
+app.delete('/api/staging/:slug', (req, res) => {
+  const file = path.join(STAGING_DIR, `${req.params.slug}.json`);
+  if (!fs.existsSync(file)) return res.status(404).json({ error: 'Not found' });
+  fs.unlinkSync(file);
+  res.json({ ok: true });
+});
+
+// PREVIEW-ONLY: run AI and write preview + stage, no theme write
+app.post('/api/preview-only', async (req, res) => {
+  try {
+    const ast = req.body;
+    if (!ast?.slug) return res.status(400).json({ error: 'Missing slug' });
+
+    const fragment = await generateTailwindHtmlFromAST(openai, ast);
+    const preview = previewHtml(ast, { fragment });
+    const previewOut = path.join(PREVIEW_DIR, `${ast.slug}.html`);
+    fs.writeFileSync(previewOut, preview, 'utf8');
+
+    writeStage(ast.slug, ast, fragment);
+    res.json({ ok: true, previewUrl: `/preview/${ast.slug}` });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Preview-only failed' });
+  }
+});
+
+// CONVERT: read staged slug and write to theme
+app.post('/api/convert', async (req, res) => {
+  try {
+    const { slug } = req.body || {};
+    if (!slug) return res.status(400).json({ error: 'Missing slug' });
+    const stageFile = path.join(STAGING_DIR, `${slug}.json`);
+    if (!fs.existsSync(stageFile)) return res.status(404).json({ error: 'Not staged' });
+    const { ast, fragment } = JSON.parse(fs.readFileSync(stageFile, 'utf8'));
+
+    const { OUT_ACF, OUT_FLEXI, OUT_NAVBAR, OUT_FOOTER } = ensureDirs(CONFIG.themeRoot);
+    const phpDir = ast.type === 'navbar' ? OUT_NAVBAR : ast.type === 'footer' ? OUT_FOOTER : OUT_FLEXI;
+
+    const acf = acfPhp(ast);
+    const front = classStrip(frontendPhp(ast, { fragment }));
+
+    const acfOut = path.join(OUT_ACF, `acf_${ast.slug}.php`);
+    const frontOut = path.join(phpDir, `${ast.slug}.php`);
+    fs.writeFileSync(acfOut, acf, 'utf8');
+    fs.writeFileSync(frontOut, front, 'utf8');
+
+    res.json({ ok: true, paths: { acf: acfOut, frontend: frontOut } });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Convert failed' });
+  }
+});
+
+// One-shot generate (kept for compatibility)
+app.post('/api/generate', async (req, res) => {
+  try {
+    const ast = req.body;
+    if (!ast?.slug || !ast?.type) return res.status(400).json({ error: 'Missing slug/type' });
+
+    const fragment = await generateTailwindHtmlFromAST(openai, ast);
+    const { OUT_ACF, OUT_FLEXI, OUT_NAVBAR, OUT_FOOTER } = ensureDirs(CONFIG.themeRoot);
+    const phpDir = ast.type === 'navbar' ? OUT_NAVBAR : ast.type === 'footer' ? OUT_FOOTER : OUT_FLEXI;
+
+    const acf = acfPhp(ast);
+    const front = classStrip(frontendPhp(ast, { fragment }));
+    const preview = previewHtml(ast, { fragment });
+
+    const acfOut = path.join(OUT_ACF, `acf_${ast.slug}.php`);
+    const frontOut = path.join(phpDir, `${ast.slug}.php`);
+    const previewOut = path.join(PREVIEW_DIR, `${ast.slug}.html`);
+
+    fs.writeFileSync(acfOut, acf, 'utf8');
+    fs.writeFileSync(frontOut, front, 'utf8');
+    fs.writeFileSync(previewOut, preview, 'utf8');
+
+    // also stage so homepage lists it
+    writeStage(ast.slug, ast, fragment);
+
+    res.json({ ok: true, paths: { acf: acfOut, frontend: frontOut, preview: previewOut }, previewUrl: `/preview/${ast.slug}` });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: 'Generation failed' });
+  }
+});
+
+// Serve previews
+app.get('/preview/:slug', (req, res) => {
+  const file = path.join(PREVIEW_DIR, `${req.params.slug}.html`);
+  if (!fs.existsSync(file)) return res.status(404).send('Not found');
+  res.setHeader('Content-Type', 'text/html; charset=utf-8');
+  res.send(fs.readFileSync(file, 'utf8'));
+});
+
+const port = 5173;
+app.listen(port, () => console.log(`Generator running: http://localhost:${port}`));

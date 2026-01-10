@@ -1,0 +1,20 @@
+{
+  "name": "figma2wp-generator",
+  "version": "0.3.0",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "express": "^4.19.2",
+    "openai": "^4.104.0"
+  },
+  "scripts": {
+    "fixtures:render": "node scripts/render-fixtures.mjs",
+    "fixtures:diff": "node scripts/visual-diff.mjs",
+    "fixtures:all": "node scripts/render-fixtures.mjs && node scripts/visual-diff.mjs"
+  },
+  "devDependencies": {
+    "pixelmatch": "^7.1.0",
+    "playwright": "^1.57.0",
+    "pngjs": "^7.0.0"
+  }
+}

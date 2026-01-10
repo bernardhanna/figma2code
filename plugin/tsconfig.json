@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "lib": ["ES2021"],
+    "types": ["@figma/plugin-typings"],
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "noEmitOnError": true,
+    "outDir": "dist"
+  },
+  "include": ["code.ts", "ui.html"]
+}

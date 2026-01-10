@@ -1,0 +1,282 @@
+{
+  "meta": {
+    "schema": "intent-graph",
+    "version": 1,
+    "slug": "day2test2",
+    "sectionType": "hero",
+    "createdAt": "2026-01-09T18:53:17.140Z"
+  },
+  "sectionType": "hero",
+  "collections": [],
+  "nodes": [
+    {
+      "id": "3163:2414",
+      "parentId": null,
+      "name": "bgImage",
+      "type": "FRAME",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "HORIZONTAL",
+        "itemSpacing": 8,
+        "padT": 80,
+        "padR": 80,
+        "padB": 80,
+        "padL": 80,
+        "primaryAlign": "MAX",
+        "counterAlign": "CENTER",
+        "primarySizing": "FIXED",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-row",
+        "reason": "auto-layout-horizontal"
+      },
+      "isText": false,
+      "isImage": true
+    },
+    {
+      "id": "3341:1198",
+      "parentId": "3163:2414",
+      "name": "Rectangle 1",
+      "type": "RECTANGLE",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": null,
+      "layoutIntent": {
+        "layout": "block",
+        "reason": "fallback"
+      },
+      "isText": false,
+      "isImage": false
+    },
+    {
+      "id": "3163:2415",
+      "parentId": "3163:2414",
+      "name": "Frame 427318139",
+      "type": "FRAME",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "VERTICAL",
+        "itemSpacing": 8,
+        "padT": 8,
+        "padR": 8,
+        "padB": 8,
+        "padL": 8,
+        "primaryAlign": "MIN",
+        "counterAlign": "MIN",
+        "primarySizing": "HUG",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-col",
+        "reason": "auto-layout-vertical"
+      },
+      "isText": false,
+      "isImage": false
+    },
+    {
+      "id": "3163:2416",
+      "parentId": "3163:2415",
+      "name": "text",
+      "type": "FRAME",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "VERTICAL",
+        "itemSpacing": 56,
+        "padT": 64,
+        "padR": 64,
+        "padB": 64,
+        "padL": 64,
+        "primaryAlign": "MIN",
+        "counterAlign": "MIN",
+        "primarySizing": "HUG",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-col",
+        "reason": "auto-layout-vertical"
+      },
+      "isText": false,
+      "isImage": false
+    },
+    {
+      "id": "3163:2417",
+      "parentId": "3163:2416",
+      "name": "Heading & Text",
+      "type": "FRAME",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "VERTICAL",
+        "itemSpacing": 16,
+        "padT": 0,
+        "padR": 0,
+        "padB": 0,
+        "padL": 0,
+        "primaryAlign": "MIN",
+        "counterAlign": "MIN",
+        "primarySizing": "HUG",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-col",
+        "reason": "auto-layout-vertical"
+      },
+      "isText": false,
+      "isImage": false
+    },
+    {
+      "id": "3163:2418",
+      "parentId": "3163:2417",
+      "name": "headings",
+      "type": "FRAME",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "VERTICAL",
+        "itemSpacing": 8,
+        "padT": 0,
+        "padR": 0,
+        "padB": 0,
+        "padL": 0,
+        "primaryAlign": "MIN",
+        "counterAlign": "MIN",
+        "primarySizing": "HUG",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-col",
+        "reason": "auto-layout-vertical"
+      },
+      "isText": false,
+      "isImage": false
+    },
+    {
+      "id": "3163:2419",
+      "parentId": "3163:2418",
+      "name": "WHITNEY MOORE",
+      "type": "TEXT",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": null,
+      "layoutIntent": {
+        "layout": "block",
+        "reason": "fallback"
+      },
+      "isText": true,
+      "isImage": false
+    },
+    {
+      "id": "3163:2420",
+      "parentId": "3163:2418",
+      "name": "Build, review and ship with ease",
+      "type": "TEXT",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": null,
+      "layoutIntent": {
+        "layout": "block",
+        "reason": "fallback"
+      },
+      "isText": true,
+      "isImage": false
+    },
+    {
+      "id": "3163:2421",
+      "parentId": "3163:2417",
+      "name": "The next big thing starts here. Start building with Prodify and be the first to market with a product that is ready to take on the competition and delight your customers",
+      "type": "TEXT",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": null,
+      "layoutIntent": {
+        "layout": "block",
+        "reason": "fallback"
+      },
+      "isText": true,
+      "isImage": false
+    },
+    {
+      "id": "3163:2422",
+      "parentId": "3163:2416",
+      "name": "buttons",
+      "type": "FRAME",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "HORIZONTAL",
+        "itemSpacing": 12,
+        "padT": 0,
+        "padR": 0,
+        "padB": 0,
+        "padL": 0,
+        "primaryAlign": "MIN",
+        "counterAlign": "MIN",
+        "primarySizing": "HUG",
+        "counterSizing": "HUG"
+      },
+      "layoutIntent": {
+        "layout": "flex-row",
+        "reason": "auto-layout-horizontal"
+      },
+      "isText": false,
+      "isImage": false
+    },
+    {
+      "id": "3163:2423",
+      "parentId": "3163:2422",
+      "name": "CTA Button",
+      "type": "INSTANCE",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "HORIZONTAL",
+        "itemSpacing": 8,
+        "padT": 16,
+        "padR": 32,
+        "padB": 16,
+        "padL": 32,
+        "primaryAlign": "CENTER",
+        "counterAlign": "CENTER",
+        "primarySizing": "HUG",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-row",
+        "reason": "auto-layout-horizontal"
+      },
+      "isText": false,
+      "isImage": true
+    },
+    {
+      "id": "3163:2424",
+      "parentId": "3163:2422",
+      "name": "CTA Button",
+      "type": "INSTANCE",
+      "wrapperRole": "structural",
+      "dimensionIntent": null,
+      "auto": {
+        "layout": "HORIZONTAL",
+        "itemSpacing": 8,
+        "padT": 16,
+        "padR": 32,
+        "padB": 16,
+        "padL": 32,
+        "primaryAlign": "CENTER",
+        "counterAlign": "CENTER",
+        "primarySizing": "HUG",
+        "counterSizing": "FIXED"
+      },
+      "layoutIntent": {
+        "layout": "flex-row",
+        "reason": "auto-layout-horizontal"
+      },
+      "isText": false,
+      "isImage": true
+    }
+  ],
+  "warnings": []
+}

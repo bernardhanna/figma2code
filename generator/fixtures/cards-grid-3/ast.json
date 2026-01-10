@@ -1,0 +1,42 @@
+{
+  "slug": "cards-grid-3",
+  "type": "flexi_block",
+  "frame": {
+    "w": 1200,
+    "h": 600
+  },
+  "tree": {
+    "id": "root",
+    "name": "Cards Grid: 3",
+    "type": "FRAME",
+    "w": 1200,
+    "h": 600,
+    "auto": {
+      "layout": "HORIZONTAL",
+      "itemSpacing": 24
+    },
+    "children": [
+      {
+        "id": "c1",
+        "name": "Card 1",
+        "type": "RECTANGLE",
+        "w": 360,
+        "h": 240
+      },
+      {
+        "id": "c2",
+        "name": "Card 2",
+        "type": "RECTANGLE",
+        "w": 360,
+        "h": 240
+      },
+      {
+        "id": "c3",
+        "name": "Card 3",
+        "type": "RECTANGLE",
+        "w": 360,
+        "h": 240
+      }
+    ]
+  }
+}
