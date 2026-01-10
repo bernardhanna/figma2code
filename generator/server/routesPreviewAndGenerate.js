@@ -136,7 +136,7 @@ export function registerPreviewAndGenerateRoutes(app) {
       return res.status(404).send("Not found");
     } catch (e) {
       return res.status(500).send(String(e?.message || e));
-    }
+    } 
   });
 
   app.get("/api/staging", (req, res) => {
