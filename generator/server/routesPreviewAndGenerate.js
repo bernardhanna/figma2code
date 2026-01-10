@@ -7,19 +7,18 @@ import { PREVIEW_DIR } from "./runtimePaths.js";
 import { getConfig } from "./configStore.js";
 import { ensureThemeOutputDirs } from "./themeOutputDirs.js";
 import { classStrip } from "./classSanitizer.js";
-import { buildPreviewFragment } from "./fragmentPipeline.js";
+import { buildPreviewFragment, buildMergedResponsivePreview, loadVariantsForGroup } from "./fragmentPipeline.js";
 import { listStages, deleteStage } from "./stageStore.js";
 
 import { normalizeAst } from "../auto/normalizeAst.js";
 import { buildIntentGraph } from "../auto/intentGraphPass.js";
-import { autoLayoutify } from "../auto/autoLayoutify/index.js"; // keep your current import path
+import { autoLayoutify } from "../auto/autoLayoutify/index.js";
 import { semanticAccessiblePass } from "../auto/phase2SemanticPass.js";
 import { acfPhp } from "../templates/acf.php.js";
 import { frontendPhp } from "../templates/frontend.php.js";
 import { previewHtml } from "../templates/preview.html.js";
 
 export function registerPreviewAndGenerateRoutes(app) {
-  // Preview-only (HTML render + stage)
   app.post("/api/preview-only", async (req, res) => {
     try {
       const r = await buildPreviewFragment({
@@ -44,6 +43,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         phase3IntentPath: r.phase3IntentPath,
         rasterCtaOffenders: r.rasterCtaOffenders,
         phase3: r.phase3,
+        responsive: r.responsive || null,
       });
     } catch (e) {
       console.error(e);
@@ -51,12 +51,14 @@ export function registerPreviewAndGenerateRoutes(app) {
     }
   });
 
-  // Generate (preview + write to theme)
   app.post("/api/generate", async (req, res) => {
     try {
       const astIn = req.body;
-      if (!astIn?.slug || !astIn?.type || !astIn?.tree) {
-        return res.status(400).json({ ok: false, error: "Missing slug/type/tree" });
+      if (!astIn?.slug && !astIn?.meta?.figma?.frameName && !astIn?.meta?.frameName) {
+        return res.status(400).json({ ok: false, error: "Missing slug/frameName" });
+      }
+      if (!astIn?.type || !astIn?.tree) {
+        return res.status(400).json({ ok: false, error: "Missing type/tree" });
       }
 
       const r = await buildPreviewFragment({
@@ -95,6 +97,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         phase3IntentPath: r.phase3IntentPath,
         rasterCtaOffenders: r.rasterCtaOffenders,
         phase3: r.phase3,
+        responsive: r.responsive || null,
       });
     } catch (e) {
       console.error(e);
@@ -102,15 +105,40 @@ export function registerPreviewAndGenerateRoutes(app) {
     }
   });
 
-  // Serve previews
+  // Serve previews (with on-demand rebuild from variants)
   app.get("/preview/:slug", (req, res) => {
-    const file = path.join(PREVIEW_DIR, `${req.params.slug}.html`);
-    if (!fs.existsSync(file)) return res.status(404).send("Not found");
-    res.setHeader("Content-Type", "text/html; charset=utf-8");
-    res.send(fs.readFileSync(file, "utf8"));
+    try {
+      const slug = String(req.params.slug || "").trim();
+      const file = path.join(PREVIEW_DIR, `${slug}.html`);
+
+      // Serve cached preview if present
+      if (fs.existsSync(file)) {
+        res.setHeader("Content-Type", "text/html; charset=utf-8");
+        return res.send(fs.readFileSync(file, "utf8"));
+      }
+
+      // If preview missing, try to build from stored variants
+      const { available } = loadVariantsForGroup(slug);
+      if (available && available.length) {
+        const built = buildMergedResponsivePreview({
+          groupKey: slug,
+          autoLayoutify,
+          previewHtml,
+        });
+
+        if (built.ok) {
+          fs.writeFileSync(file, built.preview, "utf8");
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.send(built.preview);
+        }
+      }
+
+      return res.status(404).send("Not found");
+    } catch (e) {
+      return res.status(500).send(String(e?.message || e));
+    }
   });
 
-  // Staging list/delete
   app.get("/api/staging", (req, res) => {
     const items = listStages().map(({ slug, when }) => ({ slug, when }));
     res.json({ ok: true, items });

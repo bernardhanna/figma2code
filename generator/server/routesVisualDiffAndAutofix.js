@@ -22,7 +22,6 @@ function viewportPresets(figmaW, figmaH, tabletMax = 1024) {
   const desktopW = Math.max(1, Math.round(figmaW || 1440));
   const desktopH = Math.max(1, Math.round(figmaH || 900));
 
-  // Heights: keep headroom for toolbar etc.
   const baseH = Math.max(desktopH + 140, 900);
 
   return [
@@ -33,7 +32,6 @@ function viewportPresets(figmaW, figmaH, tabletMax = 1024) {
 }
 
 export function registerVisualDiffAndAutofixRoutes(app, { port }) {
-  /* ===================== Layout endpoint ===================== */
   app.post("/api/layout/:slug", async (req, res) => {
     try {
       const slug = String(req.params.slug || "").trim();
@@ -54,7 +52,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
     }
   });
 
-  /* ===================== Compare endpoint ===================== */
   app.post("/api/compare/:slug", async (req, res) => {
     try {
       const slug = String(req.params.slug || "").trim();
@@ -69,7 +66,8 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
       }
 
       const serverUrl = `http://127.0.0.1:${port}`;
-      const previewUrl = `${serverUrl}/preview/${encodeURIComponent(slug)}`;
+      // IMPORTANT: force overlay OFF for compare runs
+      const previewUrl = `${serverUrl}/preview/${encodeURIComponent(slug)}?ov=0`;
 
       const shotCfg = req.body?.screenshot && typeof req.body.screenshot === "object" ? req.body.screenshot : null;
 
@@ -108,7 +106,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
       const outDir = path.join(VDIFF_DIR, slug);
       ensureDir(outDir);
 
-      // Ensure patches exist for this slug (AutoFix uses this file)
       ensurePatchesFile(outDir);
 
       const figmaPath = path.join(outDir, "figma.png");
@@ -117,12 +114,9 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
       const scorePath = path.join(outDir, "score.json");
       const elementDiffPath = path.join(outDir, "element-diff.json");
 
-      // Multi-viewport support
       const multi = req.body?.multi === true || req.body?.viewports === "all";
-      const tabletMax =
-        typeof req.body?.tabletMax === "number" && req.body.tabletMax > 0 ? req.body.tabletMax : 1024;
+      const tabletMax = typeof req.body?.tabletMax === "number" && req.body.tabletMax > 0 ? req.body.tabletMax : 1024;
 
-      // Fetch figma png and cache it
       const figmaResp = await fetch(figmaUrl);
       if (!figmaResp.ok) {
         return res.status(500).json({
@@ -139,7 +133,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
       const includeAA = req.body?.includeAA !== false;
       const passDiffRatio = typeof req.body?.passDiffRatio === "number" ? req.body.passDiffRatio : 0.03;
 
-      // If caller explicitly passes viewport, treat it as a single-run override.
       const singleViewport =
         req.body?.viewport && typeof req.body.viewport === "object" && Number(req.body.viewport.width) > 0
           ? req.body.viewport
@@ -203,7 +196,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
           };
         }
 
-        // SINGLE run (backwards compatible)
         if (!multi) {
           const viewport =
             singleViewport || {
@@ -213,7 +205,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
 
           const result = await runCompareOne(null, viewport);
 
-          // --- AutoFix: capture layout and compute offenders ---
           try {
             const layout = await captureLayoutJson({ chromium, slug, port, outDir, viewport, waitMs: 50 });
             computeElementDiff(diffPath, layout, elementDiffPath);
@@ -233,7 +224,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
           });
         }
 
-        // MULTI run
         const presets = viewportPresets(figmaPng.width, figmaPng.height, tabletMax);
         const results = {};
 
@@ -241,7 +231,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
           results[p.key] = await runCompareOne(p.key, p.viewport);
         }
 
-        // Back-compat aliases => desktop
         fs.copyFileSync(path.join(outDir, "render.desktop.png"), renderPath);
         fs.copyFileSync(path.join(outDir, "diff.desktop.png"), diffPath);
         fs.copyFileSync(path.join(outDir, "score.desktop.json"), scorePath);
@@ -259,7 +248,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
           artifacts: {
             all: `/fixtures.out/${encodeURIComponent(slug)}/score.all.json`,
             figma: `/fixtures.out/${encodeURIComponent(slug)}/figma.png`,
-            // aliases (desktop)
             render: `/fixtures.out/${encodeURIComponent(slug)}/render.png`,
             diff: `/fixtures.out/${encodeURIComponent(slug)}/diff.png`,
             score: `/fixtures.out/${encodeURIComponent(slug)}/score.json`,
@@ -274,7 +262,7 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
     }
   });
 
-  /* ===================== AutoFix endpoint ===================== */
+  // AutoFix endpoint unchanged from your version…
   app.post("/api/autofix/:slug", async (req, res) => {
     try {
       const slug = String(req.params.slug || "").trim();
@@ -302,7 +290,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
       const top = offenders[0];
       const patches = JSON.parse(fs.readFileSync(patchesPath, "utf8") || "{}");
 
-      // --- 1) Learned rules first (classReplace) ---
       if (fs.existsSync(layoutPath)) {
         try {
           const layout = JSON.parse(fs.readFileSync(layoutPath, "utf8") || "[]");
@@ -338,7 +325,6 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
         }
       }
 
-      // --- 2) Fallback: bounded deterministic transform nudge cycle ---
       const existing = patches[top.nodeId] || {};
       const cycle = [
         { style: { transform: "translateX(1px)" } },

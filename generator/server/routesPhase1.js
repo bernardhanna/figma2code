@@ -5,6 +5,7 @@ import path from "node:path";
 
 import { STAGING_DIR } from "./runtimePaths.js";
 import { slugify, writePhase1Stage } from "./phase1Overlay.js";
+import { parseGroupVariant } from "./variantNaming.js";
 
 export function registerPhase1Routes(app) {
   app.post("/api/phase1/export", (req, res) => {
@@ -14,7 +15,11 @@ export function registerPhase1Routes(app) {
         return res.status(400).json({ ok: false, error: "Missing tree in Phase-1 payload" });
       }
 
-      const slug = slugify(incoming.slug || incoming.meta?.figma?.frameName || "section");
+      const frameName = incoming.slug || incoming.meta?.figma?.frameName || incoming.meta?.frameName || "section";
+      const parsed = parseGroupVariant(frameName);
+
+      const groupOrSlug = parsed.isVariant ? parsed.groupKey : frameName;
+      const slug = slugify(groupOrSlug);
 
       const ast = {
         meta: incoming.meta || {
@@ -37,6 +42,8 @@ export function registerPhase1Routes(app) {
         slug,
         overlayUrl: out.overlayUrl,
         paths: { raw: out.rawPath, overlay: out.overlayPath },
+        variant: parsed.isVariant ? parsed.variant : null,
+        groupKey: parsed.isVariant ? parsed.groupKey : null,
       });
     } catch (e) {
       return res.status(500).json({ ok: false, error: String(e?.message || e) });
