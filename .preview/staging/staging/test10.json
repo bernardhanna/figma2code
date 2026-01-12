@@ -1,0 +1,761 @@
+{
+  "slug": "test10",
+  "when": 1768211722580,
+  "ast": {
+    "slug": "test10",
+    "type": "flexi_block",
+    "frame": {
+      "w": 1728,
+      "h": 878
+    },
+    "tree": {
+      "id": "3163:2414",
+      "name": "bgImage",
+      "type": "FRAME",
+      "w": 1728,
+      "h": 878,
+      "bb": {
+        "x": 1889,
+        "y": 120,
+        "w": 1728,
+        "h": 878
+      },
+      "auto": {
+        "layout": "HORIZONTAL",
+        "itemSpacing": 8,
+        "padT": 80,
+        "padR": 80,
+        "padB": 80,
+        "padL": 80,
+        "primaryAlign": "MAX",
+        "counterAlign": "CENTER",
+        "primarySizing": "FIXED",
+        "counterSizing": "FIXED"
+      },
+      "r": {
+        "tl": 0,
+        "tr": 0,
+        "br": 0,
+        "bl": 0
+      },
+      "fills": [
+        {
+          "kind": "solid",
+          "r": 1,
+          "g": 1,
+          "b": 1,
+          "a": 1
+        },
+        {
+          "kind": "image",
+          "scaleMode": "CROP",
+          "imageHash": "a94929a5bfc7f77233fd62eaa5013a70dfeb9b90",
+          "src": "/assets/fill_a94929a5bfc7f77233fd62ea-mk8axnza.png"
+        },
+        {
+          "kind": "gradient",
+          "type": "LINEAR",
+          "angle": -3.8498715041523654e-14,
+          "stops": [
+            {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 0,
+              "pos": 0
+            },
+            {
+              "r": 1,
+              "g": 1,
+              "b": 1,
+              "a": 1,
+              "pos": 1
+            }
+          ]
+        }
+      ],
+      "opacity": 1,
+      "blendMode": "PASS_THROUGH",
+      "clipsContent": true,
+      "img": {
+        "src": "/assets/bgimage-mkazlsa5.png",
+        "w": 1728,
+        "h": 878
+      },
+      "children": [
+        {
+          "id": "3341:1198",
+          "name": "Rectangle 1",
+          "type": "RECTANGLE",
+          "w": 100,
+          "h": 100,
+          "bb": {
+            "x": 2802,
+            "y": 509,
+            "w": 100,
+            "h": 100
+          },
+          "size": {
+            "primary": "FIXED",
+            "counter": "FIXED",
+            "w": 100,
+            "h": 100
+          },
+          "r": {
+            "tl": 0,
+            "tr": 0,
+            "br": 0,
+            "bl": 0
+          },
+          "fills": [
+            {
+              "kind": "solid",
+              "r": 0.8509804010391235,
+              "g": 0.8509804010391235,
+              "b": 0.8509804010391235,
+              "a": 1
+            }
+          ],
+          "opacity": 1,
+          "blendMode": "PASS_THROUGH",
+          "clipsContent": false
+        },
+        {
+          "id": "3163:2415",
+          "name": "Frame 427318139",
+          "type": "FRAME",
+          "w": 627,
+          "h": 565,
+          "bb": {
+            "x": 2910,
+            "y": 276.5,
+            "w": 627,
+            "h": 565
+          },
+          "auto": {
+            "layout": "VERTICAL",
+            "itemSpacing": 8,
+            "padT": 8,
+            "padR": 8,
+            "padB": 8,
+            "padL": 8,
+            "primaryAlign": "MIN",
+            "counterAlign": "MIN",
+            "primarySizing": "HUG",
+            "counterSizing": "FIXED"
+          },
+          "size": {
+            "primary": "HUG",
+            "counter": "FIXED",
+            "w": 627,
+            "h": 565,
+            "align": "MIN"
+          },
+          "r": {
+            "tl": 0,
+            "tr": 0,
+            "br": 0,
+            "bl": 0
+          },
+          "stroke": {
+            "weight": 5,
+            "align": "INSIDE",
+            "color": {
+              "r": 0.03529411926865578,
+              "g": 0.007843137718737125,
+              "b": 0.6431372761726379,
+              "a": 1
+            }
+          },
+          "fills": [
+            {
+              "kind": "none"
+            }
+          ],
+          "opacity": 1,
+          "blendMode": "PASS_THROUGH",
+          "clipsContent": false,
+          "children": [
+            {
+              "id": "3163:2416",
+              "name": "text",
+              "type": "FRAME",
+              "w": 611,
+              "h": 549,
+              "bb": {
+                "x": 2918,
+                "y": 284.5,
+                "w": 611,
+                "h": 549
+              },
+              "auto": {
+                "layout": "VERTICAL",
+                "itemSpacing": 56,
+                "padT": 64,
+                "padR": 64,
+                "padB": 64,
+                "padL": 64,
+                "primaryAlign": "MIN",
+                "counterAlign": "MIN",
+                "primarySizing": "HUG",
+                "counterSizing": "FIXED"
+              },
+              "size": {
+                "primary": "HUG",
+                "counter": "FIXED",
+                "w": 611,
+                "h": 549,
+                "align": "MIN"
+              },
+              "r": {
+                "tl": 0,
+                "tr": 0,
+                "br": 0,
+                "bl": 0
+              },
+              "stroke": {
+                "weight": 3,
+                "align": "INSIDE",
+                "color": {
+                  "r": 0.03529411926865578,
+                  "g": 0.007843137718737125,
+                  "b": 0.6431372761726379,
+                  "a": 1
+                }
+              },
+              "fills": [
+                {
+                  "kind": "none"
+                }
+              ],
+              "opacity": 1,
+              "blendMode": "PASS_THROUGH",
+              "clipsContent": false,
+              "children": [
+                {
+                  "id": "3163:2417",
+                  "name": "Heading & Text",
+                  "type": "FRAME",
+                  "w": 483,
+                  "h": 309,
+                  "bb": {
+                    "x": 2982,
+                    "y": 348.5,
+                    "w": 483,
+                    "h": 309
+                  },
+                  "auto": {
+                    "layout": "VERTICAL",
+                    "itemSpacing": 16,
+                    "padT": 0,
+                    "padR": 0,
+                    "padB": 0,
+                    "padL": 0,
+                    "primaryAlign": "MIN",
+                    "counterAlign": "MIN",
+                    "primarySizing": "HUG",
+                    "counterSizing": "FIXED"
+                  },
+                  "size": {
+                    "primary": "HUG",
+                    "counter": "FIXED",
+                    "w": 483,
+                    "h": 309,
+                    "align": "MIN"
+                  },
+                  "r": {
+                    "tl": 0,
+                    "tr": 0,
+                    "br": 0,
+                    "bl": 0
+                  },
+                  "fills": [
+                    {
+                      "kind": "none"
+                    }
+                  ],
+                  "opacity": 1,
+                  "blendMode": "PASS_THROUGH",
+                  "clipsContent": false,
+                  "children": [
+                    {
+                      "id": "3163:2418",
+                      "name": "headings",
+                      "type": "FRAME",
+                      "w": 483,
+                      "h": 264,
+                      "bb": {
+                        "x": 2982,
+                        "y": 348.5,
+                        "w": 483,
+                        "h": 264
+                      },
+                      "auto": {
+                        "layout": "VERTICAL",
+                        "itemSpacing": 8,
+                        "padT": 0,
+                        "padR": 0,
+                        "padB": 0,
+                        "padL": 0,
+                        "primaryAlign": "MIN",
+                        "counterAlign": "MIN",
+                        "primarySizing": "HUG",
+                        "counterSizing": "FIXED"
+                      },
+                      "size": {
+                        "primary": "HUG",
+                        "counter": "FIXED",
+                        "w": 483,
+                        "h": 264,
+                        "align": "MIN"
+                      },
+                      "r": {
+                        "tl": 0,
+                        "tr": 0,
+                        "br": 0,
+                        "bl": 0
+                      },
+                      "fills": [
+                        {
+                          "kind": "none"
+                        }
+                      ],
+                      "opacity": 1,
+                      "blendMode": "PASS_THROUGH",
+                      "clipsContent": false,
+                      "children": [
+                        {
+                          "id": "3163:2419",
+                          "name": "WHITNEY MOORE",
+                          "type": "TEXT",
+                          "w": 365.322,
+                          "h": 22,
+                          "bb": {
+                            "x": 2982,
+                            "y": 348.5,
+                            "w": 365.322,
+                            "h": 22
+                          },
+                          "size": {
+                            "primary": "FIXED",
+                            "counter": "FIXED",
+                            "w": 365.322,
+                            "h": 22
+                          },
+                          "fills": [
+                            {
+                              "kind": "none"
+                            }
+                          ],
+                          "opacity": 1,
+                          "blendMode": "PASS_THROUGH",
+                          "clipsContent": false,
+                          "text": {
+                            "raw": "WHITNEY MOORE",
+                            "family": "Montserrat",
+                            "fontSize": 18,
+                            "fontWeight": 500,
+                            "letterSpacingPx": 1,
+                            "align": "left",
+                            "color": {
+                              "r": 0,
+                              "g": 0,
+                              "b": 0,
+                              "a": 1
+                            },
+                            "italic": false,
+                            "decoration": "none",
+                            "uppercase": true,
+                            "fillHex": "#000000"
+                          },
+                          "typography": {
+                            "colorHex": "#000000"
+                          }
+                        },
+                        {
+                          "id": "3163:2420",
+                          "name": "Build, review and ship with ease",
+                          "type": "TEXT",
+                          "w": 483,
+                          "h": 234,
+                          "bb": {
+                            "x": 2982,
+                            "y": 378.5,
+                            "w": 483,
+                            "h": 234
+                          },
+                          "size": {
+                            "primary": "FIXED",
+                            "counter": "FIXED",
+                            "w": 483,
+                            "h": 234
+                          },
+                          "fills": [
+                            {
+                              "kind": "none"
+                            }
+                          ],
+                          "opacity": 1,
+                          "blendMode": "PASS_THROUGH",
+                          "clipsContent": false,
+                          "text": {
+                            "raw": "Experience. Clarity. Results.",
+                            "family": "Montserrat",
+                            "fontSize": 68,
+                            "fontWeight": 700,
+                            "lineHeightPx": 78,
+                            "letterSpacingPx": 1,
+                            "align": "left",
+                            "color": {
+                              "r": 0.03529411926865578,
+                              "g": 0.007843137718737125,
+                              "b": 0.6431372761726379,
+                              "a": 1
+                            },
+                            "italic": false,
+                            "decoration": "none",
+                            "uppercase": false,
+                            "fillHex": "#0902a4"
+                          },
+                          "typography": {
+                            "colorHex": "#0902a4"
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "id": "3163:2421",
+                      "name": "The next big thing starts here. Start building with Prodify and be the first to market with a product that is ready to take on the competition and delight your customers",
+                      "type": "TEXT",
+                      "w": 515,
+                      "h": 29,
+                      "bb": {
+                        "x": 2982,
+                        "y": 628.5,
+                        "w": 515,
+                        "h": 29
+                      },
+                      "size": {
+                        "primary": "FIXED",
+                        "counter": "FIXED",
+                        "w": 515,
+                        "h": 29
+                      },
+                      "fills": [
+                        {
+                          "kind": "none"
+                        }
+                      ],
+                      "opacity": 1,
+                      "blendMode": "PASS_THROUGH",
+                      "clipsContent": false,
+                      "text": {
+                        "raw": "Driven by values since 1882.",
+                        "family": "Montserrat",
+                        "fontSize": 24,
+                        "fontWeight": 500,
+                        "letterSpacingPx": 1,
+                        "align": "left",
+                        "color": {
+                          "r": 0,
+                          "g": 0,
+                          "b": 0,
+                          "a": 1
+                        },
+                        "italic": false,
+                        "decoration": "none",
+                        "uppercase": false,
+                        "fillHex": "#000000"
+                      },
+                      "typography": {
+                        "colorHex": "#000000"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "3163:2422",
+                  "name": "buttons",
+                  "type": "FRAME",
+                  "w": 456,
+                  "h": 56,
+                  "bb": {
+                    "x": 2982,
+                    "y": 713.5,
+                    "w": 456,
+                    "h": 56
+                  },
+                  "auto": {
+                    "layout": "HORIZONTAL",
+                    "itemSpacing": 12,
+                    "padT": 0,
+                    "padR": 0,
+                    "padB": 0,
+                    "padL": 0,
+                    "primaryAlign": "MIN",
+                    "counterAlign": "MIN",
+                    "primarySizing": "HUG",
+                    "counterSizing": "HUG"
+                  },
+                  "size": {
+                    "primary": "HUG",
+                    "counter": "HUG",
+                    "w": 456,
+                    "h": 56,
+                    "align": "MIN"
+                  },
+                  "r": {
+                    "tl": 0,
+                    "tr": 0,
+                    "br": 0,
+                    "bl": 0
+                  },
+                  "fills": [
+                    {
+                      "kind": "none"
+                    }
+                  ],
+                  "opacity": 1,
+                  "blendMode": "PASS_THROUGH",
+                  "clipsContent": false,
+                  "children": [
+                    {
+                      "id": "3163:2423",
+                      "name": "CTA Button",
+                      "type": "INSTANCE",
+                      "w": 287,
+                      "h": 56,
+                      "bb": {
+                        "x": 2982,
+                        "y": 713.5,
+                        "w": 287,
+                        "h": 56
+                      },
+                      "auto": {
+                        "layout": "HORIZONTAL",
+                        "itemSpacing": 8,
+                        "padT": 16,
+                        "padR": 32,
+                        "padB": 16,
+                        "padL": 32,
+                        "primaryAlign": "CENTER",
+                        "counterAlign": "CENTER",
+                        "primarySizing": "HUG",
+                        "counterSizing": "FIXED"
+                      },
+                      "size": {
+                        "primary": "HUG",
+                        "counter": "FIXED",
+                        "w": 287,
+                        "h": 56,
+                        "align": "CENTER"
+                      },
+                      "r": {
+                        "tl": 0,
+                        "tr": 0,
+                        "br": 0,
+                        "bl": 0
+                      },
+                      "shadows": [
+                        {
+                          "inset": false,
+                          "x": 10,
+                          "y": 14,
+                          "blur": 24,
+                          "r": 0,
+                          "g": 0,
+                          "b": 0,
+                          "a": 0.25
+                        }
+                      ],
+                      "fills": [
+                        {
+                          "kind": "solid",
+                          "r": 0.03529411926865578,
+                          "g": 0.007843137718737125,
+                          "b": 0.6431372761726379,
+                          "a": 1
+                        }
+                      ],
+                      "opacity": 1,
+                      "blendMode": "PASS_THROUGH",
+                      "clipsContent": false,
+                      "actions": {
+                        "isClickable": true
+                      },
+                      "img": {
+                        "src": "/assets/cta_button-mkazlscr.png",
+                        "w": 287,
+                        "h": 56
+                      },
+                      "__instanceText": [
+                        {
+                          "raw": "View Practice Areas",
+                          "family": "Montserrat",
+                          "fontSize": 20,
+                          "fontWeight": 400,
+                          "lineHeightPx": 20,
+                          "letterSpacingPx": 1,
+                          "align": "center",
+                          "color": {
+                            "r": 1,
+                            "g": 1,
+                            "b": 1,
+                            "a": 1
+                          },
+                          "italic": false,
+                          "decoration": "none",
+                          "uppercase": false
+                        }
+                      ],
+                      "cta": {
+                        "label": "View Practice Areas",
+                        "typography": {
+                          "family": "Montserrat",
+                          "sizePx": 20,
+                          "lineHeightPx": 20,
+                          "weight": 400,
+                          "letterSpacingPx": 1,
+                          "italic": false,
+                          "uppercase": false,
+                          "decoration": "none",
+                          "align": "center"
+                        }
+                      }
+                    },
+                    {
+                      "id": "3163:2424",
+                      "name": "CTA Button",
+                      "type": "INSTANCE",
+                      "w": 157,
+                      "h": 56,
+                      "bb": {
+                        "x": 3281,
+                        "y": 713.5,
+                        "w": 157,
+                        "h": 56
+                      },
+                      "auto": {
+                        "layout": "HORIZONTAL",
+                        "itemSpacing": 8,
+                        "padT": 16,
+                        "padR": 32,
+                        "padB": 16,
+                        "padL": 32,
+                        "primaryAlign": "CENTER",
+                        "counterAlign": "CENTER",
+                        "primarySizing": "HUG",
+                        "counterSizing": "FIXED"
+                      },
+                      "size": {
+                        "primary": "HUG",
+                        "counter": "FIXED",
+                        "w": 157,
+                        "h": 56,
+                        "align": "CENTER"
+                      },
+                      "r": {
+                        "tl": 0,
+                        "tr": 0,
+                        "br": 0,
+                        "bl": 0
+                      },
+                      "shadows": [
+                        {
+                          "inset": false,
+                          "x": 20,
+                          "y": 14,
+                          "blur": 24,
+                          "r": 0,
+                          "g": 0,
+                          "b": 0,
+                          "a": 0.07999999821186066
+                        }
+                      ],
+                      "fills": [
+                        {
+                          "kind": "solid",
+                          "r": 0.8588235378265381,
+                          "g": 0.9176470637321472,
+                          "b": 0.9960784316062927,
+                          "a": 1
+                        }
+                      ],
+                      "opacity": 1,
+                      "blendMode": "PASS_THROUGH",
+                      "clipsContent": false,
+                      "actions": {
+                        "isClickable": true
+                      },
+                      "img": {
+                        "src": "/assets/cta_button-mkazlseh.png",
+                        "w": 157,
+                        "h": 56
+                      },
+                      "__instanceText": [
+                        {
+                          "raw": "About Us",
+                          "family": "Montserrat",
+                          "fontSize": 20,
+                          "fontWeight": 400,
+                          "lineHeightPx": 20,
+                          "letterSpacingPx": 0,
+                          "align": "left",
+                          "color": {
+                            "r": 0.11372549086809158,
+                            "g": 0.30588236451148987,
+                            "b": 0.8470588326454163,
+                            "a": 1
+                          },
+                          "italic": false,
+                          "decoration": "none",
+                          "uppercase": false
+                        }
+                      ],
+                      "cta": {
+                        "label": "About Us",
+                        "typography": {
+                          "family": "Montserrat",
+                          "sizePx": 20,
+                          "lineHeightPx": 20,
+                          "weight": 400,
+                          "letterSpacingPx": 0,
+                          "italic": false,
+                          "uppercase": false,
+                          "decoration": "none",
+                          "align": "left"
+                        }
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    "slots": {},
+    "meta": {
+      "schema": "figma-ast",
+      "version": 1,
+      "exportedAt": "2026-01-12T09:55:22.574Z",
+      "figma": {
+        "pageName": "      ↳ 🖥️  Home v3",
+        "frameName": "bgImage"
+      },
+      "overlay": {
+        "src": "/assets/bgimage-mkazlt1m.png",
+        "w": 1728,
+        "h": 878
+      }
+    },
+    "__bg": {
+      "enabled": true,
+      "src": "/assets/bgimage-mkazlsa5.png",
+      "objectFit": "cover",
+      "objectPosition": "center",
+      "source": "fill"
+    }
+  }
+}

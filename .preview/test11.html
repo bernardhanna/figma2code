@@ -1,106 +1,18 @@
-// generator/templates/preview.html.js
-// Preview shell with:
-// - optional background injection (ast.__bg)
-// - optional Figma overlay compare UI (meta.overlay.src)
-// - auto Google Fonts injection
-// - APPLY PATCHES support (fixtures.out/<slug>/patches.json)
-//
-// Viewport tooling:
-// - Viewport switcher (mobile/tablet/desktop) + draggable width resizer
-// - Non-scaling device frame (NO transform scaling; only width changes)
-//
-// Critical layout guarantees (this version):
-// - Overlay is positioned/clipped INSIDE #cmp_root and cannot exceed current viewport (--vpw)
-// - #cmp_root width is clamped to current viewport (--vpw) and design width (--design-w)
-// - device frame clips everything to viewport (overflow hidden)
-// - Overlay opacity/difference are driven by CSS vars on #cmp_root (not on other wrappers)
-//
-// Fixes in this version:
-// - Opacity slider works (applied to BOTH CSS var + inline style on the <img>)
-// - Difference checkbox works (applied to BOTH CSS var + inline style on the <img>)
-// - Nudge UI removed (and no arrow-key handlers)
-
-export function previewHtml(ast, opts = {}) {
-  const fragmentRaw = (opts.fragment || "").trim();
-
-  const padding = (() => {
-    const out = ["pt-5", "pb-5"];
-    for (const p of ast.layout?.padding || []) {
-      if (p?.screen && (p.ptRem ?? "") !== "") out.push(`${p.screen}:pt-[${p.ptRem}rem]`);
-      if (p?.screen && (p.pbRem ?? "") !== "") out.push(`${p.screen}:pb-[${p.pbRem}rem]`);
-    }
-    return out.join(" ");
-  })();
-
-  const classes = ast.content?.classes || {};
-  const outer = (classes.outer || "")
-    .replace(/\bflex\b/g, "")
-    .replace(/\bflex-col\b/g, "")
-    .replace(/\bflex-row\b/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-
-  const overlaySrc = String(ast?.meta?.overlay?.src || "").trim();
-
-  // Background injection:
-  // Only use ast.__bg if explicitly enabled; never fall back to frame export.
-  const bgSrc = (() => {
-    const enabled = !!ast?.__bg?.enabled;
-    const s1 = enabled ? String(ast?.__bg?.src || "").trim() : "";
-    if (!s1) return "";
-    if (overlaySrc && s1 === overlaySrc) return "";
-    return s1;
-  })();
-
-  // Default to FILL behaviour
-  const bgFit = String(ast?.__bg?.objectFit || "cover");
-  const bgPos = String(ast?.__bg?.objectPosition || "center");
-
-  // Deterministic compare sizing
-  const frameH = Math.max(1, Math.round(ast?.frame?.h || ast?.tree?.h || 1));
-
-  // Design width = desktop reference width
-  const designW = Math.max(1, Math.round(ast?.frame?.w || ast?.tree?.w || 1200));
-
-  const { googleFonts, primaryFontFamily } = buildGoogleFontsLinks(ast);
-
-  // Slot replacements
-  const headingText = ast.content?.heading?.text || "Heading";
-  const subcopyHtml = ast.content?.subcopy || "";
-  const img = ast.content?.image;
-
-  let fragment = fragmentRaw;
-  fragment = fragment.replace(
-    "<!--SLOT:heading-->",
-    `<h2 class="font-semibold leading-tight tracking-tight">${escapeHtml(headingText)}</h2>`
-  );
-  fragment = fragment.replace("<!--SLOT:subcopy-->", subcopyHtml || "");
-  fragment = fragment.replace(
-    "<!--SLOT:image_main-->",
-    img
-      ? `<img class="${ast.layout?.imageRadius || "rounded-none"} block h-auto w-full" src="${escapeHtml(
-          img.src
-        )}" alt="${escapeHtml(headingText)}" loading="lazy" />`
-      : ""
-  );
-
-  const bodyFontCss = primaryFontFamily
-    ? `body{ font-family: ${cssFontStack(primaryFontFamily)}; }`
-    : "";
-
-  const slug = String(ast?.slug || "");
-
-  return `<!doctype html>
+<!doctype html>
 <html>
 <head>
   <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
   <script src="https://cdn.tailwindcss.com"></script>
-  <title>Preview – ${escapeHtml(slug)}</title>
+  <title>Preview – test11</title>
 
-  ${googleFonts || ""}
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;700&display=swap" rel="stylesheet">
+  
 
   <style>
-    ${bodyFontCss}
+    body{ font-family: Montserrat, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
 
     .overlay-toolbar{
       position: sticky;
@@ -163,8 +75,8 @@ export function previewHtml(ast, opts = {}) {
       transform: none !important;
       zoom: 1 !important;
 
-      width: var(--vpw, ${designW}px);
-      max-width: min(100%, var(--design-w, ${designW}px));
+      width: var(--vpw, 1728px);
+      max-width: min(100%, var(--design-w, 1728px));
       background: #fff;
       position: relative;
     }
@@ -183,7 +95,7 @@ export function previewHtml(ast, opts = {}) {
       width: 100%;
       min-height: var(--cmp-minh, 1px);
 
-      max-width: min(var(--vpw, ${designW}px), var(--design-w, ${designW}px));
+      max-width: min(var(--vpw, 1728px), var(--design-w, 1728px));
       margin-left: auto;
       margin-right: auto;
 
@@ -228,7 +140,7 @@ export function previewHtml(ast, opts = {}) {
       mix-blend-mode: var(--obm, normal);
 
       z-index: 40;
-      max-width: min(var(--vpw, ${designW}px), var(--design-w, ${designW}px));
+      max-width: min(var(--vpw, 1728px), var(--design-w, 1728px));
     }
 
     .overlay-hidden{ display: none; }
@@ -356,9 +268,7 @@ export function previewHtml(ast, opts = {}) {
         </div>
       </div>
 
-      ${
-        overlaySrc
-          ? `
+      
       <div class="flex items-center gap-2 ml-auto" id="ov_controls">
         <input id="ov_enabled" type="checkbox" checked />
         <label for="ov_enabled" class="text-sm font-medium">Figma overlay</label>
@@ -382,52 +292,48 @@ export function previewHtml(ast, opts = {}) {
       <button id="ov_scores" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50">
         Scores
       </button>
-      `
-          : `<div class="ml-auto"></div>`
-      }
+      
     </div>
   </div>
 
   <div class="preview-stage">
-    <div id="device_frame" class="device-frame device-outline" style="--vpw:${designW}px; --design-w:${designW}px;">
+    <div id="device_frame" class="device-frame device-outline" style="--vpw:1728px; --design-w:1728px;">
       <div class="device-frame-inner">
         <section class="relative">
           <div
             id="ov_root"
-            class="relative flex flex-col items-center w-full mx-auto ${outer} ${padding}"
+            class="relative flex flex-col items-center w-full mx-auto  pt-5 pb-5"
           >
             <div
               id="cmp_root"
-              style="--cmp-minh:${frameH}px; --bg-fit:${escapeHtml(bgFit)}; --bg-pos:${escapeHtml(
-    bgPos
-  )}; --oop:0.5; --obm:normal;"
+              style="--cmp-minh:878px; --bg-fit:cover; --bg-pos:center; --oop:0.5; --obm:normal;"
             >
-              ${
-                bgSrc
-                  ? `
+              
               <div class="bg-layer" aria-hidden="true">
-                <img data-figma-bg="1" src="${escapeHtml(bgSrc)}" alt="" />
+                <img data-figma-bg="1" src="/assets/bgimage-mkb0gkab.png" alt="" />
               </div>
-              `
-                  : ""
-              }
+              
 
               <div class="content-layer">
-                ${fragment}
+                <section class="relative flex overflow-hidden" style="background-image: linear-gradient(0deg, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%), url('/assets/bgimage-mkb0gkab.png'); background-size: cover; background-position: center; background-repeat: no-repeat;">
+<div class="flex flex-col items-center w-full mx-auto max-w-[108rem] pt-5 pb-5 max-lg:px-5">
+<div data-node-id="3163:2414" data-node="3163:2414" class="flex flex-col md:flex-row md:justify-end md:items-center gap-[0.5rem] pt-[5rem] pr-[5rem] pb-[5rem] pl-[5rem] overflow-hidden"><div data-node-id="3163:2415" data-node="3163:2415" class="flex flex-col md:flex-col md:justify-start md:items-start gap-[0.5rem] pt-[0.5rem] pr-[0.5rem] pb-[0.5rem] pl-[0.5rem] border-[0.3125rem] border-[rgba(9,2,164,1)] w-[39.1875rem] max-w-full shrink-0 self-start"><div data-node-id="3163:2416" data-node="3163:2416" class="flex flex-col md:flex-col md:justify-start md:items-start gap-[3.5rem] pt-[4rem] pr-[4rem] pb-[4rem] pl-[4rem] border-[0.1875rem] border-[rgba(9,2,164,1)] self-start"><div data-node-id="3163:2417" data-node="3163:2417" class="flex flex-col md:flex-col md:justify-start md:items-start gap-[1rem] self-start"><div data-node-id="3163:2418" data-node="3163:2418" class="flex flex-col md:flex-col md:justify-start md:items-start gap-[0.5rem] self-start"><p data-node-id="3163:2419" data-node="3163:2419" data-ff="Montserrat" class="text-left text-[1.125rem] font-[500] tracking-[0.0625rem] text-[#000000] font-['Montserrat'] uppercase">WHITNEY MOORE</p>
+<h1 data-node-id="3163:2420" data-node="3163:2420" data-ff="Montserrat" class="text-left text-[4.25rem] font-[700] leading-[4.875rem] tracking-[0.0625rem] text-[#0902a4] font-['Montserrat']">Experience. Clarity. Results.</h1></div>
+<h3 data-node-id="3163:2421" data-node="3163:2421" data-ff="Montserrat" class="text-left text-[1.5rem] font-[500] tracking-[0.0625rem] text-[#000000] font-['Montserrat']">Driven by values since 1882.</h3></div>
+<div data-node-id="3163:2422" data-node="3163:2422" class="flex flex-col md:flex-row md:justify-start md:items-start gap-[0.75rem] self-start"><button data-node-id="3163:2423" data-node="3163:2423" type="button" aria-label="View Practice Areas" class="flex flex-col md:flex-row md:justify-center md:items-center gap-[0.5rem] pt-[1rem] pr-[2rem] pb-[1rem] pl-[2rem] bg-[rgba(9,2,164,1)] bg-center shadow-[0.625rem_0.875rem_1.5rem_rgba(0,0,0,0.25)] btn inline-flex justify-center items-center gap-2 whitespace-nowrap hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 py-5 min-h-14 lg:w-[17.9375rem] lg:h-[3.5rem] lg:min-h-0 w-[17.9375rem] max-w-full shrink-0 self-center"><span class="font-['Montserrat'] text-[1.25rem] leading-[1.25rem] tracking-[0.0625rem] font-[400] text-[rgba(255,255,255,1)]">View Practice Areas</span></button>
+<button data-node-id="3163:2424" data-node="3163:2424" type="button" aria-label="About Us" class="flex flex-col md:flex-row md:justify-center md:items-center gap-[0.5rem] pt-[1rem] pr-[2rem] pb-[1rem] pl-[2rem] bg-[rgba(219,234,254,1)] bg-center shadow-[1.25rem_0.875rem_1.5rem_rgba(0,0,0,0.07999999821186066)] btn inline-flex justify-center items-center gap-2 whitespace-nowrap hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 py-5 min-h-14 lg:w-[9.8125rem] lg:h-[3.5rem] lg:min-h-0 w-[9.8125rem] max-w-full shrink-0 self-center"><span class="font-['Montserrat'] text-[1.25rem] leading-[1.25rem] font-[400] text-[rgba(29,78,216,1)]">About Us</span></button></div></div></div></div>
+</div>
+</section>
               </div>
 
-              ${
-                overlaySrc
-                  ? `<img
+              <img
                       id="ov_img"
                       data-figma-overlay="1"
                       class="overlay-img"
-                      src="${escapeHtml(overlaySrc)}"
+                      src="/assets/bgimage-mkb0gl0y.png"
                       alt=""
                       aria-hidden="true"
-                    />`
-                  : ""
-              }
+                    />
             </div>
           </div>
         </section>
@@ -438,7 +344,7 @@ export function previewHtml(ast, opts = {}) {
   <!-- Apply patches (fixtures.out/<slug>/patches.json) -->
   <script>
     (function(){
-      const slug = ${JSON.stringify(slug)};
+      const slug = "test11";
       if (!slug) return;
 
       const PATCH_URL = "/fixtures.out/" + encodeURIComponent(slug) + "/patches.json";
@@ -523,8 +429,8 @@ export function previewHtml(ast, opts = {}) {
   <script>
     (function(){
       // -------- Viewport sizing (NO scaling) --------
-      const designW = ${JSON.stringify(designW)};
-      const slug = ${JSON.stringify(slug)};
+      const designW = 1728;
+      const slug = "test11";
       const key = "previewViewport:" + slug;
 
       const btnM = document.getElementById("vp_mobile");
@@ -631,16 +537,14 @@ export function previewHtml(ast, opts = {}) {
     })();
   </script>
 
-  ${
-    overlaySrc
-      ? `
+  
   <div id="score_modal_backdrop" class="modal-backdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="score_modal_title">
       <div class="modal-hd">
         <div>
           <div id="score_modal_title" class="modal-title">Visual diff scores</div>
           <div class="modal-sub">
-            Slug: <span class="mono">${escapeHtml(slug)}</span>
+            Slug: <span class="mono">test11</span>
           </div>
         </div>
         <button id="score_modal_close" class="btn2" aria-label="Close">Close</button>
@@ -716,7 +620,7 @@ export function previewHtml(ast, opts = {}) {
 
       if (!cmp || !img) return;
 
-      const key = 'figmaOverlay:' + ${JSON.stringify(slug)};
+      const key = 'figmaOverlay:' + "test11";
       const state = (() => {
         try { return JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch { return {}; }
       })();
@@ -794,7 +698,7 @@ export function previewHtml(ast, opts = {}) {
         linkDiff: document.getElementById('score_link_diff'),
       };
 
-      const slug = ${JSON.stringify(slug)};
+      const slug = "test11";
 
       function pct(x){
         const n = Number(x);
@@ -838,7 +742,7 @@ export function previewHtml(ast, opts = {}) {
         scoreEls.pill.textContent = pass ? "PASS" : "FAIL";
 
         scoreEls.main.textContent =
-          \`diffRatio \${pct(score.diffRatio)} · pass<=\${pct(score.compare?.passDiffRatio)}\`;
+          `diffRatio ${pct(score.diffRatio)} · pass<=${pct(score.compare?.passDiffRatio)}`;
 
         scoreEls.diffRatio.textContent = pct(score.diffRatio);
         scoreEls.diffPixels.textContent = String(score.diffPixels ?? '—');
@@ -846,20 +750,20 @@ export function previewHtml(ast, opts = {}) {
         scoreEls.passDiffRatio.textContent = pct(score.compare?.passDiffRatio);
         scoreEls.viewport.textContent =
           score.viewport?.width && score.viewport?.height
-            ? \`\${score.viewport.width}×\${score.viewport.height}\`
+            ? `${score.viewport.width}×${score.viewport.height}`
             : '—';
         scoreEls.at.textContent = fmtDate(score.at);
 
-        const base = \`/fixtures.out/\${encodeURIComponent(slug)}\`;
-        if (scoreEls.linkScore) scoreEls.linkScore.href = \`\${base}/score.json\`;
-        if (scoreEls.linkFigma) scoreEls.linkFigma.href = \`\${base}/figma.png\`;
-        if (scoreEls.linkRender) scoreEls.linkRender.href = \`\${base}/render.png\`;
-        if (scoreEls.linkDiff) scoreEls.linkDiff.href = \`\${base}/diff.png\`;
+        const base = `/fixtures.out/${encodeURIComponent(slug)}`;
+        if (scoreEls.linkScore) scoreEls.linkScore.href = `${base}/score.json`;
+        if (scoreEls.linkFigma) scoreEls.linkFigma.href = `${base}/figma.png`;
+        if (scoreEls.linkRender) scoreEls.linkRender.href = `${base}/render.png`;
+        if (scoreEls.linkDiff) scoreEls.linkDiff.href = `${base}/diff.png`;
       }
 
       async function loadLatestScore(){
         try{
-          const r = await fetch(\`/fixtures.out/\${encodeURIComponent(slug)}/score.json\`, { cache: 'no-store' });
+          const r = await fetch(`/fixtures.out/${encodeURIComponent(slug)}/score.json`, { cache: 'no-store' });
           if (!r.ok) return null;
           return await r.json();
         } catch {
@@ -870,7 +774,7 @@ export function previewHtml(ast, opts = {}) {
       async function runCompare(){
         const body = { waitMs: 350, screenshot: { mode: "element", selector: "#cmp_root", minHeight: 50 } };
 
-        const r = await fetch(\`/api/compare/\${encodeURIComponent(slug)}\`, {
+        const r = await fetch(`/api/compare/${encodeURIComponent(slug)}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
@@ -878,7 +782,7 @@ export function previewHtml(ast, opts = {}) {
 
         const out = await r.json().catch(() => null);
         if (!r.ok || !out?.ok) {
-          const msg = out?.error ? String(out.error) : \`Compare failed (\${r.status})\`;
+          const msg = out?.error ? String(out.error) : `Compare failed (${r.status})`;
           throw new Error(msg);
         }
         return out.score;
@@ -927,9 +831,7 @@ export function previewHtml(ast, opts = {}) {
       });
     })();
   </script>
-  `
-      : ""
-  }
+  
 
   <script>
     (function(){
@@ -941,77 +843,4 @@ export function previewHtml(ast, opts = {}) {
     })();
   </script>
 </body>
-</html>`;
-}
-
-/* ---------------- helpers ---------------- */
-
-function buildGoogleFontsLinks(ast) {
-  let fonts = Array.isArray(ast?.meta?.fonts) ? ast.meta.fonts : [];
-  if (!fonts.length) fonts = scanFontsFromAst(ast?.tree);
-  if (!fonts.length) return { googleFonts: "", primaryFontFamily: "" };
-
-  const primaryFontFamily = String(fonts[0]?.family || "").trim();
-  const famParts = [];
-
-  for (const f of fonts) {
-    const family = String(f?.family || "").trim();
-    if (!family) continue;
-
-    const weightsRaw = Array.isArray(f?.weights) ? f.weights : [];
-    const weights = Array.from(
-      new Set(weightsRaw.map((w) => Number(w)).filter((w) => Number.isFinite(w) && w > 0))
-    ).sort((a, b) => a - b);
-
-    const famEnc = encodeURIComponent(family).replace(/%20/g, "+");
-    if (weights.length) famParts.push("family=" + famEnc + ":wght@" + weights.join(";"));
-    else famParts.push("family=" + famEnc);
-  }
-
-  if (!famParts.length) return { googleFonts: "", primaryFontFamily };
-
-  const href = "https://fonts.googleapis.com/css2?" + famParts.join("&") + "&display=swap";
-
-  const googleFonts =
-    '\n  <link rel="preconnect" href="https://fonts.googleapis.com">' +
-    '\n  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-    '\n  <link href="' +
-    href +
-    '" rel="stylesheet">\n  ';
-
-  return { googleFonts, primaryFontFamily };
-}
-
-function scanFontsFromAst(root) {
-  const map = new Map(); // family -> {family, weights:Set}
-  (function walk(n) {
-    if (!n) return;
-
-    const t = n?.text || null;
-    const fam = String(t?.fontFamily || t?.family || t?.fontName?.family || "").trim();
-    if (fam) {
-      const w = Number(t?.fontWeight || t?.fontName?.style?.match(/\\d+/)?.[0] || 400);
-      if (!map.has(fam)) map.set(fam, { family: fam, weights: new Set() });
-      if (Number.isFinite(w) && w > 0) map.get(fam).weights.add(w);
-    }
-    for (const c of n.children || []) walk(c);
-  })(root);
-
-  return [...map.values()].map((v) => ({ family: v.family, weights: [...v.weights] }));
-}
-
-function cssFontStack(family) {
-  const fam = String(family || "").trim();
-  if (!fam) return `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
-  const quoted = /\\s/.test(fam) ? "'" + fam.replace(/'/g, "\\\\'") + "'" : fam;
-  return quoted + `, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
-}
-
-function escapeHtml(s = "") {
-  return String(s)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
+</html>

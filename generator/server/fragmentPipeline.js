@@ -4,9 +4,15 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { PREVIEW_DIR } from "./runtimePaths.js";
-import { parseGroupVariant } from "./variantNaming.js";
-import { writeVariantAst, readVariantAstIfExists, listAvailableVariants, materializeOverlayIfDataUrl } from "./variantStore.js";
 import { mergeResponsiveFragments } from "../auto/mergeResponsiveFragments.js";
+
+import { parseGroupVariant } from "./variantNaming.js";
+import {
+  writeVariantAst,
+  readVariantAstIfExists,
+  materializeOverlayIfDataUrl,
+} from "./variantStore.js";
+
 import { writeStage } from "./stageStore.js";
 
 function asObj(v) {
@@ -14,15 +20,34 @@ function asObj(v) {
 }
 
 /**
+ * If a pass returns { ast: <actualAst>, ... }, unwrap it.
+ * If it's already an AST, return it.
+ */
+function coerceAst(maybeWrapped, fallbackAst = null) {
+  if (!maybeWrapped) return fallbackAst;
+  if (asObj(maybeWrapped) && asObj(maybeWrapped.ast) && asObj(maybeWrapped.ast.tree)) {
+    return maybeWrapped.ast;
+  }
+  if (asObj(maybeWrapped) && asObj(maybeWrapped.tree)) return maybeWrapped;
+  return fallbackAst;
+}
+
+/**
  * Normalize pipeline step return shapes.
- * Many of your passes may return:
+ * Many passes may return:
  * - ast (direct)
  * - { ast, report, ... }
  */
 function unwrapAstResult(out, fallbackAst) {
   if (!out) return { ast: fallbackAst, extra: null };
-  if (asObj(out) && asObj(out.ast)) return { ast: out.ast, extra: out };
-  if (asObj(out)) return { ast: out, extra: null };
+
+  // If it looks like { ast: { tree: ... } }
+  if (asObj(out) && asObj(out.ast) && asObj(out.ast.tree)) return { ast: out.ast, extra: out };
+
+  // If it looks like a plain AST
+  if (asObj(out) && asObj(out.tree)) return { ast: out, extra: null };
+
+  // Unknown shape: fallback
   return { ast: fallbackAst, extra: null };
 }
 
@@ -38,8 +63,7 @@ function compositeAstForMerged({ groupKey, variantsMap }) {
   const baseAst = variantsMap[baseKey] || null;
   if (!baseAst) return null;
 
-  // For sizing & overlay: prefer desktop (if exists) for designW/overlay reference,
-  // otherwise fall back to base.
+  // Prefer desktop for sizing/overlay reference if present
   const desktopAst = variantsMap.desktop || null;
   const prefer = desktopAst || baseAst;
 
@@ -52,32 +76,29 @@ function compositeAstForMerged({ groupKey, variantsMap }) {
     for (const f of arr) {
       const family = String(f?.family || "").trim();
       if (!family) continue;
-      const key = family + ":" + (Array.isArray(f?.weights) ? f.weights.join(",") : "");
+      const weights = Array.isArray(f?.weights) ? f.weights : [];
+      const key = family + ":" + weights.join(",");
       if (seen.has(key)) continue;
       seen.add(key);
       fonts.push(f);
     }
   }
 
-  const out = {
+  return {
     ...prefer,
     slug: groupKey,
-    // keep tree/frame from prefer (desktop if present)
     meta: {
       ...(prefer.meta || {}),
-      fonts: fonts.length ? fonts : (prefer.meta?.fonts || []),
-      // Also preserve an indicator this is merged
+      fonts: fonts.length ? fonts : prefer.meta?.fonts || [],
       responsive: {
         groupKey,
-        variants: Object.keys(variantsMap).filter((k) => !!variantsMap[k]),
+        variants: ["mobile", "tablet", "desktop"].filter((k) => !!variantsMap[k]),
         base: baseKey,
         mdFrom: variantsMap.tablet ? "tablet" : "",
         lgFrom: variantsMap.desktop ? "desktop" : "",
       },
     },
   };
-
-  return out;
 }
 
 function ensurePreviewDir() {
@@ -85,15 +106,23 @@ function ensurePreviewDir() {
 }
 
 /**
- * Build a single fragment (legacy path) from one AST.
+ * Build a single fragment (legacy path) from one AST using your existing passes.
  */
-function renderOneFragment({ ast, autoLayoutify, semanticAccessiblePass, buildIntentGraph, normalizeAst }) {
+function renderOneFragment({
+  ast,
+  autoLayoutify,
+  semanticAccessiblePass,
+  preventNestedInteractive,
+  buildIntentGraph,
+  normalizeAst,
+}) {
   let a = ast;
 
-  // normalize
+  // normalize (robustly unwrap)
   if (normalizeAst) {
     const r = normalizeAst(a);
-    a = r || a;
+    const un = unwrapAstResult(r, a);
+    a = un.ast || a;
   }
 
   // intent graph pass
@@ -108,16 +137,27 @@ function renderOneFragment({ ast, autoLayoutify, semanticAccessiblePass, buildIn
   // semantic pass
   let phase2Report = null;
   let phase2NormalizedPath = null;
-  if (semanticAccessiblePass) {
-    const r = semanticAccessiblePass(a);
+  // Prevent <button> wrapping <button>/<a> etc.
+  // This must run after semantics/clickability is assigned.
+  if (preventNestedInteractive) {
+    const r = preventNestedInteractive(a);
     const un = unwrapAstResult(r, a);
-    a = un.ast;
-    phase2Report = un.extra?.report || un.extra?.phase2Report || null;
+    a = un.ast || a;
+  }
+
+
+  // Guard: ensure we truly have an AST with tree before rendering
+  if (!a || !a.tree) {
+    throw new Error("renderOneFragment: pipeline produced AST missing tree");
   }
 
   // render
   const semantics = a?.semantics || a?.semanticsMap || a?.meta?.semantics || {};
-  const fragment = autoLayoutify(a, { semantics, wrap: true, fontMap: a?.meta?.fontMap || {} });
+  const fragment = autoLayoutify(a, {
+    semantics,
+    wrap: true,
+    fontMap: a?.meta?.fontMap || {},
+  });
 
   return {
     ast: a,
@@ -130,12 +170,17 @@ function renderOneFragment({ ast, autoLayoutify, semanticAccessiblePass, buildIn
 
 /**
  * Load stored variants for a groupKey and return a variantsMap {mobile,tablet,desktop}.
+ * Coerces any wrapped shapes into plain ASTs.
  */
 export function loadVariantsForGroup(groupKey) {
+  const m0 = readVariantAstIfExists(groupKey, "mobile");
+  const t0 = readVariantAstIfExists(groupKey, "tablet");
+  const d0 = readVariantAstIfExists(groupKey, "desktop");
+
   const variantsMap = {
-    mobile: readVariantAstIfExists(groupKey, "mobile"),
-    tablet: readVariantAstIfExists(groupKey, "tablet"),
-    desktop: readVariantAstIfExists(groupKey, "desktop"),
+    mobile: coerceAst(m0, null),
+    tablet: coerceAst(t0, null),
+    desktop: coerceAst(d0, null),
   };
 
   const available = Object.entries(variantsMap)
@@ -150,50 +195,61 @@ export function loadVariantsForGroup(groupKey) {
  */
 export function buildMergedResponsivePreview({ groupKey, autoLayoutify, previewHtml }) {
   const { variantsMap, available } = loadVariantsForGroup(groupKey);
+
   if (!available.length) {
     return { ok: false, status: 404, error: `No variants found for "${groupKey}".` };
   }
 
   const baseVariant = pickBaseVariant(variantsMap);
   const baseAst = variantsMap[baseVariant];
+  if (!baseAst?.tree) {
+    return { ok: false, status: 500, error: `No base AST (with tree) found for "${groupKey}".` };
+  }
 
+  const mobileAst = variantsMap.mobile || null;
   const tabletAst = variantsMap.tablet || null;
   const desktopAst = variantsMap.desktop || null;
 
-  // Render fragments separately, but without wrappers duplication in merge output?
-  // We merge at HTML string level, so keep wrappers consistent.
-  // NOTE: autoLayoutify currently returns FULL <section> wrapper when wrap=true.
-  // For merge to behave, we need fragments of the same "shape". We'll set wrap=true.
-  // The merge operates on tags containing data-node/data-key.
-  const semanticsBase = baseAst?.semantics || baseAst?.semanticsMap || {};
-  const semanticsTablet = tabletAst?.semantics || tabletAst?.semanticsMap || {};
-  const semanticsDesktop = desktopAst?.semantics || desktopAst?.semanticsMap || {};
-
-  const mobileHtml = variantsMap.mobile
-    ? autoLayoutify(variantsMap.mobile, { semantics: semanticsBase, wrap: true, fontMap: variantsMap.mobile?.meta?.fontMap || {} })
+  const mobileHtml = mobileAst
+    ? autoLayoutify(mobileAst, {
+      semantics: mobileAst?.semantics || mobileAst?.semanticsMap || {},
+      wrap: true,
+      fontMap: mobileAst?.meta?.fontMap || {},
+    })
     : "";
 
   const tabletHtml = tabletAst
-    ? autoLayoutify(tabletAst, { semantics: semanticsTablet, wrap: true, fontMap: tabletAst?.meta?.fontMap || {} })
+    ? autoLayoutify(tabletAst, {
+      semantics: tabletAst?.semantics || tabletAst?.semanticsMap || {},
+      wrap: true,
+      fontMap: tabletAst?.meta?.fontMap || {},
+    })
     : "";
 
   const desktopHtml = desktopAst
-    ? autoLayoutify(desktopAst, { semantics: semanticsDesktop, wrap: true, fontMap: desktopAst?.meta?.fontMap || {} })
+    ? autoLayoutify(desktopAst, {
+      semantics: desktopAst?.semantics || desktopAst?.semanticsMap || {},
+      wrap: true,
+      fontMap: desktopAst?.meta?.fontMap || {},
+    })
     : "";
 
-  const merged = mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml });
+  const mergedFragment = mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml });
 
   const mergedAst = compositeAstForMerged({ groupKey, variantsMap });
+  if (!mergedAst?.tree) {
+    return { ok: false, status: 500, error: `Failed to build merged AST for "${groupKey}".` };
+  }
 
   // Stage merged ast for compare/autofix
   writeStage(groupKey, mergedAst);
 
-  const preview = previewHtml(mergedAst, { fragment: merged });
+  const preview = previewHtml(mergedAst, { fragment: mergedFragment });
 
   return {
     ok: true,
     ast: mergedAst,
-    fragment: merged,
+    fragment: mergedFragment,
     preview,
     availableVariants: available,
     baseVariant,
@@ -202,13 +258,6 @@ export function buildMergedResponsivePreview({ groupKey, autoLayoutify, previewH
 
 /**
  * Primary entry for /api/preview-only and /api/generate.
- * - If input slug/frameName uses groupKey@variant:
- *    - normalize/passes/run on this variant AST
- *    - materialize overlay if data: URL
- *    - write fixtures.out/<groupKey>/ast.<variant>.json (override immediately)
- *    - rebuild merged preview for groupKey
- * - Else:
- *    - legacy build of single preview for ast.slug
  */
 export async function buildPreviewFragment({
   astInput,
@@ -216,6 +265,7 @@ export async function buildPreviewFragment({
   buildIntentGraph,
   autoLayoutify,
   semanticAccessiblePass,
+  preventNestedInteractive,
   previewHtml,
 }) {
   try {
@@ -223,7 +273,6 @@ export async function buildPreviewFragment({
       return { ok: false, status: 400, error: "Missing tree in payload" };
     }
 
-    // Determine naming source: explicit slug OR figma frame name
     const nameSource =
       String(astInput?.slug || "").trim() ||
       String(astInput?.meta?.figma?.frameName || "").trim() ||
@@ -231,30 +280,25 @@ export async function buildPreviewFragment({
 
     const parsed = parseGroupVariant(nameSource);
 
-    // Always ensure preview dir exists
     ensurePreviewDir();
 
-    // Variant mode
+    // ---------------- Variant mode ----------------
     if (parsed.isVariant) {
       const groupKey = parsed.groupKey;
       const variant = parsed.variant;
 
-      // Build the variant AST through your existing pipeline steps (normalize + passes)
       const single = renderOneFragment({
-        ast: {
-          ...astInput,
-          // slug should be groupKey for variant storage
-          slug: groupKey,
-        },
+        ast: { ...astInput, slug: groupKey },
         autoLayoutify,
         semanticAccessiblePass,
+        preventNestedInteractive,
         buildIntentGraph,
         normalizeAst,
       });
 
       let variantAst = single.ast;
 
-      // If overlay is a data URL, materialize to fixtures.out and rewrite src.
+      // Materialize overlay if it is a data URL
       const overlaySrc = String(variantAst?.meta?.overlay?.src || "").trim();
       if (overlaySrc) {
         const newSrc = materializeOverlayIfDataUrl({
@@ -262,6 +306,7 @@ export async function buildPreviewFragment({
           variant,
           overlaySrc,
         });
+
         if (newSrc && newSrc !== overlaySrc) {
           variantAst = {
             ...variantAst,
@@ -276,19 +321,17 @@ export async function buildPreviewFragment({
         }
       }
 
-      // Write the processed AST variant (override immediately)
+      // Override immediately
       writeVariantAst(groupKey, variant, variantAst);
 
-      // Rebuild merged preview based on stored variants
+      // Rebuild merged preview
       const merged = buildMergedResponsivePreview({
         groupKey,
         autoLayoutify,
         previewHtml,
       });
 
-      if (!merged.ok) {
-        return merged;
-      }
+      if (!merged.ok) return merged;
 
       // Write preview file for /preview/:groupKey
       const previewOut = path.join(PREVIEW_DIR, `${groupKey}.html`);
@@ -299,13 +342,13 @@ export async function buildPreviewFragment({
         ast: merged.ast,
         fragment: merged.fragment,
         preview: merged.preview,
-        // Back-compat fields expected by routes:
+
         phase2Report: single.phase2Report || null,
         phase2NormalizedPath: single.phase2NormalizedPath || null,
         phase3IntentPath: null,
         rasterCtaOffenders: null,
         phase3: single.phase3 || null,
-        // Useful extra
+
         responsive: {
           groupKey,
           variantSaved: variant,
@@ -315,16 +358,16 @@ export async function buildPreviewFragment({
       };
     }
 
-    // Legacy mode (single frame export)
+    // ---------------- Legacy mode ----------------
     const single = renderOneFragment({
       ast: astInput,
       autoLayoutify,
       semanticAccessiblePass,
+      preventNestedInteractive,
       buildIntentGraph,
       normalizeAst,
     });
 
-    // Stage for compare/autofix
     writeStage(single.ast.slug, single.ast);
 
     const preview = previewHtml(single.ast, { fragment: single.fragment });
@@ -334,6 +377,7 @@ export async function buildPreviewFragment({
       ast: single.ast,
       fragment: single.fragment,
       preview,
+
       phase2Report: single.phase2Report || null,
       phase2NormalizedPath: single.phase2NormalizedPath || null,
       phase3IntentPath: null,

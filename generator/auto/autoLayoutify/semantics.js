@@ -98,20 +98,58 @@ export function isClickable(node) {
  * - Else name hints can imply link/button
  * - Else clickability of INSTANCE implies button
  */
+// generator/auto/autoLayoutify/semantics.js
+
+function hasOwnClickAction(node) {
+  if (!node) return false;
+  if (node.actions?.openUrl) return true;
+  if (node.actions?.isClickable === true) return true;
+  return false;
+}
+
+function isProbablyLeafInteractive(node) {
+  // Allow INTERACTIVE leafs: INSTANCE (CTA components), VECTOR icons, TEXT links, etc.
+  // But do NOT auto-promote container frames/groups.
+  const t = String(node?.type || "").toUpperCase();
+  return t === "INSTANCE" || t === "TEXT" || t === "VECTOR" || t === "BOOLEAN_OPERATION";
+}
+
+function hasRenderableChildren(node) {
+  return Array.isArray(node?.children) && node.children.length > 0;
+}
+
+/**
+ * Decide whether to force rendering as <a> or <button>.
+ *
+ * Hard rule:
+ * - Only force interactive if the node itself has explicit actions.
+ * - Never infer interactivity for container nodes with children.
+ * - If node is explicitly clickable:
+ *    - openUrl => <a>
+ *    - else => <button>
+ */
 export function shouldRenderAsLinkOrButton(node) {
-  // Explicit Figma interaction
-  if (node.actions?.openUrl) return "a";
+  if (!node) return null;
 
-  // Name hint
-  const name = (node.name || "").toLowerCase();
-  if (name.includes("link")) return "a";
-  if (name.includes("button") || name.includes("cta")) return "button";
+  // If this node has children, it is a container. Do not auto-promote.
+  // The only exception is if the container itself has explicit actions.
+  const container = hasRenderableChildren(node);
 
-  // Auto-layout clickable container with text child
-  const hasTextChild = (node.children || []).some(c => c.text);
-  if (hasTextChild && node.auto?.layout && node.fills?.length) {
-    return "button";
+  if (!hasOwnClickAction(node)) {
+    // No explicit action: only allow leaf-style nodes to be treated as interactive
+    // if your semantics map explicitly says so (handled by aiTagFor elsewhere).
+    return null;
   }
 
+  // Explicit actions exist
+  if (node.actions?.openUrl) return "a";
+
+  // Only allow <button> for:
+  // - clickable leaf nodes
+  // - clickable containers IF they are "rasterized CTA instances" (rare) — but we keep it strict.
+  if (!container || isProbablyLeafInteractive(node)) return "button";
+
+  // Container with action: still avoid turning an entire layout frame into a button.
+  // Render it as a div and let inner CTAs be the interactive elements.
   return null;
 }

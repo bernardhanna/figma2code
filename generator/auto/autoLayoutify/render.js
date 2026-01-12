@@ -42,9 +42,17 @@ import { renderSvgLeaf } from "./svgRender.js";
 
 /* ------------------ tag helpers ------------------ */
 
-function openTag(tag, classes = "", attrs = "", node) {
+function openTag(tag, classes = "", attrs = "", node, ctx) {
   const nodeId = node?.id ? ` data-node-id="${escAttr(node.id)}"` : "";
-  return `<${tag}${nodeId}${attrs}${classes ? ` class="${classes}"` : ""}>`;
+
+  const injected =
+    node?.id && ctx?.classInject && typeof ctx.classInject.get === "function"
+      ? String(ctx.classInject.get(node.id) || "")
+      : "";
+
+  const finalClasses = cls(classes, injected);
+
+  return `<${tag}${nodeId}${attrs}${finalClasses ? ` class="${finalClasses}"` : ""}>`;
 }
 
 function attrsForNode(node, extra = "") {
@@ -286,6 +294,15 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     : flexResponsiveClasses(al, node.children || []);
 
   let tag = aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
+
+  // SAFETY: never render auto-layout containers as interactive unless they have explicit actions
+  const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+  const hasActions = !!(node?.actions?.openUrl || node?.actions?.isClickable === true);
+
+  if (hasChildren && (tag === "a" || tag === "button") && !hasActions) {
+    tag = "div";
+  }
+
   const containerOk = new Set(["div", "section", "nav", "header", "footer", "a", "button"]);
   if (!containerOk.has(tag)) tag = "div";
 
@@ -323,17 +340,14 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
       const sizing = childSizing(child, useGrid ? "GRID" : al.layout);
       const self = alignSelf(child);
 
-      const needWrap =
-        !!sizing ||
-        !!self ||
-        hasOwnBoxDeco(child) ||
-        (child.auto && child.auto.layout !== "NONE");
+      // Instead of wrapping in a <div>, inject these onto the child's own root element.
+      if ((sizing || self) && child?.id) {
+        if (!ctx.classInject) ctx.classInject = new Map();
+        const prev = String(ctx.classInject.get(child.id) || "");
+        ctx.classInject.set(child.id, cls(prev, sizing, self));
+      }
 
-      const inner = renderNode(child, useGrid ? "GRID" : al.layout, false, semantics, ctx);
-      if (!needWrap) return inner;
-
-      const wrap = cls(sizing, self);
-      return openTag("div", wrap, "", child) + inner + "</div>";
+      return renderNode(child, useGrid ? "GRID" : al.layout, false, semantics, ctx);
     })
     .filter(Boolean)
     .join("\n");
@@ -371,7 +385,7 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   }
 
   return (
-    openTag(tag, container, attrsForNode(node, hrefAttr + typeAttr + aria), node) +
+    openTag(tag, container, attrsForNode(node, hrefAttr + typeAttr + aria), node, ctx) +
     body +
     `</${tag}>`
   );
@@ -469,7 +483,9 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     );
 
     return (
-      openTag(tag, classes, attrsForNode(node, ffData), node) + (t.raw || "") + `</${tag}>`
+      openTag(tag, classes, attrsForNode(node, ffData), node, ctx) +
+      (t.raw || "") +
+      `</${tag}>`
     );
   }
 
@@ -563,7 +579,13 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
         : "";
 
     return (
-      openTag(tag, classes, attrsForNode(node, hrefAttr + targetAttr + typeAttr + aria), node) +
+      openTag(
+        tag,
+        classes,
+        attrsForNode(node, hrefAttr + targetAttr + typeAttr + aria),
+        node,
+        ctx
+      ) +
       inner +
       `</${tag}>`
     );
@@ -576,8 +598,17 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     const classes = cls(sizeForImg, deco, clip, "object-cover");
 
     const alt = escAttr(node.name || "Image");
-    return `<img src="${escAttr(node.img.src)}" alt="${alt}" loading="lazy" decoding="async"${classes ? ` class="${classes}"` : ""
-      }>`;
+
+    // IMPORTANT: injected sizing classes should apply to <img> too, so we use openTag.
+    return (
+      openTag(
+        "img",
+        classes,
+        ` src="${escAttr(node.img.src)}" alt="${alt}" loading="lazy" decoding="async"`,
+        node,
+        ctx
+      ).replace(/>$/, " />") // make it self-closing
+    );
   }
 
   const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ false);
@@ -589,5 +620,5 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     .join("\n");
 
   const classes = cls(baseSize, deco, clip);
-  return openTag("div", classes, attrsForNode(node), node) + inner + `</div>`;
+  return openTag("div", classes, attrsForNode(node), node, ctx) + inner + `</div>`;
 }

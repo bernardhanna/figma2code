@@ -5,8 +5,12 @@
 // IMPORTANT FIXES:
 // 1) Preserve/extract CTA text from rasterized INSTANCE nodes.
 // 2) Normalize TEXT color into hex so renderer emits Tailwind `text-[#...]`.
-// 3) NEW: Extract stable node key from layer name token like "#hero_title".
+// 3) Extract stable node key from layer name token like "#hero_title".
 //    Example: "Title #hero_title" => node.key = "hero_title"
+// 4) NEW (background regression fix):
+//    - If the ROOT node has an IMAGE fill, force ast.__bg from that fill (enabled=true).
+//    - If no IMAGE fill is found, DO NOT inject/fallback to frame export background.
+//      (ast.__bg will be disabled/empty unless explicitly set elsewhere.)
 //
 // Assumptions:
 // - Input nodes match your exported schema (id/type/name/children/text/typography/img/actions/auto/etc).
@@ -25,7 +29,9 @@ function clamp01(v) {
 
 function rgba01ToHex(rgba) {
   if (!isObj(rgba)) return null;
-  const r = rgba.r, g = rgba.g, b = rgba.b;
+  const r = rgba.r,
+    g = rgba.g,
+    b = rgba.b;
 
   if (typeof r !== "number" || typeof g !== "number" || typeof b !== "number") return null;
 
@@ -38,7 +44,7 @@ function rgba01ToHex(rgba) {
 }
 
 /**
- * NEW: Extract stable key from `name` using #token convention.
+ * Extract stable key from `name` using #token convention.
  * - "Title #hero_title" => "hero_title"
  */
 function extractNodeKeyFromName(name) {
@@ -50,9 +56,7 @@ function extractNodeKeyFromName(name) {
 
 function walkCollectText(n, out = []) {
   if (!n) return out;
-  if (isObj(n.text) && typeof n.text.raw === "string" && n.text.raw.trim()) {
-    out.push(n);
-  }
+  if (isObj(n.text) && typeof n.text.raw === "string" && n.text.raw.trim()) out.push(n);
   for (const c of n.children || []) walkCollectText(c, out);
   return out;
 }
@@ -124,6 +128,10 @@ function normalizeTextColorOnNode(node) {
   if (!node.typography.colorHex) node.typography.colorHex = hex;
 }
 
+/* ---------------------------------------------
+ * CTA recovery for rasterized/clickable INSTANCE
+ * --------------------------------------------- */
+
 function recoverCtaFromInstance(node) {
   const texts = walkCollectText(node, []);
   if (texts.length) {
@@ -184,12 +192,87 @@ function recoverCtaFromInstance(node) {
   return null;
 }
 
+/* ---------------------------------------------
+ * Background extraction (ROOT IMAGE FILL -> ast.__bg)
+ * --------------------------------------------- */
+
+function isFillImage(fill) {
+  if (!fill || typeof fill !== "object") return false;
+  const t = String(fill.type || fill.fillType || "").toUpperCase();
+  return t === "IMAGE" || t === "IMAGE_FILL";
+}
+
+function firstImageFill(node) {
+  const fills = Array.isArray(node?.fills) ? node.fills : Array.isArray(node?.fill) ? node.fill : [];
+
+  for (const f of fills) {
+    if (!isFillImage(f)) continue;
+
+    // exporters vary wildly; try common keys:
+    const src =
+      (typeof f.src === "string" && f.src.trim()) ||
+      (typeof f.url === "string" && f.url.trim()) ||
+      (typeof f.imageUrl === "string" && f.imageUrl.trim()) ||
+      (typeof f.image?.src === "string" && f.image.src.trim()) ||
+      "";
+
+    if (!src) continue;
+
+    const objectFit = String(f.objectFit || f.scaleMode || "cover").toLowerCase();
+    const objectPosition = String(f.objectPosition || f.position || "center");
+
+    return { src, objectFit, objectPosition };
+  }
+
+  // sometimes fill image ends up on node.img
+  const nsrc = typeof node?.img?.src === "string" ? node.img.src.trim() : "";
+  if (nsrc) return { src: nsrc, objectFit: "cover", objectPosition: "center" };
+
+  return null;
+}
+
+function pickRootNodeForBg(ast) {
+  return ast?.tree || ast?.root || ast?.frameNode || ast?.node || null;
+}
+
+function enforceBgFromFill(ast) {
+  const root = pickRootNodeForBg(ast);
+  if (!root) return;
+
+  const fillBg = firstImageFill(root);
+
+  // If we find a fill image, force __bg to it and enable.
+  if (fillBg?.src) {
+    ast.__bg = {
+      enabled: true,
+      src: fillBg.src,
+      objectFit: fillBg.objectFit || "cover",
+      objectPosition: fillBg.objectPosition || "center",
+      source: "fill",
+    };
+    return;
+  }
+
+  // No fill found: do NOT allow fallback backgrounds to creep in.
+  if (ast.__bg) {
+    ast.__bg.enabled = false;
+    ast.__bg.src = "";
+    if (!ast.__bg.objectFit) ast.__bg.objectFit = "cover";
+    if (!ast.__bg.objectPosition) ast.__bg.objectPosition = "center";
+    if (!ast.__bg.source) ast.__bg.source = "none";
+  }
+}
+
+/* ---------------------------------------------
+ * Main node normalization
+ * --------------------------------------------- */
+
 function normalizeNode(node) {
   if (!isObj(node)) return node;
 
   const n = { ...node };
 
-  // NEW: stable key extraction
+  // stable key extraction
   const k = extractNodeKeyFromName(n.name);
   if (k) n.key = k;
 
@@ -225,6 +308,9 @@ export function normalizeAst(ast) {
 
   const out = { ...ast };
   if (isObj(out.tree)) out.tree = normalizeNode(out.tree);
+
+  // NEW: enforce background selection rules
+  enforceBgFromFill(out);
 
   return out;
 }

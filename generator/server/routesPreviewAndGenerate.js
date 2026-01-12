@@ -16,6 +16,7 @@ import { autoLayoutify } from "../auto/autoLayoutify/index.js";
 import { semanticAccessiblePass } from "../auto/phase2SemanticPass.js";
 import { acfPhp } from "../templates/acf.php.js";
 import { frontendPhp } from "../templates/frontend.php.js";
+import { preventNestedInteractive } from "../auto/preventNestedInteractive.js";
 import { previewHtml } from "../templates/preview.html.js";
 
 export function registerPreviewAndGenerateRoutes(app) {
@@ -27,6 +28,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         buildIntentGraph,
         autoLayoutify,
         semanticAccessiblePass,
+        preventNestedInteractive, 
         previewHtml,
       });
 
@@ -67,6 +69,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         buildIntentGraph,
         autoLayoutify,
         semanticAccessiblePass,
+        preventNestedInteractive,
         previewHtml,
       });
 

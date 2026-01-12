@@ -1,0 +1,66 @@
+// generator/auto/preventNestedInteractive.js
+//
+// Prevent nested <button>/<a> problems caused by clickability propagation.
+// Rule:
+// - If a node is "interactive" BUT contains an interactive descendant,
+//   demote the node to non-interactive (div semantics), keeping its layout.
+//
+// This avoids duplicated wrapper buttons and preserves leaf CTAs as the only interactives.
+
+function isObj(x) {
+  return x && typeof x === "object" && !Array.isArray(x);
+}
+
+function isInteractiveNode(n) {
+  // Depending on your pipeline, interactivity may be represented differently.
+  // We check a few common shapes without assuming too much.
+  const a = n?.actions || {};
+  const sem = n?.semantics || {};
+
+  if (a && (a.isClickable || a.href)) return true;
+  if (sem && (sem.tag === "button" || sem.tag === "a")) return true;
+  if (n?.tag === "button" || n?.tag === "a") return true;
+
+  return false;
+}
+
+function demoteNode(n) {
+  // Remove/neutralize clickability at this level only.
+  if (isObj(n.actions)) {
+    delete n.actions.isClickable;
+    delete n.actions.href;
+    delete n.actions.target;
+  }
+  if (isObj(n.semantics)) {
+    // Preserve aria/labels if you want, but ensure tag is not interactive.
+    if (n.semantics.tag === "button" || n.semantics.tag === "a") {
+      n.semantics.tag = "div";
+    }
+  }
+  if (n.tag === "button" || n.tag === "a") n.tag = "div";
+}
+
+function hasInteractiveDescendant(n) {
+  const kids = Array.isArray(n?.children) ? n.children : [];
+  for (const c of kids) {
+    if (isInteractiveNode(c)) return true;
+    if (hasInteractiveDescendant(c)) return true;
+  }
+  return false;
+}
+
+export function preventNestedInteractive(ast) {
+  (function walk(n) {
+    if (!n) return;
+
+    const selfInteractive = isInteractiveNode(n);
+    if (selfInteractive && hasInteractiveDescendant(n)) {
+      // Demote *this* node so only descendants remain interactive.
+      demoteNode(n);
+    }
+
+    for (const c of n.children || []) walk(c);
+  })(ast?.tree || ast);
+
+  return ast;
+}
