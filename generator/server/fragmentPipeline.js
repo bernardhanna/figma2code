@@ -107,6 +107,7 @@ function ensurePreviewDir() {
 
 /**
  * Build a single fragment (legacy path) from one AST using your existing passes.
+ * IMPORTANT: applies semanticAccessiblePass() to the rendered HTML fragment.
  */
 function renderOneFragment({
   ast,
@@ -134,9 +135,6 @@ function renderOneFragment({
     phase3 = un.extra || null;
   }
 
-  // semantic pass
-  let phase2Report = null;
-  let phase2NormalizedPath = null;
   // Prevent <button> wrapping <button>/<a> etc.
   // This must run after semantics/clickability is assigned.
   if (preventNestedInteractive) {
@@ -145,7 +143,6 @@ function renderOneFragment({
     a = un.ast || a;
   }
 
-
   // Guard: ensure we truly have an AST with tree before rendering
   if (!a || !a.tree) {
     throw new Error("renderOneFragment: pipeline produced AST missing tree");
@@ -153,18 +150,26 @@ function renderOneFragment({
 
   // render
   const semantics = a?.semantics || a?.semanticsMap || a?.meta?.semantics || {};
-  const fragment = autoLayoutify(a, {
+  let fragment = autoLayoutify(a, {
     semantics,
     wrap: true,
     fontMap: a?.meta?.fontMap || {},
   });
+
+  // Phase2: semantic + accessible HTML edits
+  let phase2Report = null;
+  if (semanticAccessiblePass) {
+    const out = semanticAccessiblePass({ html: fragment, ast: a, semantics });
+    if (out && typeof out.html === "string") fragment = out.html;
+    phase2Report = out?.report || null;
+  }
 
   return {
     ast: a,
     fragment,
     phase3,
     phase2Report,
-    phase2NormalizedPath,
+    phase2NormalizedPath: null,
   };
 }
 
@@ -192,8 +197,14 @@ export function loadVariantsForGroup(groupKey) {
 
 /**
  * Build merged responsive fragment for groupKey from stored variant ASTs.
+ * IMPORTANT: runs semanticAccessiblePass on each variant fragment BEFORE merging.
  */
-export function buildMergedResponsivePreview({ groupKey, autoLayoutify, previewHtml }) {
+export function buildMergedResponsivePreview({
+  groupKey,
+  autoLayoutify,
+  semanticAccessiblePass,
+  previewHtml,
+}) {
   const { variantsMap, available } = loadVariantsForGroup(groupKey);
 
   if (!available.length) {
@@ -210,29 +221,33 @@ export function buildMergedResponsivePreview({ groupKey, autoLayoutify, previewH
   const tabletAst = variantsMap.tablet || null;
   const desktopAst = variantsMap.desktop || null;
 
-  const mobileHtml = mobileAst
-    ? autoLayoutify(mobileAst, {
-      semantics: mobileAst?.semantics || mobileAst?.semanticsMap || {},
-      wrap: true,
-      fontMap: mobileAst?.meta?.fontMap || {},
-    })
-    : "";
+  const phase2Reports = {};
 
-  const tabletHtml = tabletAst
-    ? autoLayoutify(tabletAst, {
-      semantics: tabletAst?.semantics || tabletAst?.semanticsMap || {},
+  function renderVariant(ast) {
+    if (!ast) return "";
+    const semantics = ast?.semantics || ast?.semanticsMap || ast?.meta?.semantics || {};
+    let html = autoLayoutify(ast, {
+      semantics,
       wrap: true,
-      fontMap: tabletAst?.meta?.fontMap || {},
-    })
-    : "";
+      fontMap: ast?.meta?.fontMap || {},
+    });
 
-  const desktopHtml = desktopAst
-    ? autoLayoutify(desktopAst, {
-      semantics: desktopAst?.semantics || desktopAst?.semanticsMap || {},
-      wrap: true,
-      fontMap: desktopAst?.meta?.fontMap || {},
-    })
-    : "";
+    if (semanticAccessiblePass) {
+      const out = semanticAccessiblePass({ html, ast, semantics });
+      if (out && typeof out.html === "string") html = out.html;
+      phase2Reports[ast?.meta?.responsive?.variant || ast?.slug || "variant"] = out?.report || null;
+    }
+    return html;
+  }
+
+  // Ensure we label variant reports deterministically
+  if (mobileAst) mobileAst.meta = { ...(mobileAst.meta || {}), responsive: { ...(mobileAst.meta?.responsive || {}), variant: "mobile" } };
+  if (tabletAst) tabletAst.meta = { ...(tabletAst.meta || {}), responsive: { ...(tabletAst.meta?.responsive || {}), variant: "tablet" } };
+  if (desktopAst) desktopAst.meta = { ...(desktopAst.meta || {}), responsive: { ...(desktopAst.meta?.responsive || {}), variant: "desktop" } };
+
+  const mobileHtml = renderVariant(mobileAst);
+  const tabletHtml = renderVariant(tabletAst);
+  const desktopHtml = renderVariant(desktopAst);
 
   const mergedFragment = mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml });
 
@@ -253,6 +268,7 @@ export function buildMergedResponsivePreview({ groupKey, autoLayoutify, previewH
     preview,
     availableVariants: available,
     baseVariant,
+    phase2Reports,
   };
 }
 
@@ -324,10 +340,11 @@ export async function buildPreviewFragment({
       // Override immediately
       writeVariantAst(groupKey, variant, variantAst);
 
-      // Rebuild merged preview
+      // Rebuild merged preview (WITH semantic pass applied per-variant)
       const merged = buildMergedResponsivePreview({
         groupKey,
         autoLayoutify,
+        semanticAccessiblePass,
         previewHtml,
       });
 
@@ -343,7 +360,9 @@ export async function buildPreviewFragment({
         fragment: merged.fragment,
         preview: merged.preview,
 
+        // Single variant's phase2 is still useful to surface
         phase2Report: single.phase2Report || null,
+        phase2Reports: merged.phase2Reports || null,
         phase2NormalizedPath: single.phase2NormalizedPath || null,
         phase3IntentPath: null,
         rasterCtaOffenders: null,

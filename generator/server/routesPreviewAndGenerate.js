@@ -7,7 +7,11 @@ import { PREVIEW_DIR } from "./runtimePaths.js";
 import { getConfig } from "./configStore.js";
 import { ensureThemeOutputDirs } from "./themeOutputDirs.js";
 import { classStrip } from "./classSanitizer.js";
-import { buildPreviewFragment, buildMergedResponsivePreview, loadVariantsForGroup } from "./fragmentPipeline.js";
+import {
+  buildPreviewFragment,
+  buildMergedResponsivePreview,
+  loadVariantsForGroup,
+} from "./fragmentPipeline.js";
 import { listStages, deleteStage } from "./stageStore.js";
 
 import { normalizeAst } from "../auto/normalizeAst.js";
@@ -28,7 +32,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         buildIntentGraph,
         autoLayoutify,
         semanticAccessiblePass,
-        preventNestedInteractive, 
+        preventNestedInteractive,
         previewHtml,
       });
 
@@ -41,6 +45,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         ok: true,
         previewUrl: `/preview/${r.ast.slug}`,
         phase2Report: r.phase2Report,
+        phase2Reports: r.phase2Reports || null,
         phase2NormalizedPath: r.phase2NormalizedPath,
         phase3IntentPath: r.phase3IntentPath,
         rasterCtaOffenders: r.rasterCtaOffenders,
@@ -96,6 +101,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         paths: { acf: acfOut, frontend: frontOut, preview: previewOut },
         previewUrl: `/preview/${r.ast.slug}`,
         phase2Report: r.phase2Report,
+        phase2Reports: r.phase2Reports || null,
         phase2NormalizedPath: r.phase2NormalizedPath,
         phase3IntentPath: r.phase3IntentPath,
         rasterCtaOffenders: r.rasterCtaOffenders,
@@ -126,6 +132,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         const built = buildMergedResponsivePreview({
           groupKey: slug,
           autoLayoutify,
+          semanticAccessiblePass, // IMPORTANT
           previewHtml,
         });
 
@@ -139,7 +146,7 @@ export function registerPreviewAndGenerateRoutes(app) {
       return res.status(404).send("Not found");
     } catch (e) {
       return res.status(500).send(String(e?.message || e));
-    } 
+    }
   });
 
   app.get("/api/staging", (req, res) => {

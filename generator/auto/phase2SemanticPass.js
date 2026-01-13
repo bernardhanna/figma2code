@@ -1,20 +1,26 @@
 // generator/auto/phase2SemanticPass.js
 // Phase-2: Semantic + Accessible pass.
-// Consumes rendered HTML (from autoLayoutify/render.js) + AST and applies:
+// Called as: semanticAccessiblePass({ html, ast, semantics })
+// Returns:  { html, report }
+//
+// Adds/keeps:
 // - aria-label on icon-only buttons/links
-// - alt text for images
-// - deterministic landmark upgrades (root + small set of top-level frames) based on:
-//    1) semantics map (semantics[nodeId].tag / role / label)
-//    2) node.name patterns ("hero", "nav", "footer", "main", etc.)
-// - deterministic layout fix: promote overlay RECTANGLE layers to absolute
-// - deterministic typography emission from AST node.typography (NO guessing)
+// - img alt inference
+// - overlay RECTANGLE absolute promotion
+// - focus-visible ring enforcement
+// - deterministic typography injection
+// - deterministic landmark upgrades (root + limited top-level frames)
 //
-// IMPORTANT:
-// - This pass MUST be called like:
-//   semanticAccessiblePass({ html: fragmentHtml, ast, semantics })
+// Landmark rules:
+// 1) semantics map (semantics[nodeId].tag / role / label) if present
+// 2) frame name patterns (node.name)
+// 3) ROOT hero fallback (NEW): apply role="banner" + aria-labelledby when bg cues + heading exist,
+//    even if the outer wrapper lacks data-node or the “real” root is the first data-node==ast.tree.id.
 //
-// Return shape:
-//   { html: "<processed>", report: { fixes:[], warnings:[] } }
+// Disable via semantics flags (no call-site signature changes):
+// - semantics.enableLandmarks = false
+// - semantics.rootHeroFallback = false
+// - semantics.strictLandmarks = false (no tag rename; only role/aria additions)
 
 function tokenize(html) {
   const tokens = [];
@@ -38,16 +44,32 @@ function parseTag(tagStr) {
   const name = nameMatch ? nameMatch[1].toLowerCase() : "";
 
   const attrs = new Map();
+
   if (!isClose) {
-    const attrRe = /([a-zA-Z0-9:-]+)(?:\s*=\s*"([^"]*)")?/g;
     const inner = tagStr
       .replace(/^<\s*([a-zA-Z0-9:-]+)\s*/i, "")
-      .replace(/\/?>$/, "");
-    let a;
-    while ((a = attrRe.exec(inner))) {
-      const k = a[1];
-      if (!k) continue;
-      const v = typeof a[2] === "string" ? a[2] : null;
+      .replace(/\/?>$/, "")
+      .trim();
+
+    const attrRe =
+      /([^\s=/>"']+)(?:\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s"'=<>`]+)))?/g;
+
+    let m2;
+    while ((m2 = attrRe.exec(inner))) {
+      const kRaw = m2[1];
+      if (!kRaw) continue;
+
+      const v =
+        typeof m2[2] === "string"
+          ? m2[2]
+          : typeof m2[3] === "string"
+            ? m2[3]
+            : typeof m2[4] === "string"
+              ? m2[4]
+              : null;
+
+      // Normalize keys to lowercase so lookups are deterministic.
+      const k = String(kRaw).toLowerCase();
       attrs.set(k, v);
     }
   }
@@ -74,13 +96,16 @@ function buildTag(name, attrs, kind) {
 }
 
 function getAttr(attrs, key) {
-  return attrs.has(key) ? attrs.get(key) : null;
+  const k = String(key || "").toLowerCase();
+  return attrs.has(k) ? attrs.get(k) : null;
 }
 function setAttr(attrs, key, val) {
-  attrs.set(key, val);
+  const k = String(key || "").toLowerCase();
+  attrs.set(k, val);
 }
 function delAttr(attrs, key) {
-  attrs.delete(key);
+  const k = String(key || "").toLowerCase();
+  attrs.delete(k);
 }
 function addClass(attrs, cls) {
   const cur = getAttr(attrs, "class") || "";
@@ -137,7 +162,6 @@ const FONT_FAMILY_MAP = {
   "Red Hat Text": "font-secondary",
 };
 
-// Deterministic: emit exact values. No semantic guesses.
 function typographyToTailwind(typography) {
   if (!typography || typeof typography !== "object") return "";
 
@@ -153,8 +177,6 @@ function typographyToTailwind(typography) {
     if (mapped) out.push(mapped);
   }
 
-  // NOTE: We intentionally keep px here (strict) because Phase-1 is already outputting rem
-  // via remTypo(). If you want Phase-2 to also use rem, swap to rem conversion here.
   if (typeof sizePx === "number" && Number.isFinite(sizePx) && sizePx > 0) {
     out.push(`text-[${sizePx}px]`);
   }
@@ -230,7 +252,6 @@ function looksLikeOverlayRect(node, parentNode) {
   return namedOverlay;
 }
 
-// Remove sizing/shrink classes that force flow placement
 function stripFlowSizingClasses(classStr) {
   const s = String(classStr || "");
   return s
@@ -246,14 +267,13 @@ function stripFlowSizingClasses(classStr) {
 /* ==================== Landmarks (deterministic, safe) ==================== */
 
 function readLandmarkOpts(semantics) {
-  // Call signature stays semanticAccessiblePass({ html, ast, semantics })
-  // Options are optionally hung off the semantics object itself to avoid new params.
   const opts = {
     enableLandmarks: true,
-    strictLandmarks: true, // if false: do not rename tags; only add safe role/aria.
+    strictLandmarks: true,
     upgradeTopLevelFrames: true,
     topLevelLimit: 6,
     upgradeRootWrapper: true,
+    rootHeroFallback: true,
   };
 
   if (semantics && typeof semantics.enableLandmarks === "boolean") {
@@ -270,6 +290,9 @@ function readLandmarkOpts(semantics) {
   }
   if (semantics && typeof semantics.upgradeRootWrapper === "boolean") {
     opts.upgradeRootWrapper = semantics.upgradeRootWrapper;
+  }
+  if (semantics && typeof semantics.rootHeroFallback === "boolean") {
+    opts.rootHeroFallback = semantics.rootHeroFallback;
   }
 
   return opts;
@@ -298,7 +321,6 @@ function isLandmarkTag(t) {
 }
 
 function isContainerishHtmlTag(tagName) {
-  // IMPORTANT: exclude inline tags like <span> to avoid layout changes.
   const t = String(tagName || "").toLowerCase();
   return t === "div" || t === "section" || t === "header" || t === "footer" || t === "nav" || t === "main";
 }
@@ -312,10 +334,8 @@ function semLandmarkHint(sem) {
       (typeof sem.ariaLabel === "string" && sem.ariaLabel.trim()) ? sem.ariaLabel.trim() :
         "";
 
-  // Prefer explicit tag when it is a landmark.
   if (isLandmarkTag(tag)) return { kind: tag, role, label };
 
-  // Otherwise, allow role as a hint for banner/nav/main/footer-ish.
   if (role === "banner") return { kind: "header", role: "banner", label };
   if (role === "navigation") return { kind: "nav", role: "navigation", label };
   if (role === "main") return { kind: "main", role: "main", label };
@@ -327,18 +347,13 @@ function semLandmarkHint(sem) {
 function nameLandmarkHint(nodeName) {
   const n = normHint(nodeName);
 
-  // Order matters: nav/footer/main before generic "header"
   if (/\b(nav|navigation|menu|menubar)\b/.test(n)) return { kind: "nav" };
   if (/\b(footer|site footer)\b/.test(n)) return { kind: "footer" };
   if (/\b(main|content|page content)\b/.test(n)) return { kind: "main" };
 
-  // Hero-like => banner/header
   if (/\b(hero|banner|jumbotron|masthead|top)\b/.test(n)) return { kind: "header", role: "banner" };
-
-  // Header bar (not necessarily hero)
   if (/\b(header|headerbar|topbar)\b/.test(n)) return { kind: "header" };
 
-  // Generic section hint (low confidence): only used to add aria labeling, not rename.
   if (/\b(section|block|module)\b/.test(n)) return { kind: "section" };
 
   return null;
@@ -370,13 +385,6 @@ function canRenameToLandmark({ opts, insideInteractive, currentTag, targetTag })
   return true;
 }
 
-/**
- * Find the first heading tag (h1-h6) within a container token range and return:
- * - headingOpenIndex
- * - headingId (existing or injected)
- *
- * This uses a generic nesting counter starting at containerOpenIndex to remain token-based.
- */
 function findOrCreateHeadingIdInRange(tokens, containerOpenIndex, preferredIdSeed) {
   let depth = 1;
   for (let i = containerOpenIndex + 1; i < tokens.length; i++) {
@@ -388,14 +396,12 @@ function findOrCreateHeadingIdInRange(tokens, containerOpenIndex, preferredIdSee
     if (tag.kind === "open") depth++;
     else if (tag.kind === "close") depth--;
 
-    // Look for first heading open tag inside the container.
     if (tag.kind === "open" && /^h[1-6]$/.test(tag.name)) {
       const existingId = getAttr(tag.attrs, "id");
       if (existingId && existingId.trim()) {
         return { headingOpenIndex: i, headingId: existingId.trim(), injected: false };
       }
 
-      // Inject deterministic id.
       const seed = stableIdFromToken(preferredIdSeed || "");
       if (!seed) return null;
 
@@ -412,7 +418,204 @@ function findOrCreateHeadingIdInRange(tokens, containerOpenIndex, preferredIdSee
   return null;
 }
 
+function rootHasBgCue(rootWrapperTag, astRoot, astWhole) {
+  const style = rootWrapperTag?.attrs ? (getAttr(rootWrapperTag.attrs, "style") || "") : "";
+  if (/background-image\s*:/i.test(style)) return true;
+
+  if (astWhole?.__bg?.enabled) return true;
+
+  const fills = astRoot?.fills || [];
+  if (Array.isArray(fills)) {
+    if (fills.some((f) => f?.kind === "image")) return true;
+    if (fills.some((f) => f?.kind === "gradient")) return true;
+  }
+
+  return false;
+}
+
+// ===== Root hero fallback: ALWAYS applies role=banner when bg cue exists.
+// If a heading exists, uses aria-labelledby; otherwise uses aria-label deterministically. =====
+
+function findFirstOpenTagIndex(tokens) {
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].type !== "tag") continue;
+    const tag = parseTag(tokens[i].value);
+    if (tag.kind === "open") return i;
+  }
+  return -1;
+}
+
+function findFirstOpenTagByDataNode(tokens, nodeId) {
+  if (!nodeId) return -1;
+  for (let i = 0; i < tokens.length; i++) {
+    if (tokens[i].type !== "tag") continue;
+    const tag = parseTag(tokens[i].value);
+    if (tag.kind !== "open") continue;
+    const dn = getAttr(tag.attrs, "data-node");
+    if (dn === nodeId) return i;
+  }
+  return -1;
+}
+
+function htmlAlreadyHasBanner(tokens) {
+  for (const t of tokens) {
+    if (t.type !== "tag") continue;
+    const tag = parseTag(t.value);
+    if (tag.kind !== "open") continue;
+    const role = getAttr(tag.attrs, "role");
+    if (role && String(role).toLowerCase() === "banner") return true;
+  }
+  return false;
+}
+
+function heroFallbackLabel(ast, semantics) {
+  const rootId = ast?.tree?.id || "";
+  const sem = rootId ? semantics?.[rootId] : null;
+  const fromSem =
+    (typeof sem?.label === "string" && sem.label.trim()) ? sem.label.trim() :
+      (typeof sem?.ariaLabel === "string" && sem.ariaLabel.trim()) ? sem.ariaLabel.trim() :
+        "";
+  if (fromSem) return fromSem;
+
+  const name = trimText(ast?.tree?.name || "");
+  if (name) return inferLabelFromNode({ name }) || name;
+
+  return "Hero";
+}
+
+function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
+  if (!opts?.enableLandmarks) return { applied: false };
+  if (!opts?.rootHeroFallback) return { applied: false };
+  if (htmlAlreadyHasBanner(tokens)) return { applied: false };
+
+  const rootAst = ast?.tree || null;
+  const rootAstId = rootAst?.id || "";
+  if (!rootAstId) return { applied: false };
+
+  const rootWrapperIdx = findFirstOpenTagIndex(tokens);
+  const rootNodeIdx = findFirstOpenTagByDataNode(tokens, rootAstId);
+
+  const candidates = [];
+  if (rootWrapperIdx >= 0) candidates.push({ idx: rootWrapperIdx, kind: "wrapper" });
+  if (rootNodeIdx >= 0 && rootNodeIdx !== rootWrapperIdx)
+    candidates.push({ idx: rootNodeIdx, kind: "rootNode" });
+
+  const fallbackAriaLabel = heroFallbackLabel(ast, semantics);
+
+  // Prefer wrapper if it has bg cue. Otherwise allow root node.
+  for (const c of candidates) {
+    const idx = c.idx;
+    const t = tokens[idx];
+    if (t.type !== "tag") continue;
+
+    const tag = parseTag(t.value);
+    if (!isContainerishHtmlTag(tag.name)) continue;
+
+    // Candidate-specific bg cue test:
+    // - wrapper: style may carry background-image
+    // - root node: may not have style; but AST root fills/__bg indicate cue
+    const hasCue = rootHasBgCue(tag, rootAst, ast);
+    if (!hasCue) continue;
+
+    // Apply banner role
+    setIfMissing(tag.attrs, "role", "banner");
+
+    // Prefer aria-labelledby if we can find/insert a real heading tag; else aria-label.
+    const found = findOrCreateHeadingIdInRange(tokens, idx, rootAstId);
+
+    if (found?.headingId) {
+      if (!getAttr(tag.attrs, "aria-labelledby") && !getAttr(tag.attrs, "aria-label")) {
+        setAttr(tag.attrs, "aria-labelledby", found.headingId);
+      }
+    } else {
+      if (!getAttr(tag.attrs, "aria-label") && !getAttr(tag.attrs, "aria-labelledby")) {
+        setAttr(tag.attrs, "aria-label", fallbackAriaLabel);
+      }
+    }
+
+    tokens[idx] = { type: "tag", value: buildTag(tag.name, tag.attrs, "open") };
+    report?.fixes?.push(
+      `Landmark: root hero fallback applied on <${tag.name}> (idx=${idx}) role="banner".`
+    );
+    return { applied: true, index: idx };
+  }
+
+  return { applied: false };
+}
+
 /* ==================== MAIN PASS ==================== */
+
+function upgradeRootHeroBanner({ html, ast, semantics, report }) {
+  if (semantics && semantics.enableLandmarks === false) return html;
+  if (semantics && semantics.rootHeroFallback === false) return html;
+
+  // If any banner already exists, never add another.
+  if (/\brole\s*=\s*["']banner["']/i.test(String(html || ""))) return html;
+
+  const rootId = ast?.tree?.id;
+  if (!rootId) return html;
+
+  const seed = String(rootId).replace(/[^a-zA-Z0-9_-]+/g, "_");
+  const headingId = `${seed}-heading`;
+
+  let out = html;
+
+  // Ensure first h1 has stable id if present
+  out = out.replace(/<h1\b(?![^>]*\bid=)([^>]*)>/i, `<h1 id="${headingId}"$1>`);
+
+  // Backstop 1: if wrapper (first section/div/header/main) has background-image style, apply banner there.
+  // Use aria-labelledby if we now have an h1, else aria-label.
+  const wrapperRe =
+    /<(section|div|header|main)\b([^>]*\bstyle\s*=\s*["'][^"']*background-image\s*:[^"']*["'][^>]*)>/i;
+
+  const fallbackLabel = heroFallbackLabel(ast, semantics);
+
+  out = out.replace(wrapperRe, (m, tagName, attrs) => {
+    const lowerAttrs = String(attrs).toLowerCase();
+    if (/\brole\s*=\s*["']banner["']/.test(lowerAttrs)) return m;
+
+    // prefer aria-labelledby if the injected id exists somewhere
+    const hasHeading = new RegExp(`\\bid=["']${headingId}["']`, "i").test(out);
+
+    report?.fixes?.push?.(`Landmark: backstop banner applied on <${tagName}> (wrapper bg cue).`);
+
+    if (hasHeading) {
+      if (/\baria-labelledby\s*=|\baria-label\s*=/.test(lowerAttrs)) return `<${tagName}${attrs} role="banner">`;
+      return `<${tagName}${attrs} role="banner" aria-labelledby="${headingId}">`;
+    }
+
+    if (/\baria-labelledby\s*=|\baria-label\s*=/.test(lowerAttrs)) return `<${tagName}${attrs} role="banner">`;
+    return `<${tagName}${attrs} role="banner" aria-label="${escAttr(fallbackLabel)}">`;
+  });
+
+  // If banner now exists, stop.
+  if (/\brole\s*=\s*["']banner["']/i.test(out)) return out;
+
+  // Backstop 2: apply banner on root data-node container
+  const dataNodeNeedle = `data-node="${rootId}"`;
+  const reRootOpen = new RegExp(
+    `<([a-zA-Z][a-zA-Z0-9:-]*)\\b([^>]*\\s${dataNodeNeedle}[^>]*)>`,
+    "i"
+  );
+
+  out = out.replace(reRootOpen, (m, tagName, attrs) => {
+    const lowerAttrs = String(attrs).toLowerCase();
+    if (/\brole\s*=/.test(lowerAttrs)) return m;
+
+    const tn = String(tagName).toLowerCase();
+    if (!["div", "section", "header", "main", "footer", "nav", "span"].includes(tn)) return m;
+
+    report?.fixes?.push?.(`Landmark: backstop banner applied on ${tagName}[data-node=${rootId}].`);
+
+    // aria-labelledby if h1 exists, else aria-label
+    const hasHeading = new RegExp(`\\bid=["']${headingId}["']`, "i").test(out);
+
+    if (hasHeading) return `<${tagName}${attrs} role="banner" aria-labelledby="${headingId}">`;
+    return `<${tagName}${attrs} role="banner" aria-label="${escAttr(fallbackLabel)}">`;
+  });
+
+  return out;
+}
 
 export function semanticAccessiblePass({ html, ast, semantics }) {
   const report = { fixes: [], warnings: [] };
@@ -420,9 +623,11 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
 
   const opts = readLandmarkOpts(semantics);
 
+  // Early deterministic hero fallback
+  const early = applyRootHeroBannerEarly(tokens, ast, semantics, opts, report);
+
   const parentMap = buildParentMap(ast?.tree);
 
-  // Root/top-level IDs (AST-driven), used for deterministic landmark upgrades.
   const rootAst = ast?.tree || null;
   const rootAstId = rootAst?.id || "";
   const topLevelIds = new Set();
@@ -432,28 +637,21 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
     }
   }
 
-  // Track first open tag as "root wrapper" (may NOT have data-node).
   let rootWrapperOpenIndex = -1;
-
-  // Track interactive nesting to prevent invalid landmark nesting.
   let linkDepth = 0;
   let buttonDepth = 0;
 
-  // Stack for icon-only aria-label detection
   const interactiveStack = []; // { name, attrs, openIndex, hasText, nodeId }
 
-  // Landmark uniqueness guards (avoid multiple <main> etc).
   let mainApplied = false;
-  let bannerApplied = false;
+  let bannerApplied = !!early?.applied || htmlAlreadyHasBanner(tokens);
 
-  // Pass A: Accessibility/semantics + Typography + Landmark upgrades
   for (let i = 0; i < tokens.length; i++) {
     const t = tokens[i];
 
     if (t.type !== "tag") {
       const txt = trimText(t.value || "");
       if (txt) {
-        // mark nearest interactive as containing text
         for (let k = interactiveStack.length - 1; k >= 0; k--) {
           interactiveStack[k].hasText = true;
           break;
@@ -464,78 +662,64 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
 
     const tag = parseTag(t.value);
 
-    // Identify the root wrapper (first open tag in the fragment).
     if (rootWrapperOpenIndex === -1 && tag.kind === "open") {
       rootWrapperOpenIndex = i;
     }
 
     const insideInteractive = linkDepth > 0 || buttonDepth > 0;
 
-    // OPEN: typography + landmark upgrades for container-ish tags
+    if (tag.kind === "open") {
+      const role = getAttr(tag.attrs, "role");
+      if (role && String(role).toLowerCase() === "banner") bannerApplied = true;
+    }
+
+    // OPEN: landmarks + typography
     if (tag.kind === "open") {
       const nodeId = getAttr(tag.attrs, "data-node") || "";
       const node = nodeId ? findNodeById(ast?.tree, nodeId) : null;
       const sem = nodeId && semantics ? semantics[nodeId] : null;
 
-      // ========================
-      // Landmark upgrades (ROOT wrapper and selected top-level frames)
-      // ========================
       if (opts.enableLandmarks) {
         const isRootWrapper = i === rootWrapperOpenIndex && opts.upgradeRootWrapper;
         const isRootNode = !!(nodeId && rootAstId && nodeId === rootAstId);
         const isTopLevel = !!(nodeId && topLevelIds.has(nodeId));
 
-        // Use AST root name/semantics to guide root wrapper even without data-node.
-        const nameForHint = isRootWrapper
-          ? (rootAst?.name || "")
-          : (node?.name || "");
-
-        const semForHint = isRootWrapper
-          ? (rootAstId && semantics ? semantics[rootAstId] : null)
-          : sem;
+        const nameForHint = isRootWrapper ? (rootAst?.name || "") : (node?.name || "");
+        const semForHint = isRootWrapper ? (rootAstId && semantics ? semantics[rootAstId] : null) : sem;
 
         const semHint = semLandmarkHint(semForHint);
         const nameHint = nameLandmarkHint(nameForHint);
 
-        // Choose a target landmark:
-        // 1) semantics hint if present
-        // 2) name hint if present
-        // Only apply to root wrapper, root node, or top-level frames (small set).
         let target = null;
         if (isRootWrapper || isRootNode || isTopLevel) {
           target = semHint || nameHint;
         }
 
         if (target && isContainerishHtmlTag(tag.name) && !insideInteractive) {
-          // MAIN uniqueness guard
-          if (target.kind === "main" && mainApplied) {
-            target = null;
-          }
+          if (target.kind === "main" && mainApplied) target = null;
 
-          // Rename tag only in strict mode; otherwise keep tag and apply role/aria.
           const canRename = canRenameToLandmark({
             opts,
             insideInteractive,
             currentTag: tag.name,
-            targetTag: target.kind,
+            targetTag: target?.kind,
           });
 
           if (target) {
-            if (canRename && target.kind !== tag.name) {
+            if (canRename && target.kind && target.kind !== tag.name) {
               tag.name = target.kind;
               report.fixes.push(
-                `Landmark: upgraded <${parseTag(t.value).name}> to <${target.kind}>` +
+                `Landmark: upgraded to <${target.kind}>` +
                 (nodeId ? ` (data-node=${nodeId}).` : " (root wrapper).")
               );
             }
 
-            // Banner role: apply for hero/header targets (even if tag remains <section> when strictLandmarks=false)
             const wantsBanner =
               target.role === "banner" ||
-              target.kind === "header" && /\b(hero|banner|jumbotron|masthead|top)\b/.test(normHint(nameForHint));
+              (target.kind === "header" &&
+                /\b(hero|banner|jumbotron|masthead|top)\b/.test(normHint(nameForHint)));
 
             if (wantsBanner && !bannerApplied) {
-              // Only set role if missing; do not override explicit roles.
               setIfMissing(tag.attrs, "role", "banner");
               bannerApplied = true;
               report.fixes.push(
@@ -544,7 +728,6 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
               );
             }
 
-            // Nav aria-label (minimal): only if tag is nav after rename OR already nav.
             const isNavNow = tag.name === "nav" || target.kind === "nav";
             if (isNavNow) {
               const existing = getAttr(tag.attrs, "aria-label");
@@ -558,55 +741,8 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
               }
             }
 
-            // Main uniqueness mark once we apply it (either by rename or by semantics hint).
             if (target.kind === "main" && (tag.name === "main" || !opts.strictLandmarks)) {
               mainApplied = true;
-            }
-
-            // Section/header/banner labelling: aria-labelledby if we can reliably find a heading.
-            // Applies to:
-            // - <section>
-            // - <header role="banner"> (your preferred pattern)
-            const isSectionLike =
-              tag.name === "section" ||
-              (getAttr(tag.attrs, "role") === "banner") ||
-              tag.name === "header";
-
-            if (isSectionLike) {
-              const hasAL = !!getAttr(tag.attrs, "aria-label");
-              const hasALB = !!getAttr(tag.attrs, "aria-labelledby");
-
-              // If already labelled, do nothing.
-              if (!hasAL && !hasALB) {
-                // Use nodeId (preferred), else AST root id for root wrapper, else nothing.
-                const seed =
-                  nodeId ||
-                  (isRootWrapper && rootAstId ? stableIdFromToken(rootAstId) : "");
-
-                const found = seed ? findOrCreateHeadingIdInRange(tokens, i, seed) : null;
-
-                if (found?.headingId) {
-                  setAttr(tag.attrs, "aria-labelledby", found.headingId);
-                  report.fixes.push(
-                    `Landmark: added aria-labelledby="${found.headingId}"` +
-                    (nodeId ? ` (data-node=${nodeId}).` : " (root wrapper).")
-                  );
-                } else if (target.kind === "section") {
-                  // As a fallback for non-hero sections, aria-label from name/semantics (minimal).
-                  const label =
-                    (typeof semForHint?.label === "string" && semForHint.label.trim())
-                      ? semForHint.label.trim()
-                      : (trimText(nameForHint) || "");
-
-                  if (label) {
-                    setAttr(tag.attrs, "aria-label", label.length > 80 ? label.slice(0, 77) + "…" : label);
-                    report.fixes.push(
-                      `Landmark: added aria-label on <section>` +
-                      (nodeId ? ` (data-node=${nodeId}).` : " (root wrapper).")
-                    );
-                  }
-                }
-              }
             }
 
             tokens[i] = { type: "tag", value: buildTag(tag.name, tag.attrs, "open") };
@@ -615,11 +751,8 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
         }
       }
 
-      // ========================
-      // Typography injection (existing behavior)
-      // ========================
+      // Typography injection
       if (nodeId) {
-        // Typography (safe: only if node.typography exists)
         if (node?.typography) {
           const tw = typographyToTailwind(node.typography);
           if (tw) addClass(tag.attrs, tw);
@@ -681,7 +814,6 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
         report.fixes.push('Added href="#" on <a>.');
       }
 
-      // Prevent nested interactive inside <a>
       if (linkDepth > 1) {
         report.warnings.push("Nested <a> inside <a> converted to <span>.");
         tag.name = "span";
@@ -745,8 +877,7 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
     const tag = parseTag(t.value);
     if (tag.kind !== "open") continue;
 
-    if (tag.name !== "div" && tag.name !== "section" && tag.name !== "main" && tag.name !== "header")
-      continue;
+    if (tag.name !== "div" && tag.name !== "section" && tag.name !== "main" && tag.name !== "header") continue;
 
     const nodeId = getAttr(tag.attrs, "data-node");
     if (!nodeId) continue;
@@ -767,7 +898,6 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
       tokens[i] = { type: "tag", value: buildTag(tag.name, tag.attrs, "open") };
       report.fixes.push(`Promoted RECTANGLE overlay to absolute layer (data-node=${nodeId}).`);
 
-      // Ensure a nearby ancestor wrapper is relative
       for (let j = i - 1; j >= 0; j--) {
         const tj = tokens[j];
         if (tj.type !== "tag") continue;
@@ -783,5 +913,9 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
     }
   }
 
-  return { html: tokensToString(tokens), report };
+  // FINAL: stringify tokens, then apply string-level root hero upgrade as a deterministic backstop.
+  let outHtml = tokensToString(tokens);
+  outHtml = upgradeRootHeroBanner({ html: outHtml, ast, semantics, report });
+
+  return { html: outHtml, report };
 }

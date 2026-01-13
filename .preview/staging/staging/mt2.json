@@ -1,8 +1,8 @@
 {
-  "slug": "test8",
-  "when": 1768210977499,
+  "slug": "mt2",
+  "when": 1768292079215,
   "ast": {
-    "slug": "test8",
+    "slug": "mt2",
     "type": "flexi_block",
     "frame": {
       "w": 1728,
@@ -10,7 +10,7 @@
     },
     "tree": {
       "id": "3163:2414",
-      "name": "bgImage",
+      "name": "hero@desktop",
       "type": "FRAME",
       "w": 1728,
       "h": 878,
@@ -50,7 +50,7 @@
           "kind": "image",
           "scaleMode": "CROP",
           "imageHash": "a94929a5bfc7f77233fd62eaa5013a70dfeb9b90",
-          "src": "/assets/fill_a94929a5bfc7f77233fd62ea-mk8axnza.png"
+          "src": "/assets/fill_a94929a5bfc7f77233fd62ea-mkcb6a1t.png"
         },
         {
           "kind": "gradient",
@@ -78,48 +78,11 @@
       "blendMode": "PASS_THROUGH",
       "clipsContent": true,
       "img": {
-        "src": "/assets/bgimage-mkaz5tbx.png",
+        "src": "/assets/hero_desktop-mkcbg3un.png",
         "w": 1728,
         "h": 878
       },
       "children": [
-        {
-          "id": "3341:1198",
-          "name": "Rectangle 1",
-          "type": "RECTANGLE",
-          "w": 100,
-          "h": 100,
-          "bb": {
-            "x": 2802,
-            "y": 509,
-            "w": 100,
-            "h": 100
-          },
-          "size": {
-            "primary": "FIXED",
-            "counter": "FIXED",
-            "w": 100,
-            "h": 100
-          },
-          "r": {
-            "tl": 0,
-            "tr": 0,
-            "br": 0,
-            "bl": 0
-          },
-          "fills": [
-            {
-              "kind": "solid",
-              "r": 0.8509804010391235,
-              "g": 0.8509804010391235,
-              "b": 0.8509804010391235,
-              "a": 1
-            }
-          ],
-          "opacity": 1,
-          "blendMode": "PASS_THROUGH",
-          "clipsContent": false
-        },
         {
           "id": "3163:2415",
           "name": "Frame 427318139",
@@ -584,7 +547,7 @@
                         "isClickable": true
                       },
                       "img": {
-                        "src": "/assets/cta_button-mkaz5th1.png",
+                        "src": "/assets/cta_button-mkcbg3ww.png",
                         "w": 287,
                         "h": 56
                       },
@@ -688,7 +651,7 @@
                         "isClickable": true
                       },
                       "img": {
-                        "src": "/assets/cta_button-mkaz5tiv.png",
+                        "src": "/assets/cta_button-mkcbg3ye.png",
                         "w": 157,
                         "h": 56
                       },
@@ -739,20 +702,20 @@
     "meta": {
       "schema": "figma-ast",
       "version": 1,
-      "exportedAt": "2026-01-12T09:42:57.492Z",
+      "exportedAt": "2026-01-13T08:14:39.191Z",
       "figma": {
         "pageName": "      ↳ 🖥️  Home v3",
-        "frameName": "bgImage"
+        "frameName": "hero@desktop"
       },
       "overlay": {
-        "src": "/assets/bgimage-mkaz5u4x.png",
+        "src": "/assets/hero_desktop-mkcbg4lt.png",
         "w": 1728,
         "h": 878
       }
     },
     "__bg": {
       "enabled": true,
-      "src": "/assets/bgimage-mkaz5tbx.png",
+      "src": "/assets/hero_desktop-mkcbg3un.png",
       "objectFit": "cover",
       "objectPosition": "center",
       "source": "fill"
