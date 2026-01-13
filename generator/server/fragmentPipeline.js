@@ -13,7 +13,7 @@ import {
   readVariantAstIfExists,
   materializeOverlayIfPossible,
 } from "./variantStore.js";
-
+import { parseGroupVariant } from "./variantNaming.js";
 import { writeStage } from "./stageStore.js";
 
 function asObj(v) {
@@ -310,9 +310,10 @@ export async function buildPreviewFragment({
     }
 
     const nameSource =
-      String(astInput?.slug || "").trim() ||
       String(astInput?.meta?.figma?.frameName || "").trim() ||
-      String(astInput?.meta?.frameName || "").trim();
+      String(astInput?.tree?.name || "").trim() ||
+      String(astInput?.frame?.name || "").trim() ||
+      String(astInput?.slug || "").trim();
 
     const parsed = parseGroupVariant(nameSource);
     console.log("[variant]", { nameSource, parsed });

@@ -84,29 +84,30 @@ ${bodyFontCss}
   width: 100%;
   height: var(--cmp-h, auto);
 
- max-width: var(--vpw, ${designW}px);
+  max-width: var(--vpw, ${designW}px);
   margin-left: auto;
   margin-right: auto;
 
   overflow: hidden;
 }
 
-
+/* -------- Background layer (div-based, not <img>) -------- */
 .bg-layer{
   position:absolute;
   inset:0;
   z-index:0;
   pointer-events:none;
   overflow:hidden;
-}
-.bg-layer img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  display:block;
-  object-fit: var(--bg-fit, cover);
-  object-position: var(--bg-pos, center);
+
+  /* These are set by JS in preview.html.js via inline styles */
+  background-image: none;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  /* Ensure no accidental paint over content */
+  background-color: transparent;
+  display: none; /* JS turns on when a bg src exists */
 }
 
 .content-layer{
@@ -115,8 +116,7 @@ ${bodyFontCss}
   width:100%;
 }
 
-/* replace ONLY the .overlay-img block in preview.styles.js with this */
-
+/* overlay */
 .overlay-img{
   position: absolute;
   top: 0;
@@ -142,7 +142,6 @@ ${bodyFontCss}
 
   z-index: 40;
 }
-
 
 .overlay-hidden{ display: none; }
 
