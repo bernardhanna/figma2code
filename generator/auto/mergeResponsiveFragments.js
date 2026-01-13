@@ -1,182 +1,200 @@
 // generator/auto/mergeResponsiveFragments.js
 //
-// Merge strategy (HTML-layer, robust with existing pipeline):
-// - Render base fragment (mobile else tablet else desktop).
-// - Render tablet + desktop fragments.
-// - Match nodes by data-key first. If missing, fallback to positional matching.
-// - For each matched node, append md:/lg: prefixed class tokens from that variant.
+// mergeResponsiveFragments({ mobileHtml, desktopHtml, tabletHtml? }) => mergedHtml
+//
+// Goals:
+// - Base DOM is mobile (if provided).
+// - Desktop-only changes become breakpoint-prefixed classes (default: lg:).
+// - Preserve variant chains like hover:, focus:, group-hover:, aria-*, etc.
+// - Do NOT prefix tokens that already include an explicit breakpoint or an
+//   arbitrary responsive/media variant (e.g. min-[900px]:, max-[...]:, [...]:).
 //
 // Notes:
-// - This expects your renderer emits either data-key="..." or at least data-node="..." on tags.
-// - It modifies ONLY class="" attributes on matched tags; DOM structure stays from baseHtml.
-//
-// Export: mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml }) => html
+// - Best-effort "class token" merger. Assumes DOM structure is mostly stable.
+// - If structure diverges materially, prefer variant swapping in preview.
 
-function tokenizeClasses(cls) {
-  const s = String(cls || "").trim();
-  if (!s) return [];
-  return s.split(/\s+/g).filter(Boolean);
+function isStr(x) {
+  return typeof x === "string";
 }
 
-function prefixTokens(tokens, prefix) {
-  return tokens
-    .map((t) => String(t || "").trim())
-    .filter(Boolean)
-    .map((t) => {
-      // If already responsive/variant prefixed, keep as-is.
-      if (/^(sm:|md:|lg:|xl:|2xl:)/.test(t)) return t;
-      return `${prefix}:${t}`;
-    });
-}
-
-function dedupe(tokens) {
-  const out = [];
+function uniqKeepOrder(arr) {
   const seen = new Set();
-  for (const t of tokens) {
-    if (!seen.has(t)) {
-      seen.add(t);
-      out.push(t);
-    }
+  const out = [];
+  for (const s of arr) {
+    const k = String(s || "");
+    if (!k) continue;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(k);
   }
   return out;
 }
 
-/**
- * Extract a linear list of elements with:
- * - key: data-key="..." (preferred)
- * - classStr: class="..."
- * - idx: ordinal for stable fallback mapping
- * - classStart/classEnd: indexes into the source HTML string
- */
-function extractElements(html) {
-  const out = [];
-  const re = /<([a-zA-Z0-9-]+)([^>]*?)>/g;
-  let m;
+function splitClassTokens(s) {
+  return String(s || "")
+    .trim()
+    .split(/\s+/g)
+    .map((t) => t.trim())
+    .filter(Boolean);
+}
 
-  while ((m = re.exec(html))) {
-    const full = m[0];
+// Detect tokens that already encode breakpoint/media condition; do not double-prefix.
+function hasExplicitBreakpointPrefix(token) {
+  const t = String(token || "").trim();
+  if (!t) return false;
+
+  if (/^(sm|md|lg|xl|2xl):/.test(t)) return true;
+
+  if (/^(min|max)-\[[^\]]+\]:/.test(t)) return true;
+  if (/^\[[^\]]+\]:/.test(t)) return true;
+
+  // Container queries like @lg:, @[400px]:
+  if (/^@\S+:/.test(t)) return true;
+
+  // Tailwind max-* syntax
+  if (/^max-(sm|md|lg|xl|2xl):/.test(t)) return true;
+
+  return false;
+}
+
+function prefixToken(token, prefix) {
+  const t = String(token || "").trim();
+  if (!t) return "";
+  if (hasExplicitBreakpointPrefix(t)) return t;
+  return `${prefix}:${t}`;
+}
+
+function extractClassMap(html) {
+  const map = new Map();
+  const tokenRe = /<([a-zA-Z0-9:-]+)([^>]*?)>/g;
+  let m;
+  const tagCount = new Map();
+
+  while ((m = tokenRe.exec(html))) {
+    const tag = m[1];
     const attrs = m[2] || "";
 
-    // Only consider nodes with data-node or data-key (your pipeline usually emits data-node)
-    if (!/data-node=/.test(attrs) && !/data-key=/.test(attrs)) continue;
+    const dataNode = (attrs.match(/\bdata-node\s*=\s*"([^"]+)"/) || [])[1];
+    const id = (attrs.match(/\bid\s*=\s*"([^"]+)"/) || [])[1];
+    const cls = (attrs.match(/\bclass\s*=\s*"([^"]*)"/) || [])[1];
 
-    const keyM = attrs.match(/\sdata-key="([^"]+)"/);
-    const key = keyM ? keyM[1] : "";
+    if (cls == null) continue;
 
-    const clsM = attrs.match(/\sclass="([^"]*)"/);
-    const classStr = clsM ? clsM[1] : "";
-
-    let classStart = -1;
-    let classEnd = -1;
-
-    if (clsM) {
-      // Find within the current tag substring; then translate to full html indexes
-      const idxInTag = full.indexOf(clsM[0]);
-      if (idxInTag >= 0) {
-        classStart = m.index + idxInTag + ` class="`.length;
-        classEnd = classStart + clsM[1].length;
-      }
+    let key = "";
+    if (dataNode) key = `data-node:${dataNode}`;
+    else if (id) key = `id:${id}`;
+    else {
+      const n = (tagCount.get(tag) || 0) + 1;
+      tagCount.set(tag, n);
+      key = `tag:${tag}#${n}`;
     }
 
-    out.push({
-      idx: out.length,
-      key,
-      classStr,
-      classStart,
-      classEnd,
-    });
+    map.set(key, cls);
   }
 
+  return map;
+}
+
+function replaceClassAttr(html, keyToNewClass) {
+  const tokenRe = /<([a-zA-Z0-9:-]+)([^>]*?)>/g;
+
+  const tagCount = new Map();
+  let out = "";
+  let lastIndex = 0;
+  let m;
+
+  while ((m = tokenRe.exec(html))) {
+    const full = m[0];
+    const tag = m[1];
+    const attrs = m[2] || "";
+
+    const start = m.index;
+    const end = m.index + full.length;
+
+    out += html.slice(lastIndex, start);
+
+    const dataNode = (attrs.match(/\bdata-node\s*=\s*"([^"]+)"/) || [])[1];
+    const id = (attrs.match(/\bid\s*=\s*"([^"]+)"/) || [])[1];
+
+    let key = "";
+    if (dataNode) key = `data-node:${dataNode}`;
+    else if (id) key = `id:${id}`;
+    else {
+      const n = (tagCount.get(tag) || 0) + 1;
+      tagCount.set(tag, n);
+      key = `tag:${tag}#${n}`;
+    }
+
+    const nextClass = keyToNewClass.get(key);
+    if (!nextClass) {
+      out += full;
+      lastIndex = end;
+      continue;
+    }
+
+    if (/\bclass\s*=/.test(attrs)) {
+      const replaced = full.replace(
+        /\bclass\s*=\s*"([^"]*)"/,
+        `class="${nextClass.replace(/"/g, "&quot;")}"`
+      );
+      out += replaced;
+    } else {
+      const injected = full.replace(
+        new RegExp(`^<${tag}`),
+        `<${tag} class="${nextClass.replace(/"/g, "&quot;")}"`
+      );
+      out += injected;
+    }
+
+    lastIndex = end;
+  }
+
+  out += html.slice(lastIndex);
   return out;
 }
 
-function buildMatchIndex(elements) {
-  const byKey = new Map();
-  const noKey = [];
-  for (const el of elements) {
-    if (el.key) byKey.set(el.key, el);
-    else noKey.push(el);
+export function mergeResponsiveFragments({
+  mobileHtml,
+  desktopHtml,
+  tabletHtml,
+  desktopPrefix = "lg",
+  tabletPrefix = "md",
+} = {}) {
+  const hasMobile = isStr(mobileHtml) && mobileHtml.trim().length > 0;
+  const hasDesktop = isStr(desktopHtml) && desktopHtml.trim().length > 0;
+  const hasTablet = isStr(tabletHtml) && tabletHtml.trim().length > 0;
+
+  // Base DOM priority: mobile -> tablet -> desktop
+  const base = hasMobile ? mobileHtml : hasTablet ? tabletHtml : hasDesktop ? desktopHtml : "";
+  if (!base) return "";
+
+  if (!hasDesktop && !hasTablet) return base;
+
+  const baseMap = extractClassMap(base);
+  const merged = new Map();
+
+  for (const [key, cls] of baseMap.entries()) {
+    merged.set(key, String(cls || "").trim());
   }
-  return { byKey, noKey };
-}
 
-function mergeIntoBaseHtml({ baseHtml, tabletHtml, desktopHtml }) {
-  const baseEls = extractElements(baseHtml);
-  const tabletEls = tabletHtml ? extractElements(tabletHtml) : [];
-  const desktopEls = desktopHtml ? extractElements(desktopHtml) : [];
+  function applyVariant(variantHtml, prefix) {
+    if (!variantHtml) return;
+    const vMap = extractClassMap(variantHtml);
 
-  const tIndex = buildMatchIndex(tabletEls);
-  const dIndex = buildMatchIndex(desktopEls);
+    for (const [key, vCls] of vMap.entries()) {
+      if (!merged.has(key)) continue;
 
-  // Build mapping for base no-key positions (for fallback positional match)
-  const baseNoKeyPos = new Map();
-  let nk = 0;
-  for (const el of baseEls) {
-    if (!el.key) {
-      baseNoKeyPos.set(el.idx, nk);
-      nk++;
+      const baseCls = merged.get(key) || "";
+      const baseTokens = splitClassTokens(baseCls);
+      const vTokens = splitClassTokens(vCls).map((t) => prefixToken(t, prefix));
+
+      const next = uniqKeepOrder([...baseTokens, ...vTokens]).join(" ");
+      merged.set(key, next);
     }
   }
 
-  function matchVariantEl(baseEl, variantIndex, variantNoKeyList) {
-    if (baseEl.key && variantIndex.byKey.has(baseEl.key)) {
-      return variantIndex.byKey.get(baseEl.key);
-    }
+  if (hasTablet) applyVariant(tabletHtml, tabletPrefix);
+  if (hasDesktop) applyVariant(desktopHtml, desktopPrefix);
 
-    const i = baseNoKeyPos.get(baseEl.idx);
-    if (typeof i === "number" && variantNoKeyList[i]) return variantNoKeyList[i];
-
-    return null;
-  }
-
-  // Apply class replacements via string slicing (end -> start)
-  const replacements = [];
-
-  for (const baseEl of baseEls) {
-    if (baseEl.classStart < 0 || baseEl.classEnd < 0) continue;
-
-    const baseTokens = tokenizeClasses(baseEl.classStr);
-    const merged = [...baseTokens];
-
-    const tEl = tabletHtml ? matchVariantEl(baseEl, tIndex, tIndex.noKey) : null;
-    const dEl = desktopHtml ? matchVariantEl(baseEl, dIndex, dIndex.noKey) : null;
-
-    if (tEl) {
-      const tTokens = tokenizeClasses(tEl.classStr);
-      merged.push(...prefixTokens(tTokens, "md"));
-    }
-
-    if (dEl) {
-      const dTokens = tokenizeClasses(dEl.classStr);
-      merged.push(...prefixTokens(dTokens, "lg"));
-    }
-
-    const finalClassStr = dedupe(merged).join(" ");
-
-    replacements.push({
-      start: baseEl.classStart,
-      end: baseEl.classEnd,
-      value: finalClassStr,
-    });
-  }
-
-  replacements.sort((a, b) => b.start - a.start);
-
-  let out = baseHtml;
-  for (const r of replacements) {
-    out = out.slice(0, r.start) + r.value + out.slice(r.end);
-  }
-
-  return out;
-}
-
-export function mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml }) {
-  const baseHtml = mobileHtml || tabletHtml || desktopHtml || "";
-  if (!baseHtml) return "";
-
-  return mergeIntoBaseHtml({
-    baseHtml,
-    tabletHtml: tabletHtml || "",
-    desktopHtml: desktopHtml || "",
-  });
+  return replaceClassAttr(base, merged);
 }

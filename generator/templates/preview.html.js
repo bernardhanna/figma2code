@@ -1,36 +1,27 @@
 // generator/templates/preview.html.js
 // Preview shell with:
-// - optional background injection (ast.__bg)
-// - optional Figma overlay compare UI (meta.overlay.src)
+// - optional Figma overlay compare UI (meta.overlay.src OR group overlays)
+// - optional background injection (ast.__bg OR responsive assets)
 // - auto Google Fonts injection
 // - APPLY PATCHES support (fixtures.out/<slug>/patches.json)
+// - Responsive viewport tooling (mobile/tablet/desktop) + draggable width resizer
+// - One-screen responsive variant swapping (fetch-and-swap) using /preview/<variantSlug>?embed=1&toolbar=0
 //
-// Viewport tooling:
-// - Viewport switcher (mobile/tablet/desktop) + draggable width resizer
-// - Non-scaling device frame (NO transform scaling; only width changes)
-//
-// Critical layout guarantees (this version):
+// Critical layout guarantees:
 // - Overlay is positioned/clipped INSIDE #cmp_root and cannot exceed current viewport (--vpw)
 // - #cmp_root width is clamped to current viewport (--vpw) and design width (--design-w)
 // - device frame clips everything to viewport (overflow hidden)
-// - Overlay opacity/difference are driven by CSS vars on #cmp_root (not on other wrappers)
+// - Overlay opacity/difference are driven by CSS vars on #cmp_root + inline styles on the overlay <img>
 //
-// Fixes in this version:
-// - Opacity slider works (applied to BOTH CSS var + inline style on the <img>)
-// - Difference checkbox works (applied to BOTH CSS var + inline style on the <img>)
-// - Nudge UI removed (and no arrow-key handlers)
+// Notes:
+// - CSS is sourced from generator/templates/preview/preview.styles.js to avoid duplication.
+
+import { previewCss } from "./preview/preview.styles.js";
+import { viewportScript } from "./preview/preview.viewport.js";
+import { patchesScript } from "./preview/preview.patches.js";
 
 export function previewHtml(ast, opts = {}) {
   const fragmentRaw = (opts.fragment || "").trim();
-
-  const padding = (() => {
-    const out = ["pt-5", "pb-5"];
-    for (const p of ast.layout?.padding || []) {
-      if (p?.screen && (p.ptRem ?? "") !== "") out.push(`${p.screen}:pt-[${p.ptRem}rem]`);
-      if (p?.screen && (p.pbRem ?? "") !== "") out.push(`${p.screen}:pb-[${p.pbRem}rem]`);
-    }
-    return out.join(" ");
-  })();
 
   const classes = ast.content?.classes || {};
   const outer = (classes.outer || "")
@@ -40,31 +31,126 @@ export function previewHtml(ast, opts = {}) {
     .replace(/\s+/g, " ")
     .trim();
 
-  const overlaySrc = String(ast?.meta?.overlay?.src || "").trim();
-
-  // Background injection:
-  // Only use ast.__bg if explicitly enabled; never fall back to frame export.
-  const bgSrc = (() => {
-    const enabled = !!ast?.__bg?.enabled;
-    const s1 = enabled ? String(ast?.__bg?.src || "").trim() : "";
-    if (!s1) return "";
-    if (overlaySrc && s1 === overlaySrc) return "";
-    return s1;
-  })();
-
-  // Default to FILL behaviour
-  const bgFit = String(ast?.__bg?.objectFit || "cover");
-  const bgPos = String(ast?.__bg?.objectPosition || "center");
-
-  // Deterministic compare sizing
-  const frameH = Math.max(1, Math.round(ast?.frame?.h || ast?.tree?.h || 1));
+  const overlaySrcMeta = String(ast?.meta?.overlay?.src || "").trim();
+  const overlayMetaW = Number(ast?.meta?.overlay?.w || 0) || null;
+  const overlayMetaH = Number(ast?.meta?.overlay?.h || 0) || null;
 
   // Design width = desktop reference width
   const designW = Math.max(1, Math.round(ast?.frame?.w || ast?.tree?.w || 1200));
 
+  // Frame name (used to derive responsive group + sibling variants)
+  const frameName = String(
+    ast?.meta?.figma?.frameName || ast?.frame?.name || ast?.tree?.name || ""
+  ).trim();
+  const frameBase = frameName.replace(/@.*/i, "").trim();
+
+  const slug = String(ast?.slug || "").trim();
+
+  // Group slug should match your server/fixtures naming (e.g. fixtures.out/home_v3).
+  const groupSlug =
+    String(opts.groupSlug || "").trim() ||
+    baseSlugFrom(slug) ||
+    toGroupSlug(frameBase) ||
+    slug;
+
+  // Detect “merged responsive group mode”:
+  const responsiveVariants = Array.isArray(ast?.meta?.responsive?.variants)
+    ? ast.meta.responsive.variants
+    : [];
+  const isMergedGroup = responsiveVariants.length >= 2;
+
+  // If you have these in AST already, they win; otherwise defaults are fine.
+  const respWidths = {
+    mobile: Number(ast?.meta?.responsive?.widths?.mobile) || 390,
+    tablet: Number(ast?.meta?.responsive?.widths?.tablet) || 1084,
+    desktop: Number(ast?.meta?.responsive?.widths?.desktop) || designW,
+  };
+
+  // Overlay natural widths (used to clamp overlay max-width per bucket)
+  const overlayW = {
+    mobile: Number(ast?.meta?.responsive?.overlayW?.mobile) || respWidths.mobile,
+    tablet: Number(ast?.meta?.responsive?.overlayW?.tablet) || respWidths.tablet,
+    desktop: overlayMetaW || respWidths.desktop,
+  };
+
+  // -----------------------------
+  // Responsive assets (preferred)
+  // -----------------------------
+  // If fragmentPipeline sets:
+  // ast.meta.responsive.assets = {
+  //   mobile: { overlay: "...", bg: "..." },
+  //   tablet: { overlay: "...", bg: "..." },
+  //   desktop:{ overlay: "...", bg: "..." }
+  // }
+  // then those win.
+  const respAssets = (ast?.meta?.responsive?.assets && typeof ast.meta.responsive.assets === "object")
+    ? ast.meta.responsive.assets
+    : null;
+
+  const assetOverlay = {
+    mobile: String(respAssets?.mobile?.overlay || "").trim(),
+    tablet: String(respAssets?.tablet?.overlay || "").trim(),
+    desktop: String(respAssets?.desktop?.overlay || "").trim(),
+  };
+
+  const assetBg = {
+    mobile: String(respAssets?.mobile?.bg || "").trim(),
+    tablet: String(respAssets?.tablet?.bg || "").trim(),
+    desktop: String(respAssets?.desktop?.bg || "").trim(),
+  };
+
+  // -----------------------------
+  // Fallback overlay convention
+  // -----------------------------
+  const groupOverlayFixtures = {
+    mobile: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.mobile.png`,
+    tablet: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.tablet.png`,
+    desktop: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.desktop.png`,
+  };
+
+  // Decide group overlay candidates for each bucket:
+  // 1) responsive assets (if present)
+  // 2) fixtures convention
+  // 3) meta.overlay.src (legacy)
+  const groupOverlay = {
+    mobile: assetOverlay.mobile || groupOverlayFixtures.mobile || overlaySrcMeta,
+    tablet: assetOverlay.tablet || groupOverlayFixtures.tablet || overlaySrcMeta,
+    desktop: assetOverlay.desktop || groupOverlayFixtures.desktop || overlaySrcMeta,
+  };
+
+  // Choose initial overlay src:
+  // - Prefer bucket-specific overlay if available
+  // - Otherwise meta.overlay.src
+  // - Otherwise (merged group) try desktop fixtures
+  const overlaySrcInitial =
+    groupOverlay.desktop || overlaySrcMeta || (isMergedGroup ? groupOverlayFixtures.desktop : "");
+
+  // -----------------------------
+  // Background (preferred: assets; fallback: ast.__bg)
+  // -----------------------------
+  const legacyBgEnabled = !!ast?.__bg?.enabled;
+  const legacyBgSrc = legacyBgEnabled ? String(ast?.__bg?.src || "").trim() : "";
+
+  const bgFit = String(ast?.__bg?.objectFit || "cover").trim() || "cover";
+  const bgPos = String(ast?.__bg?.objectPosition || "center").trim() || "center";
+
+  // For each bucket:
+  // 1) responsive assets bg
+  // 2) legacy ast.__bg (same for all)
+  const groupBg = {
+    mobile: assetBg.mobile || legacyBgSrc,
+    tablet: assetBg.tablet || legacyBgSrc,
+    desktop: assetBg.desktop || legacyBgSrc,
+  };
+
+  // If overlay equals bg, suppress background to avoid double stacking
+  for (const k of ["mobile", "tablet", "desktop"]) {
+    if (groupBg[k] && groupOverlay[k] && groupBg[k] === groupOverlay[k]) groupBg[k] = "";
+  }
+
   const { googleFonts, primaryFontFamily } = buildGoogleFontsLinks(ast);
 
-  // Slot replacements
+  // Slot replacements (for demo templates that still use slots)
   const headingText = ast.content?.heading?.text || "Heading";
   const subcopyHtml = ast.content?.subcopy || "";
   const img = ast.content?.image;
@@ -87,8 +173,7 @@ export function previewHtml(ast, opts = {}) {
   const bodyFontCss = primaryFontFamily
     ? `body{ font-family: ${cssFontStack(primaryFontFamily)}; }`
     : "";
-
-  const slug = String(ast?.slug || "");
+  const css = previewCss({ bodyFontCss, designW });
 
   return `<!doctype html>
 <html>
@@ -100,241 +185,7 @@ export function previewHtml(ast, opts = {}) {
   ${googleFonts || ""}
 
   <style>
-    ${bodyFontCss}
-
-    .overlay-toolbar{
-      position: sticky;
-      top: 0;
-      z-index: 60;
-      backdrop-filter: blur(8px);
-      background: rgba(255,255,255,.86);
-      border-bottom: 1px solid rgba(0,0,0,.08);
-    }
-
-    /* --- Viewport toolbar --- */
-    .vpbar{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
-    .vpbtn{
-      font-size: 12px;
-      padding: 6px 10px;
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      cursor: pointer;
-      user-select:none;
-    }
-    .vpbtn[data-active="1"]{
-      background:#0f172a;
-      color:#fff;
-      border-color: rgba(15,23,42,.3);
-    }
-    .vpmeta{ font-size: 12px; color: rgba(15,23,42,.75); white-space: nowrap; }
-    .vptrack{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-    .vprail{
-      position:relative;
-      height: 10px;
-      width: 220px;
-      border-radius: 999px;
-      background: rgba(15,23,42,.10);
-      border: 1px solid rgba(0,0,0,.08);
-      cursor: ew-resize;
-      user-select:none;
-    }
-    .vpthumb{
-      position:absolute;
-      top: 50%;
-      transform: translate(-50%,-50%);
-      width: 14px;
-      height: 14px;
-      border-radius: 999px;
-      background:#0f172a;
-      box-shadow: 0 8px 20px rgba(0,0,0,.16);
-    }
-    .vprail:active .vpthumb{ transform: translate(-50%,-50%) scale(1.05); }
-
-    /* --- Non-scaling device frame wrapper --- */
-    .preview-stage{
-      width: 100%;
-      display:flex;
-      justify-content:center;
-      padding: 16px 12px 40px;
-    }
-
-    .device-frame{
-      transform: none !important;
-      zoom: 1 !important;
-
-      width: var(--vpw, ${designW}px);
-      max-width: min(100%, var(--design-w, ${designW}px));
-      background: #fff;
-      position: relative;
-    }
-
-    .device-frame-inner{ width: 100%; }
-
-    .device-outline{
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 14px;
-      box-shadow: 0 14px 38px rgba(0,0,0,.10);
-      overflow: hidden;
-    }
-
-    #cmp_root{
-      position: relative;
-      width: 100%;
-      min-height: var(--cmp-minh, 1px);
-
-      max-width: min(var(--vpw, ${designW}px), var(--design-w, ${designW}px));
-      margin-left: auto;
-      margin-right: auto;
-
-      overflow: hidden;
-    }
-
-    .bg-layer{
-      position:absolute;
-      inset:0;
-      z-index:0;
-      pointer-events:none;
-      overflow:hidden;
-    }
-    .bg-layer img{
-      position:absolute;
-      inset:0;
-      width:100%;
-      height:100%;
-      display:block;
-      object-fit: var(--bg-fit, cover);
-      object-position: var(--bg-pos, center);
-    }
-
-    .content-layer{
-      position:relative;
-      z-index:10;
-      width:100%;
-    }
-
-    .overlay-img{
-      position: absolute;
-      left: 0;
-      top: 0;
-
-      width: 100%;
-      height: auto;
-
-      pointer-events: none;
-
-      /* Defaults (JS also sets inline styles for reliability) */
-      opacity: var(--oop, 0.5);
-      mix-blend-mode: var(--obm, normal);
-
-      z-index: 40;
-      max-width: min(var(--vpw, ${designW}px), var(--design-w, ${designW}px));
-    }
-
-    .overlay-hidden{ display: none; }
-
-    /* --- Score modal --- */
-    .modal-backdrop{
-      position:fixed;
-      inset:0;
-      background:rgba(15,23,42,.45);
-      backdrop-filter: blur(4px);
-      display:none;
-      z-index: 1000;
-      align-items:center;
-      justify-content:center;
-      padding: 24px;
-    }
-    .modal-backdrop[data-open="1"]{ display:flex; }
-
-    .modal{
-      width: min(920px, 100%);
-      background:#fff;
-      border-radius:16px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.22);
-      border: 1px solid rgba(0,0,0,.08);
-      overflow:hidden;
-    }
-    .modal-hd{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap: 12px;
-      padding: 16px 18px;
-      border-bottom: 1px solid rgba(0,0,0,.08);
-      background: rgba(248,250,252,.9);
-    }
-    .modal-title{ font-size: 14px; font-weight: 700; color:#0f172a; }
-    .modal-sub{ font-size: 12px; color: rgba(15,23,42,.7); margin-top: 2px; }
-    .modal-bd{ padding: 16px 18px; }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      gap: 8px;
-      font-size: 12px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      color:#0f172a;
-      font-weight: 600;
-    }
-    .pill[data-kind="pass"]{ border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); }
-    .pill[data-kind="fail"]{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); }
-
-    .grid{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 720px){
-      .grid{ grid-template-columns: 1fr; }
-    }
-    .card{
-      border: 1px solid rgba(0,0,0,.08);
-      border-radius: 14px;
-      padding: 12px 12px;
-      background: #fff;
-    }
-    .k{ font-size: 11px; color: rgba(15,23,42,.65); text-transform: uppercase; letter-spacing: .06em; }
-    .v{ margin-top: 4px; font-size: 13px; color:#0f172a; font-weight: 600; }
-    .mono{ font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace; }
-
-    .modal-ft{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap: 10px;
-      padding: 14px 18px;
-      border-top: 1px solid rgba(0,0,0,.08);
-      background: rgba(248,250,252,.9);
-      flex-wrap: wrap;
-    }
-    .btn2{
-      font-size: 12px;
-      padding: 8px 12px;
-      border-radius: 10px;
-      border: 1px solid rgba(0,0,0,.12);
-      background: #fff;
-      cursor:pointer;
-    }
-    .btn2:hover{ background: rgba(241,245,249,.8); }
-    .btn2.primary{
-      background: #0f172a;
-      color:#fff;
-      border-color: rgba(15,23,42,.3);
-    }
-    .btn2.primary:hover{ background:#111c33; }
-
-    .links a{
-      font-size: 12px;
-      color:#0f172a;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-      opacity:.9;
-      margin-right: 10px;
-      white-space: nowrap;
-    }
+${css}
   </style>
 </head>
 
@@ -357,7 +208,7 @@ export function previewHtml(ast, opts = {}) {
       </div>
 
       ${
-        overlaySrc
+        overlaySrcInitial
           ? `
       <div class="flex items-center gap-2 ml-auto" id="ov_controls">
         <input id="ov_enabled" type="checkbox" checked />
@@ -392,40 +243,37 @@ export function previewHtml(ast, opts = {}) {
     <div id="device_frame" class="device-frame device-outline" style="--vpw:${designW}px; --design-w:${designW}px;">
       <div class="device-frame-inner">
         <section class="relative">
-          <div
-            id="ov_root"
-            class="relative flex flex-col items-center w-full mx-auto ${outer} ${padding}"
-          >
+          <div id="ov_root" class="relative flex flex-col items-center w-full mx-auto ${outer}">
             <div
               id="cmp_root"
-              style="--cmp-minh:${frameH}px; --bg-fit:${escapeHtml(bgFit)}; --bg-pos:${escapeHtml(
-    bgPos
-  )}; --oop:0.5; --obm:normal;"
+              style="height:auto; --oop:0.5; --obm:normal;"
+              data-bg-fit="${escapeHtml(bgFit)}"
+              data-bg-pos="${escapeHtml(bgPos)}"
+              data-group-bg-mobile="${escapeHtml(groupBg.mobile)}"
+              data-group-bg-tablet="${escapeHtml(groupBg.tablet)}"
+              data-group-bg-desktop="${escapeHtml(groupBg.desktop)}"
             >
-              ${
-                bgSrc
-                  ? `
-              <div class="bg-layer" aria-hidden="true">
-                <img data-figma-bg="1" src="${escapeHtml(bgSrc)}" alt="" />
-              </div>
-              `
-                  : ""
-              }
+              <div id="bg_layer" class="bg-layer" aria-hidden="true"></div>
 
               <div class="content-layer">
                 ${fragment}
               </div>
 
               ${
-                overlaySrc
+                overlaySrcInitial
                   ? `<img
-                      id="ov_img"
-                      data-figma-overlay="1"
-                      class="overlay-img"
-                      src="${escapeHtml(overlaySrc)}"
-                      alt=""
-                      aria-hidden="true"
-                    />`
+                        id="ov_img"
+                        data-figma-overlay="1"
+                        class="overlay-img"
+                        src="${escapeHtml(overlaySrcInitial)}"
+                        data-ov-w="${overlayMetaW ? String(overlayMetaW) : ""}"
+                        data-ov-h="${overlayMetaH ? String(overlayMetaH) : ""}"
+                        data-group-ov-mobile="${escapeHtml(groupOverlay.mobile)}"
+                        data-group-ov-tablet="${escapeHtml(groupOverlay.tablet)}"
+                        data-group-ov-desktop="${escapeHtml(groupOverlay.desktop)}"
+                        alt=""
+                        aria-hidden="true"
+                      />`
                   : ""
               }
             </div>
@@ -435,204 +283,357 @@ export function previewHtml(ast, opts = {}) {
     </div>
   </div>
 
-  <!-- Apply patches (fixtures.out/<slug>/patches.json) -->
+  <!-- =========================================================
+       Responsive injection + one-screen variant swapping
+       ========================================================= -->
   <script>
     (function(){
-      const slug = ${JSON.stringify(slug)};
-      if (!slug) return;
+      const initialSlug = ${JSON.stringify(slug)};
+      const groupKey = ${JSON.stringify(groupSlug)}; // slug-safe key (e.g. "hero_v3")
+      const frameName = ${JSON.stringify(frameName)};
+      const respWidths = ${JSON.stringify(respWidths)};
+      const overlayW = ${JSON.stringify(overlayW)};
+      const isMergedGroup = ${JSON.stringify(isMergedGroup)};
 
-      const PATCH_URL = "/fixtures.out/" + encodeURIComponent(slug) + "/patches.json";
+      // Current active slug used by patches/scores/compare
+      // In merged-group mode, keep it group-scoped.
+      window.__CURRENT_PREVIEW_SLUG__ = isMergedGroup ? groupKey : initialSlug;
 
-      function asObj(v){ return (v && typeof v === 'object') ? v : null; }
+      window.__RESPONSIVE__ = {
+        groupKey,
+        widths: respWidths,
+        breakpoints: { mobileMax: 768, tabletMax: 1084 },
+        overlayW,
+        frameName,
+        initialSlug,
+        mergedGroup: isMergedGroup
+      };
 
-      function applyPatchToEl(el, patch){
-        if (!el || !patch) return;
+      const contentEl = document.querySelector("#cmp_root .content-layer");
+      const ovImg = document.getElementById("ov_img");
+      const cmp = document.getElementById("cmp_root");
+      const bgLayer = document.getElementById("bg_layer");
 
-        if (Array.isArray(patch.classAdd)) {
-          for (const c of patch.classAdd) {
-            const cls = String(c || '').trim();
-            if (cls) el.classList.add(cls);
+      const initialContentHtml = contentEl ? contentEl.innerHTML : "";
+      const initialOverlaySrc = ovImg ? (ovImg.getAttribute("src") || "") : "";
+      const initialOvW = ovImg ? Number(ovImg.getAttribute("data-ov-w") || 0) : 0;
+
+      function applyOverlayClamp(bucket){
+        if (!ovImg) return;
+
+        const attrW = Number(ovImg.getAttribute("data-ov-w") || 0);
+        const ow =
+          (attrW && isFinite(attrW) && attrW > 0)
+            ? attrW
+            : (Number(window.__RESPONSIVE__?.overlayW?.[bucket]) || 0);
+
+        if (ow && isFinite(ow) && ow > 0) ovImg.style.maxWidth = ow + "px";
+        else ovImg.style.maxWidth = "";
+      }
+
+      function uniq(arr){
+        return Array.from(new Set((arr || []).map(s => String(s||"").trim()).filter(Boolean)));
+      }
+
+      function toSlug(s){
+        return String(s || "")
+          .trim()
+          .toLowerCase()
+          .replace(/\\s+/g, "_")
+          .replace(/[^a-z0-9_@\\-]+/g, "")
+          .replace(/_+/g, "_")
+          .replace(/^_+|_+$/g, "");
+      }
+
+      function deriveCandidateSlugs(bucket){
+        const b = String(bucket || "").trim().toLowerCase();
+        const out = [];
+
+        if (groupKey) out.push(groupKey + "_" + b);
+
+        const baseFromInitial = String(initialSlug || "").replace(/(_|-|@)(desktop|tablet|mobile)$/i, "");
+        if (baseFromInitial) out.push(baseFromInitial + "_" + b);
+
+        if (groupKey) out.push(groupKey + "-" + b);
+        if (groupKey) out.push(groupKey + "@" + b);
+
+        if (initialSlug) {
+          out.push(initialSlug.replace(/(_|-|@)(desktop|tablet|mobile)$/i, "$1" + b));
+          out.push(initialSlug.replace(/(desktop|tablet|mobile)$/i, b));
+          out.push(initialSlug + "_" + b);
+        }
+
+        if (frameName) {
+          const base = frameName.includes("@") ? frameName.split("@")[0].trim() : frameName.trim();
+          if (base) {
+            out.push(toSlug(base + "_" + b));
+            out.push(toSlug(base + "-" + b));
+            out.push(toSlug(base + "@" + b));
           }
         }
 
-        if (Array.isArray(patch.classRemove)) {
-          for (const c of patch.classRemove) {
-            const cls = String(c || '').trim();
-            if (cls) el.classList.remove(cls);
-          }
+        return uniq(out);
+      }
+
+      async function fetchVariantHtml(variantSlug){
+        const url = "/preview/" + encodeURIComponent(variantSlug) + "?embed=1&toolbar=0";
+        const r = await fetch(url, { cache: "no-store" });
+        if (!r.ok) throw new Error("Variant not found: " + variantSlug);
+        return await r.text();
+      }
+
+      function extractFromHtml(html){
+        const doc = new DOMParser().parseFromString(String(html||""), "text/html");
+        const c = doc.querySelector("#cmp_root .content-layer");
+        const o = doc.getElementById("ov_img");
+        const ow = o ? Number(o.getAttribute("data-ov-w") || 0) : 0;
+        const oh = o ? Number(o.getAttribute("data-ov-h") || 0) : 0;
+        const overlaySrc = o ? (o.getAttribute("src") || "") : "";
+
+        const cmp2 = doc.getElementById("cmp_root");
+        const bg =
+          cmp2 ? (cmp2.getAttribute("data-group-bg-mobile") || "") : "";
+        // NOTE: we don't rely on fetched bg for merged mode; this is only a best-effort extra fallback
+        return {
+          contentHtml: c ? c.innerHTML : "",
+          overlaySrc,
+          overlayW: (ow && isFinite(ow) && ow > 0) ? ow : 0,
+          overlayH: (oh && isFinite(oh) && oh > 0) ? oh : 0,
+          bgSrc: String(bg || "").trim(),
+        };
+      }
+
+      async function reapplyPatchesIfAvailable(){
+        if (typeof window.__applyPatchesForCurrentSlug__ === "function") {
+          try { await window.__applyPatchesForCurrentSlug__(); } catch {}
+        }
+      }
+
+      // ---------------- overlay-by-breakpoint switching ----------------
+      let _ovSwapNonce = 0;
+
+      function preferredGroupOverlaySrc(bucket){
+        const b = String(bucket || "").toLowerCase();
+        if (!ovImg) return "";
+        const m = ovImg.getAttribute("data-group-ov-mobile") || "";
+        const t = ovImg.getAttribute("data-group-ov-tablet") || "";
+        const d = ovImg.getAttribute("data-group-ov-desktop") || "";
+        if (b === "mobile") return m || "";
+        if (b === "tablet") return t || d || "";
+        return d || "";
+      }
+
+      function setOverlaySrcWithFallbacks(bucket, fetchedVariantOverlaySrc){
+        if (!ovImg) return;
+
+        const desired = preferredGroupOverlaySrc(bucket);
+        const fallbacks = uniq([
+          desired,
+          String(fetchedVariantOverlaySrc || "").trim(),
+          String(initialOverlaySrc || "").trim(),
+        ]).filter(Boolean);
+
+        if (!fallbacks.length) return;
+
+        const nonce = ++_ovSwapNonce;
+        let idx = 0;
+
+        function trySet(){
+          if (nonce !== _ovSwapNonce) return;
+          const next = fallbacks[idx];
+          if (!next) return;
+
+          if (ovImg.getAttribute("src") === next) return;
+
+          ovImg.onerror = () => {
+            if (nonce !== _ovSwapNonce) return;
+            idx++;
+            if (idx < fallbacks.length) trySet();
+          };
+
+          ovImg.src = next;
         }
 
-        if (asObj(patch.classReplace)) {
-          for (const from in patch.classReplace) {
-            const to = String(patch.classReplace[from] || '').trim();
-            const fr = String(from || '').trim();
-            if (!fr || !to) continue;
-            if (el.classList.contains(fr)) {
-              el.classList.remove(fr);
-              el.classList.add(to);
+        trySet();
+      }
+
+      // ---------------- background switching ----------------
+      let _bgSwapNonce = 0;
+
+      function preferredGroupBgSrc(bucket){
+        const b = String(bucket || "").toLowerCase();
+        if (!cmp) return "";
+        const m = cmp.getAttribute("data-group-bg-mobile") || "";
+        const t = cmp.getAttribute("data-group-bg-tablet") || "";
+        const d = cmp.getAttribute("data-group-bg-desktop") || "";
+        if (b === "mobile") return m || "";
+        if (b === "tablet") return t || d || "";
+        return d || "";
+      }
+
+      function applyBgStyle(src){
+        if (!bgLayer || !cmp) return;
+
+        const fit = cmp.getAttribute("data-bg-fit") || "cover";
+        const pos = cmp.getAttribute("data-bg-pos") || "center";
+
+        if (!src) {
+          bgLayer.style.backgroundImage = "";
+          bgLayer.style.backgroundSize = "";
+          bgLayer.style.backgroundPosition = "";
+          bgLayer.style.backgroundRepeat = "";
+          bgLayer.style.display = "none";
+          return;
+        }
+
+        bgLayer.style.display = "block";
+        bgLayer.style.backgroundImage = "url(" + JSON.stringify(String(src)) + ")";
+        bgLayer.style.backgroundSize = String(fit);
+        bgLayer.style.backgroundPosition = String(pos);
+        bgLayer.style.backgroundRepeat = "no-repeat";
+      }
+
+      function setBgSrcWithFallbacks(bucket, fetchedVariantBgSrc){
+        if (!bgLayer) return;
+
+        const desired = preferredGroupBgSrc(bucket);
+        const fallbacks = uniq([
+          desired,
+          String(fetchedVariantBgSrc || "").trim(),
+        ]).filter(Boolean);
+
+        // allow empty bg (explicitly none)
+        const nonce = ++_bgSwapNonce;
+
+        if (!fallbacks.length) {
+          applyBgStyle("");
+          return;
+        }
+
+        let idx = 0;
+        function trySet(){
+          if (nonce !== _bgSwapNonce) return;
+          const next = fallbacks[idx];
+          if (!next) { applyBgStyle(""); return; }
+
+          // Preload so we can fall back if 404
+          const img = new Image();
+          img.onload = () => { if (nonce === _bgSwapNonce) applyBgStyle(next); };
+          img.onerror = () => {
+            if (nonce !== _bgSwapNonce) return;
+            idx++;
+            if (idx < fallbacks.length) trySet();
+            else applyBgStyle("");
+          };
+          img.src = next;
+        }
+
+        trySet();
+      }
+
+      async function switchToBucket(bucket){
+        const b = String(bucket || "").trim().toLowerCase();
+
+        // Always swap bg + overlay first (so mergedGroup behaves correctly)
+        setBgSrcWithFallbacks(b, "");
+        setOverlaySrcWithFallbacks(b, "");
+        applyOverlayClamp(b);
+
+        if (window.__RESPONSIVE__?.mergedGroup) {
+          window.__CURRENT_PREVIEW_SLUG__ = groupKey;
+          await reapplyPatchesIfAvailable();
+          return;
+        }
+
+        if (b === "desktop") {
+          if (contentEl) contentEl.innerHTML = initialContentHtml;
+
+          setBgSrcWithFallbacks("desktop", "");
+          setOverlaySrcWithFallbacks("desktop", "");
+
+          if (ovImg) {
+            if (initialOvW && isFinite(initialOvW)) ovImg.setAttribute("data-ov-w", String(initialOvW));
+            else ovImg.removeAttribute("data-ov-w");
+          }
+
+          window.__CURRENT_PREVIEW_SLUG__ = initialSlug;
+
+          if (initialOvW && isFinite(initialOvW)) window.__RESPONSIVE__.overlayW.desktop = initialOvW;
+
+          applyOverlayClamp("desktop");
+          await reapplyPatchesIfAvailable();
+          return;
+        }
+
+        const candidates = deriveCandidateSlugs(b);
+
+        for (const s of candidates) {
+          try{
+            const html = await fetchVariantHtml(s);
+            const { contentHtml, overlaySrc, overlayW: ow, overlayH: oh, bgSrc } = extractFromHtml(html);
+
+            if (contentEl && contentHtml) contentEl.innerHTML = contentHtml;
+
+            // bg: if the fetched page happened to carry a usable bg hint
+            setBgSrcWithFallbacks(b, bgSrc);
+
+            if (ovImg) {
+              setOverlaySrcWithFallbacks(b, overlaySrc);
+
+              if (ow) {
+                ovImg.setAttribute("data-ov-w", String(ow));
+                window.__RESPONSIVE__.overlayW[b] = ow;
+              } else {
+                ovImg.removeAttribute("data-ov-w");
+              }
+
+              if (oh) ovImg.setAttribute("data-ov-h", String(oh));
+              else ovImg.removeAttribute("data-ov-h");
+
+              applyOverlayClamp(b);
             }
+
+            window.__CURRENT_PREVIEW_SLUG__ = s;
+            await reapplyPatchesIfAvailable();
+            return;
+          } catch {
+            // try next
           }
         }
 
-        if (asObj(patch.style)) {
-          for (const k in patch.style) {
-            const v = patch.style[k];
-            if (v === null || typeof v === 'undefined') continue;
-            try { el.style[k] = String(v); } catch {}
-          }
-        }
+        await reapplyPatchesIfAvailable();
       }
 
-      async function loadPatches(){
-        try{
-          const r = await fetch(PATCH_URL, { cache: 'no-store' });
-          if (!r.ok) return null;
-          const json = await r.json();
-          return asObj(json) || null;
-        } catch {
-          return null;
-        }
+      window.__onPreviewBucketChange = ({ bucket }) => { switchToBucket(bucket); };
+
+      function bucketForWidth(w){
+        const ww = Number(w) || 0;
+        if (ww > 0 && ww <= 768) return "mobile";
+        if (ww > 0 && ww <= 1084) return "tablet";
+        return "desktop";
       }
 
-      function applyAll(patches){
-        if (!patches) return;
+      (function initAssets(){
+        const qs = new URLSearchParams(location.search);
+        const qW = Number(qs.get("vpw"));
+        const w = (isFinite(qW) && qW > 0) ? qW : (respWidths.desktop || ${designW});
+        const b = bucketForWidth(w);
 
-        const nodes = Array.from(document.querySelectorAll('[data-node-id],[data-node]'));
-
-        for (const el of nodes) {
-          const id =
-            el.getAttribute('data-node-id') ||
-            el.getAttribute('data-node') ||
-            null;
-
-          if (!id) continue;
-
-          const p = patches[id];
-          if (p) applyPatchToEl(el, p);
-        }
-      }
-
-      (async function init(){
-        const patches = await loadPatches();
-        if (!patches) return;
-        applyAll(patches);
+        setBgSrcWithFallbacks(b, "");
+        setOverlaySrcWithFallbacks(b, "");
+        applyOverlayClamp(b);
       })();
     })();
   </script>
 
-  <script>
-    (function(){
-      // -------- Viewport sizing (NO scaling) --------
-      const designW = ${JSON.stringify(designW)};
-      const slug = ${JSON.stringify(slug)};
-      const key = "previewViewport:" + slug;
+  <!-- Apply patches (shared implementation) -->
+  ${patchesScript(slug)}
 
-      const btnM = document.getElementById("vp_mobile");
-      const btnT = document.getElementById("vp_tablet");
-      const btnD = document.getElementById("vp_desktop");
-
-      const frame = document.getElementById("device_frame");
-      const rail = document.getElementById("vp_rail");
-      const thumb = document.getElementById("vp_thumb");
-      const readout = document.getElementById("vp_readout");
-
-      if (!frame || !rail || !thumb || !readout || !btnM || !btnT || !btnD) return;
-
-      const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
-      const minW = 320;
-      const maxW = designW;
-
-      const state = (() => {
-        try { return JSON.parse(localStorage.getItem(key) || "{}") || {}; } catch { return {}; }
-      })();
-
-      function setActive(which){
-        btnM.dataset.active = which === "mobile" ? "1" : "0";
-        btnT.dataset.active = which === "tablet" ? "1" : "0";
-        btnD.dataset.active = which === "desktop" ? "1" : "0";
-      }
-
-      function setWidth(px, which){
-        const w = clamp(Math.round(px), minW, maxW);
-        frame.style.setProperty("--vpw", w + "px");
-        readout.textContent = w + "px";
-
-        const r = rail.getBoundingClientRect();
-        const t = (w - minW) / (maxW - minW);
-        thumb.style.left = (t * r.width) + "px";
-
-        if (which) setActive(which);
-
-        state.w = w;
-        state.which = which || state.which || "custom";
-        localStorage.setItem(key, JSON.stringify(state));
-      }
-
-      const presets = { mobile: 390, tablet: 768, desktop: maxW };
-
-      const qs = new URLSearchParams(location.search);
-      const qW = Number(qs.get("vpw"));
-      const initW = Number.isFinite(qW) && qW > 0 ? qW : (Number(state.w) || maxW);
-
-      const near = (a,b) => Math.abs(a-b) <= 2;
-      let initWhich = state.which || "desktop";
-      if (near(initW, presets.mobile)) initWhich = "mobile";
-      else if (near(initW, presets.tablet)) initWhich = "tablet";
-      else if (near(initW, presets.desktop)) initWhich = "desktop";
-      else initWhich = "custom";
-
-      setWidth(initW, initWhich === "custom" ? null : initWhich);
-
-      btnM.addEventListener("click", () => setWidth(presets.mobile, "mobile"));
-      btnT.addEventListener("click", () => setWidth(presets.tablet, "tablet"));
-      btnD.addEventListener("click", () => setWidth(presets.desktop, "desktop"));
-
-      let dragging = false;
-
-      function clientX(e){
-        if (e.touches && e.touches[0]) return e.touches[0].clientX;
-        return e.clientX;
-      }
-
-      function onMove(e){
-        if (!dragging) return;
-        const r = rail.getBoundingClientRect();
-        const x = clamp(clientX(e) - r.left, 0, r.width);
-        const t = r.width ? (x / r.width) : 0;
-        const w = minW + t * (maxW - minW);
-        setWidth(w, null);
-        e.preventDefault();
-      }
-
-      function onUp(){
-        dragging = false;
-        document.removeEventListener("mousemove", onMove);
-        document.removeEventListener("mouseup", onUp);
-        document.removeEventListener("touchmove", onMove);
-        document.removeEventListener("touchend", onUp);
-      }
-
-      rail.addEventListener("mousedown", (e) => {
-        dragging = true;
-        onMove(e);
-        document.addEventListener("mousemove", onMove);
-        document.addEventListener("mouseup", onUp);
-      });
-
-      rail.addEventListener("touchstart", (e) => {
-        dragging = true;
-        onMove(e);
-        document.addEventListener("touchmove", onMove, { passive: false });
-        document.addEventListener("touchend", onUp);
-      }, { passive: false });
-
-      frame.style.transform = "none";
-      frame.style.zoom = "1";
-    })();
-  </script>
+  <!-- Viewport sizing + bucket detection (reads window.__RESPONSIVE__) -->
+  ${viewportScript({ designW, slug })}
 
   ${
-    overlaySrc
+    overlaySrcInitial
       ? `
   <div id="score_modal_backdrop" class="modal-backdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="score_modal_title">
@@ -640,7 +641,7 @@ export function previewHtml(ast, opts = {}) {
         <div>
           <div id="score_modal_title" class="modal-title">Visual diff scores</div>
           <div class="modal-sub">
-            Slug: <span class="mono">${escapeHtml(slug)}</span>
+            Slug: <span class="mono" id="score_slug_label">${escapeHtml(slug)}</span>
           </div>
         </div>
         <button id="score_modal_close" class="btn2" aria-label="Close">Close</button>
@@ -706,6 +707,8 @@ export function previewHtml(ast, opts = {}) {
       const qs = new URLSearchParams(location.search);
       const ovForcedOff = qs.get('ov') === '0';
 
+      const getSlug = () => String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+
       const cmp = document.getElementById('cmp_root');
       const img = document.getElementById('ov_img');
       const enabled = document.getElementById('ov_enabled');
@@ -716,7 +719,9 @@ export function previewHtml(ast, opts = {}) {
 
       if (!cmp || !img) return;
 
-      const key = 'figmaOverlay:' + ${JSON.stringify(slug)};
+      const groupKey = String(window.__RESPONSIVE__?.groupKey || "") || getSlug();
+      const key = 'figmaOverlay:' + groupKey;
+
       const state = (() => {
         try { return JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch { return {}; }
       })();
@@ -740,21 +745,17 @@ export function previewHtml(ast, opts = {}) {
         const op = ovForcedOff ? 0 : clamp01((Number(opacity?.value) || 0) / 100);
         const mode = (!ovForcedOff && on && diff?.checked) ? 'difference' : 'normal';
 
-        // Apply via vars (for tooling)...
         cmp.style.setProperty('--oop', String(op));
         cmp.style.setProperty('--obm', mode);
 
-        // ...AND apply directly to the overlay image (for reliability)
         img.style.opacity = String(op);
         img.style.mixBlendMode = mode;
 
-        // ensure paint
         void img.offsetHeight;
 
         if (opacityVal && opacity) opacityVal.textContent = String(opacity.value || '0') + '%';
       }
 
-      // init controls from state
       if (enabled) enabled.checked = ovForcedOff ? false : (state.enabled !== false);
       if (opacity) opacity.value = String(clampInt(Number(state.opacity ?? 50), 0, 100));
       if (diff) diff.checked = !!state.diff;
@@ -772,12 +773,13 @@ export function previewHtml(ast, opts = {}) {
 
       apply();
 
-      // ---------------- Scores modal ----------------
+      // Scores modal unchanged (uses window.__CURRENT_PREVIEW_SLUG__)
       const scoreBtn = document.getElementById('ov_scores');
       const modalBackdrop = document.getElementById('score_modal_backdrop');
       const modalClose = document.getElementById('score_modal_close');
       const runCompareBtn = document.getElementById('score_run_compare');
       const refreshBtn = document.getElementById('score_refresh');
+      const scoreSlugLabel = document.getElementById('score_slug_label');
 
       const scoreEls = {
         pill: document.getElementById('score_pill'),
@@ -793,8 +795,6 @@ export function previewHtml(ast, opts = {}) {
         linkRender: document.getElementById('score_link_render'),
         linkDiff: document.getElementById('score_link_diff'),
       };
-
-      const slug = ${JSON.stringify(slug)};
 
       function pct(x){
         const n = Number(x);
@@ -850,16 +850,21 @@ export function previewHtml(ast, opts = {}) {
             : '—';
         scoreEls.at.textContent = fmtDate(score.at);
 
-        const base = \`/fixtures.out/\${encodeURIComponent(slug)}\`;
+        const currentSlug = getSlug();
+        const base = \`/fixtures.out/\${encodeURIComponent(currentSlug)}\`;
         if (scoreEls.linkScore) scoreEls.linkScore.href = \`\${base}/score.json\`;
-        if (scoreEls.linkFigma) scoreEls.linkFigma.href = \`\${base}/figma.png\`;
+
+        const merged = !!window.__RESPONSIVE__?.mergedGroup;
+        if (scoreEls.linkFigma) scoreEls.linkFigma.href = merged ? \`\${base}/figma.desktop.png\` : \`\${base}/figma.png\`;
+
         if (scoreEls.linkRender) scoreEls.linkRender.href = \`\${base}/render.png\`;
         if (scoreEls.linkDiff) scoreEls.linkDiff.href = \`\${base}/diff.png\`;
       }
 
       async function loadLatestScore(){
         try{
-          const r = await fetch(\`/fixtures.out/\${encodeURIComponent(slug)}/score.json\`, { cache: 'no-store' });
+          const currentSlug = getSlug();
+          const r = await fetch(\`/fixtures.out/\${encodeURIComponent(currentSlug)}/score.json\`, { cache: 'no-store' });
           if (!r.ok) return null;
           return await r.json();
         } catch {
@@ -868,9 +873,10 @@ export function previewHtml(ast, opts = {}) {
       }
 
       async function runCompare(){
+        const currentSlug = getSlug();
         const body = { waitMs: 350, screenshot: { mode: "element", selector: "#cmp_root", minHeight: 50 } };
 
-        const r = await fetch(\`/api/compare/\${encodeURIComponent(slug)}\`, {
+        const r = await fetch(\`/api/compare/\${encodeURIComponent(currentSlug)}\`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(body),
@@ -887,6 +893,7 @@ export function previewHtml(ast, opts = {}) {
       async function openScores(){
         setModalOpen(true);
         if (scoreEls.pill) scoreEls.pill.textContent = "Loading…";
+        if (scoreSlugLabel) scoreSlugLabel.textContent = getSlug();
         const score = await loadLatestScore();
         applyScore(score);
       }
@@ -904,6 +911,7 @@ export function previewHtml(ast, opts = {}) {
 
       if (refreshBtn) refreshBtn.addEventListener('click', async () => {
         if (scoreEls.pill) scoreEls.pill.textContent = "Loading…";
+        if (scoreSlugLabel) scoreSlugLabel.textContent = getSlug();
         const score = await loadLatestScore();
         applyScore(score);
       });
@@ -934,7 +942,8 @@ export function previewHtml(ast, opts = {}) {
   <script>
     (function(){
       const qs = new URLSearchParams(location.search);
-      if (qs.get('toolbar') === '0') {
+      const embed = qs.get('embed') === '1';
+      if (embed || qs.get('toolbar') === '0') {
         const tb = document.getElementById('toolbar_root');
         if (tb) tb.style.display = 'none';
       }
@@ -945,6 +954,24 @@ export function previewHtml(ast, opts = {}) {
 }
 
 /* ---------------- helpers ---------------- */
+
+// Matches your observed fixtures.out naming pattern: "Home v3" -> "home_v3"
+function toGroupSlug(name) {
+  return String(name || "")
+    .trim()
+    .toLowerCase()
+    .replace(/@.*/i, "") // drop @desktop/@tablet/@mobile
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+// "home_v3_mobile" -> "home_v3", "home_v3@tablet" -> "home_v3", "home_v3-desktop" -> "home_v3"
+function baseSlugFrom(slug) {
+  const s = String(slug || "").trim();
+  if (!s) return "";
+  return s.replace(/(_|-|@)(desktop|tablet|mobile)$/i, "").trim();
+}
 
 function buildGoogleFontsLinks(ast) {
   let fonts = Array.isArray(ast?.meta?.fonts) ? ast.meta.fonts : [];
@@ -983,14 +1010,14 @@ function buildGoogleFontsLinks(ast) {
 }
 
 function scanFontsFromAst(root) {
-  const map = new Map(); // family -> {family, weights:Set}
+  const map = new Map();
   (function walk(n) {
     if (!n) return;
 
     const t = n?.text || null;
     const fam = String(t?.fontFamily || t?.family || t?.fontName?.family || "").trim();
     if (fam) {
-      const w = Number(t?.fontWeight || t?.fontName?.style?.match(/\\d+/)?.[0] || 400);
+      const w = Number(t?.fontWeight || t?.fontName?.style?.match(/\d+/)?.[0] || 400);
       if (!map.has(fam)) map.set(fam, { family: fam, weights: new Set() });
       if (Number.isFinite(w) && w > 0) map.get(fam).weights.add(w);
     }
@@ -1002,9 +1029,13 @@ function scanFontsFromAst(root) {
 
 function cssFontStack(family) {
   const fam = String(family || "").trim();
-  if (!fam) return `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
-  const quoted = /\\s/.test(fam) ? "'" + fam.replace(/'/g, "\\\\'") + "'" : fam;
-  return quoted + `, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
+  if (!fam)
+    return `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
+  const quoted = /\s/.test(fam) ? "'" + fam.replace(/'/g, "\\'") + "'" : fam;
+  return (
+    quoted +
+    `, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`
+  );
 }
 
 function escapeHtml(s = "") {

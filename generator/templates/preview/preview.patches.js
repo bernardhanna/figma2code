@@ -1,14 +1,13 @@
 // generator/templates/preview/preview.patches.js
 
-export function patchesScript(slug) {
+export function patchesScript(fallbackSlug) {
   return `
-  <!-- Apply patches (fixtures.out/<slug>/patches.json) -->
   <script>
     (function(){
-      const slug = ${JSON.stringify(String(slug || ""))};
-      if (!slug) return;
+      const fallback = ${JSON.stringify(String(fallbackSlug || ""))};
 
-      const PATCH_URL = "/fixtures.out/" + encodeURIComponent(slug) + "/patches.json";
+      const getSlug = () =>
+        String(window.__CURRENT_PREVIEW_SLUG__ || fallback || "").trim();
 
       function asObj(v){ return (v && typeof v === 'object') ? v : null; }
 
@@ -50,9 +49,10 @@ export function patchesScript(slug) {
         }
       }
 
-      async function loadPatches(){
+      async function loadPatches(slug){
         try{
-          const r = await fetch(PATCH_URL, { cache: 'no-store' });
+          const url = "/fixtures.out/" + encodeURIComponent(slug) + "/patches.json";
+          const r = await fetch(url, { cache: 'no-store' });
           if (!r.ok) return null;
           const json = await r.json();
           return asObj(json) || null;
@@ -63,28 +63,28 @@ export function patchesScript(slug) {
 
       function applyAll(patches){
         if (!patches) return;
-
         const nodes = Array.from(document.querySelectorAll('[data-node-id],[data-node]'));
-
         for (const el of nodes) {
-          const id =
-            el.getAttribute('data-node-id') ||
-            el.getAttribute('data-node') ||
-            null;
-
+          const id = el.getAttribute('data-node-id') || el.getAttribute('data-node') || null;
           if (!id) continue;
-
           const p = patches[id];
           if (p) applyPatchToEl(el, p);
         }
       }
 
-      (async function init(){
-        const patches = await loadPatches();
+      async function applyCurrent(){
+        const slug = getSlug();
+        if (!slug) return;
+        const patches = await loadPatches(slug);
         if (!patches) return;
         applyAll(patches);
-      })();
+      }
+
+      // expose for responsive swapper
+      window.__applyPatchesForCurrentSlug__ = applyCurrent;
+
+      applyCurrent();
     })();
   </script>
-`;
+  `;
 }

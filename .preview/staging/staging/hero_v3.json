@@ -1,8 +1,8 @@
 {
-  "slug": "mt2",
-  "when": 1768292079215,
+  "slug": "hero_v3",
+  "when": 1768325347747,
   "ast": {
-    "slug": "mt2",
+    "slug": "hero_v3",
     "type": "flexi_block",
     "frame": {
       "w": 1728,
@@ -10,7 +10,7 @@
     },
     "tree": {
       "id": "3163:2414",
-      "name": "hero@desktop",
+      "name": "Home v3@desktop",
       "type": "FRAME",
       "w": 1728,
       "h": 878,
@@ -50,7 +50,7 @@
           "kind": "image",
           "scaleMode": "CROP",
           "imageHash": "a94929a5bfc7f77233fd62eaa5013a70dfeb9b90",
-          "src": "/assets/fill_a94929a5bfc7f77233fd62ea-mkcb6a1t.png"
+          "src": "/assets/fill_a94929a5bfc7f77233fd62ea-mkcqq3ey.png"
         },
         {
           "kind": "gradient",
@@ -78,7 +78,7 @@
       "blendMode": "PASS_THROUGH",
       "clipsContent": true,
       "img": {
-        "src": "/assets/hero_desktop-mkcbg3un.png",
+        "src": "/assets/home_v3_desktop-mkcv95r4.png",
         "w": 1728,
         "h": 878
       },
@@ -547,7 +547,7 @@
                         "isClickable": true
                       },
                       "img": {
-                        "src": "/assets/cta_button-mkcbg3ww.png",
+                        "src": "/assets/cta_button-mkcv95uo.png",
                         "w": 287,
                         "h": 56
                       },
@@ -651,7 +651,7 @@
                         "isClickable": true
                       },
                       "img": {
-                        "src": "/assets/cta_button-mkcbg3ye.png",
+                        "src": "/assets/cta_button-mkcv95wi.png",
                         "w": 157,
                         "h": 56
                       },
@@ -702,20 +702,20 @@
     "meta": {
       "schema": "figma-ast",
       "version": 1,
-      "exportedAt": "2026-01-13T08:14:39.191Z",
+      "exportedAt": "2026-01-13T17:29:07.711Z",
       "figma": {
         "pageName": "      ↳ 🖥️  Home v3",
-        "frameName": "hero@desktop"
+        "frameName": "Home v3@desktop"
       },
       "overlay": {
-        "src": "/assets/hero_desktop-mkcbg4lt.png",
+        "src": "/assets/home_v3_desktop-mkcv96rc.png",
         "w": 1728,
         "h": 878
       }
     },
     "__bg": {
       "enabled": true,
-      "src": "/assets/hero_desktop-mkcbg3un.png",
+      "src": "/assets/home_v3_desktop-mkcv95r4.png",
       "objectFit": "cover",
       "objectPosition": "center",
       "source": "fill"

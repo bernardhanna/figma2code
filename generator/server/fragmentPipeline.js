@@ -2,6 +2,7 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import process from "node:process";
 
 import { PREVIEW_DIR } from "./runtimePaths.js";
 import { mergeResponsiveFragments } from "../auto/mergeResponsiveFragments.js";
@@ -10,13 +11,23 @@ import { parseGroupVariant } from "./variantNaming.js";
 import {
   writeVariantAst,
   readVariantAstIfExists,
-  materializeOverlayIfDataUrl,
+  materializeOverlayIfPossible,
 } from "./variantStore.js";
 
 import { writeStage } from "./stageStore.js";
 
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
+}
+
+function slugifyGroupKey(input) {
+  return String(input || "")
+    .trim()
+    .toLowerCase()
+    .replace(/@.*/i, "")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_+|_+$/g, "");
 }
 
 /**
@@ -41,13 +52,9 @@ function coerceAst(maybeWrapped, fallbackAst = null) {
 function unwrapAstResult(out, fallbackAst) {
   if (!out) return { ast: fallbackAst, extra: null };
 
-  // If it looks like { ast: { tree: ... } }
   if (asObj(out) && asObj(out.ast) && asObj(out.ast.tree)) return { ast: out.ast, extra: out };
-
-  // If it looks like a plain AST
   if (asObj(out) && asObj(out.tree)) return { ast: out, extra: null };
 
-  // Unknown shape: fallback
   return { ast: fallbackAst, extra: null };
 }
 
@@ -58,16 +65,19 @@ function pickBaseVariant(variantsMap) {
   return "";
 }
 
+/**
+ * Build the "merged AST" (metadata carrier) used by previewHtml shell.
+ * IMPORTANT:
+ * - We deliberately choose the BASE variant as the merged AST so that:
+ *   - mobile base => mobile overlay/bg by default
+ * - Fonts and responsive meta are merged across variants.
+ */
 function compositeAstForMerged({ groupKey, variantsMap }) {
   const baseKey = pickBaseVariant(variantsMap);
   const baseAst = variantsMap[baseKey] || null;
   if (!baseAst) return null;
 
-  // Prefer desktop for sizing/overlay reference if present
-  const desktopAst = variantsMap.desktop || null;
-  const prefer = desktopAst || baseAst;
-
-  // Merge fonts list (best-effort union)
+  // Merge fonts across variants (best-effort union)
   const fonts = [];
   const seen = new Set();
   for (const v of ["mobile", "tablet", "desktop"]) {
@@ -85,11 +95,11 @@ function compositeAstForMerged({ groupKey, variantsMap }) {
   }
 
   return {
-    ...prefer,
+    ...baseAst,
     slug: groupKey,
     meta: {
-      ...(prefer.meta || {}),
-      fonts: fonts.length ? fonts : prefer.meta?.fonts || [],
+      ...(baseAst.meta || {}),
+      fonts: fonts.length ? fonts : baseAst.meta?.fonts || [],
       responsive: {
         groupKey,
         variants: ["mobile", "tablet", "desktop"].filter((k) => !!variantsMap[k]),
@@ -109,7 +119,7 @@ function ensurePreviewDir() {
  * Build a single fragment (legacy path) from one AST using your existing passes.
  * IMPORTANT: applies semanticAccessiblePass() to the rendered HTML fragment.
  */
-function renderOneFragment({
+export function renderOneFragment({
   ast,
   autoLayoutify,
   semanticAccessiblePass,
@@ -119,14 +129,12 @@ function renderOneFragment({
 }) {
   let a = ast;
 
-  // normalize (robustly unwrap)
   if (normalizeAst) {
     const r = normalizeAst(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
   }
 
-  // intent graph pass
   let phase3 = null;
   if (buildIntentGraph) {
     const r = buildIntentGraph(a);
@@ -135,20 +143,16 @@ function renderOneFragment({
     phase3 = un.extra || null;
   }
 
-  // Prevent <button> wrapping <button>/<a> etc.
-  // This must run after semantics/clickability is assigned.
   if (preventNestedInteractive) {
     const r = preventNestedInteractive(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
   }
 
-  // Guard: ensure we truly have an AST with tree before rendering
   if (!a || !a.tree) {
     throw new Error("renderOneFragment: pipeline produced AST missing tree");
   }
 
-  // render
   const semantics = a?.semantics || a?.semanticsMap || a?.meta?.semantics || {};
   let fragment = autoLayoutify(a, {
     semantics,
@@ -156,7 +160,6 @@ function renderOneFragment({
     fontMap: a?.meta?.fontMap || {},
   });
 
-  // Phase2: semantic + accessible HTML edits
   let phase2Report = null;
   if (semanticAccessiblePass) {
     const out = semanticAccessiblePass({ html: fragment, ast: a, semantics });
@@ -240,10 +243,22 @@ export function buildMergedResponsivePreview({
     return html;
   }
 
-  // Ensure we label variant reports deterministically
-  if (mobileAst) mobileAst.meta = { ...(mobileAst.meta || {}), responsive: { ...(mobileAst.meta?.responsive || {}), variant: "mobile" } };
-  if (tabletAst) tabletAst.meta = { ...(tabletAst.meta || {}), responsive: { ...(tabletAst.meta?.responsive || {}), variant: "tablet" } };
-  if (desktopAst) desktopAst.meta = { ...(desktopAst.meta || {}), responsive: { ...(desktopAst.meta?.responsive || {}), variant: "desktop" } };
+  // Stamp variant label for reporting/debug
+  if (mobileAst)
+    mobileAst.meta = {
+      ...(mobileAst.meta || {}),
+      responsive: { ...(mobileAst.meta?.responsive || {}), variant: "mobile" },
+    };
+  if (tabletAst)
+    tabletAst.meta = {
+      ...(tabletAst.meta || {}),
+      responsive: { ...(tabletAst.meta?.responsive || {}), variant: "tablet" },
+    };
+  if (desktopAst)
+    desktopAst.meta = {
+      ...(desktopAst.meta || {}),
+      responsive: { ...(desktopAst.meta?.responsive || {}), variant: "desktop" },
+    };
 
   const mobileHtml = renderVariant(mobileAst);
   const tabletHtml = renderVariant(tabletAst);
@@ -251,12 +266,17 @@ export function buildMergedResponsivePreview({
 
   const mergedFragment = mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml });
 
+  console.log("[merge] lens", {
+    mobile: (mobileHtml || "").length,
+    tablet: (tabletHtml || "").length,
+    desktop: (desktopHtml || "").length,
+  });
+
   const mergedAst = compositeAstForMerged({ groupKey, variantsMap });
   if (!mergedAst?.tree) {
     return { ok: false, status: 500, error: `Failed to build merged AST for "${groupKey}".` };
   }
 
-  // Stage merged ast for compare/autofix
   writeStage(groupKey, mergedAst);
 
   const preview = previewHtml(mergedAst, { fragment: mergedFragment });
@@ -295,12 +315,13 @@ export async function buildPreviewFragment({
       String(astInput?.meta?.frameName || "").trim();
 
     const parsed = parseGroupVariant(nameSource);
+    console.log("[variant]", { nameSource, parsed });
 
     ensurePreviewDir();
 
     // ---------------- Variant mode ----------------
     if (parsed.isVariant) {
-      const groupKey = parsed.groupKey;
+      const groupKey = slugifyGroupKey(parsed.groupKey);
       const variant = parsed.variant;
 
       const single = renderOneFragment({
@@ -314,13 +335,16 @@ export async function buildPreviewFragment({
 
       let variantAst = single.ast;
 
-      // Materialize overlay if it is a data URL
+      // Materialize overlay into fixtures.out/<group>/figma.<variant>.png
       const overlaySrc = String(variantAst?.meta?.overlay?.src || "").trim();
       if (overlaySrc) {
-        const newSrc = materializeOverlayIfDataUrl({
+        const serverUrl = process.env.PREVIEW_BASE_URL || `http://127.0.0.1:5173`;
+
+        const newSrc = await materializeOverlayIfPossible({
           groupKey,
           variant,
           overlaySrc,
+          serverUrl,
         });
 
         if (newSrc && newSrc !== overlaySrc) {
@@ -328,19 +352,14 @@ export async function buildPreviewFragment({
             ...variantAst,
             meta: {
               ...(variantAst.meta || {}),
-              overlay: {
-                ...(variantAst.meta?.overlay || {}),
-                src: newSrc,
-              },
+              overlay: { ...(variantAst.meta?.overlay || {}), src: newSrc },
             },
           };
         }
       }
 
-      // Override immediately
       writeVariantAst(groupKey, variant, variantAst);
 
-      // Rebuild merged preview (WITH semantic pass applied per-variant)
       const merged = buildMergedResponsivePreview({
         groupKey,
         autoLayoutify,
@@ -350,7 +369,6 @@ export async function buildPreviewFragment({
 
       if (!merged.ok) return merged;
 
-      // Write preview file for /preview/:groupKey
       const previewOut = path.join(PREVIEW_DIR, `${groupKey}.html`);
       fs.writeFileSync(previewOut, merged.preview, "utf8");
 
@@ -360,7 +378,6 @@ export async function buildPreviewFragment({
         fragment: merged.fragment,
         preview: merged.preview,
 
-        // Single variant's phase2 is still useful to surface
         phase2Report: single.phase2Report || null,
         phase2Reports: merged.phase2Reports || null,
         phase2NormalizedPath: single.phase2NormalizedPath || null,

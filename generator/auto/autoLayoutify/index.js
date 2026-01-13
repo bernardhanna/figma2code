@@ -71,7 +71,7 @@ export function autoLayoutify(ast, opts = {}) {
   const rootW = Math.max(1, Math.round(ast?.tree?.w || ast?.frame?.w || 1200));
   const maxWClass = `max-w-[${rem(rootW)}]`;
 
-  const innerOpen = `<div class="flex flex-col items-center w-full mx-auto ${maxWClass} pt-5 pb-5 max-lg:px-5">`;
+  const innerOpen = `<div class="w-full ${maxWClass}">`;
 
   return sectionOpen + "\n" + innerOpen + "\n" + html + "\n</div>\n</section>";
 }

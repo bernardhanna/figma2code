@@ -1,5 +1,4 @@
 // generator/server/createApp.js
-
 import express from "express";
 
 import { corsMiddleware } from "./corsMiddleware.js";
@@ -9,13 +8,24 @@ import { registerHomeRoutes } from "./routesHome.js";
 import { registerConfigRoutes } from "./routesConfig.js";
 import { registerUploadRoutes } from "./routesUpload.js";
 import { registerPhase1Routes } from "./routesPhase1.js";
-
-// IMPORTANT: do NOT import registerCompareRoute from ./routes/compareRoute.js
-// Compare is implemented inside registerVisualDiffAndAutofixRoutes
 import { registerPreviewAndGenerateRoutes } from "./routesPreviewAndGenerate.js";
 import { registerVisualDiffAndAutofixRoutes } from "./routesVisualDiffAndAutofix.js";
 
-export function createApp({ port }) {
+import { registerBatchUploadRoutes } from "./routesBatchUpload.js";
+
+/**
+ * createApp({ port, deps })
+ * deps must include:
+ * - normalizeAst
+ * - buildIntentGraph
+ * - autoLayoutify
+ * - semanticAccessiblePass
+ * - preventNestedInteractive
+ * - previewHtml
+ * - renderOneFragment
+ * - buildMergedResponsivePreview (optional; batch route can import directly too)
+ */
+export function createApp({ port, deps }) {
   ensureRuntimeDirs();
 
   const app = express();
@@ -38,6 +48,9 @@ export function createApp({ port }) {
 
   registerPreviewAndGenerateRoutes(app, { port });
   registerVisualDiffAndAutofixRoutes(app, { port });
+
+  // Batch upload (Option B: one-click export all variants)
+  registerBatchUploadRoutes(app, deps);
 
   return app;
 }

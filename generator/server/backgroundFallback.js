@@ -106,6 +106,40 @@ export function applyNamedBackgroundFallback(ast) {
     return best;
   }
 
+  function isWrapperType(node) {
+    const t = String(node?.type || "").toUpperCase();
+    return t === "FRAME" || t === "GROUP" || t === "INSTANCE" || t === "COMPONENT";
+  }
+
+  function pickSrcFromDirectIfSafe(node) {
+    // Avoid using frame/instance snapshot exports as “background”
+    if (isWrapperType(node)) return "";
+    return pickSrcFromDirect(node);
+  }
+
+  function findBestFillImageDeep(root) {
+    let best = "";
+    (function walk(n) {
+      if (!n || best) return;
+      const fromFills = pickSrcFromFills(n);
+      if (fromFills) { best = fromFills; return; }
+      for (const c of n.children || []) walk(c);
+    })(root);
+    return best;
+  }
+
+  function findBestDirectImageDeep(root) {
+    let best = "";
+    (function walk(n) {
+      if (!n || best) return;
+      // Only accept direct sources from non-wrapper nodes
+      const fromDirect = pickSrcFromDirectIfSafe(n);
+      if (fromDirect) { best = fromDirect; return; }
+      for (const c of n.children || []) walk(c);
+    })(root);
+    return best;
+  }
+
   // Find a node by naming convention anywhere in the tree
   let found = null;
 
@@ -125,9 +159,10 @@ export function applyNamedBackgroundFallback(ast) {
   // - Then direct sources on the named node
   // - Then scan inside it (in case it's a wrapper group/frame)
   let src =
-    pickSrcFromFills(found) ||
-    pickSrcFromDirect(found) ||
-    findBestBgSrcDeep(found) ||
+    findBestFillImageDeep(found) ||   // NEW helper: scans subtree fills only
+    pickSrcFromFills(found) ||        // keep (fills on node)
+    pickSrcFromDirectIfSafe(found) || // safer direct fallback
+    findBestDirectImageDeep(found) || // last resort direct scan
     "/assets/placeholder-hero-bg.jpg";
 
   ast.__bg = {

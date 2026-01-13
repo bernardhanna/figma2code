@@ -75,7 +75,6 @@ ${bodyFontCss}
 
 .device-outline{
   border: 1px solid rgba(0,0,0,.08);
-  border-radius: 14px;
   box-shadow: 0 14px 38px rgba(0,0,0,.10);
   overflow: hidden;
 }
@@ -83,14 +82,15 @@ ${bodyFontCss}
 #cmp_root{
   position: relative;
   width: 100%;
-  min-height: var(--cmp-minh, 1px);
+  height: var(--cmp-h, auto);
 
-  max-width: min(var(--vpw, ${designW}px), var(--design-w, ${designW}px));
+ max-width: var(--vpw, ${designW}px);
   margin-left: auto;
   margin-right: auto;
 
   overflow: hidden;
 }
+
 
 .bg-layer{
   position:absolute;
@@ -115,13 +115,24 @@ ${bodyFontCss}
   width:100%;
 }
 
+/* replace ONLY the .overlay-img block in preview.styles.js with this */
+
 .overlay-img{
   position: absolute;
-  left: 0;
   top: 0;
 
+  /* Center the overlay when it's narrower than the viewport */
+  left: 50%;
+  transform: translateX(-50%);
+
+  /* Fill available width, but never exceed the active overlay design width */
   width: 100%;
   height: auto;
+
+  max-width: min(
+    var(--vpw, ${designW}px),
+    var(--overlay-w, var(--design-w, ${designW}px))
+  );
 
   pointer-events: none;
 
@@ -130,8 +141,8 @@ ${bodyFontCss}
   mix-blend-mode: var(--obm, normal);
 
   z-index: 40;
-  max-width: min(var(--vpw, ${designW}px), var(--design-w, ${designW}px));
 }
+
 
 .overlay-hidden{ display: none; }
 
