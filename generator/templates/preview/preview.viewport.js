@@ -4,35 +4,16 @@ export function viewportScript({ designW, slug }) {
   return `
   <script>
     (function(){
-      // =========================================================
-      // Viewport sizing (NO scaling) + responsive bucket switching
-      //
-      // Breakpoints (your spec):
-      // - mobile:  <= 768
-      // - tablet:  769..1084
-      // - desktop: >= 1085
-      //
-      // IMPORTANT:
-      // Tailwind breakpoints do NOT respond to changing a div width.
-      // So we expose hooks to let preview swap markup + overlay by bucket.
-      // =========================================================
-
       const FALLBACK_DESIGN_W = ${JSON.stringify(Number(designW) || 1200)};
-      const slug = ${JSON.stringify(String(slug || ""))};
+      const pageSlug = ${JSON.stringify(String(slug || ""))};
 
-      // preview.html.js (or another injected script) can set:
-      // window.__RESPONSIVE__ = {
-      //   groupKey: "Home v3", // shared state across variants
-      //   widths: { mobile: 390, tablet: 1084, desktop: 1728 },
-      //   breakpoints: { mobileMax: 768, tabletMax: 1084 }
-      // };
       const resp = (window.__RESPONSIVE__ && typeof window.__RESPONSIVE__ === "object")
         ? window.__RESPONSIVE__
         : null;
 
       const groupKey = (resp && typeof resp.groupKey === "string" && resp.groupKey.trim())
         ? resp.groupKey.trim()
-        : slug;
+        : pageSlug;
 
       const key = "previewViewport:" + groupKey;
 
@@ -46,26 +27,27 @@ export function viewportScript({ designW, slug }) {
       const readout = document.getElementById("vp_readout");
 
       const cmp = document.getElementById("cmp_root");
+      const ovImg = document.getElementById("ov_img");
+      const bgLayer = document.getElementById("bg_layer");
 
+      // NEW: content iframe (enables real Tailwind breakpoints)
+      const vpIframe = document.getElementById("vp_iframe");
+
+      // In embed mode there is no toolbar; bail cleanly
       if (!frame || !rail || !thumb || !readout || !btnM || !btnT || !btnD) return;
 
       const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
       const minW = 320;
 
-      // ----- Breakpoints (as per your spec) -----
       const bpMobileMax = Number(resp?.breakpoints?.mobileMax) || 768;
       const bpTabletMax = Number(resp?.breakpoints?.tabletMax) || 1084;
 
-      // ----- Design widths (must match Figma frames) -----
-      // These are preset button targets (NOT the breakpoint thresholds).
       const wMobile  = Number(resp?.widths?.mobile)  || 390;
       const wTablet  = Number(resp?.widths?.tablet)  || 1084;
       const wDesktop = Number(resp?.widths?.desktop) || FALLBACK_DESIGN_W;
 
-      // Max resize width should be the desktop design width (not current bucket width)
       const maxW = Math.max(wDesktop, wTablet, wMobile, FALLBACK_DESIGN_W);
 
-      // Expose design clamp for CSS (device frame max width)
       frame.style.setProperty("--design-w", String(maxW) + "px");
 
       const state = (() => {
@@ -92,51 +74,144 @@ export function viewportScript({ designW, slug }) {
         thumb.style.left = (t * r.width) + "px";
       }
 
-      function setOverlayClampForBucket(b){
-        if (!cmp) return;
-        const ow = (b === "mobile") ? wMobile : (b === "tablet") ? wTablet : wDesktop;
-        cmp.style.setProperty("--overlay-w", ow + "px");
-        cmp.dataset.bucket = b;
+      function preferredGroupOverlaySrc(bucket){
+        if (!cmp) return "";
+        const b = String(bucket || "").toLowerCase();
+        const m = cmp.getAttribute("data-group-ov-mobile") || "";
+        const t = cmp.getAttribute("data-group-ov-tablet") || "";
+        const d = cmp.getAttribute("data-group-ov-desktop") || "";
+        if (b === "mobile") return m || "";
+        if (b === "tablet") return t || d || "";
+        return d || "";
       }
 
-      let currentBucket = null;
+      function preferredGroupBgSrc(bucket){
+        if (!cmp) return "";
+        const b = String(bucket || "").toLowerCase();
+        const m = cmp.getAttribute("data-group-bg-mobile") || "";
+        const t = cmp.getAttribute("data-group-bg-tablet") || "";
+        const d = cmp.getAttribute("data-group-bg-desktop") || "";
+        if (b === "mobile") return m || "";
+        if (b === "tablet") return t || d || "";
+        return d || "";
+      }
 
-      // Hook: preview HTML can implement to swap variant markup + overlay
-      // window.__onPreviewBucketChange = ({ bucket, widthPx }) => {}
-      function notifyBucketChange(nextBucket, w){
-        if (typeof window.__onPreviewBucketChange === "function") {
-          try { window.__onPreviewBucketChange({ bucket: nextBucket, widthPx: w }); } catch {}
+      function applyBgStyle(src){
+        if (!bgLayer || !cmp) return;
+
+        const fit = cmp.getAttribute("data-bg-fit") || "cover";
+        const pos = cmp.getAttribute("data-bg-pos") || "center";
+
+        if (!src) {
+          bgLayer.style.backgroundImage = "";
+          bgLayer.style.backgroundSize = "";
+          bgLayer.style.backgroundPosition = "";
+          bgLayer.style.backgroundRepeat = "";
+          bgLayer.style.display = "none";
+          return;
+        }
+
+        bgLayer.style.display = "block";
+        bgLayer.style.backgroundImage = "url(" + JSON.stringify(String(src)) + ")";
+        bgLayer.style.backgroundSize = String(fit);
+        bgLayer.style.backgroundPosition = String(pos);
+        bgLayer.style.backgroundRepeat = "no-repeat";
+      }
+
+      function setBg(bucket){
+        const src = preferredGroupBgSrc(bucket);
+        if (!src) { applyBgStyle(""); return; }
+
+        const img = new Image();
+        img.onload = () => applyBgStyle(src);
+        img.onerror = () => applyBgStyle("");
+        img.src = src;
+      }
+
+      function setOverlay(bucket){
+        if (!ovImg) return;
+        const src = preferredGroupOverlaySrc(bucket);
+        if (!src) return;
+
+        if (ovImg.getAttribute("src") !== src) {
+          ovImg.onerror = () => {};
+          ovImg.src = src;
+        }
+      }
+
+      function setOverlayClampForBucket(bucket){
+        if (!cmp) return;
+        const b = String(bucket || "").toLowerCase();
+
+        const ow =
+          b === "mobile" ? wMobile :
+          b === "tablet" ? wTablet :
+          wDesktop;
+
+        cmp.style.setProperty("--overlay-w", ow + "px");
+        cmp.dataset.bucket = b;
+
+        if (ovImg) {
+          const hinted = Number(resp?.overlayW?.[b]) || 0;
+          const finalW = hinted > 0 ? hinted : ow;
+          ovImg.style.maxWidth = finalW + "px";
+        }
+      }
+
+      // NEW: keep iframe height tidy (optional, but prevents huge blank space)
+      function setIframeWidth(w){
+        if (!vpIframe) return;
+        vpIframe.style.width = w + "px";
+      }
+
+      function tryAutoIframeHeight(){
+        // If same-origin srcdoc is used, we can read scrollHeight
+        if (!vpIframe) return;
+        try {
+          const doc = vpIframe.contentDocument;
+          if (!doc) return;
+          const h = Math.max(
+            doc.documentElement?.scrollHeight || 0,
+            doc.body?.scrollHeight || 0
+          );
+          if (h > 0) vpIframe.style.height = h + "px";
+        } catch {
+          // ignore cross-origin
         }
       }
 
       function setWidth(px, forcedLabel){
         const w = clamp(Math.round(px), minW, maxW);
 
+        // This still drives overlay clamp and the device frame sizing visuals
         frame.style.setProperty("--vpw", w + "px");
         readout.textContent = w + "px";
         setThumb(w);
 
-        const b = bucketForWidth(w);
+        // IMPORTANT:
+        // Tailwind breakpoints will NOT respond to --vpw.
+        // They WILL respond inside an iframe whose viewport width is w.
+        setIframeWidth(w);
 
-        // Buttons reflect bucket even when dragging
+        const b = bucketForWidth(w);
         setActive(b);
 
-        // Clamp overlay to the *variant* design width for the current bucket
+        // Bucket-driven overlay/bg behaviour (outside iframe)
         setOverlayClampForBucket(b);
+        setOverlay(b);
+        setBg(b);
 
         state.w = w;
         state.which = forcedLabel || b;
         localStorage.setItem(key, JSON.stringify(state));
 
-        if (b !== currentBucket) {
-          currentBucket = b;
-          notifyBucketChange(b, w);
-        }
+        // Try to keep iframe height correct after width changes (content reflows)
+        setTimeout(tryAutoIframeHeight, 0);
+        setTimeout(tryAutoIframeHeight, 60);
       }
 
       const presets = { mobile: wMobile, tablet: wTablet, desktop: wDesktop };
 
-      // Init width (URL param wins, then stored, then desktop)
       const qs = new URLSearchParams(location.search);
       const qW = Number(qs.get("vpw"));
       const initW =
@@ -146,12 +221,10 @@ export function viewportScript({ designW, slug }) {
 
       setWidth(initW, null);
 
-      // Preset buttons jump to *Figma design widths*
       btnM.addEventListener("click", () => setWidth(presets.mobile, "mobile"));
       btnT.addEventListener("click", () => setWidth(presets.tablet, "tablet"));
       btnD.addEventListener("click", () => setWidth(presets.desktop, "desktop"));
 
-      // Drag rail
       let dragging = false;
 
       function clientX(e){
@@ -191,9 +264,16 @@ export function viewportScript({ designW, slug }) {
         document.addEventListener("touchend", onUp);
       }, { passive: false });
 
-      // Ensure no accidental scaling
       frame.style.transform = "none";
       frame.style.zoom = "1";
+
+      // If iframe exists, set an initial height once it loads
+      if (vpIframe) {
+        vpIframe.addEventListener("load", () => {
+          tryAutoIframeHeight();
+          setTimeout(tryAutoIframeHeight, 80);
+        });
+      }
     })();
   </script>
 `;

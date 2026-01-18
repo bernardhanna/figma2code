@@ -5,7 +5,7 @@
 // - auto Google Fonts injection
 // - APPLY PATCHES support (fixtures.out/<slug>/patches.json)
 // - Responsive viewport tooling (mobile/tablet/desktop) + draggable width resizer
-// - One-screen responsive variant swapping (fetch-and-swap) using /preview/<variantSlug>?embed=1&toolbar=0
+// - (REMOVED) One-screen responsive variant swapping (fetch-and-swap)
 //
 // Critical layout guarantees:
 // - Overlay is positioned/clipped INSIDE #cmp_root and cannot exceed current viewport (--vpw)
@@ -15,10 +15,13 @@
 //
 // Notes:
 // - CSS is sourced from generator/templates/preview/preview.styles.js to avoid duplication.
+// - Tailwind responsiveness should happen naturally as viewport width changes.
+// - Overlay/background can switch per bucket (mobile/tablet/desktop) without swapping markup.
 
 import { previewCss } from "./preview/preview.styles.js";
 import { viewportScript } from "./preview/preview.viewport.js";
 import { patchesScript } from "./preview/preview.patches.js";
+import { responsiveScript } from "./preview/preview.responsive.js";
 
 export function previewHtml(ast, opts = {}) {
   const fragmentRaw = (opts.fragment || "").trim();
@@ -35,9 +38,6 @@ export function previewHtml(ast, opts = {}) {
   const overlayMetaW = Number(ast?.meta?.overlay?.w || 0) || null;
   const overlayMetaH = Number(ast?.meta?.overlay?.h || 0) || null;
 
-  // Design width = desktop reference width
-  const designW = Math.max(1, Math.round(ast?.frame?.w || ast?.tree?.w || 1200));
-
   // Frame name (used to derive responsive group + sibling variants)
   const frameName = String(
     ast?.meta?.figma?.frameName || ast?.frame?.name || ast?.tree?.name || ""
@@ -48,23 +48,59 @@ export function previewHtml(ast, opts = {}) {
 
   // Group slug should match your server/fixtures naming (e.g. fixtures.out/home_v3).
   const groupSlug =
-    String(opts.groupSlug || "").trim() ||
-    baseSlugFrom(slug) ||
-    toGroupSlug(frameBase) ||
-    slug;
+    String(opts.groupSlug || "").trim() || baseSlugFrom(slug) || toGroupSlug(frameBase) || slug;
 
-  // Detect “merged responsive group mode”:
-  const responsiveVariants = Array.isArray(ast?.meta?.responsive?.variants)
-    ? ast.meta.responsive.variants
-    : [];
-  const isMergedGroup = responsiveVariants.length >= 2;
+  // Detect “merged responsive group mode”
+  // Prefer explicit flag, otherwise infer from meta.responsive.variants when present.
+  const variantsArr = Array.isArray(ast?.meta?.responsive?.variants) ? ast.meta.responsive.variants : [];
+  const isMergedGroup = !!ast?.meta?.responsive?.mergedGroup || variantsArr.length >= 2;
 
-  // If you have these in AST already, they win; otherwise defaults are fine.
-  const respWidths = {
-    mobile: Number(ast?.meta?.responsive?.widths?.mobile) || 390,
-    tablet: Number(ast?.meta?.responsive?.widths?.tablet) || 1084,
-    desktop: Number(ast?.meta?.responsive?.widths?.desktop) || designW,
+  // ---------------------------------------------------------
+  // Design widths MUST match Figma frames we are testing.
+  // In merged responsive mode the carrier AST is often mobile,
+  // so ast.frame.w may be 390. We must instead use stored
+  // responsive widths (or variantMeta if present).
+  // ---------------------------------------------------------
+
+  // Best source: precomputed widths in ast.meta.responsive.widths
+  const widthsFromMeta =
+    ast?.meta?.responsive?.widths && typeof ast.meta.responsive.widths === "object"
+      ? ast.meta.responsive.widths
+      : null;
+
+  // Optional: if fragmentPipeline stamped variantMeta with frame sizes
+  // Example:
+  // ast.meta.responsive.variantMeta = {
+  //   mobile:{ frame:{w,h} }, tablet:{ frame:{w,h} }, desktop:{ frame:{w,h} }
+  // }
+  const variantMeta =
+    ast?.meta?.responsive?.variantMeta && typeof ast.meta.responsive.variantMeta === "object"
+      ? ast.meta.responsive.variantMeta
+      : null;
+
+  const variantMetaWidths = variantMeta
+    ? {
+        mobile: Number(variantMeta?.mobile?.frame?.w) || 0,
+        tablet: Number(variantMeta?.tablet?.frame?.w) || 0,
+        desktop: Number(variantMeta?.desktop?.frame?.w) || 0,
+      }
+    : null;
+
+  // Fallback carrier width (legacy)
+  const carrierW = Math.max(1, Math.round(ast?.frame?.w || ast?.tree?.w || 1200));
+
+  // Resolve responsive widths (source of truth)
+  const resolvedRespWidths = {
+    mobile: Number(widthsFromMeta?.mobile) || Number(variantMetaWidths?.mobile) || 390,
+    tablet: Number(widthsFromMeta?.tablet) || Number(variantMetaWidths?.tablet) || 1084,
+    desktop: Number(widthsFromMeta?.desktop) || Number(variantMetaWidths?.desktop) || carrierW,
   };
+
+  // Design width should be DESKTOP frame width when known; otherwise carrier
+  const designW = Math.max(1, Math.round(resolvedRespWidths.desktop || carrierW));
+
+  // NOTE: This is the source-of-truth used by preview.viewport.js preset buttons.
+  const respWidths = resolvedRespWidths;
 
   // Overlay natural widths (used to clamp overlay max-width per bucket)
   const overlayW = {
@@ -83,9 +119,10 @@ export function previewHtml(ast, opts = {}) {
   //   desktop:{ overlay: "...", bg: "..." }
   // }
   // then those win.
-  const respAssets = (ast?.meta?.responsive?.assets && typeof ast.meta.responsive.assets === "object")
-    ? ast.meta.responsive.assets
-    : null;
+  const respAssets =
+    ast?.meta?.responsive?.assets && typeof ast.meta.responsive.assets === "object"
+      ? ast.meta.responsive.assets
+      : null;
 
   const assetOverlay = {
     mobile: String(respAssets?.mobile?.overlay || "").trim(),
@@ -119,11 +156,10 @@ export function previewHtml(ast, opts = {}) {
   };
 
   // Choose initial overlay src:
-  // - Prefer bucket-specific overlay if available
-  // - Otherwise meta.overlay.src
-  // - Otherwise (merged group) try desktop fixtures
+  // If we’re merged-group, default initial overlay to desktop overlay;
+  // else fallback to meta overlay.
   const overlaySrcInitial =
-    groupOverlay.desktop || overlaySrcMeta || (isMergedGroup ? groupOverlayFixtures.desktop : "");
+    (isMergedGroup ? groupOverlay.desktop : "") || overlaySrcMeta || "";
 
   // -----------------------------
   // Background (preferred: assets; fallback: ast.__bg)
@@ -164,9 +200,11 @@ export function previewHtml(ast, opts = {}) {
   fragment = fragment.replace(
     "<!--SLOT:image_main-->",
     img
-      ? `<img class="${ast.layout?.imageRadius || "rounded-none"} block h-auto w-full" src="${escapeHtml(
-          img.src
-        )}" alt="${escapeHtml(headingText)}" loading="lazy" />`
+      ? `<img class="${
+          ast.layout?.imageRadius || "rounded-none"
+        } block h-auto w-full" src="${escapeHtml(img.src)}" alt="${escapeHtml(
+          headingText
+        )}" loading="lazy" />`
       : ""
   );
 
@@ -252,12 +290,35 @@ ${css}
               data-group-bg-mobile="${escapeHtml(groupBg.mobile)}"
               data-group-bg-tablet="${escapeHtml(groupBg.tablet)}"
               data-group-bg-desktop="${escapeHtml(groupBg.desktop)}"
+              data-group-ov-mobile="${escapeHtml(groupOverlay.mobile)}"
+              data-group-ov-tablet="${escapeHtml(groupOverlay.tablet)}"
+              data-group-ov-desktop="${escapeHtml(groupOverlay.desktop)}"
             >
               <div id="bg_layer" class="bg-layer" aria-hidden="true"></div>
 
-              <div class="content-layer">
-                ${fragment}
-              </div>
+<div class="content-layer">
+  <iframe
+    id="vp_iframe"
+    title="Preview content"
+    style="display:block; border:0; width:100%;"
+    srcdoc="${escapeAttr(`<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  ${googleFonts || ""}
+  <style>
+    html, body { margin:0; padding:0; background: transparent; }
+  </style>
+</head>
+<body>
+  ${fragment}
+</body>
+</html>`)}"
+  ></iframe>
+</div>
+
 
               ${
                 overlaySrcInitial
@@ -268,9 +329,6 @@ ${css}
                         src="${escapeHtml(overlaySrcInitial)}"
                         data-ov-w="${overlayMetaW ? String(overlayMetaW) : ""}"
                         data-ov-h="${overlayMetaH ? String(overlayMetaH) : ""}"
-                        data-group-ov-mobile="${escapeHtml(groupOverlay.mobile)}"
-                        data-group-ov-tablet="${escapeHtml(groupOverlay.tablet)}"
-                        data-group-ov-desktop="${escapeHtml(groupOverlay.desktop)}"
                         alt=""
                         aria-hidden="true"
                       />`
@@ -284,347 +342,17 @@ ${css}
   </div>
 
   <!-- =========================================================
-       Responsive injection + one-screen variant swapping
+       Responsive config + minimal bucket hook (NO HTML swapping)
        ========================================================= -->
-  <script>
-    (function(){
-      const initialSlug = ${JSON.stringify(slug)};
-      const groupKey = ${JSON.stringify(groupSlug)}; // slug-safe key (e.g. "hero_v3")
-      const frameName = ${JSON.stringify(frameName)};
-      const respWidths = ${JSON.stringify(respWidths)};
-      const overlayW = ${JSON.stringify(overlayW)};
-      const isMergedGroup = ${JSON.stringify(isMergedGroup)};
-
-      // Current active slug used by patches/scores/compare
-      // In merged-group mode, keep it group-scoped.
-      window.__CURRENT_PREVIEW_SLUG__ = isMergedGroup ? groupKey : initialSlug;
-
-      window.__RESPONSIVE__ = {
-        groupKey,
-        widths: respWidths,
-        breakpoints: { mobileMax: 768, tabletMax: 1084 },
-        overlayW,
-        frameName,
-        initialSlug,
-        mergedGroup: isMergedGroup
-      };
-
-      const contentEl = document.querySelector("#cmp_root .content-layer");
-      const ovImg = document.getElementById("ov_img");
-      const cmp = document.getElementById("cmp_root");
-      const bgLayer = document.getElementById("bg_layer");
-
-      const initialContentHtml = contentEl ? contentEl.innerHTML : "";
-      const initialOverlaySrc = ovImg ? (ovImg.getAttribute("src") || "") : "";
-      const initialOvW = ovImg ? Number(ovImg.getAttribute("data-ov-w") || 0) : 0;
-
-      function applyOverlayClamp(bucket){
-        if (!ovImg) return;
-
-        const attrW = Number(ovImg.getAttribute("data-ov-w") || 0);
-        const ow =
-          (attrW && isFinite(attrW) && attrW > 0)
-            ? attrW
-            : (Number(window.__RESPONSIVE__?.overlayW?.[bucket]) || 0);
-
-        if (ow && isFinite(ow) && ow > 0) ovImg.style.maxWidth = ow + "px";
-        else ovImg.style.maxWidth = "";
-      }
-
-      function uniq(arr){
-        return Array.from(new Set((arr || []).map(s => String(s||"").trim()).filter(Boolean)));
-      }
-
-      function toSlug(s){
-        return String(s || "")
-          .trim()
-          .toLowerCase()
-          .replace(/\\s+/g, "_")
-          .replace(/[^a-z0-9_@\\-]+/g, "")
-          .replace(/_+/g, "_")
-          .replace(/^_+|_+$/g, "");
-      }
-
-      function deriveCandidateSlugs(bucket){
-        const b = String(bucket || "").trim().toLowerCase();
-        const out = [];
-
-        if (groupKey) out.push(groupKey + "_" + b);
-
-        const baseFromInitial = String(initialSlug || "").replace(/(_|-|@)(desktop|tablet|mobile)$/i, "");
-        if (baseFromInitial) out.push(baseFromInitial + "_" + b);
-
-        if (groupKey) out.push(groupKey + "-" + b);
-        if (groupKey) out.push(groupKey + "@" + b);
-
-        if (initialSlug) {
-          out.push(initialSlug.replace(/(_|-|@)(desktop|tablet|mobile)$/i, "$1" + b));
-          out.push(initialSlug.replace(/(desktop|tablet|mobile)$/i, b));
-          out.push(initialSlug + "_" + b);
-        }
-
-        if (frameName) {
-          const base = frameName.includes("@") ? frameName.split("@")[0].trim() : frameName.trim();
-          if (base) {
-            out.push(toSlug(base + "_" + b));
-            out.push(toSlug(base + "-" + b));
-            out.push(toSlug(base + "@" + b));
-          }
-        }
-
-        return uniq(out);
-      }
-
-      async function fetchVariantHtml(variantSlug){
-        const url = "/preview/" + encodeURIComponent(variantSlug) + "?embed=1&toolbar=0";
-        const r = await fetch(url, { cache: "no-store" });
-        if (!r.ok) throw new Error("Variant not found: " + variantSlug);
-        return await r.text();
-      }
-
-      function extractFromHtml(html){
-        const doc = new DOMParser().parseFromString(String(html||""), "text/html");
-        const c = doc.querySelector("#cmp_root .content-layer");
-        const o = doc.getElementById("ov_img");
-        const ow = o ? Number(o.getAttribute("data-ov-w") || 0) : 0;
-        const oh = o ? Number(o.getAttribute("data-ov-h") || 0) : 0;
-        const overlaySrc = o ? (o.getAttribute("src") || "") : "";
-
-        const cmp2 = doc.getElementById("cmp_root");
-        const bg =
-          cmp2 ? (cmp2.getAttribute("data-group-bg-mobile") || "") : "";
-        // NOTE: we don't rely on fetched bg for merged mode; this is only a best-effort extra fallback
-        return {
-          contentHtml: c ? c.innerHTML : "",
-          overlaySrc,
-          overlayW: (ow && isFinite(ow) && ow > 0) ? ow : 0,
-          overlayH: (oh && isFinite(oh) && oh > 0) ? oh : 0,
-          bgSrc: String(bg || "").trim(),
-        };
-      }
-
-      async function reapplyPatchesIfAvailable(){
-        if (typeof window.__applyPatchesForCurrentSlug__ === "function") {
-          try { await window.__applyPatchesForCurrentSlug__(); } catch {}
-        }
-      }
-
-      // ---------------- overlay-by-breakpoint switching ----------------
-      let _ovSwapNonce = 0;
-
-      function preferredGroupOverlaySrc(bucket){
-        const b = String(bucket || "").toLowerCase();
-        if (!ovImg) return "";
-        const m = ovImg.getAttribute("data-group-ov-mobile") || "";
-        const t = ovImg.getAttribute("data-group-ov-tablet") || "";
-        const d = ovImg.getAttribute("data-group-ov-desktop") || "";
-        if (b === "mobile") return m || "";
-        if (b === "tablet") return t || d || "";
-        return d || "";
-      }
-
-      function setOverlaySrcWithFallbacks(bucket, fetchedVariantOverlaySrc){
-        if (!ovImg) return;
-
-        const desired = preferredGroupOverlaySrc(bucket);
-        const fallbacks = uniq([
-          desired,
-          String(fetchedVariantOverlaySrc || "").trim(),
-          String(initialOverlaySrc || "").trim(),
-        ]).filter(Boolean);
-
-        if (!fallbacks.length) return;
-
-        const nonce = ++_ovSwapNonce;
-        let idx = 0;
-
-        function trySet(){
-          if (nonce !== _ovSwapNonce) return;
-          const next = fallbacks[idx];
-          if (!next) return;
-
-          if (ovImg.getAttribute("src") === next) return;
-
-          ovImg.onerror = () => {
-            if (nonce !== _ovSwapNonce) return;
-            idx++;
-            if (idx < fallbacks.length) trySet();
-          };
-
-          ovImg.src = next;
-        }
-
-        trySet();
-      }
-
-      // ---------------- background switching ----------------
-      let _bgSwapNonce = 0;
-
-      function preferredGroupBgSrc(bucket){
-        const b = String(bucket || "").toLowerCase();
-        if (!cmp) return "";
-        const m = cmp.getAttribute("data-group-bg-mobile") || "";
-        const t = cmp.getAttribute("data-group-bg-tablet") || "";
-        const d = cmp.getAttribute("data-group-bg-desktop") || "";
-        if (b === "mobile") return m || "";
-        if (b === "tablet") return t || d || "";
-        return d || "";
-      }
-
-      function applyBgStyle(src){
-        if (!bgLayer || !cmp) return;
-
-        const fit = cmp.getAttribute("data-bg-fit") || "cover";
-        const pos = cmp.getAttribute("data-bg-pos") || "center";
-
-        if (!src) {
-          bgLayer.style.backgroundImage = "";
-          bgLayer.style.backgroundSize = "";
-          bgLayer.style.backgroundPosition = "";
-          bgLayer.style.backgroundRepeat = "";
-          bgLayer.style.display = "none";
-          return;
-        }
-
-        bgLayer.style.display = "block";
-        bgLayer.style.backgroundImage = "url(" + JSON.stringify(String(src)) + ")";
-        bgLayer.style.backgroundSize = String(fit);
-        bgLayer.style.backgroundPosition = String(pos);
-        bgLayer.style.backgroundRepeat = "no-repeat";
-      }
-
-      function setBgSrcWithFallbacks(bucket, fetchedVariantBgSrc){
-        if (!bgLayer) return;
-
-        const desired = preferredGroupBgSrc(bucket);
-        const fallbacks = uniq([
-          desired,
-          String(fetchedVariantBgSrc || "").trim(),
-        ]).filter(Boolean);
-
-        // allow empty bg (explicitly none)
-        const nonce = ++_bgSwapNonce;
-
-        if (!fallbacks.length) {
-          applyBgStyle("");
-          return;
-        }
-
-        let idx = 0;
-        function trySet(){
-          if (nonce !== _bgSwapNonce) return;
-          const next = fallbacks[idx];
-          if (!next) { applyBgStyle(""); return; }
-
-          // Preload so we can fall back if 404
-          const img = new Image();
-          img.onload = () => { if (nonce === _bgSwapNonce) applyBgStyle(next); };
-          img.onerror = () => {
-            if (nonce !== _bgSwapNonce) return;
-            idx++;
-            if (idx < fallbacks.length) trySet();
-            else applyBgStyle("");
-          };
-          img.src = next;
-        }
-
-        trySet();
-      }
-
-      async function switchToBucket(bucket){
-        const b = String(bucket || "").trim().toLowerCase();
-
-        // Always swap bg + overlay first (so mergedGroup behaves correctly)
-        setBgSrcWithFallbacks(b, "");
-        setOverlaySrcWithFallbacks(b, "");
-        applyOverlayClamp(b);
-
-        if (window.__RESPONSIVE__?.mergedGroup) {
-          window.__CURRENT_PREVIEW_SLUG__ = groupKey;
-          await reapplyPatchesIfAvailable();
-          return;
-        }
-
-        if (b === "desktop") {
-          if (contentEl) contentEl.innerHTML = initialContentHtml;
-
-          setBgSrcWithFallbacks("desktop", "");
-          setOverlaySrcWithFallbacks("desktop", "");
-
-          if (ovImg) {
-            if (initialOvW && isFinite(initialOvW)) ovImg.setAttribute("data-ov-w", String(initialOvW));
-            else ovImg.removeAttribute("data-ov-w");
-          }
-
-          window.__CURRENT_PREVIEW_SLUG__ = initialSlug;
-
-          if (initialOvW && isFinite(initialOvW)) window.__RESPONSIVE__.overlayW.desktop = initialOvW;
-
-          applyOverlayClamp("desktop");
-          await reapplyPatchesIfAvailable();
-          return;
-        }
-
-        const candidates = deriveCandidateSlugs(b);
-
-        for (const s of candidates) {
-          try{
-            const html = await fetchVariantHtml(s);
-            const { contentHtml, overlaySrc, overlayW: ow, overlayH: oh, bgSrc } = extractFromHtml(html);
-
-            if (contentEl && contentHtml) contentEl.innerHTML = contentHtml;
-
-            // bg: if the fetched page happened to carry a usable bg hint
-            setBgSrcWithFallbacks(b, bgSrc);
-
-            if (ovImg) {
-              setOverlaySrcWithFallbacks(b, overlaySrc);
-
-              if (ow) {
-                ovImg.setAttribute("data-ov-w", String(ow));
-                window.__RESPONSIVE__.overlayW[b] = ow;
-              } else {
-                ovImg.removeAttribute("data-ov-w");
-              }
-
-              if (oh) ovImg.setAttribute("data-ov-h", String(oh));
-              else ovImg.removeAttribute("data-ov-h");
-
-              applyOverlayClamp(b);
-            }
-
-            window.__CURRENT_PREVIEW_SLUG__ = s;
-            await reapplyPatchesIfAvailable();
-            return;
-          } catch {
-            // try next
-          }
-        }
-
-        await reapplyPatchesIfAvailable();
-      }
-
-      window.__onPreviewBucketChange = ({ bucket }) => { switchToBucket(bucket); };
-
-      function bucketForWidth(w){
-        const ww = Number(w) || 0;
-        if (ww > 0 && ww <= 768) return "mobile";
-        if (ww > 0 && ww <= 1084) return "tablet";
-        return "desktop";
-      }
-
-      (function initAssets(){
-        const qs = new URLSearchParams(location.search);
-        const qW = Number(qs.get("vpw"));
-        const w = (isFinite(qW) && qW > 0) ? qW : (respWidths.desktop || ${designW});
-        const b = bucketForWidth(w);
-
-        setBgSrcWithFallbacks(b, "");
-        setOverlaySrcWithFallbacks(b, "");
-        applyOverlayClamp(b);
-      })();
-    })();
-  </script>
+  ${responsiveScript({
+    slug,
+    frameName,
+    designW,
+    widths: respWidths,
+    breakpoints: { mobileMax: 768, tabletMax: 1084 },
+    groupKey: groupSlug,
+    mergedGroup: isMergedGroup,
+  })}
 
   <!-- Apply patches (shared implementation) -->
   ${patchesScript(slug)}
@@ -1029,8 +757,7 @@ function scanFontsFromAst(root) {
 
 function cssFontStack(family) {
   const fam = String(family || "").trim();
-  if (!fam)
-    return `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
+  if (!fam) return `ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`;
   const quoted = /\s/.test(fam) ? "'" + fam.replace(/'/g, "\\'") + "'" : fam;
   return (
     quoted +
@@ -1046,3 +773,12 @@ function escapeHtml(s = "") {
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
+
+function escapeAttr(s) {
+  return String(s || "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+

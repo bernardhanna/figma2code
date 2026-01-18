@@ -5,6 +5,7 @@ import path from "node:path";
 import process from "node:process";
 
 import { PREVIEW_DIR } from "./runtimePaths.js";
+import { decideResponsiveStrategy } from "./variantDecision.js";
 import { mergeResponsiveFragments } from "../auto/mergeResponsiveFragments.js";
 
 import { parseGroupVariant } from "./variantNaming.js";
@@ -13,7 +14,7 @@ import {
   readVariantAstIfExists,
   materializeOverlayIfPossible,
 } from "./variantStore.js";
-import { parseGroupVariant } from "./variantNaming.js";
+
 import { writeStage } from "./stageStore.js";
 
 function asObj(v) {
@@ -58,19 +59,20 @@ function unwrapAstResult(out, fallbackAst) {
   return { ast: fallbackAst, extra: null };
 }
 
+/**
+ * IMPORTANT: Prefer desktop as base so preview defaults to desktop-correct markup
+ * when you are in desktop mode.
+ */
 function pickBaseVariant(variantsMap) {
-  if (variantsMap.mobile) return "mobile";
-  if (variantsMap.tablet) return "tablet";
   if (variantsMap.desktop) return "desktop";
+  if (variantsMap.tablet) return "tablet";
+  if (variantsMap.mobile) return "mobile";
   return "";
 }
 
 /**
  * Build the "merged AST" (metadata carrier) used by previewHtml shell.
- * IMPORTANT:
- * - We deliberately choose the BASE variant as the merged AST so that:
- *   - mobile base => mobile overlay/bg by default
- * - Fonts and responsive meta are merged across variants.
+ * Fonts and responsive meta are merged across variants.
  */
 function compositeAstForMerged({ groupKey, variantsMap }) {
   const baseKey = pickBaseVariant(variantsMap);
@@ -94,6 +96,13 @@ function compositeAstForMerged({ groupKey, variantsMap }) {
     }
   }
 
+  // Stamp widths if present on each variant AST frame
+  const widths = {
+    mobile: Number(variantsMap?.mobile?.frame?.w || variantsMap?.mobile?.tree?.w || 0) || 0,
+    tablet: Number(variantsMap?.tablet?.frame?.w || variantsMap?.tablet?.tree?.w || 0) || 0,
+    desktop: Number(variantsMap?.desktop?.frame?.w || variantsMap?.desktop?.tree?.w || 0) || 0,
+  };
+
   return {
     ...baseAst,
     slug: groupKey,
@@ -106,6 +115,11 @@ function compositeAstForMerged({ groupKey, variantsMap }) {
         base: baseKey,
         mdFrom: variantsMap.tablet ? "tablet" : "",
         lgFrom: variantsMap.desktop ? "desktop" : "",
+        widths: {
+          mobile: widths.mobile || 390,
+          tablet: widths.tablet || 1084,
+          desktop: widths.desktop || (baseAst?.frame?.w || baseAst?.tree?.w || 1200),
+        },
       },
     },
   };
@@ -226,9 +240,10 @@ export function buildMergedResponsivePreview({
 
   const phase2Reports = {};
 
-  function renderVariant(ast) {
+  function renderVariant(ast, label) {
     if (!ast) return "";
     const semantics = ast?.semantics || ast?.semanticsMap || ast?.meta?.semantics || {};
+
     let html = autoLayoutify(ast, {
       semantics,
       wrap: true,
@@ -238,47 +253,69 @@ export function buildMergedResponsivePreview({
     if (semanticAccessiblePass) {
       const out = semanticAccessiblePass({ html, ast, semantics });
       if (out && typeof out.html === "string") html = out.html;
-      phase2Reports[ast?.meta?.responsive?.variant || ast?.slug || "variant"] = out?.report || null;
+      phase2Reports[label] = out?.report || null;
     }
+
     return html;
   }
 
-  // Stamp variant label for reporting/debug
-  if (mobileAst)
-    mobileAst.meta = {
-      ...(mobileAst.meta || {}),
-      responsive: { ...(mobileAst.meta?.responsive || {}), variant: "mobile" },
-    };
-  if (tabletAst)
-    tabletAst.meta = {
-      ...(tabletAst.meta || {}),
-      responsive: { ...(tabletAst.meta?.responsive || {}), variant: "tablet" },
-    };
-  if (desktopAst)
-    desktopAst.meta = {
-      ...(desktopAst.meta || {}),
-      responsive: { ...(desktopAst.meta?.responsive || {}), variant: "desktop" },
-    };
+  const mobileHtml = renderVariant(mobileAst, "mobile");
+  const tabletHtml = renderVariant(tabletAst, "tablet");
+  const desktopHtml = renderVariant(desktopAst, "desktop");
 
-  const mobileHtml = renderVariant(mobileAst);
-  const tabletHtml = renderVariant(tabletAst);
-  const desktopHtml = renderVariant(desktopAst);
-
-  const mergedFragment = mergeResponsiveFragments({ mobileHtml, tabletHtml, desktopHtml });
-
-  console.log("[merge] lens", {
-    mobile: (mobileHtml || "").length,
-    tablet: (tabletHtml || "").length,
-    desktop: (desktopHtml || "").length,
+  console.log("[variants] lens", {
+    mobile: mobileHtml?.length || 0,
+    tablet: tabletHtml?.length || 0,
+    desktop: desktopHtml?.length || 0,
   });
 
+  // ------------------------------------------------------------
+  // FORCE MERGE (your stated requirement)
+  // ------------------------------------------------------------
+  const mergedFragment = mergeResponsiveFragments({
+    desktopHtml,
+    tabletHtml,
+    mobileHtml,
+      mobilePrefix: "max-md",
+  tabletPrefix: "max-lg",
+    mode: "viewport",
+    baseVariant: "desktop",
+    breakpoints: { mobileMax: 768, tabletMax: 1084 },
+  });
+
+  // Build merged AST (metadata carrier)
   const mergedAst = compositeAstForMerged({ groupKey, variantsMap });
   if (!mergedAst?.tree) {
     return { ok: false, status: 500, error: `Failed to build merged AST for "${groupKey}".` };
   }
 
+  // ------------------------------------------------------------
+  // Persist per-variant overlay/bg so preview can swap them correctly
+  // ------------------------------------------------------------
+  const overlay = {
+    mobile: String(mobileAst?.meta?.overlay?.src || "").trim(),
+    tablet: String(tabletAst?.meta?.overlay?.src || "").trim(),
+    desktop: String(desktopAst?.meta?.overlay?.src || "").trim(),
+  };
+
+  const bg = {
+    mobile: String(mobileAst?.meta?.bg?.src || mobileAst?.meta?.background?.src || "").trim(),
+    tablet: String(tabletAst?.meta?.bg?.src || tabletAst?.meta?.background?.src || "").trim(),
+    desktop: String(desktopAst?.meta?.bg?.src || desktopAst?.meta?.background?.src || "").trim(),
+  };
+
+  mergedAst.meta = {
+    ...(mergedAst.meta || {}),
+    responsive: {
+      ...(mergedAst.meta?.responsive || {}),
+      mergedGroup: true,
+      assets: { overlay, bg },
+    },
+  };
+
   writeStage(groupKey, mergedAst);
 
+  // IMPORTANT: previewHtml must now render inside an iframe for Tailwind breakpoints
   const preview = previewHtml(mergedAst, { fragment: mergedFragment });
 
   return {
@@ -291,6 +328,7 @@ export function buildMergedResponsivePreview({
     phase2Reports,
   };
 }
+
 
 /**
  * Primary entry for /api/preview-only and /api/generate.

@@ -1,4 +1,14 @@
 // generator/auto/phase2SemanticPass.js
+//
+// Phase 2: Semantic + Accessibility pass over rendered HTML.
+// - Tokenizes + parses tags, edits attrs, re-serializes.
+// - Injects deterministic typography classes from AST.typography.
+// - Adds accessibility attrs (alt, aria-label) and interaction safety.
+// - Landmark upgrades + root hero banner fallback (bg-image cue aware).
+// - Promotes overlay RECTANGLE layers to absolute inset overlays.
+// - NEW: Stable merge keys (data-key) for responsive fragment merging.
+//        IMPORTANT: keys are ROOTLESS (do not include AST root frame name)
+//        so mobile/desktop variants can merge reliably.
 
 function tokenize(html) {
   const tokens = [];
@@ -115,6 +125,71 @@ function findNodeById(astTree, id) {
   })(astTree);
   return found;
 }
+
+/* ==================== NEW: Stable merge keys (ROOTLESS) ==================== */
+
+function normKeyPart(s) {
+  return String(s || "")
+    .toLowerCase()
+    .replace(/\s+/g, " ")
+    .trim()
+    .replace(/[_\-:]+/g, " ")
+    .replace(/[^\p{L}\p{N}\s]/gu, "")
+    .replace(/\s+/g, "-")
+    .slice(0, 60);
+}
+
+function stableNodeLabel(n) {
+  if (!n) return "node";
+
+  // TEXT: prefer content (more stable than frame names across breakpoints)
+  if (n.type === "TEXT") {
+    const raw = trimText(n?.text?.raw || "");
+    if (raw) return `text:${normKeyPart(raw)}`;
+  }
+
+  const nm = trimText(n.name || "");
+  if (nm) return `${normKeyPart(n.type)}:${normKeyPart(nm)}`;
+
+  return `${normKeyPart(n.type)}:unnamed`;
+}
+
+/**
+ * ROOTLESS stable keys:
+ * - Do NOT include the AST root label in descendant keys.
+ * - This allows mobile/desktop top-level frames with different names
+ *   to still share keys for equivalent descendants.
+ */
+function buildStableKeyMap(astTree) {
+  const map = new Map(); // id -> stable key
+
+  function walkChildren(parentNode, parentPath) {
+    const kids = Array.isArray(parentNode?.children) ? parentNode.children : [];
+    const seen = new Map(); // label -> count
+
+    for (const child of kids) {
+      if (!child?.id) continue;
+
+      const label = stableNodeLabel(child);
+      const n = (seen.get(label) || 0) + 1;
+      seen.set(label, n);
+
+      const seg = `${label}#${n}`;
+      const key = parentPath ? `${parentPath}/${seg}` : seg;
+
+      map.set(child.id, key);
+      walkChildren(child, key);
+    }
+  }
+
+  // Root itself gets a constant key; descendants are rootless paths.
+  if (astTree?.id) map.set(astTree.id, "root");
+  walkChildren(astTree, "");
+
+  return map;
+}
+
+/* ==================== Accessibility helpers ==================== */
 
 function inferAltFromNode(node) {
   if (!node) return null;
@@ -299,7 +374,14 @@ function isLandmarkTag(t) {
 
 function isContainerishHtmlTag(tagName) {
   const t = String(tagName || "").toLowerCase();
-  return t === "div" || t === "section" || t === "header" || t === "footer" || t === "nav" || t === "main";
+  return (
+    t === "div" ||
+    t === "section" ||
+    t === "header" ||
+    t === "footer" ||
+    t === "nav" ||
+    t === "main"
+  );
 }
 
 function semLandmarkHint(sem) {
@@ -307,9 +389,11 @@ function semLandmarkHint(sem) {
   const tag = sem.tag ? String(sem.tag).toLowerCase() : "";
   const role = sem.role ? String(sem.role).toLowerCase() : "";
   const label =
-    (typeof sem.label === "string" && sem.label.trim()) ? sem.label.trim() :
-      (typeof sem.ariaLabel === "string" && sem.ariaLabel.trim()) ? sem.ariaLabel.trim() :
-        "";
+    typeof sem.label === "string" && sem.label.trim()
+      ? sem.label.trim()
+      : typeof sem.ariaLabel === "string" && sem.ariaLabel.trim()
+        ? sem.ariaLabel.trim()
+        : "";
 
   if (isLandmarkTag(tag)) return { kind: tag, role, label };
 
@@ -328,7 +412,8 @@ function nameLandmarkHint(nodeName) {
   if (/\b(footer|site footer)\b/.test(n)) return { kind: "footer" };
   if (/\b(main|content|page content)\b/.test(n)) return { kind: "main" };
 
-  if (/\b(hero|banner|jumbotron|masthead|top)\b/.test(n)) return { kind: "header", role: "banner" };
+  if (/\b(hero|banner|jumbotron|masthead|top)\b/.test(n))
+    return { kind: "header", role: "banner" };
   if (/\b(header|headerbar|topbar)\b/.test(n)) return { kind: "header" };
 
   if (/\b(section|block|module)\b/.test(n)) return { kind: "section" };
@@ -338,9 +423,11 @@ function nameLandmarkHint(nodeName) {
 
 function deriveNavLabel(nodeName, sem) {
   const fromSem =
-    (typeof sem?.label === "string" && sem.label.trim()) ? sem.label.trim() :
-      (typeof sem?.ariaLabel === "string" && sem.ariaLabel.trim()) ? sem.ariaLabel.trim() :
-        "";
+    typeof sem?.label === "string" && sem.label.trim()
+      ? sem.label.trim()
+      : typeof sem?.ariaLabel === "string" && sem.ariaLabel.trim()
+        ? sem.ariaLabel.trim()
+        : "";
 
   if (fromSem) return fromSem;
 
@@ -395,21 +482,6 @@ function findOrCreateHeadingIdInRange(tokens, containerOpenIndex, preferredIdSee
   return null;
 }
 
-function rootHasBgCue(tag, astRoot, astWhole) {
-  const style = tag?.attrs ? (getAttr(tag.attrs, "style") || "") : "";
-  if (/background-image\s*:/i.test(style)) return true;
-
-  if (astWhole?.__bg?.enabled) return true;
-
-  const fills = astRoot?.fills || [];
-  if (Array.isArray(fills)) {
-    if (fills.some((f) => f?.kind === "image")) return true;
-    if (fills.some((f) => f?.kind === "gradient")) return true;
-  }
-
-  return false;
-}
-
 function findFirstOpenSectionIndex(tokens) {
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i].type !== "tag") continue;
@@ -429,7 +501,6 @@ function htmlHasAnyBgImageStyle(tokens) {
   }
   return false;
 }
-
 
 function findFirstOpenTagIndex(tokens) {
   for (let i = 0; i < tokens.length; i++) {
@@ -452,9 +523,6 @@ function findFirstOpenTagByDataNode(tokens, nodeId) {
   return -1;
 }
 
-// NEW: this is what your current output needs.
-// In your output, the bg cue lives on the inner <header style="background-image:...">,
-// not on the first open tag or data-node root.
 function findFirstOpenTagWithBgImageStyle(tokens) {
   for (let i = 0; i < tokens.length; i++) {
     if (tokens[i].type !== "tag") continue;
@@ -482,9 +550,11 @@ function heroFallbackLabel(ast, semantics) {
   const rootId = ast?.tree?.id || "";
   const sem = rootId ? semantics?.[rootId] : null;
   const fromSem =
-    (typeof sem?.label === "string" && sem.label.trim()) ? sem.label.trim() :
-      (typeof sem?.ariaLabel === "string" && sem.ariaLabel.trim()) ? sem.ariaLabel.trim() :
-        "";
+    typeof sem?.label === "string" && sem.label.trim()
+      ? sem.label.trim()
+      : typeof sem?.ariaLabel === "string" && sem.ariaLabel.trim()
+        ? sem.ariaLabel.trim()
+        : "";
   if (fromSem) return fromSem;
 
   const name = trimText(ast?.tree?.name || "");
@@ -493,10 +563,8 @@ function heroFallbackLabel(ast, semantics) {
   return "Hero";
 }
 
-// Apply banner to:
-// 1) first bg-image-style container (ideal for your output)
-// 2) else first open tag (wrapper)
-// 3) else root data-node
+// Apply banner to wrapper section if any bg cue exists.
+// Also respects your special case where bg-image is on an inner container.
 function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
   if (!opts?.enableLandmarks) return { applied: false };
   if (!opts?.rootHeroFallback) return { applied: false };
@@ -508,15 +576,8 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
 
   const fallbackAriaLabel = heroFallbackLabel(ast, semantics);
 
-  // Prefer the wrapper SECTION as the banner landmark target.
   const sectionIdx = findFirstOpenSectionIndex(tokens);
 
-  // Determine if there is any "hero/background cue" at all.
-  // This covers:
-  // - wrapper inline background-image (autoLayoutify sectionStyle)
-  // - ast.__bg enabled (named background fallback)
-  // - root fills image/gradient
-  // - any descendant inline background-image (your <header style="background-image:..."> case)
   const anyBgCue =
     !!ast?.__bg?.enabled ||
     (Array.isArray(rootAst?.fills) &&
@@ -527,10 +588,8 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
     const tok = tokens[sectionIdx];
     const tag = parseTag(tok.value);
 
-    // Apply banner to wrapper section
     setIfMissing(tag.attrs, "role", "banner");
 
-    // Try to label via first heading inside section; else fallback aria-label
     const found = findOrCreateHeadingIdInRange(tokens, sectionIdx, rootAstId);
     if (found?.headingId) {
       if (!getAttr(tag.attrs, "aria-labelledby") && !getAttr(tag.attrs, "aria-label")) {
@@ -543,12 +602,13 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
     }
 
     tokens[sectionIdx] = { type: "tag", value: buildTag(tag.name, tag.attrs, "open") };
-    report?.fixes?.push(`Landmark: root hero fallback applied on <section> wrapper role="banner".`);
+    report?.fixes?.push(
+      `Landmark: root hero fallback applied on <section> wrapper role="banner".`
+    );
 
     return { applied: true, index: sectionIdx, kind: "sectionWrapper" };
   }
 
-  // Fallback: previous behavior (wrapper/rootNode/bgStyle), but only if any cue exists
   if (!anyBgCue) return { applied: false };
 
   const bgStyleIdx = findFirstOpenTagWithBgImageStyle(tokens);
@@ -558,7 +618,8 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
   const candidates = [];
   if (bgStyleIdx >= 0) candidates.push({ idx: bgStyleIdx, kind: "bgStyle" });
   if (rootWrapperIdx >= 0) candidates.push({ idx: rootWrapperIdx, kind: "wrapper" });
-  if (rootNodeIdx >= 0 && rootNodeIdx !== rootWrapperIdx) candidates.push({ idx: rootNodeIdx, kind: "rootNode" });
+  if (rootNodeIdx >= 0 && rootNodeIdx !== rootWrapperIdx)
+    candidates.push({ idx: rootNodeIdx, kind: "rootNode" });
 
   for (const c of candidates) {
     const idx = c.idx;
@@ -582,13 +643,14 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
     }
 
     tokens[idx] = { type: "tag", value: buildTag(tag2.name, tag2.attrs, "open") };
-    report?.fixes?.push(`Landmark: root hero fallback applied on <${tag2.name}> (${c.kind}) role="banner".`);
+    report?.fixes?.push(
+      `Landmark: root hero fallback applied on <${tag2.name}> (${c.kind}) role="banner".`
+    );
     return { applied: true, index: idx, kind: c.kind };
   }
 
   return { applied: false };
 }
-
 
 /* ==================== Backstop (string-level) ==================== */
 
@@ -618,7 +680,9 @@ function upgradeRootHeroBanner({ html, ast, semantics, report }) {
     const lower = String(attrs).toLowerCase();
     if (/\brole\s*=\s*["']banner["']/.test(lower)) return m;
 
-    report?.fixes?.push?.(`Landmark: backstop banner applied on <${tagName}> (bg-image style).`);
+    report?.fixes?.push?.(
+      `Landmark: backstop banner applied on <${tagName}> (bg-image style).`
+    );
 
     const hasHeading = new RegExp(`\\bid=["']${headingId}["']`, "i").test(out);
     if (hasHeading) return `<${tagName}${attrs} role="banner" aria-labelledby="${headingId}">`;
@@ -628,17 +692,23 @@ function upgradeRootHeroBanner({ html, ast, semantics, report }) {
   return out;
 }
 
+/* ==================== MAIN PASS ==================== */
+
 export function semanticAccessiblePass({ html, ast, semantics }) {
   const report = { fixes: [], warnings: [] };
   let tokens = tokenize(html || "");
 
   const opts = readLandmarkOpts(semantics);
 
+  // Stable merge keys: rootless data-key map
+  const stableKeyMap = buildStableKeyMap(ast?.tree);
+
   const early = applyRootHeroBannerEarly(tokens, ast, semantics, opts, report);
 
-  // If banner was applied to wrapper/bgStyle, do NOT also upgrade the AST root container into a <header>.
+  // If banner was applied to wrapper-like element, do NOT also upgrade the AST root node into a <header>.
   const bannerOnWrapperLike =
-    !!early?.applied && (early.kind === "sectionWrapper" || early.kind === "wrapper" || early.kind === "bgStyle");
+    !!early?.applied &&
+    (early.kind === "sectionWrapper" || early.kind === "wrapper" || early.kind === "bgStyle");
 
   const parentMap = buildParentMap(ast?.tree);
 
@@ -688,6 +758,24 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
       if (role && String(role).toLowerCase() === "banner") bannerApplied = true;
     }
 
+    // Stable data-key: ALWAYS normalize/overwrite when data-node exists.
+    // This is critical because the renderer may have already emitted mobile-rooted keys.
+    if ((tag.kind === "open" || tag.kind === "self") && tag.attrs) {
+      const dn = getAttr(tag.attrs, "data-node");
+      if (dn) {
+        const stable = stableKeyMap.get(dn);
+        if (stable) {
+          const cur = getAttr(tag.attrs, "data-key");
+          if (cur !== stable) {
+            setAttr(tag.attrs, "data-key", stable);
+            tokens[i] = { type: "tag", value: buildTag(tag.name, tag.attrs, tag.kind) };
+            tag.attrs = parseTag(tokens[i].value).attrs;
+          }
+        }
+      }
+    }
+
+
     // OPEN: landmarks + typography
     if (tag.kind === "open") {
       const nodeId = getAttr(tag.attrs, "data-node") || "";
@@ -704,7 +792,11 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
         const suppressRootHeaderUpgrade = isRootNode && bannerOnWrapperLike;
 
         const nameForHint = isRootWrapper ? (rootAst?.name || "") : (node?.name || "");
-        const semForHint = isRootWrapper ? (rootAstId && semantics ? semantics[rootAstId] : null) : sem;
+        const semForHint = isRootWrapper
+          ? rootAstId && semantics
+            ? semantics[rootAstId]
+            : null
+          : sem;
 
         const semHint = semLandmarkHint(semForHint);
         const nameHint = nameLandmarkHint(nameForHint);
@@ -858,8 +950,13 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
     }
 
     // CLOSE: interactive - aria-label if icon-only
-    if (tag.kind === "close" && (tag.name === "a" || tag.name === "button" || tag.name === "span")) {
-      const top = interactiveStack.length ? interactiveStack[interactiveStack.length - 1] : null;
+    if (
+      tag.kind === "close" &&
+      (tag.name === "a" || tag.name === "button" || tag.name === "span")
+    ) {
+      const top = interactiveStack.length
+        ? interactiveStack[interactiveStack.length - 1]
+        : null;
 
       if (top && top.name === tag.name) {
         interactiveStack.pop();
