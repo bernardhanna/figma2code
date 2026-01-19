@@ -10,6 +10,7 @@ import { registerUploadRoutes } from "./routesUpload.js";
 import { registerPhase1Routes } from "./routesPhase1.js";
 import { registerPreviewAndGenerateRoutes } from "./routesPreviewAndGenerate.js";
 import { registerVisualDiffAndAutofixRoutes } from "./routesVisualDiffAndAutofix.js";
+import { registerExportRoutes } from "./routesExport.js";
 
 import { registerBatchUploadRoutes } from "./routesBatchUpload.js";
 
@@ -48,6 +49,7 @@ export function createApp({ port, deps }) {
 
   registerPreviewAndGenerateRoutes(app, { port });
   registerVisualDiffAndAutofixRoutes(app, { port });
+  registerExportRoutes(app);
 
   // Batch upload (Option B: one-click export all variants)
   registerBatchUploadRoutes(app, deps);
