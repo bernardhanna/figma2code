@@ -129,18 +129,12 @@ function cssBackgroundFromPick(node, ast, picked, opts = {}) {
   const w = Math.max(1, Math.round(node?.w || ast?.frame?.w || 1600));
   const h = Math.max(1, Math.round(node?.h || ast?.frame?.h || 900));
 
-  const placeholderUrl = `https://placehold.co/${w}x${h}/png?text=bgImage`;
-
   // IMPORTANT: We do NOT use node.img.src anywhere.
   const realSrc = picked?.src && typeof picked.src === "string" ? picked.src.trim() : "";
 
   let imgUrl = "";
-  if (opts.preferPlaceholder) {
-    imgUrl = placeholderUrl;
-  } else if (opts.allowRealSrc && realSrc) {
+  if (opts.allowRealSrc && realSrc) {
     imgUrl = realSrc;
-  } else {
-    imgUrl = placeholderUrl;
   }
 
   const urlLayer = imgUrl ? `url('${escCssUrl(imgUrl)}')` : "";
@@ -160,7 +154,9 @@ function cssBackgroundFromPick(node, ast, picked, opts = {}) {
   if (gradientLayer) layers.push(gradientLayer);
   if (urlLayer) layers.push(urlLayer);
 
-  if (!layers.length) layers.push(`url('${escCssUrl(placeholderUrl)}')`);
+  // If there is neither a gradient nor a real image src, do NOT synthesize
+  // a placeholder. Just return empty so preview uses plain background.
+  if (!layers.length) return "";
 
   return layers.join(", ");
 }

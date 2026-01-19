@@ -18,6 +18,7 @@ import { normalizeAst } from "../auto/normalizeAst.js";
 import { buildIntentGraph } from "../auto/intentGraphPass.js";
 import { autoLayoutify } from "../auto/autoLayoutify/index.js";
 import { semanticAccessiblePass } from "../auto/phase2SemanticPass.js";
+import { interactiveStatesPass } from "../auto/interactiveStatesPass.js";
 import { acfPhp } from "../templates/acf.php.js";
 import { frontendPhp } from "../templates/frontend.php.js";
 import { preventNestedInteractive } from "../auto/preventNestedInteractive.js";
@@ -33,6 +34,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         autoLayoutify,
         semanticAccessiblePass,
         preventNestedInteractive,
+        interactiveStatesPass,
         previewHtml,
       });
 
@@ -75,6 +77,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         autoLayoutify,
         semanticAccessiblePass,
         preventNestedInteractive,
+        interactiveStatesPass,
         previewHtml,
       });
 

@@ -144,6 +144,15 @@ export function shouldRenderAsLinkOrButton(node) {
   // Explicit actions exist
   if (node.actions?.openUrl) return "a";
 
+  // Avoid turning large auto-layout INSTANCE cards into <button> when they have no URL.
+  const isInstance = String(node.type || "").toUpperCase() === "INSTANCE";
+  const hasAutoLayout =
+    node.auto && node.auto.layout && node.auto.layout !== "NONE";
+  if (isInstance && hasAutoLayout && !node.actions?.openUrl) {
+    // Render as non-interactive container (<div>); inner content can still be interactive.
+    return null;
+  }
+
   // Only allow <button> for:
   // - clickable leaf nodes
   // - clickable containers IF they are "rasterized CTA instances" (rare) — but we keep it strict.

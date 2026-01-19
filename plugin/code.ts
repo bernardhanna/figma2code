@@ -132,6 +132,24 @@ type NodeBase = {
   // NEW: for rasterized INSTANCE (e.g., CTAs), preserve label text runs for generator
   __instanceText?: TextPayload[];
 
+  // NEW: interactive state snapshots (per Figma component variants)
+  // Shape:
+  // {
+  //   default: NodeBase;      // resolved tree for default state
+  //   hover?: NodeBase;       // resolved tree for "Hover"
+  //   active?: NodeBase;      // "Pressed"/"Active"
+  //   focus?: NodeBase;       // "Focus"/"Focused"
+  //   disabled?: NodeBase;    // "Disabled"
+  // }
+  // Only attached for interactive-looking components (buttons/links/cards).
+  __states?: {
+    default: NodeBase;
+    hover?: NodeBase;
+    active?: NodeBase;
+    focus?: NodeBase;
+    disabled?: NodeBase;
+  };
+
   children?: NodeBase[];
 };
 
@@ -808,6 +826,438 @@ function isContainerNode(node: SceneNode): boolean {
     node.type === "INSTANCE"
   );
 }
+
+/**
+ * Heuristic: is this node an "interactive-looking" control where we care about states?
+ * We keep this narrow (buttons/links/cards/CTAs) to keep export size small.
+ */
+function isInteractiveLooking(node: SceneNode, actions?: Actions): boolean {
+  const name = String((node as any).name || "").toLowerCase();
+
+  if (
+    name.includes("button") ||
+    name.includes("btn") ||
+    name.includes("cta") ||
+    name.includes("link") ||
+    name.includes("card")
+  ) {
+    return true;
+  }
+
+  if (actions?.isClickable || actions?.openUrl) return true;
+
+  return false;
+}
+
+/**
+ * Lightweight walker used for state snapshots:
+ * - No PNG export (keeps payload small)
+ * - Traverses INSTANCE internals so we can diff backgrounds/text/etc when available
+ */
+async function walkForState(node: SceneNode): Promise<NodeBase | null> {
+  if (!isNodeVisible(node)) return null;
+
+  const { w, h } = sizeOf(node);
+
+  const base: NodeBase = {
+    id: node.id,
+    name: node.name,
+    type: node.type,
+    w: round(w),
+    h: round(h),
+    bb: absBB(node),
+
+    auto: getAutoLayout(node),
+    size: undefined,
+    r: getRadii(node),
+    shadows: getShadows(node),
+    stroke: getStroke(node),
+    fills: getFills(node),
+    opacity: getOpacity(node),
+    blendMode: getBlendMode(node),
+    blur: getBlur(node),
+    clipsContent: (node as any).clipsContent === true,
+    actions: getActions(node),
+  };
+
+  if (node.type === "TEXT") {
+    base.text = textPayload(node as TextNode);
+  }
+
+  if ("children" in node) {
+    const kids = (node as any as ChildrenMixin)
+      .children as readonly SceneNode[];
+    const outKids: NodeBase[] = [];
+    for (const c of kids) {
+      const child = await walkForState(c);
+      if (child) outKids.push(child);
+    }
+    if (outKids.length) base.children = outKids;
+  }
+
+  return base;
+}
+
+type StateAxisInfo = {
+  axisName: string;
+  valuesByPseudo: {
+    default: { component: ComponentNode | null; value: string | null };
+    hover?: { component: ComponentNode | null; value: string };
+    active?: { component: ComponentNode | null; value: string };
+    focus?: { component: ComponentNode | null; value: string };
+    disabled?: { component: ComponentNode | null; value: string };
+  };
+};
+
+function isDefaultVariantValue(raw: string): boolean {
+  const v = String(raw || "")
+    .trim()
+    .toLowerCase();
+  if (!v) return false;
+  return (
+    v === "default" ||
+    v === "base" ||
+    v === "rest" ||
+    v === "normal" ||
+    v === "primary"
+  );
+}
+
+function mapVariantValueToPseudo(
+  raw: string
+): "hover" | "active" | "focus" | "disabled" | "" {
+  const v = String(raw || "")
+    .trim()
+    .toLowerCase();
+  if (!v) return "";
+  if (v === "hover" || v === "on hover" || v.includes("hover")) return "hover";
+  if (
+    v === "pressed" ||
+    v === "press" ||
+    v === "active" ||
+    v === "down" ||
+    v.includes("pressed") ||
+    v.includes("press") ||
+    v.includes("active")
+  )
+    return "active";
+  if (
+    v === "focus" ||
+    v === "focused" ||
+    v === "focus visible" ||
+    v === "focus-visible" ||
+    v.includes("focus")
+  ) {
+    return "focus";
+  }
+  if (v === "disabled" || v === "inactive" || v.includes("disabled"))
+    return "disabled";
+  return "";
+}
+
+/**
+ * Find a component in the set that matches the given variant properties.
+ * Returns the first matching component, or null if none found.
+ */
+function findComponentByVariantProperties(
+  set: ComponentSetNode,
+  targetProps: Record<string, string>
+): ComponentNode | null {
+  const children = (set.children || []) as readonly ComponentNode[];
+  for (const comp of children) {
+    const vp = ((comp as any).variantProperties || {}) as Record<
+      string,
+      string
+    >;
+    let matches = true;
+    for (const [axisName, targetValue] of Object.entries(targetProps)) {
+      if (vp[axisName] !== targetValue) {
+        matches = false;
+        break;
+      }
+    }
+    if (matches) return comp;
+  }
+  return null;
+}
+
+/**
+ * Inspect a component set and infer which axis encodes interaction state.
+ */
+function inferStateAxisInfo(instance: InstanceNode): StateAxisInfo | null {
+  const main = (instance as any).mainComponent as ComponentNode | null;
+  const set = (main?.parent || null) as ComponentSetNode | null;
+  if (!main || !set || set.type !== "COMPONENT_SET") return null;
+
+  const children = (set.children || []) as readonly ComponentNode[];
+  if (!children.length) return null;
+
+  const axisScore: Record<
+    string,
+    {
+      axisName: string;
+      hitCount: number;
+      values: Record<string, { component: ComponentNode; value: string }>;
+    }
+  > = {};
+
+  for (const comp of children) {
+    const vp = ((comp as any).variantProperties || {}) as Record<
+      string,
+      string
+    >;
+    for (const [axisNameRaw, valueRaw] of Object.entries(vp)) {
+      const axisName = String(axisNameRaw || "");
+      const value = String(valueRaw || "");
+      if (!axisName || !value) continue;
+
+      const pseudo = mapVariantValueToPseudo(value);
+      if (!pseudo) continue;
+
+      const key = axisName;
+      if (!axisScore[key]) {
+        axisScore[key] = {
+          axisName,
+          hitCount: 0,
+          values: {},
+        };
+      }
+      axisScore[key].hitCount++;
+      axisScore[key].values[value] = { component: comp, value };
+    }
+  }
+
+  const candidates = Object.values(axisScore).sort(
+    (a, b) => b.hitCount - a.hitCount
+  );
+  if (!candidates.length) return null;
+
+  const best = candidates[0];
+
+  // Get current variant properties from the instance
+  // Priority: instance.variantProperties (instance overrides) > mainComponent.variantProperties
+  const instanceVp = ((instance as any).variantProperties || {}) as Record<
+    string,
+    string
+  >;
+  const mainVp = (((instance as any).mainComponent as any)?.variantProperties ||
+    {}) as Record<string, string>;
+  const currentVp = { ...mainVp, ...instanceVp }; // Instance overrides component
+
+  // Store all current variant properties (for preserving non-state axes like color)
+  const allCurrentProps = { ...currentVp };
+
+  const currentValue = currentVp[best.axisName] || null;
+
+  // Prefer an explicit "Default"/"Base" style variant as the baseline, regardless
+  // of what the instance is currently set to in the design.
+  // But preserve other axes (like color) from the current instance.
+  let defaultComponent: ComponentNode | null =
+    ((instance as any).mainComponent as ComponentNode) || null;
+  let defaultValue: string | null = currentValue;
+
+  // Try to find a "Default" variant that also matches current non-state properties
+  for (const { component, value } of Object.values(best.values)) {
+    if (isDefaultVariantValue(value)) {
+      const compVp = ((component as any).variantProperties || {}) as Record<
+        string,
+        string
+      >;
+      // Check if this component matches current values for all OTHER axes
+      let matchesOtherAxes = true;
+      for (const [axisName, currentVal] of Object.entries(allCurrentProps)) {
+        if (axisName === best.axisName) continue; // Skip state axis
+        if (compVp[axisName] !== currentVal) {
+          matchesOtherAxes = false;
+          break;
+        }
+      }
+      if (matchesOtherAxes) {
+        defaultComponent = component;
+        defaultValue = value;
+        break;
+      }
+    }
+  }
+
+  // If we didn't find a matching default, try to find any component that matches
+  // current non-state properties with a default state value
+  if (!defaultComponent || defaultComponent === main) {
+    const targetProps = { ...allCurrentProps };
+    // Try different default state values
+    for (const defaultStateValue of [
+      "Default",
+      "Base",
+      "Rest",
+      "Normal",
+      "Primary",
+    ]) {
+      targetProps[best.axisName] = defaultStateValue;
+      const found = findComponentByVariantProperties(set, targetProps);
+      if (found) {
+        defaultComponent = found;
+        defaultValue = defaultStateValue;
+        break;
+      }
+    }
+    // If still not found, use the current main component
+    if (!defaultComponent) {
+      defaultComponent = main;
+      defaultValue = currentValue;
+    }
+  }
+
+  const valuesByPseudo: StateAxisInfo["valuesByPseudo"] = {
+    default: { component: defaultComponent, value: defaultValue },
+  };
+
+  // For each state (hover, active, etc.), find components that match
+  // the current values for OTHER axes (like color)
+  for (const { component, value } of Object.values(best.values)) {
+    const pseudo = mapVariantValueToPseudo(value);
+    if (!pseudo) continue;
+    if (!(valuesByPseudo as any)[pseudo]) {
+      // Check if this component matches current values for non-state axes
+      const compVp = ((component as any).variantProperties || {}) as Record<
+        string,
+        string
+      >;
+      let matchesOtherAxes = true;
+      for (const [axisName, currentVal] of Object.entries(allCurrentProps)) {
+        if (axisName === best.axisName) continue; // Skip state axis
+        if (compVp[axisName] !== currentVal) {
+          matchesOtherAxes = false;
+          break;
+        }
+      }
+      // Only use this component if it matches current non-state properties
+      if (matchesOtherAxes) {
+        (valuesByPseudo as any)[pseudo] = { component, value };
+      }
+    }
+  }
+
+  // If we didn't find matching components for some states, try to find them
+  // by searching the component set with preserved non-state properties
+  const entries: Array<"hover" | "active" | "focus" | "disabled"> = [
+    "hover",
+    "active",
+    "focus",
+    "disabled",
+  ];
+  for (const pseudo of entries) {
+    if ((valuesByPseudo as any)[pseudo]) continue; // Already found
+
+    // Try to find a component with this state that matches current non-state props
+    const targetProps = { ...allCurrentProps };
+    // Map pseudo to possible variant values
+    const stateValues =
+      pseudo === "hover"
+        ? ["Hover", "On Hover"]
+        : pseudo === "active"
+        ? ["Pressed", "Press", "Active", "Down"]
+        : pseudo === "focus"
+        ? ["Focus", "Focused", "Focus Visible"]
+        : ["Disabled", "Inactive"];
+
+    for (const stateValue of stateValues) {
+      targetProps[best.axisName] = stateValue;
+      const found = findComponentByVariantProperties(set, targetProps);
+      if (found) {
+        const foundVp = ((found as any).variantProperties || {}) as Record<
+          string,
+          string
+        >;
+        (valuesByPseudo as any)[pseudo] = {
+          component: found,
+          value: foundVp[best.axisName] || stateValue,
+        };
+        break;
+      }
+    }
+  }
+
+  return { axisName: best.axisName, valuesByPseudo };
+}
+
+/**
+ * Temporarily swap the instance's main component to another variant, run `fn`, then restore.
+ */
+async function withSwappedComponent<T>(
+  instance: InstanceNode,
+  target: ComponentNode | null,
+  fn: () => Promise<T>
+): Promise<T> {
+  const anyInstance = instance as any;
+  const swap =
+    typeof anyInstance.swapComponent === "function"
+      ? anyInstance.swapComponent.bind(anyInstance)
+      : null;
+  const original = (anyInstance.mainComponent || null) as ComponentNode | null;
+
+  if (!swap || !target || target === original) {
+    return await fn();
+  }
+
+  swap(target);
+  try {
+    return await fn();
+  } finally {
+    try {
+      if (original) swap(original);
+    } catch {
+      // ignore restore failures
+    }
+  }
+}
+
+/**
+ * Build __states snapshots for an INSTANCE whose component set encodes interaction states.
+ */
+async function exportInstanceStates(
+  instance: InstanceNode
+): Promise<NodeBase["__states"] | undefined> {
+  const info = inferStateAxisInfo(instance);
+  if (!info) return undefined;
+
+  const states: any = {};
+
+  // Default snapshot (preferred: explicit "Default"/"Base" variant on the axis).
+  const def = await withSwappedComponent(
+    instance,
+    info.valuesByPseudo.default.component,
+    () => walkForState(instance)
+  );
+  if (!def) return undefined;
+  states.default = def;
+
+  const entries: [
+    keyof StateAxisInfo["valuesByPseudo"],
+    "hover" | "active" | "focus" | "disabled"
+  ][] = [
+    ["hover", "hover"],
+    ["active", "active"],
+    ["focus", "focus"],
+    ["disabled", "disabled"],
+  ] as any;
+
+  for (const [slotKey, pseudo] of entries) {
+    const rec = (info.valuesByPseudo as any)[slotKey] as
+      | { component: ComponentNode | null; value: string }
+      | undefined;
+    if (!rec || !rec.component) continue;
+
+    const snap = await withSwappedComponent(instance, rec.component, () =>
+      walkForState(instance)
+    );
+    if (snap) {
+      (states as any)[pseudo] = snap;
+    }
+  }
+
+  return states;
+}
+
 /**
  * NEW: capture ALL descendant TextNodes under a node (used for rasterized INSTANCE labels).
  * We return them in document order as best-effort.
@@ -904,6 +1354,30 @@ async function walk(
     // Capture label(s) from descendants (text inside the instance)
     const runs = collectTextDescendants(node);
     if (runs.length) base.__instanceText = runs;
+
+    // Best-effort interactive state snapshots (hover/active/focus/disabled) based on component variants.
+    try {
+      const states = await exportInstanceStates(node as InstanceNode);
+      if (states && states.default) {
+        base.__states = states;
+
+        // Align the exported INSTANCE's own visual decoration with the "default"
+        // state snapshot so preview starts from the default design, even if the
+        // Figma instance is currently set to Hover/Pressed/etc.
+        const def = states.default;
+        if (def) {
+          if (Array.isArray(def.fills)) base.fills = def.fills;
+          if (def.stroke) base.stroke = def.stroke;
+          if (Array.isArray(def.shadows)) base.shadows = def.shadows;
+          if (typeof def.opacity === "number") base.opacity = def.opacity;
+          if (def.blendMode) base.blendMode = def.blendMode;
+          if (def.blur) base.blur = def.blur;
+          if (def.r) base.r = def.r;
+        }
+      }
+    } catch {
+      // state export is best-effort only; ignore failures
+    }
 
     // Do NOT traverse instance internals (keeps AST small & avoids duplicating vectors)
     return base;
