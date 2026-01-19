@@ -245,35 +245,37 @@ ${css}
         </div>
       </div>
 
+      <div class="flex items-center gap-2 ml-auto flex-wrap" id="toolbar_actions">
       ${
         overlaySrcInitial
           ? `
-      <div class="flex items-center gap-2 ml-auto" id="ov_controls">
-        <input id="ov_enabled" type="checkbox" checked />
-        <label for="ov_enabled" class="text-sm font-medium">Figma overlay</label>
-      </div>
+        <div class="flex items-center gap-2" id="ov_controls">
+          <input id="ov_enabled" type="checkbox" checked />
+          <label for="ov_enabled" class="text-sm font-medium">Figma overlay</label>
+        </div>
 
-      <div class="flex items-center gap-2" id="ov_opacity_wrap">
-        <label class="text-sm text-slate-700">Opacity</label>
-        <input id="ov_opacity" type="range" min="0" max="100" value="50" />
-        <span id="ov_opacity_val" class="text-sm text-slate-700 w-12">50%</span>
-      </div>
+        <div class="flex items-center gap-2" id="ov_opacity_wrap">
+          <label class="text-sm text-slate-700">Opacity</label>
+          <input id="ov_opacity" type="range" min="0" max="100" value="50" />
+          <span id="ov_opacity_val" class="text-sm text-slate-700 w-12">50%</span>
+        </div>
 
-      <div class="flex items-center gap-2" id="ov_diff_wrap">
-        <input id="ov_diff" type="checkbox" />
-        <label for="ov_diff" class="text-sm text-slate-700">Difference</label>
-      </div>
+        <div class="flex items-center gap-2" id="ov_diff_wrap">
+          <input id="ov_diff" type="checkbox" />
+          <label for="ov_diff" class="text-sm text-slate-700">Difference</label>
+        </div>
 
-      <button id="ov_reset" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50">
-        Reset
-      </button>
+        <button id="ov_reset" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50">
+          Reset
+        </button>
 
-      <button id="ov_scores" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50">
-        Scores
-      </button>
-      `
-          : `<div class="ml-auto"></div>`
+        <button id="ov_scores" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50">
+          Scores
+        </button>
+        `
+          : ``
       }
+      </div>
     </div>
   </div>
 
@@ -337,6 +339,19 @@ ${css}
             </div>
           </div>
         </section>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay-toolbar" id="export_root">
+    <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
+      <div class="flex items-center gap-2" id="export_controls">
+        <span class="vpmeta">Export:</span>
+        <select id="export_type" class="vpbtn" style="min-width:160px;">
+          <option value="">Select folder</option>
+        </select>
+        <span id="export_components_root" class="vpmeta" title=""></span>
+        <button id="export_btn" class="vpbtn" type="button">Export</button>
       </div>
     </div>
   </div>
@@ -669,11 +684,99 @@ ${css}
 
   <script>
     (function(){
+      const exportBtn = document.getElementById('export_btn');
+      const typeSelect = document.getElementById('export_type');
+      const rootLabel = document.getElementById('export_components_root');
+      if (!exportBtn) return;
+
+      const qs = new URLSearchParams(location.search);
+      const qsType = String(qs.get('type') || '').trim();
+
+      const getSlug = () => String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+
+      let componentsRoot = "";
+
+      async function loadComponents(){
+        try {
+          const r = await fetch('/api/components');
+          const out = await r.json().catch(() => null);
+          const items = Array.isArray(out?.items) ? out.items : [];
+          componentsRoot = String(out?.root || '').trim();
+
+          if (rootLabel) {
+            rootLabel.textContent = componentsRoot ? 'Root: ' + componentsRoot : 'Root: (not set)';
+            rootLabel.title = componentsRoot || '';
+          }
+
+          if (typeSelect) {
+            typeSelect.innerHTML = '';
+            const placeholder = document.createElement('option');
+            placeholder.value = '';
+            placeholder.textContent = 'Select folder';
+            typeSelect.appendChild(placeholder);
+
+            for (const item of items) {
+              const opt = document.createElement('option');
+              opt.value = item;
+              opt.textContent = item;
+              typeSelect.appendChild(opt);
+            }
+
+            if (qsType && items.includes(qsType)) {
+              typeSelect.value = qsType;
+            }
+          }
+        } catch {
+          if (rootLabel) rootLabel.textContent = 'Root: (unavailable)';
+        }
+      }
+
+      loadComponents();
+
+      exportBtn.addEventListener('click', async () => {
+        const slug = getSlug();
+        const type = String(typeSelect?.value || '').trim();
+        if (!type) return alert('Select a component folder (e.g. hero).');
+
+        try {
+          exportBtn.disabled = true;
+          exportBtn.textContent = 'Exporting...';
+
+          const payload = { slug, type };
+          if (componentsRoot) payload.componentsRoot = componentsRoot;
+
+          const r = await fetch('/export', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          const out = await r.json().catch(() => null);
+          if (!r.ok || !out?.ok) {
+            const msg = out?.error ? String(out.error) : \`Export failed (\${r.status})\`;
+            throw new Error(msg);
+          }
+
+          alert('Exported to: ' + out.folder);
+        } catch (e) {
+          alert('Export error: ' + (e && e.message ? e.message : String(e)));
+        } finally {
+          exportBtn.disabled = false;
+          exportBtn.textContent = 'Export';
+        }
+      });
+    })();
+  </script>
+
+  <script>
+    (function(){
       const qs = new URLSearchParams(location.search);
       const embed = qs.get('embed') === '1';
       if (embed || qs.get('toolbar') === '0') {
         const tb = document.getElementById('toolbar_root');
         if (tb) tb.style.display = 'none';
+        const eb = document.getElementById('export_root');
+        if (eb) eb.style.display = 'none';
       }
     })();
   </script>
