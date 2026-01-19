@@ -884,6 +884,14 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
     base.text = textPayload(node as TextNode);
   }
 
+  const hasImgFill = base.fills?.some((f) => f.kind === "image") === true;
+  const rasterForState =
+    (shouldRasterizeNode(node) && node.type !== "INSTANCE") || hasImgFill;
+  if (rasterForState) {
+    const img = await exportPNG(node);
+    if (img) base.img = img;
+  }
+
   if ("children" in node) {
     const kids = (node as any as ChildrenMixin)
       .children as readonly SceneNode[];

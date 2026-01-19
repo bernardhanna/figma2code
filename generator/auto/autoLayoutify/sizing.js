@@ -17,7 +17,11 @@ export function fixedBoxSize(node, allowH = false) {
 }
 
 export function sizeClassForLeaf(node, parentLayout, isRoot, isText) {
-  if (isText) return "";
+  if (isText) {
+    const s = node.size || {};
+    const w = num(s.w ?? node.w) ? (s.w ?? node.w) : null;
+    return pos(w) ? cls(`w-[${rem(w)}]`, "max-w-full") : "";
+  }
   if (!parentLayout || parentLayout === "GRID") return "";
 
   const s = node.size || {};

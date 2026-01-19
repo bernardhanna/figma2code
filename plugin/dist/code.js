@@ -615,6 +615,7 @@ function isInteractiveLooking(node, actions) {
  */
 function walkForState(node) {
     return __awaiter(this, void 0, void 0, function* () {
+        var _a;
         if (!isNodeVisible(node))
             return null;
         const { w, h } = sizeOf(node);
@@ -639,6 +640,13 @@ function walkForState(node) {
         };
         if (node.type === "TEXT") {
             base.text = textPayload(node);
+        }
+        const hasImgFill = ((_a = base.fills) === null || _a === void 0 ? void 0 : _a.some((f) => f.kind === "image")) === true;
+        const rasterForState = (shouldRasterizeNode(node) && node.type !== "INSTANCE") || hasImgFill;
+        if (rasterForState) {
+            const img = yield exportPNG(node);
+            if (img)
+                base.img = img;
         }
         if ("children" in node) {
             const kids = node
