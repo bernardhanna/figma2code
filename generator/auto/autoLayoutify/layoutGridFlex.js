@@ -102,6 +102,12 @@ export function shouldUseGrid(node, semantics) {
   const al = node.auto;
   if (!al || al.layout === "NONE") return false;
 
+  const nameLower = String(node?.name || "").toLowerCase();
+  // Decorative bars are tiny, ordered strips; flex preserves spacing better than grid.
+  if (nameLower.includes("decorativebar") || (nameLower.includes("decorative") && nameLower.includes("bar"))) {
+    return false;
+  }
+
   // NEVER grid for vertical stacks (per spec)
   if (al.layout === "VERTICAL") return false;
 
@@ -173,19 +179,26 @@ export function gridColsResponsive(maxCols) {
 }
 
 
-export function flexResponsiveClasses(al, kids) {
-  const base = ["flex", "flex-col"];
+export function flexResponsiveClasses(al, kids, opts = {}) {
+  const forceRow = !!opts.forceRow;
+  const noWrap = !!opts.noWrap;
 
-  // Desktop direction mirrors Figma auto layout
-  const dirDesktop = al.layout === "HORIZONTAL" ? "md:flex-row" : "md:flex-col";
-  base.push(dirDesktop);
+  const base = ["flex", forceRow ? "flex-row" : "flex-col"];
 
-  if (al.layout === "HORIZONTAL" && (kids?.length || 0) >= 3) base.push("md:flex-wrap");
+  // Desktop direction mirrors Figma auto layout (unless forced row)
+  if (!forceRow) {
+    const dirDesktop = al.layout === "HORIZONTAL" ? "md:flex-row" : "md:flex-col";
+    base.push(dirDesktop);
+  }
 
-  const justMd = JUSTIFY[al.primaryAlign || "MIN"];
-  const itemsMd = ITEMS[al.counterAlign || "MIN"];
-  if (justMd) base.push(`md:${justMd}`);
-  if (itemsMd) base.push(`md:${itemsMd}`);
+  if (!noWrap && al.layout === "HORIZONTAL" && (kids?.length || 0) >= 3) {
+    base.push(forceRow ? "flex-wrap" : "md:flex-wrap");
+  }
+
+  const just = JUSTIFY[al.primaryAlign || "MIN"];
+  const items = ITEMS[al.counterAlign || "MIN"];
+  if (just) base.push(forceRow ? just : `md:${just}`);
+  if (items) base.push(forceRow ? items : `md:${items}`);
 
   return cls(...base);
 }

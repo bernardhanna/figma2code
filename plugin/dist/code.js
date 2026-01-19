@@ -592,6 +592,357 @@ function isContainerNode(node) {
         node.type === "INSTANCE");
 }
 /**
+ * Heuristic: is this node an "interactive-looking" control where we care about states?
+ * We keep this narrow (buttons/links/cards/CTAs) to keep export size small.
+ */
+function isInteractiveLooking(node, actions) {
+    const name = String(node.name || "").toLowerCase();
+    if (name.includes("button") ||
+        name.includes("btn") ||
+        name.includes("cta") ||
+        name.includes("link") ||
+        name.includes("card")) {
+        return true;
+    }
+    if ((actions === null || actions === void 0 ? void 0 : actions.isClickable) || (actions === null || actions === void 0 ? void 0 : actions.openUrl))
+        return true;
+    return false;
+}
+/**
+ * Lightweight walker used for state snapshots:
+ * - No PNG export (keeps payload small)
+ * - Traverses INSTANCE internals so we can diff backgrounds/text/etc when available
+ */
+function walkForState(node) {
+    return __awaiter(this, void 0, void 0, function* () {
+        if (!isNodeVisible(node))
+            return null;
+        const { w, h } = sizeOf(node);
+        const base = {
+            id: node.id,
+            name: node.name,
+            type: node.type,
+            w: round(w),
+            h: round(h),
+            bb: absBB(node),
+            auto: getAutoLayout(node),
+            size: undefined,
+            r: getRadii(node),
+            shadows: getShadows(node),
+            stroke: getStroke(node),
+            fills: getFills(node),
+            opacity: getOpacity(node),
+            blendMode: getBlendMode(node),
+            blur: getBlur(node),
+            clipsContent: node.clipsContent === true,
+            actions: getActions(node),
+        };
+        if (node.type === "TEXT") {
+            base.text = textPayload(node);
+        }
+        if ("children" in node) {
+            const kids = node
+                .children;
+            const outKids = [];
+            for (const c of kids) {
+                const child = yield walkForState(c);
+                if (child)
+                    outKids.push(child);
+            }
+            if (outKids.length)
+                base.children = outKids;
+        }
+        return base;
+    });
+}
+function isDefaultVariantValue(raw) {
+    const v = String(raw || "")
+        .trim()
+        .toLowerCase();
+    if (!v)
+        return false;
+    return (v === "default" ||
+        v === "base" ||
+        v === "rest" ||
+        v === "normal" ||
+        v === "primary");
+}
+function mapVariantValueToPseudo(raw) {
+    const v = String(raw || "")
+        .trim()
+        .toLowerCase();
+    if (!v)
+        return "";
+    if (v === "hover" || v === "on hover" || v.includes("hover"))
+        return "hover";
+    if (v === "pressed" ||
+        v === "press" ||
+        v === "active" ||
+        v === "down" ||
+        v.includes("pressed") ||
+        v.includes("press") ||
+        v.includes("active"))
+        return "active";
+    if (v === "focus" ||
+        v === "focused" ||
+        v === "focus visible" ||
+        v === "focus-visible" ||
+        v.includes("focus")) {
+        return "focus";
+    }
+    if (v === "disabled" || v === "inactive" || v.includes("disabled"))
+        return "disabled";
+    return "";
+}
+function normVariantValue(v) {
+    return String(v !== null && v !== void 0 ? v : "")
+        .trim()
+        .toLowerCase();
+}
+/**
+ * Find a component in the set that matches the given variant properties.
+ * Returns the first matching component, or null if none found.
+ */
+function findComponentByVariantProperties(set, targetProps) {
+    const children = (set.children || []);
+    for (const comp of children) {
+        const vp = (comp.variantProperties || {});
+        let matches = true;
+        for (const [axisName, targetValue] of Object.entries(targetProps)) {
+            if (normVariantValue(vp[axisName]) !== normVariantValue(targetValue)) {
+                matches = false;
+                break;
+            }
+        }
+        if (matches)
+            return comp;
+    }
+    return null;
+}
+/**
+ * Inspect a component set and infer which axis encodes interaction state.
+ */
+function inferStateAxisInfo(instance) {
+    var _a;
+    const main = instance.mainComponent;
+    const set = ((main === null || main === void 0 ? void 0 : main.parent) || null);
+    if (!main || !set || set.type !== "COMPONENT_SET")
+        return null;
+    const children = (set.children || []);
+    if (!children.length)
+        return null;
+    const axisScore = {};
+    for (const comp of children) {
+        const vp = (comp.variantProperties || {});
+        for (const [axisNameRaw, valueRaw] of Object.entries(vp)) {
+            const axisName = String(axisNameRaw || "");
+            const value = String(valueRaw || "");
+            if (!axisName || !value)
+                continue;
+            const pseudo = mapVariantValueToPseudo(value);
+            if (!pseudo)
+                continue;
+            const key = axisName;
+            if (!axisScore[key]) {
+                axisScore[key] = {
+                    axisName,
+                    hitCount: 0,
+                    values: {},
+                };
+            }
+            axisScore[key].hitCount++;
+            axisScore[key].values[value] = { component: comp, value };
+        }
+    }
+    const candidates = Object.values(axisScore).sort((a, b) => b.hitCount - a.hitCount);
+    if (!candidates.length)
+        return null;
+    const best = candidates[0];
+    // Get current variant properties from the instance
+    // Priority: instance.variantProperties (instance overrides) > mainComponent.variantProperties
+    const instanceVp = (instance.variantProperties || {});
+    const mainVp = (((_a = instance.mainComponent) === null || _a === void 0 ? void 0 : _a.variantProperties) ||
+        {});
+    const currentVp = Object.assign(Object.assign({}, mainVp), instanceVp); // Instance overrides component
+    // Store all current variant properties (for preserving non-state axes like color)
+    const allCurrentProps = Object.assign({}, currentVp);
+    const currentValue = currentVp[best.axisName] || null;
+    // Prefer an explicit "Default"/"Base" style variant as the baseline, regardless
+    // of what the instance is currently set to in the design.
+    // But preserve other axes (like color) from the current instance.
+    let defaultComponent = instance.mainComponent || null;
+    let defaultValue = currentValue;
+    // Try to find a "Default" variant that also matches current non-state properties
+    for (const { component, value } of Object.values(best.values)) {
+        if (isDefaultVariantValue(value)) {
+            const compVp = (component.variantProperties || {});
+            // Check if this component matches current values for all OTHER axes
+            let matchesOtherAxes = true;
+            for (const [axisName, currentVal] of Object.entries(allCurrentProps)) {
+                if (axisName === best.axisName)
+                    continue; // Skip state axis
+                if (normVariantValue(compVp[axisName]) !== normVariantValue(currentVal)) {
+                    matchesOtherAxes = false;
+                    break;
+                }
+            }
+            if (matchesOtherAxes) {
+                defaultComponent = component;
+                defaultValue = value;
+                break;
+            }
+        }
+    }
+    // If we didn't find a matching default, try to find any component that matches
+    // current non-state properties with a default state value
+    if (!defaultComponent || defaultComponent === main) {
+        const targetProps = Object.assign({}, allCurrentProps);
+        // Try different default state values
+        for (const defaultStateValue of [
+            "Default",
+            "Base",
+            "Rest",
+            "Normal",
+            "Primary",
+        ]) {
+            targetProps[best.axisName] = defaultStateValue;
+            const found = findComponentByVariantProperties(set, targetProps);
+            if (found) {
+                defaultComponent = found;
+                defaultValue = defaultStateValue;
+                break;
+            }
+        }
+        // If still not found, use the current main component
+        if (!defaultComponent) {
+            defaultComponent = main;
+            defaultValue = currentValue;
+        }
+    }
+    const valuesByPseudo = {
+        default: { component: defaultComponent, value: defaultValue },
+    };
+    // For each state (hover, active, etc.), find components that match
+    // the current values for OTHER axes (like color)
+    for (const { component, value } of Object.values(best.values)) {
+        const pseudo = mapVariantValueToPseudo(value);
+        if (!pseudo)
+            continue;
+        if (!valuesByPseudo[pseudo]) {
+            // Check if this component matches current values for non-state axes
+            const compVp = (component.variantProperties || {});
+            let matchesOtherAxes = true;
+            for (const [axisName, currentVal] of Object.entries(allCurrentProps)) {
+                if (axisName === best.axisName)
+                    continue; // Skip state axis
+                if (normVariantValue(compVp[axisName]) !== normVariantValue(currentVal)) {
+                    matchesOtherAxes = false;
+                    break;
+                }
+            }
+            // Only use this component if it matches current non-state properties
+            if (matchesOtherAxes) {
+                valuesByPseudo[pseudo] = { component, value };
+            }
+        }
+    }
+    // If we didn't find matching components for some states, try to find them
+    // by searching the component set with preserved non-state properties
+    const entries = [
+        "hover",
+        "active",
+        "focus",
+        "disabled",
+    ];
+    for (const pseudo of entries) {
+        if (valuesByPseudo[pseudo])
+            continue; // Already found
+        // Try to find a component with this state that matches current non-state props
+        const targetProps = Object.assign({}, allCurrentProps);
+        // Map pseudo to possible variant values
+        const stateValues = pseudo === "hover"
+            ? ["Hover", "On Hover"]
+            : pseudo === "active"
+                ? ["Pressed", "Press", "Active", "Down"]
+                : pseudo === "focus"
+                    ? ["Focus", "Focused", "Focus Visible"]
+                    : ["Disabled", "Inactive"];
+        for (const stateValue of stateValues) {
+            targetProps[best.axisName] = stateValue;
+            const found = findComponentByVariantProperties(set, targetProps);
+            if (found) {
+                const foundVp = (found.variantProperties || {});
+                valuesByPseudo[pseudo] = {
+                    component: found,
+                    value: foundVp[best.axisName] || stateValue,
+                };
+                break;
+            }
+        }
+    }
+    return { axisName: best.axisName, valuesByPseudo };
+}
+/**
+ * Temporarily swap the instance's main component to another variant, run `fn`, then restore.
+ */
+function withSwappedComponent(instance, target, fn) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const anyInstance = instance;
+        const swap = typeof anyInstance.swapComponent === "function"
+            ? anyInstance.swapComponent.bind(anyInstance)
+            : null;
+        const original = (anyInstance.mainComponent || null);
+        if (!swap || !target || target === original) {
+            return yield fn();
+        }
+        swap(target);
+        try {
+            return yield fn();
+        }
+        finally {
+            try {
+                if (original)
+                    swap(original);
+            }
+            catch (_a) {
+                // ignore restore failures
+            }
+        }
+    });
+}
+/**
+ * Build __states snapshots for an INSTANCE whose component set encodes interaction states.
+ */
+function exportInstanceStates(instance) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const info = inferStateAxisInfo(instance);
+        if (!info)
+            return undefined;
+        const states = {};
+        // Default snapshot (preferred: explicit "Default"/"Base" variant on the axis).
+        const def = yield withSwappedComponent(instance, info.valuesByPseudo.default.component, () => walkForState(instance));
+        if (!def)
+            return undefined;
+        states.default = def;
+        const entries = [
+            ["hover", "hover"],
+            ["active", "active"],
+            ["focus", "focus"],
+            ["disabled", "disabled"],
+        ];
+        for (const [slotKey, pseudo] of entries) {
+            const rec = info.valuesByPseudo[slotKey];
+            if (!rec || !rec.component)
+                continue;
+            const snap = yield withSwappedComponent(instance, rec.component, () => walkForState(instance));
+            if (snap) {
+                states[pseudo] = snap;
+            }
+        }
+        return states;
+    });
+}
+/**
  * NEW: capture ALL descendant TextNodes under a node (used for rasterized INSTANCE labels).
  * We return them in document order as best-effort.
  */
@@ -668,18 +1019,56 @@ function walk(node, parent) {
         }
         const hasImgFill = ((_a = base.fills) === null || _a === void 0 ? void 0 : _a.some((f) => f.kind === "image")) === true;
         const complex = shouldRasterizeNode(node);
-        // IMPORTANT: INSTANCE nodes must keep their label text even if rasterized.
         if (node.type === "INSTANCE") {
-            // Rasterize for pixel-fidelity background
-            const img = yield exportPNG(node);
-            if (img)
-                base.img = img;
-            // Capture label(s) from descendants (text inside the instance)
-            const runs = collectTextDescendants(node);
-            if (runs.length)
-                base.__instanceText = runs;
-            // Do NOT traverse instance internals (keeps AST small & avoids duplicating vectors)
-            return base;
+            // Only treat INTERACTIVE-looking instances (buttons/links/cards) as raster
+            // wrappers. For structural text components like H1/H2 with decorative bars,
+            // we fall through to normal container handling so their children render.
+            const nameLower = String(node.name || "").toLowerCase();
+            const isHeadingInstance = /^h[1-6]\b/.test(nameLower);
+            const isDecorativeBar = /\b(decorative|bar)\b/.test(nameLower);
+            const interactive = isInteractiveLooking(node, base.actions);
+            if (interactive && !isHeadingInstance && !isDecorativeBar) {
+                // Rasterize for pixel-fidelity background
+                const img = yield exportPNG(node);
+                if (img)
+                    base.img = img;
+                // Capture label(s) from descendants (text inside the instance)
+                const runs = collectTextDescendants(node);
+                if (runs.length)
+                    base.__instanceText = runs;
+                // Best-effort interactive state snapshots (hover/active/focus/disabled) based on component variants.
+                try {
+                    const states = yield exportInstanceStates(node);
+                    if (states && states.default) {
+                        base.__states = states;
+                        // Align the exported INSTANCE's own visual decoration with the "default"
+                        // state snapshot so preview starts from the default design, even if the
+                        // Figma instance is currently set to Hover/Pressed/etc.
+                        const def = states.default;
+                        if (def) {
+                            if (Array.isArray(def.fills))
+                                base.fills = def.fills;
+                            if (def.stroke)
+                                base.stroke = def.stroke;
+                            if (Array.isArray(def.shadows))
+                                base.shadows = def.shadows;
+                            if (typeof def.opacity === "number")
+                                base.opacity = def.opacity;
+                            if (def.blendMode)
+                                base.blendMode = def.blendMode;
+                            if (def.blur)
+                                base.blur = def.blur;
+                            if (def.r)
+                                base.r = def.r;
+                        }
+                    }
+                }
+                catch (_b) {
+                    // state export is best-effort only; ignore failures
+                }
+                // Do NOT traverse interactive instance internals (keeps AST small & avoids duplicating vectors)
+                return base;
+            }
         }
         // Non-instance raster rules
         if (hasImgFill || complex) {

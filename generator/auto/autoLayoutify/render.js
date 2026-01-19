@@ -32,6 +32,7 @@ import {
   alignSelf,
   sizeClassForLeaf,
   sizeClassForImg,
+  fixedBoxSize,
 } from "./sizing.js";
 
 import { boxDeco, hasOwnBoxDeco } from "./styles.js";
@@ -39,18 +40,21 @@ import { refineCtaClasses } from "./ctaRefine.js";
 
 import { resolveCtaInnerHtml, resolveCtaLabel } from "./ctaLabel.js";
 import { renderSvgLeaf } from "./svgRender.js";
+import { isCtaNode } from "./interactiveRules.js";
 
 /* ------------------ tag helpers ------------------ */
 
 function openTag(tag, classes = "", attrs = "", node, ctx) {
   const nodeId = node?.id ? ` data-node-id="${escAttr(node.id)}"` : "";
 
-  const injected =
+  const injectedFromCtx =
     node?.id && ctx?.classInject && typeof ctx.classInject.get === "function"
       ? String(ctx.classInject.get(node.id) || "")
       : "";
 
-  const finalClasses = cls(classes, injected);
+  const injectedFromNode = node?.tw ? String(node.tw) : "";
+
+  const finalClasses = cls(classes, injectedFromNode, injectedFromCtx);
 
   return `<${tag}${nodeId}${attrs}${finalClasses ? ` class="${finalClasses}"` : ""}>`;
 }
@@ -281,6 +285,12 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     : "";
 
   const pad = paddings(al);
+  const fallbackPx =
+    isRoot &&
+    ctx?.responsiveFallback?.maxXlPx &&
+    (pos(al?.padL) || pos(al?.padR))
+      ? String(ctx.responsiveFallback.maxXlPx)
+      : "";
 
   const omitBg = isRoot && ctx?.suppressRootBgId === node.id;
 
@@ -289,11 +299,20 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const clip = node.clipsContent ? "overflow-hidden" : "";
 
   const useGrid = shouldUseGrid(node, semantics);
+  const nameLower = String(node?.name || "").toLowerCase();
+  const isDecorativeBar =
+    nameLower.includes("decorativebar") ||
+    (nameLower.includes("decorative") && nameLower.includes("bar"));
+
   const layoutClasses = useGrid
     ? gridColsResponsive(gridColsFor(node))
-    : flexResponsiveClasses(al, node.children || []);
+    : flexResponsiveClasses(al, node.children || [], {
+        forceRow: isDecorativeBar && al.layout === "HORIZONTAL",
+        noWrap: isDecorativeBar,
+      });
 
-  let tag = aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
+  let tag =
+    aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
 
   // SAFETY: never render auto-layout containers as interactive unless they have explicit actions
   const hasChildren = Array.isArray(node.children) && node.children.length > 0;
@@ -312,13 +331,14 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const isLinkTag = tag === "a";
   const isButtonLikeLink = isLinkTag && (node.actions?.openUrl || hrefFromAI);
 
-  const isCtaContainer = isButtonTag || isButtonLikeLink;
+  const hasCtaMeta = !!node.cta;
+  const isCtaInteractive = hasCtaMeta && (isButtonTag || isButtonLikeLink);
 
-  const refined = isCtaContainer ? refineCtaClasses(node) : null;
+  const refined = hasCtaMeta ? refineCtaClasses(node) : null;
 
-  const ctaFixed = isCtaContainer ? fixedSizeClassesForCta(node) : "";
+  const ctaFixed = hasCtaMeta ? fixedSizeClassesForCta(node) : "";
 
-  const ctaBase = isCtaContainer
+  const ctaBase = hasCtaMeta
     ? cls(
       "btn",
       "inline-flex justify-center items-center gap-2",
@@ -331,7 +351,8 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     )
     : "";
 
-  const container = cls(layoutClasses, gap, pad, deco, clip, ctaBase);
+  const fixedSize = fixedBoxSize(node, /*allowH=*/ true);
+  const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize);
 
   const pieces = (node.children || [])
     .map((child) => {
@@ -357,15 +378,16 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     : "";
   const typeAttr = isButtonTag ? ` type="button"` : "";
 
-  const label = isCtaContainer
+  const label = hasCtaMeta
     ? bestCtaLabel(node, semantics)
     : (aiLabelFor(node, semantics) || "").trim();
 
-  const aria = isCtaContainer && label ? ` aria-label="${escAttr(label)}"` : "";
+  const aria =
+    isCtaInteractive && label ? ` aria-label="${escAttr(label)}"` : "";
 
   let body = pieces;
 
-  if (isCtaContainer) {
+  if (hasCtaMeta) {
     if (!body || !String(body).trim()) {
       const recoveredTypo = typographyClassesFromRecovered(node, ctx);
       const texts = collectTextNodesDeep(node, []);

@@ -17,8 +17,21 @@ import {
 
 import { writeStage } from "./stageStore.js";
 
+import { getComponentLibrary } from "../componentLibrary/index.js";
+import { annotateAstWithComponentMatch } from "../componentLibrary/match.js";
+
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
+}
+
+function isComponentLibDebug() {
+  return String(process.env.COMPONENT_LIB_DEBUG || "").trim() === "1";
+}
+
+function maybeAnnotateWithComponentMatch(ast) {
+  const lib = getComponentLibrary();
+  if (!lib) return ast;
+  return annotateAstWithComponentMatch(ast, lib, { debug: isComponentLibDebug() });
 }
 
 function slugifyGroupKey(input) {
@@ -140,8 +153,9 @@ export function renderOneFragment({
   preventNestedInteractive,
   buildIntentGraph,
   normalizeAst,
+  interactiveStatesPass,
 }) {
-  let a = ast;
+  let a = maybeAnnotateWithComponentMatch(ast);
 
   if (normalizeAst) {
     const r = normalizeAst(a);
@@ -159,6 +173,12 @@ export function renderOneFragment({
 
   if (preventNestedInteractive) {
     const r = preventNestedInteractive(a);
+    const un = unwrapAstResult(r, a);
+    a = un.ast || a;
+  }
+
+  if (interactiveStatesPass) {
+    const r = interactiveStatesPass(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
   }
@@ -289,6 +309,9 @@ export function buildMergedResponsivePreview({
     return { ok: false, status: 500, error: `Failed to build merged AST for "${groupKey}".` };
   }
 
+  // Stamp componentMatch onto the carrier AST as well (best-effort).
+  const mergedAstWithMatch = maybeAnnotateWithComponentMatch(mergedAst);
+
   // ------------------------------------------------------------
   // Persist per-variant overlay/bg so preview can swap them correctly
   // ------------------------------------------------------------
@@ -304,23 +327,23 @@ export function buildMergedResponsivePreview({
     desktop: String(desktopAst?.meta?.bg?.src || desktopAst?.meta?.background?.src || "").trim(),
   };
 
-  mergedAst.meta = {
-    ...(mergedAst.meta || {}),
+  mergedAstWithMatch.meta = {
+    ...(mergedAstWithMatch.meta || {}),
     responsive: {
-      ...(mergedAst.meta?.responsive || {}),
+      ...(mergedAstWithMatch.meta?.responsive || {}),
       mergedGroup: true,
       assets: { overlay, bg },
     },
   };
 
-  writeStage(groupKey, mergedAst);
+  writeStage(groupKey, mergedAstWithMatch);
 
   // IMPORTANT: previewHtml must now render inside an iframe for Tailwind breakpoints
-  const preview = previewHtml(mergedAst, { fragment: mergedFragment });
+  const preview = previewHtml(mergedAstWithMatch, { fragment: mergedFragment });
 
   return {
     ok: true,
-    ast: mergedAst,
+    ast: mergedAstWithMatch,
     fragment: mergedFragment,
     preview,
     availableVariants: available,
@@ -340,6 +363,7 @@ export async function buildPreviewFragment({
   autoLayoutify,
   semanticAccessiblePass,
   preventNestedInteractive,
+  interactiveStatesPass,
   previewHtml,
 }) {
   try {
@@ -370,6 +394,7 @@ export async function buildPreviewFragment({
         preventNestedInteractive,
         buildIntentGraph,
         normalizeAst,
+        interactiveStatesPass,
       });
 
       let variantAst = single.ast;
@@ -441,6 +466,7 @@ export async function buildPreviewFragment({
       preventNestedInteractive,
       buildIntentGraph,
       normalizeAst,
+        interactiveStatesPass,
     });
 
     writeStage(single.ast.slug, single.ast);
