@@ -1,11 +1,6 @@
 // generator/server/aiRefine.js
 
-import process from "node:process";
-
-function envBool(v) {
-  const s = String(v || "").trim().toLowerCase();
-  return s === "1" || s === "true" || s === "yes" || s === "on";
-}
+import { getConfig, getAiClient } from "../config/env.js";
 
 function looksLikeHtml(s) {
   return typeof s === "string" && s.includes("<") && s.includes(">") && s.length > 20;
@@ -17,40 +12,16 @@ function stripCodeFences(s) {
     .replace(/\s*```$/i, "");
 }
 
-function extractTextFromResponsesOutput(outputArr) {
-  try {
-    const parts = [];
-    for (const item of outputArr) {
-      const content = item?.content;
-      if (!Array.isArray(content)) continue;
-      for (const c of content) {
-        if (c?.type === "output_text" && typeof c?.text === "string") parts.push(c.text);
-        if (typeof c?.text === "string" && !c?.type) parts.push(c.text);
-      }
-    }
-    return parts.join("\n");
-  } catch {
-    return "";
-  }
-}
-
 export async function maybeAIRefine(fragment, ast) {
-  const enabled = envBool(process.env.AI_REFINE);
-  const apiKey = String(process.env.OPENAI_API_KEY || "").trim();
-  const model = String(process.env.OPENAI_MODEL || "gpt-4.1-mini").trim();
-
-  if (!enabled) return fragment;
-  if (!apiKey) {
-    console.warn("[ai] AI_REFINE enabled but OPENAI_API_KEY missing; skipping.");
-    return fragment;
-  }
+  const config = getConfig();
+  if (!config.aiRefine) return fragment;
   if (!looksLikeHtml(fragment)) return fragment;
 
-  let OpenAI;
+  let client;
   try {
-    ({ default: OpenAI } = await import("openai"));
-  } catch {
-    console.warn("[ai] openai SDK not installed; run `npm i openai`. Skipping AI refine.");
+    client = await getAiClient(config);
+  } catch (e) {
+    console.warn("[ai] getAiClient failed; skipping AI refine:", String(e?.message || e));
     return fragment;
   }
 
@@ -76,27 +47,17 @@ export async function maybeAIRefine(fragment, ast) {
     fragment,
   ].join("\n");
 
-  const client = new OpenAI({ apiKey });
-
   try {
-    const resp = await client.responses.create({
-      model,
-      input: [
-        { role: "system", content: system },
-        { role: "user", content: user },
-      ],
-      max_output_tokens: 1800,
+    const { text } = await client.complete({
+      system,
+      user,
+      maxOutputTokens: 1800,
       temperature: 0.15,
     });
 
-    const outText =
-      (resp && typeof resp.output_text === "string" && resp.output_text.trim()) ||
-      (resp && Array.isArray(resp.output) ? extractTextFromResponsesOutput(resp.output) : "") ||
-      "";
+    if (!text || !String(text).trim()) return fragment;
 
-    if (!outText.trim()) return fragment;
-
-    const cleaned = stripCodeFences(outText).trim();
+    const cleaned = stripCodeFences(String(text)).trim();
     return cleaned || fragment;
   } catch (e) {
     console.warn("[ai] refine failed; continuing deterministically:", String(e?.message || e));

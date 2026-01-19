@@ -1,4 +1,7 @@
 // generator/server.js
+import "dotenv/config";
+
+import { getConfig } from "./config/env.js";
 import { createApp } from "./server/createApp.js";
 
 // Pipeline deps (the same ones you already use in routesPreviewAndGenerate / fragmentPipeline)
@@ -15,6 +18,9 @@ import { previewHtml } from "./templates/preview.html.js";
 
 // We must export renderOneFragment from fragmentPipeline.js (see step 3)
 import { renderOneFragment } from "./server/fragmentPipeline.js";
+
+// Fail fast if AI_PROVIDER or required API keys are invalid
+getConfig();
 
 const port = 5173;
 
