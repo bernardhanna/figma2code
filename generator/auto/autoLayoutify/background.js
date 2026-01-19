@@ -24,11 +24,14 @@ export function detectSectionBackground(root, ast) {
     suppressChildIds.add(picked.sourceNodeId);
   }
 
+  const hasBgCss = typeof css === "string" && css.trim().length > 0;
+
   return {
     css,
-    // We keep suppressRootBgId so root fills/paints don't double render in content.
-    // If you want root fills to render when no bg is detected, we can gate this.
-    suppressRootBgId: root?.id || null,
+    // Only suppress root paints when we actually have a real background image/gradient
+    // to render on the outer <section>. For pure solid-color sections, let boxDeco()
+    // render the background color from fills instead.
+    suppressRootBgId: hasBgCss ? root?.id || null : null,
     suppressChildIds: Array.from(suppressChildIds),
   };
 }

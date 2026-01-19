@@ -1,4 +1,6 @@
 .env
+components
+components/*
 generator/.env
 generator/fixtures.out/
 generator/.preview/

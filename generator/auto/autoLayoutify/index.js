@@ -51,10 +51,19 @@ export function autoLayoutify(ast, opts = {}) {
   const bgInfo = detectSectionBackground(ast.tree, ast);
   const suppressBgIds = new Set(bgInfo?.suppressChildIds || []);
 
+  // If we do NOT have linked mobile/tablet variants, apply a small responsive fallback so
+  // desktop paddings don't dominate smaller viewports.
+  const responsiveVariants = Array.isArray(ast?.meta?.responsive?.variants)
+    ? ast.meta.responsive.variants
+    : [];
+  const isMergedGroup = !!ast?.meta?.responsive?.mergedGroup || responsiveVariants.length >= 2;
+  const responsiveFallback = !isMergedGroup ? { maxXlPx: "max-xl:px-5" } : null;
+
   const html = renderNode(ast.tree, null, true, semantics, {
     suppressBgIds,
     suppressRootBgId: bgInfo?.suppressRootBgId || null,
     fontMap,
+    responsiveFallback,
   });
 
   if (!wrap) return html;

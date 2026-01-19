@@ -955,6 +955,12 @@ function mapVariantValueToPseudo(
   return "";
 }
 
+function normVariantValue(v: unknown): string {
+  return String(v ?? "")
+    .trim()
+    .toLowerCase();
+}
+
 /**
  * Find a component in the set that matches the given variant properties.
  * Returns the first matching component, or null if none found.
@@ -971,7 +977,7 @@ function findComponentByVariantProperties(
     >;
     let matches = true;
     for (const [axisName, targetValue] of Object.entries(targetProps)) {
-      if (vp[axisName] !== targetValue) {
+      if (normVariantValue(vp[axisName]) !== normVariantValue(targetValue)) {
         matches = false;
         break;
       }
@@ -1067,7 +1073,9 @@ function inferStateAxisInfo(instance: InstanceNode): StateAxisInfo | null {
       let matchesOtherAxes = true;
       for (const [axisName, currentVal] of Object.entries(allCurrentProps)) {
         if (axisName === best.axisName) continue; // Skip state axis
-        if (compVp[axisName] !== currentVal) {
+        if (
+          normVariantValue(compVp[axisName]) !== normVariantValue(currentVal)
+        ) {
           matchesOtherAxes = false;
           break;
         }
@@ -1125,7 +1133,9 @@ function inferStateAxisInfo(instance: InstanceNode): StateAxisInfo | null {
       let matchesOtherAxes = true;
       for (const [axisName, currentVal] of Object.entries(allCurrentProps)) {
         if (axisName === best.axisName) continue; // Skip state axis
-        if (compVp[axisName] !== currentVal) {
+        if (
+          normVariantValue(compVp[axisName]) !== normVariantValue(currentVal)
+        ) {
           matchesOtherAxes = false;
           break;
         }
@@ -1345,42 +1355,51 @@ async function walk(
   const hasImgFill = base.fills?.some((f) => f.kind === "image") === true;
   const complex = shouldRasterizeNode(node);
 
-  // IMPORTANT: INSTANCE nodes must keep their label text even if rasterized.
   if (node.type === "INSTANCE") {
-    // Rasterize for pixel-fidelity background
-    const img = await exportPNG(node);
-    if (img) base.img = img;
+    // Only treat INTERACTIVE-looking instances (buttons/links/cards) as raster
+    // wrappers. For structural text components like H1/H2 with decorative bars,
+    // we fall through to normal container handling so their children render.
+    const nameLower = String((node as any).name || "").toLowerCase();
+    const isHeadingInstance = /^h[1-6]\b/.test(nameLower);
+    const isDecorativeBar = /\b(decorative|bar)\b/.test(nameLower);
+    const interactive = isInteractiveLooking(node, base.actions);
 
-    // Capture label(s) from descendants (text inside the instance)
-    const runs = collectTextDescendants(node);
-    if (runs.length) base.__instanceText = runs;
+    if (interactive && !isHeadingInstance && !isDecorativeBar) {
+      // Rasterize for pixel-fidelity background
+      const img = await exportPNG(node);
+      if (img) base.img = img;
 
-    // Best-effort interactive state snapshots (hover/active/focus/disabled) based on component variants.
-    try {
-      const states = await exportInstanceStates(node as InstanceNode);
-      if (states && states.default) {
-        base.__states = states;
+      // Capture label(s) from descendants (text inside the instance)
+      const runs = collectTextDescendants(node);
+      if (runs.length) base.__instanceText = runs;
 
-        // Align the exported INSTANCE's own visual decoration with the "default"
-        // state snapshot so preview starts from the default design, even if the
-        // Figma instance is currently set to Hover/Pressed/etc.
-        const def = states.default;
-        if (def) {
-          if (Array.isArray(def.fills)) base.fills = def.fills;
-          if (def.stroke) base.stroke = def.stroke;
-          if (Array.isArray(def.shadows)) base.shadows = def.shadows;
-          if (typeof def.opacity === "number") base.opacity = def.opacity;
-          if (def.blendMode) base.blendMode = def.blendMode;
-          if (def.blur) base.blur = def.blur;
-          if (def.r) base.r = def.r;
+      // Best-effort interactive state snapshots (hover/active/focus/disabled) based on component variants.
+      try {
+        const states = await exportInstanceStates(node as InstanceNode);
+        if (states && states.default) {
+          base.__states = states;
+
+          // Align the exported INSTANCE's own visual decoration with the "default"
+          // state snapshot so preview starts from the default design, even if the
+          // Figma instance is currently set to Hover/Pressed/etc.
+          const def = states.default;
+          if (def) {
+            if (Array.isArray(def.fills)) base.fills = def.fills;
+            if (def.stroke) base.stroke = def.stroke;
+            if (Array.isArray(def.shadows)) base.shadows = def.shadows;
+            if (typeof def.opacity === "number") base.opacity = def.opacity;
+            if (def.blendMode) base.blendMode = def.blendMode;
+            if (def.blur) base.blur = def.blur;
+            if (def.r) base.r = def.r;
+          }
         }
+      } catch {
+        // state export is best-effort only; ignore failures
       }
-    } catch {
-      // state export is best-effort only; ignore failures
-    }
 
-    // Do NOT traverse instance internals (keeps AST small & avoids duplicating vectors)
-    return base;
+      // Do NOT traverse interactive instance internals (keeps AST small & avoids duplicating vectors)
+      return base;
+    }
   }
 
   // Non-instance raster rules

@@ -21,14 +21,17 @@ export function sizeClassForLeaf(node, parentLayout, isRoot, isText) {
   if (!parentLayout || parentLayout === "GRID") return "";
 
   const s = node.size || {};
+  const h = num(s.h ?? node.h) ? (s.h ?? node.h) : null;
   if (parentLayout === "HORIZONTAL") {
-    if (s.primary === "FILL") return "grow basis-0 min-w-0";
-    if (num(s.w ?? node.w)) return cls(`w-[${rem(s.w ?? node.w)}]`, "max-w-full", "shrink-0");
+    if (s.primary === "FILL") return cls("grow basis-0 min-w-0", pos(h) ? `h-[${rem(h)}]` : "");
+    if (num(s.w ?? node.w)) {
+      return cls(`w-[${rem(s.w ?? node.w)}]`, "max-w-full", "shrink-0", pos(h) ? `h-[${rem(h)}]` : "");
+    }
     return "";
   }
   if (parentLayout === "VERTICAL") {
-    if (s.primary === "FILL") return "grow basis-0 min-h-0";
-    return "";
+    if (s.primary === "FILL") return cls("grow basis-0 min-h-0", pos(h) ? `h-[${rem(h)}]` : "");
+    return pos(h) ? `h-[${rem(h)}]` : "";
   }
   return "";
 }
@@ -53,7 +56,14 @@ export function childSizing(node, parentLayout) {
 
   if (parentLayout === "GRID") {
     const w = num(s.w) ? s.w : num(node.w) ? node.w : null;
-    if (pos(w) && hasOwnBoxDeco(node)) return cls(`w-[${rem(w)}]`, "max-w-full");
+    const h = num(s.h) ? s.h : num(node.h) ? node.h : null;
+    if (pos(w) && hasOwnBoxDeco(node)) {
+      return cls(
+        `w-[${rem(w)}]`,
+        "max-w-full",
+        pos(h) ? `h-[${rem(h)}]` : ""
+      );
+    }
     return "";
   }
 

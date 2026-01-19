@@ -50,9 +50,19 @@ function bgFromFills(node) {
     if (gcss) bgImageCss = `bg-[${gcss}]`;
   } else if (solids.length) {
     const f = solids[solids.length - 1];
-    bgImageCss = `bg-[rgba(${Math.round(f.r * 255)},${Math.round(f.g * 255)},${Math.round(
-      f.b * 255
-    )},${f.a ?? 1})]`;
+    const r255 = Math.round(f.r * 255);
+    const g255 = Math.round(f.g * 255);
+    const b255 = Math.round(f.b * 255);
+    const a = f.a ?? 1;
+
+    // Prefer hex for opaque colors (matches Figma dev tools like #EDEDED).
+    if (Math.abs(a - 1) < 0.001) {
+      const toHex = (n) => n.toString(16).padStart(2, "0");
+      const hex = `#${toHex(r255)}${toHex(g255)}${toHex(b255)}`;
+      bgImageCss = `bg-[${hex}]`;
+    } else {
+      bgImageCss = `bg-[rgba(${r255},${g255},${b255},${a})]`;
+    }
   } else if (images.length) {
     modeClass = "bg-cover bg-no-repeat bg-center";
   }

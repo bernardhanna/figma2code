@@ -32,6 +32,7 @@ import {
   alignSelf,
   sizeClassForLeaf,
   sizeClassForImg,
+  fixedBoxSize,
 } from "./sizing.js";
 
 import { boxDeco, hasOwnBoxDeco } from "./styles.js";
@@ -284,6 +285,12 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     : "";
 
   const pad = paddings(al);
+  const fallbackPx =
+    isRoot &&
+    ctx?.responsiveFallback?.maxXlPx &&
+    (pos(al?.padL) || pos(al?.padR))
+      ? String(ctx.responsiveFallback.maxXlPx)
+      : "";
 
   const omitBg = isRoot && ctx?.suppressRootBgId === node.id;
 
@@ -292,9 +299,17 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const clip = node.clipsContent ? "overflow-hidden" : "";
 
   const useGrid = shouldUseGrid(node, semantics);
+  const nameLower = String(node?.name || "").toLowerCase();
+  const isDecorativeBar =
+    nameLower.includes("decorativebar") ||
+    (nameLower.includes("decorative") && nameLower.includes("bar"));
+
   const layoutClasses = useGrid
     ? gridColsResponsive(gridColsFor(node))
-    : flexResponsiveClasses(al, node.children || []);
+    : flexResponsiveClasses(al, node.children || [], {
+        forceRow: isDecorativeBar && al.layout === "HORIZONTAL",
+        noWrap: isDecorativeBar,
+      });
 
   let tag =
     aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
@@ -336,7 +351,8 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     )
     : "";
 
-  const container = cls(layoutClasses, gap, pad, deco, clip, ctaBase);
+  const fixedSize = fixedBoxSize(node, /*allowH=*/ true);
+  const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize);
 
   const pieces = (node.children || [])
     .map((child) => {

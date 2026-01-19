@@ -290,6 +290,17 @@ function looksLikeOverlayRect(node, parentNode) {
   if (!node || node.type !== "RECTANGLE") return false;
 
   const name = String(node.name || "").toLowerCase();
+  const parentName = String(parentNode?.name || "").toLowerCase();
+
+  // Avoid promoting decorative bar segments (they are small rects meant to be in flow).
+  if (parentName.includes("decorativebar") || (parentName.includes("decorative") && parentName.includes("bar"))) {
+    return false;
+  }
+
+  const nw = node?.bb?.w ?? node?.w ?? 0;
+  const nh = node?.bb?.h ?? node?.h ?? 0;
+  const isTiny = nw > 0 && nh > 0 && nw <= 120 && nh <= 24;
+
   const namedOverlay =
     name.includes("overlay") ||
     name.includes("gradient") ||
@@ -301,7 +312,8 @@ function looksLikeOverlayRect(node, parentNode) {
   if (node.opacity !== undefined && node.opacity < 1) return true;
   if (isMostlyCoveringParent(node, parentNode)) return true;
 
-  return namedOverlay;
+  // Name-only fallback is too broad; only apply it for non-tiny shapes.
+  return namedOverlay && !isTiny;
 }
 
 function stripFlowSizingClasses(classStr) {
