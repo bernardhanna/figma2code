@@ -1,4 +1,5 @@
 .env
+generator/.env
 generator/fixtures.out/
 generator/.preview/
 generator/.preview/assets/
