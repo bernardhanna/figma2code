@@ -59,21 +59,37 @@ function openTag(tag, classes = "", attrs = "", node, ctx) {
   return `<${tag}${nodeId}${attrs}${finalClasses ? ` class="${finalClasses}"` : ""}>`;
 }
 
+function attrsFromMap(attrs) {
+  if (!attrs || typeof attrs !== "object") return "";
+  return Object.entries(attrs)
+    .map(([k, v]) => {
+      const key = String(k || "").trim();
+      if (!key) return "";
+      if (v === false || v === null || typeof v === "undefined") return "";
+      if (v === true) return ` ${escAttr(key)}`;
+      return ` ${escAttr(key)}="${escAttr(String(v))}"`;
+    })
+    .filter(Boolean)
+    .join("");
+}
+
 function attrsForNode(node, extra = "") {
   const dn = node?.id ? ` data-node="${escAttr(node.id)}"` : "";
   // NEW: stable merge key (from normalizeAst extracting "#key" tokens)
   const dk = node?.key ? ` data-key="${escAttr(node.key)}"` : "";
-  return dn + dk + (extra || "");
+  const custom = attrsFromMap(node?.attrs || node?.dataAttrs || null);
+  return dn + dk + custom + (extra || "");
 }
 
 /* ------------------ CTA text helpers ------------------ */
 
-function collectTextNodesDeep(node, out = []) {
-  if (!node) return out;
+function collectTextNodesDeep(node, out = [], seen = new Set()) {
+  if (!node || seen.has(node)) return out;
+  seen.add(node);
   if (node.text && typeof node.text.raw === "string" && node.text.raw.trim()) {
     out.push(node);
   }
-  for (const c of node.children || []) collectTextNodesDeep(c, out);
+  for (const c of node.children || []) collectTextNodesDeep(c, out, seen);
   return out;
 }
 
@@ -266,10 +282,18 @@ function bestCtaLabel(node, semantics) {
 export function renderNode(node, parentLayout, isRoot, semantics, ctx = {}) {
   if (!isRoot && ctx?.suppressBgIds?.has(node.id)) return "";
 
+  const stack = ctx.__renderStack || new Set();
+  ctx.__renderStack = stack;
+  if (stack.has(node)) return "";
+  stack.add(node);
+
   const isAuto = node.auto && node.auto.layout && node.auto.layout !== "NONE";
-  return isAuto
+  const out = isAuto
     ? renderAuto(node, isRoot, semantics, parentLayout, ctx)
     : renderLeaf(node, parentLayout, isRoot, semantics, ctx);
+
+  stack.delete(node);
+  return out;
 }
 
 /* ------------------ auto container ------------------ */
@@ -322,7 +346,16 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     tag = "div";
   }
 
-  const containerOk = new Set(["div", "section", "nav", "header", "footer", "a", "button"]);
+  const containerOk = new Set([
+    "div",
+    "section",
+    "nav",
+    "header",
+    "footer",
+    "a",
+    "button",
+    "select",
+  ]);
   if (!containerOk.has(tag)) tag = "div";
 
   const hrefFromAI = aiHrefFor(node, semantics);
@@ -415,6 +448,40 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
 
 /* ------------------ leaf ------------------ */
 
+function optionLabelFromNode(node) {
+  const raw =
+    node?.option?.label ||
+    node?.option?.text ||
+    node?.text?.raw ||
+    node?.name ||
+    "";
+  return String(raw || "").trim();
+}
+
+function optionValueFromNode(node, fallbackLabel) {
+  const v = node?.option?.value;
+  if (v === null || typeof v === "undefined") return fallbackLabel || "";
+  return String(v);
+}
+
+function renderOptionsFromList(options) {
+  if (!Array.isArray(options)) return "";
+  return options
+    .map((opt) => {
+      const label = String(opt?.label || opt?.text || opt || "").trim();
+      if (!label && label !== "") return "";
+      const value =
+        opt && typeof opt === "object" && "value" in opt ? String(opt.value ?? "") : label;
+      const selected = opt?.selected ? " selected" : "";
+      const disabled = opt?.disabled ? " disabled" : "";
+      return `<option value="${escAttr(value)}"${selected}${disabled}>${escAttr(
+        label
+      )}</option>`;
+    })
+    .filter(Boolean)
+    .join("");
+}
+
 function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
   const svg = renderSvgLeaf(node);
   if (svg) return svg;
@@ -424,6 +491,35 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
   const aiLeafTag = aiTagFor(node, semantics);
   const aiLeafHref = aiHrefFor(node, semantics);
   const aiLeafLabel = aiLabelFor(node, semantics);
+
+  if (aiLeafTag === "option") {
+    const label = optionLabelFromNode(node);
+    const value = optionValueFromNode(node, label);
+    const selected = node?.option?.selected ? " selected" : "";
+    const disabled = node?.option?.disabled ? " disabled" : "";
+    const attrs = attrsForNode(
+      node,
+      ` value="${escAttr(value)}"${selected}${disabled}`
+    );
+    return openTag("option", "", attrs, node, ctx) + escAttr(label) + `</option>`;
+  }
+
+  if (aiLeafTag === "select") {
+    const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ false);
+    const clip = node.clipsContent ? "overflow-hidden" : "";
+    const baseSize = sizeClassForLeaf(node, parentLayout, isRoot, false);
+    const classes = cls(baseSize, deco, clip);
+    const optionsHtml = Array.isArray(node?.__options) && node.__options.length
+      ? renderOptionsFromList(node.__options)
+      : (node.children || [])
+          .map((c) => renderNode(c, parentLayout, false, semantics, ctx))
+          .join("\n");
+    return (
+      openTag("select", classes, attrsForNode(node), node, ctx) +
+      optionsHtml +
+      `</select>`
+    );
+  }
 
   if (isText) {
     const deco = boxDeco(node, /*isText=*/ true, /*omitBg=*/ true);

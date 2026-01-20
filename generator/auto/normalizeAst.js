@@ -27,6 +27,51 @@ function clamp01(v) {
   return Math.max(0, Math.min(1, n));
 }
 
+const MAX_INLINE_DATA = Number(process.env.MAX_INLINE_DATA || 200000);
+
+function isLargeDataUrl(value) {
+  const s = typeof value === "string" ? value : "";
+  if (!s) return false;
+  if (!s.startsWith("data:")) return false;
+  if (MAX_INLINE_DATA <= 0) return false;
+  return s.length > MAX_INLINE_DATA;
+}
+
+function stripLargeInlineDataFromFill(fill) {
+  if (!isObj(fill)) return fill;
+  const f = { ...fill };
+  if (isLargeDataUrl(f.src)) f.src = "";
+  if (isLargeDataUrl(f.imageSrc)) f.imageSrc = "";
+  if (isObj(f.image) && isLargeDataUrl(f.image.src)) {
+    f.image = { ...f.image, src: "" };
+  }
+  if (isObj(f.asset) && isLargeDataUrl(f.asset.src)) {
+    f.asset = { ...f.asset, src: "" };
+  }
+  if (isObj(f.file) && isLargeDataUrl(f.file.src)) {
+    f.file = { ...f.file, src: "" };
+  }
+  return f;
+}
+
+function stripLargeInlineData(node) {
+  if (!isObj(node)) return node;
+  if (isObj(node.img) && isLargeDataUrl(node.img.src)) {
+    node.img = { ...node.img, src: "" };
+  }
+  if (isObj(node.svg)) {
+    if (isLargeDataUrl(node.svg.markup)) node.svg = { ...node.svg, markup: "" };
+    if (isLargeDataUrl(node.svg.html)) node.svg = { ...node.svg, html: "" };
+  }
+  if (Array.isArray(node.fills)) {
+    node.fills = node.fills.map(stripLargeInlineDataFromFill);
+  }
+  if (Array.isArray(node.fill)) {
+    node.fill = node.fill.map(stripLargeInlineDataFromFill);
+  }
+  return node;
+}
+
 function rgba01ToHex(rgba) {
   if (!isObj(rgba)) return null;
   const r = rgba.r,
@@ -54,10 +99,11 @@ function extractNodeKeyFromName(name) {
   return m ? m[1] : "";
 }
 
-function walkCollectText(n, out = []) {
-  if (!n) return out;
+function walkCollectText(n, out = [], seen = new Set()) {
+  if (!n || seen.has(n)) return out;
+  seen.add(n);
   if (isObj(n.text) && typeof n.text.raw === "string" && n.text.raw.trim()) out.push(n);
-  for (const c of n.children || []) walkCollectText(c, out);
+  for (const c of n.children || []) walkCollectText(c, out, seen);
   return out;
 }
 
@@ -133,7 +179,7 @@ function normalizeTextColorOnNode(node) {
  * --------------------------------------------- */
 
 function recoverCtaFromInstance(node) {
-  const texts = walkCollectText(node, []);
+  const texts = walkCollectText(node, [], new Set());
   if (texts.length) {
     const label = firstNonGenericLabel(texts[0].text?.raw);
     if (label) {
@@ -267,17 +313,21 @@ function enforceBgFromFill(ast) {
  * Main node normalization
  * --------------------------------------------- */
 
-function normalizeNode(node) {
+function normalizeNode(node, seen = new Map()) {
   if (!isObj(node)) return node;
+  if (seen.has(node)) return seen.get(node);
 
   const n = { ...node };
+  seen.set(node, n);
+
+  stripLargeInlineData(n);
 
   // stable key extraction
   const k = extractNodeKeyFromName(n.name);
   if (k) n.key = k;
 
   if (Array.isArray(n.children)) {
-    n.children = n.children.map(normalizeNode).filter(Boolean);
+    n.children = n.children.map((c) => normalizeNode(c, seen)).filter(Boolean);
   }
 
   normalizeTextColorOnNode(n);

@@ -14,6 +14,9 @@ function clamp01(x) {
   return Math.max(0, Math.min(1, x));
 }
 
+const ENABLE_INTENT_GRAPH = String(process.env.INTENT_GRAPH || "1").trim() !== "0";
+const INTENT_GRAPH_MAX_NODES = Number(process.env.INTENT_GRAPH_MAX_NODES) || 15000;
+
 function approxEqual(a, b, tol = 0.1) {
   if (typeof a !== "number" || typeof b !== "number") return false;
   if (a === 0 && b === 0) return true;
@@ -70,13 +73,24 @@ function looksLikeHero(root) {
   // prominent heading heuristic: find a TEXT node with large fontSize >= 40
   let hasProminentHeading = false;
 
-  (function walk(n) {
-    if (!n || hasProminentHeading) return;
+  const stack = [root];
+  const seen = new Set();
+  let visited = 0;
+  while (stack.length) {
+    const n = stack.pop();
+    if (!n || seen.has(n) || hasProminentHeading) continue;
+    seen.add(n);
+    visited += 1;
+    if (visited > INTENT_GRAPH_MAX_NODES) break;
     if (n.type === "TEXT" && n.text && typeof n.text.fontSize === "number") {
-      if (n.text.fontSize >= 40) hasProminentHeading = true;
+      if (n.text.fontSize >= 40) {
+        hasProminentHeading = true;
+        break;
+      }
     }
-    for (const c of safeChildren(n)) walk(c);
-  })(root);
+    const kids = safeChildren(n);
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
 
   return Boolean(hasBgImageOrGradient && hasProminentHeading);
 }
@@ -176,30 +190,51 @@ function inferLayoutForNode(node, collectionsForNode = []) {
 
 function buildNodeIndex(root) {
   const byId = new Map();
-  (function walk(n, parentId = null) {
-    if (!n || !n.id) return;
-    byId.set(n.id, { node: n, parentId });
-    for (const c of safeChildren(n)) walk(c, n.id);
-  })(root);
+  const stack = [{ node: root, parentId: null }];
+  const seen = new Set();
+  let visited = 0;
+  while (stack.length) {
+    const cur = stack.pop();
+    const n = cur?.node;
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    visited += 1;
+    if (visited > INTENT_GRAPH_MAX_NODES) break;
+    if (n.id) byId.set(n.id, { node: n, parentId: cur.parentId });
+    const kids = safeChildren(n);
+    for (let i = kids.length - 1; i >= 0; i -= 1) {
+      stack.push({ node: kids[i], parentId: n.id || null });
+    }
+  }
   return byId;
 }
 
 export function buildIntentGraph(ast) {
+  if (!ENABLE_INTENT_GRAPH) return null;
   if (!ast?.tree) throw new Error("buildIntentGraph: missing ast.tree");
 
   const root = ast.tree;
   const sectionType = looksLikeHero(root) ? "hero" : "section";
 
   const nodeIndex = buildNodeIndex(root);
+  if (nodeIndex.size > INTENT_GRAPH_MAX_NODES) return null;
 
   // Detect collections per parent
   const collections = [];
-  (function walk(n) {
-    if (!n) return;
+  const stack = [root];
+  const seen = new Set();
+  let visited = 0;
+  while (stack.length) {
+    const n = stack.pop();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    visited += 1;
+    if (visited > INTENT_GRAPH_MAX_NODES) break;
     const found = detectCollections(n);
     for (const g of found) collections.push(g);
-    for (const c of safeChildren(n)) walk(c);
-  })(root);
+    const kids = safeChildren(n);
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
 
   // Quick lookup: parentId -> collections
   const collectionsByParent = new Map();

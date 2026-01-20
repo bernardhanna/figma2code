@@ -52,9 +52,17 @@ function debugLog(...args) {
 function collectNodeIndex(root) {
   const byId = new Map();
   const byKey = new Map();
+  const seen = new Set();
+  const maxNodes = Number(process.env.STATE_PASS_MAX_NODES) || 10000;
+  let visited = 0;
 
-  (function walk(n) {
-    if (!isObj(n)) return;
+  const stack = [root];
+  while (stack.length) {
+    const n = stack.pop();
+    if (!isObj(n) || seen.has(n)) continue;
+    seen.add(n);
+    visited += 1;
+    if (visited > maxNodes) break;
     const id = n.id && String(n.id);
     const key = n.key && String(n.key);
 
@@ -63,8 +71,9 @@ function collectNodeIndex(root) {
       if (!byKey.has(key)) byKey.set(key, []);
       byKey.get(key).push(n);
     }
-    for (const c of n.children || []) walk(c);
-  })(root);
+    const kids = n.children || [];
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
 
   return { byId, byKey };
 }
@@ -166,8 +175,16 @@ export function interactiveStatesPass(ast) {
 
   const debugSummary = [];
 
-  (function walk(n) {
-    if (!isObj(n)) return;
+  const seen = new Set();
+  const maxNodes = Number(process.env.STATE_PASS_MAX_NODES) || 10000;
+  let visited = 0;
+  const stack = [root];
+  while (stack.length) {
+    const n = stack.pop();
+    if (!isObj(n) || seen.has(n)) continue;
+    seen.add(n);
+    visited += 1;
+    if (visited > maxNodes) break;
 
     if (isObj(n.__states) && isObj(n.__states.default)) {
       const stateKeys = Object.keys(n.__states).filter((k) => k !== "default");
@@ -189,8 +206,9 @@ export function interactiveStatesPass(ast) {
       }
     }
 
-    for (const c of n.children || []) walk(c);
-  })(root);
+    const kids = n.children || [];
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
 
   if (debugSummary.length) {
     debugLog("applied state utilities", debugSummary);

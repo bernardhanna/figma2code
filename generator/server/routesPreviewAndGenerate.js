@@ -36,6 +36,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         preventNestedInteractive,
         interactiveStatesPass,
         previewHtml,
+        previewOnly: true,
       });
 
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });
@@ -79,6 +80,7 @@ export function registerPreviewAndGenerateRoutes(app) {
         preventNestedInteractive,
         interactiveStatesPass,
         previewHtml,
+        previewOnly: false,
       });
 
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });

@@ -80,6 +80,7 @@ export function registerBatchUploadRoutes(app, deps) {
           preventNestedInteractive,
           buildIntentGraph,
           normalizeAst,
+          viewport: variant,
         });
 
         let variantAst = single.ast;
@@ -116,6 +117,7 @@ export function registerBatchUploadRoutes(app, deps) {
         autoLayoutify,
         semanticAccessiblePass,
         previewHtml,
+        previewOnly: true,
       });
 
       if (!merged.ok) return res.status(merged.status || 500).json(merged);

@@ -42,16 +42,27 @@ function demoteNode(n) {
 
 function hasInteractiveDescendant(n) {
   const kids = Array.isArray(n?.children) ? n.children : [];
-  for (const c of kids) {
-    if (isInteractiveNode(c)) return true;
-    if (hasInteractiveDescendant(c)) return true;
+  const stack = kids.slice();
+  const seen = new Set();
+  while (stack.length) {
+    const cur = stack.pop();
+    if (!cur || seen.has(cur)) continue;
+    seen.add(cur);
+    if (isInteractiveNode(cur)) return true;
+    const next = Array.isArray(cur.children) ? cur.children : [];
+    for (let i = next.length - 1; i >= 0; i -= 1) stack.push(next[i]);
   }
   return false;
 }
 
 export function preventNestedInteractive(ast) {
-  (function walk(n) {
-    if (!n) return;
+  const root = ast?.tree || ast;
+  const stack = [root];
+  const seen = new Set();
+  while (stack.length) {
+    const n = stack.pop();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
 
     const selfInteractive = isInteractiveNode(n);
     if (selfInteractive && hasInteractiveDescendant(n)) {
@@ -59,8 +70,9 @@ export function preventNestedInteractive(ast) {
       demoteNode(n);
     }
 
-    for (const c of n.children || []) walk(c);
-  })(ast?.tree || ast);
+    const kids = n.children || [];
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
 
   return ast;
 }

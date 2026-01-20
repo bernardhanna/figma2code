@@ -115,8 +115,10 @@ function tokensToString(tokens) {
 function findNodeById(astTree, id) {
   if (!astTree || !id) return null;
   let found = null;
+  const seen = new Set();
   (function walk(n) {
-    if (!n || found) return;
+    if (!n || found || seen.has(n)) return;
+    seen.add(n);
     if (n.id === id) {
       found = n;
       return;
@@ -162,8 +164,11 @@ function stableNodeLabel(n) {
  */
 function buildStableKeyMap(astTree) {
   const map = new Map(); // id -> stable key
+  const visited = new Set();
 
   function walkChildren(parentNode, parentPath) {
+    if (!parentNode || visited.has(parentNode)) return;
+    visited.add(parentNode);
     const kids = Array.isArray(parentNode?.children) ? parentNode.children : [];
     const seen = new Map(); // label -> count
 
@@ -261,7 +266,10 @@ function typographyToTailwind(typography) {
 
 function buildParentMap(astTree) {
   const parent = new Map(); // childId -> parentNode
+  const seen = new Set();
   (function walk(n) {
+    if (!n || seen.has(n)) return;
+    seen.add(n);
     for (const c of n?.children || []) {
       parent.set(c.id, n);
       walk(c);
@@ -708,7 +716,16 @@ function upgradeRootHeroBanner({ html, ast, semantics, report }) {
 
 export function semanticAccessiblePass({ html, ast, semantics }) {
   const report = { fixes: [], warnings: [] };
-  let tokens = tokenize(html || "");
+  const rawHtml = String(html || "");
+  const maxHtml = Number(process.env.SEMANTIC_PASS_MAX_HTML || 2000000);
+  if (maxHtml > 0 && rawHtml.length > maxHtml) {
+    report.warnings.push(
+      `semanticAccessiblePass skipped (html length ${rawHtml.length} > ${maxHtml}).`
+    );
+    return { html: rawHtml, report };
+  }
+
+  let tokens = tokenize(rawHtml);
 
   const opts = readLandmarkOpts(semantics);
 
