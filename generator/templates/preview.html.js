@@ -388,12 +388,25 @@ function slickFrameHead() {
       width: auto !important;
       height: auto !important;
       line-height: normal !important;
+      cursor: pointer !important;
+      position: relative !important;
+      z-index: 1 !important;
     }
     [data-slick-prev]::before, [data-slick-next]::before {
       content: none !important;
     }
     [data-slick-prev].slick-arrow, [data-slick-next].slick-arrow {
       transform: none !important;
+    }
+    /* Apply state-based colors from CSS variables */
+    [data-slick-prev]:hover svg, [data-slick-next]:hover svg {
+      color: var(--hover-color, currentColor) !important;
+    }
+    [data-slick-prev]:active svg, [data-slick-next]:active svg {
+      color: var(--active-color, currentColor) !important;
+    }
+    [data-slick-prev]:focus-visible svg, [data-slick-next]:focus-visible svg {
+      color: var(--focus-color, currentColor) !important;
     }
   </style>
   `;

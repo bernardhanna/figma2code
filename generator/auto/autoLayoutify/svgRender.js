@@ -36,7 +36,27 @@ function svgBaseAttrs(node) {
 function svgAttrString(node, classes, opts = {}) {
   const includeClass = opts.includeClass !== false;
   const includeAria = opts.includeAria === true;
-  const style = typeof opts.style === "string" && opts.style.trim() ? opts.style.trim() : "";
+  let style = typeof opts.style === "string" && opts.style.trim() ? opts.style.trim() : "";
+
+  // Merge in state-based colors from __states if available
+  const stateColors = [];
+  if (node?.__states) {
+    if (node.__states.hover) {
+      const hoverColor = colorFromNode(node, "hover");
+      if (hoverColor) stateColors.push(`--hover-color:${hoverColor}`);
+    }
+    if (node.__states.active) {
+      const activeColor = colorFromNode(node, "active");
+      if (activeColor) stateColors.push(`--active-color:${activeColor}`);
+    }
+    if (node.__states.focus) {
+      const focusColor = colorFromNode(node, "focus");
+      if (focusColor) stateColors.push(`--focus-color:${focusColor}`);
+    }
+  }
+  if (stateColors.length) {
+    style = style ? `${style};${stateColors.join(";")}` : stateColors.join(";");
+  }
   const base = svgBaseAttrs(node);
   const classAttr = includeClass && classes ? ` class="${escAttr(classes)}"` : "";
   const styleAttr = style ? ` style="${escAttr(style)}"` : "";
@@ -74,7 +94,17 @@ function firstSolidFill(node) {
   return null;
 }
 
-function colorFromNode(node) {
+function colorFromNode(node, stateKey = null) {
+  if (node?.__inheritColor) return "";
+  if (stateKey && node?.__states && node.__states[stateKey]) {
+    const stateNode = node.__states[stateKey];
+    const stroke = visibleStroke(stateNode);
+    if (stroke?.color) return rgba01ToCss(stroke.color);
+    const fill = firstSolidFill(stateNode);
+    if (fill && typeof fill.r === "number") {
+      return rgba01ToCss({ r: fill.r, g: fill.g, b: fill.b, a: fill.a });
+    }
+  }
   const stroke = visibleStroke(node);
   if (stroke?.color) return rgba01ToCss(stroke.color);
   const fill = firstSolidFill(node);
@@ -115,13 +145,17 @@ export function renderSvgLeaf(node) {
   const svg = node?.svg || node?.vector || null;
   if (!svg) return "";
 
+  const stateClasses = node?.tw ? String(node.tw).trim() : "";
+  const baseSizeClasses = sizeClassesFromNode(node);
+  const allClasses = cls(baseSizeClasses, stateClasses);
+
   // Case 1: full markup
   if (svg.markup || svg.html) {
     const markup = stripOuterSvg(svg.markup || svg.html);
     if (!markup) return "";
     if (MAX_INLINE_DATA > 0 && markup.length > MAX_INLINE_DATA) return "";
 
-    const classes = sizeClassesFromNode(node);
+    const classes = allClasses;
     const color = colorFromNode(node);
 
     if (markup.startsWith("<svg")) {
@@ -146,7 +180,7 @@ export function renderSvgLeaf(node) {
         null;
 
   if (paths && paths.length) {
-    const classes = sizeClassesFromNode(node);
+    const classes = allClasses;
     const color = colorFromNode(node);
     const mode = drawMode(node);
     const strokeAttrs =
@@ -181,7 +215,7 @@ export function renderSvgLeaf(node) {
 
   if (d && d.trim()) {
     if (MAX_INLINE_DATA > 0 && d.length > MAX_INLINE_DATA) return "";
-    const classes = sizeClassesFromNode(node);
+    const classes = allClasses;
     const color = colorFromNode(node);
     const mode = drawMode(node);
     const strokeAttrs =

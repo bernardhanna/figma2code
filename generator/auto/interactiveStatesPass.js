@@ -33,6 +33,7 @@
 
 import { boxDeco } from "./autoLayoutify/styles.js";
 import { cls } from "./autoLayoutify/precision.js";
+import { visibleStroke } from "./autoLayoutify/stroke.js";
 
 function isObj(v) {
   return v && typeof v === "object" && !Array.isArray(v);
@@ -131,12 +132,104 @@ function isInteractiveWrapper(node) {
     name.includes("btn") ||
     name.includes("cta") ||
     name.includes("link") ||
-    name.includes("card")
+    name.includes("card") ||
+    name.includes("arrow") ||
+    name.includes("chevron")
   ) {
     return true;
   }
   if (node?.actions?.isClickable || node?.actions?.openUrl) return true;
+  if (node?.attrs && (node.attrs["data-slick-prev"] || node.attrs["data-slick-next"])) {
+    return true;
+  }
   return false;
+}
+
+function clamp01(v) {
+  const n = Number(v);
+  if (!isFinite(n)) return 0;
+  return Math.max(0, Math.min(1, n));
+}
+
+function rgba01ToHex(rgba) {
+  if (!rgba || typeof rgba !== "object") return null;
+  const r = rgba.r;
+  const g = rgba.g;
+  const b = rgba.b;
+  if (typeof r !== "number" || typeof g !== "number" || typeof b !== "number") return null;
+  const to = (v01) => Math.round(clamp01(v01) * 255).toString(16).padStart(2, "0");
+  return `#${to(r)}${to(g)}${to(b)}`;
+}
+
+function firstSolidFill(node) {
+  const fills = Array.isArray(node?.fills) ? node.fills : Array.isArray(node?.fill) ? node.fill : [];
+  for (const f of fills) {
+    const kind = String(f?.kind || f?.type || f?.fillType || "").toLowerCase();
+    if (kind === "solid" || kind === "color") {
+      return f;
+    }
+  }
+  return null;
+}
+
+function colorHexFromNode(node) {
+  const stroke = visibleStroke(node);
+  if (stroke?.color) return rgba01ToHex(stroke.color);
+  const fill = firstSolidFill(node);
+  if (fill && typeof fill.r === "number") {
+    return rgba01ToHex({ r: fill.r, g: fill.g, b: fill.b, a: fill.a });
+  }
+  return null;
+}
+
+function isSvgOrVector(node) {
+  return !!(
+    node?.svg ||
+    node?.vector ||
+    String(node?.type || "").toUpperCase() === "VECTOR" ||
+    String(node?.type || "").toUpperCase() === "BOOLEAN_OPERATION"
+  );
+}
+
+function hasTextDescendant(node) {
+  const stack = [node];
+  const seen = new Set();
+  while (stack.length) {
+    const n = stack.pop();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    if (n.text || String(n.type || "").toUpperCase() === "TEXT") return true;
+    const kids = n.children || [];
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
+  return false;
+}
+
+function findFirstVector(node) {
+  const stack = [node];
+  const seen = new Set();
+  while (stack.length) {
+    const n = stack.pop();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    if (isSvgOrVector(n)) return n;
+    const kids = n.children || [];
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
+  return null;
+}
+
+function markVectorDescendants(node) {
+  const stack = [node];
+  const seen = new Set();
+  while (stack.length) {
+    const n = stack.pop();
+    if (!n || seen.has(n)) continue;
+    seen.add(n);
+    if (isSvgOrVector(n)) n.__inheritColor = true;
+    const kids = n.children || [];
+    for (let i = kids.length - 1; i >= 0; i -= 1) stack.push(kids[i]);
+  }
 }
 
 function computeStateClassesForNode(node, states) {
@@ -146,6 +239,26 @@ function computeStateClassesForNode(node, states) {
   const def = states.default;
 
   const supportedKeys = ["hover", "active", "focus", "disabled"];
+  const isSvg = isSvgOrVector(node);
+  const isWrapper = isInteractiveWrapper(node) && !isSvg;
+  const allowIconColor = isWrapper && !hasTextDescendant(node);
+
+  if (allowIconColor) {
+    const defIcon = findFirstVector(def);
+    const defIconColor = defIcon ? colorHexFromNode(defIcon) : null;
+    if (defIconColor) out.push(`text-[${defIconColor}]`);
+    for (const key of supportedKeys) {
+      const stateSnap = states[key];
+      if (!isObj(stateSnap)) continue;
+      const stateIcon = findFirstVector(stateSnap);
+      const stateColor = stateIcon ? colorHexFromNode(stateIcon) : null;
+      if (stateColor && stateColor !== defIconColor) {
+        const prefix = prefixForStateKey(key);
+        if (prefix) out.push(`${prefix}text-[${stateColor}]`);
+      }
+    }
+    if (defIconColor) markVectorDescendants(node);
+  }
 
   for (const key of supportedKeys) {
     if (!isObj(states[key])) continue;
@@ -153,7 +266,16 @@ function computeStateClassesForNode(node, states) {
     if (!prefix) continue;
 
     const diff = diffDecoClasses(def, states[key]);
-    if (!diff.length) continue;
+
+    if (isSvg) {
+      const defColor = colorHexFromNode(def);
+      const stateColor = colorHexFromNode(states[key]);
+      if (stateColor && stateColor !== defColor) {
+        out.push(`${prefix}text-[${stateColor}]`);
+      }
+    }
+
+    if (!diff.length && !isSvg) continue;
 
     const prefixed = diff.map((c) => prefix + c);
 
