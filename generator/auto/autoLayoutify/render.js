@@ -276,6 +276,12 @@ export function renderNode(node, parentLayout, isRoot, semantics, ctx = {}) {
 
 function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const al = node.auto;
+  const children =
+    (Array.isArray(node.children) && node.children.length
+      ? node.children
+      : node?.__states?.default?.children) || [];
+  const nodeForLayout =
+    children === node.children ? node : { ...node, children };
 
   const gap = pos(al.itemSpacing)
     ? `gap-[${(al.itemSpacing / 16)
@@ -298,15 +304,15 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const deco = cls(decoBase);
   const clip = node.clipsContent ? "overflow-hidden" : "";
 
-  const useGrid = shouldUseGrid(node, semantics);
+  const useGrid = shouldUseGrid(nodeForLayout, semantics);
   const nameLower = String(node?.name || "").toLowerCase();
   const isDecorativeBar =
     nameLower.includes("decorativebar") ||
     (nameLower.includes("decorative") && nameLower.includes("bar"));
 
   const layoutClasses = useGrid
-    ? gridColsResponsive(gridColsFor(node))
-    : flexResponsiveClasses(al, node.children || [], {
+    ? gridColsResponsive(gridColsFor(nodeForLayout))
+    : flexResponsiveClasses(al, children, {
         forceRow: isDecorativeBar && al.layout === "HORIZONTAL",
         noWrap: isDecorativeBar,
       });
@@ -315,7 +321,7 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
 
   // SAFETY: never render auto-layout containers as interactive unless they have explicit actions
-  const hasChildren = Array.isArray(node.children) && node.children.length > 0;
+  const hasChildren = Array.isArray(children) && children.length > 0;
   const hasActions = !!(node?.actions?.openUrl || node?.actions?.isClickable === true);
 
   if (hasChildren && (tag === "a" || tag === "button") && !hasActions) {
@@ -354,7 +360,7 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const fixedSize = fixedBoxSize(node, /*allowH=*/ true);
   const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize);
 
-  const pieces = (node.children || [])
+  const pieces = children
     .map((child) => {
       if (ctx?.suppressBgIds?.has(child.id)) return null;
 
@@ -492,6 +498,8 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
       baseSize,
       deco,
       clip,
+      "whitespace-pre-wrap",
+      "break-words",
       ta,
       fs,
       fw,
