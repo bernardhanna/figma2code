@@ -7,6 +7,8 @@ import process from "node:process";
 import { PREVIEW_DIR } from "./runtimePaths.js";
 import { decideResponsiveStrategy } from "./variantDecision.js";
 import { mergeResponsiveFragments } from "../auto/mergeResponsiveFragments.js";
+import { variantLinkPass } from "../auto/variantLinkPass.js";
+import { previewFocusPass } from "../auto/previewFocusPass.js";
 
 import { parseGroupVariant } from "./variantNaming.js";
 import {
@@ -154,6 +156,8 @@ export function renderOneFragment({
   buildIntentGraph,
   normalizeAst,
   interactiveStatesPass,
+  viewport,
+  previewOnly,
 }) {
   let a = maybeAnnotateWithComponentMatch(ast);
 
@@ -161,6 +165,16 @@ export function renderOneFragment({
     const r = normalizeAst(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
+  }
+
+  if (previewOnly) {
+    const focused = previewFocusPass(a, { previewOnly });
+    a = focused?.ast || a;
+  }
+
+  if (variantLinkPass) {
+    const out = variantLinkPass(a, { viewport });
+    a = out || a;
   }
 
   let phase3 = null;
@@ -187,16 +201,19 @@ export function renderOneFragment({
     throw new Error("renderOneFragment: pipeline produced AST missing tree");
   }
 
-  const semantics = a?.semantics || a?.semanticsMap || a?.meta?.semantics || {};
-  let fragment = autoLayoutify(a, {
+  const renderFocus = previewFocusPass(a, { previewOnly });
+  const renderAst = renderFocus?.ast || a;
+  const semantics =
+    renderAst?.semantics || renderAst?.semanticsMap || renderAst?.meta?.semantics || {};
+  let fragment = autoLayoutify(renderAst, {
     semantics,
     wrap: true,
-    fontMap: a?.meta?.fontMap || {},
+    fontMap: renderAst?.meta?.fontMap || {},
   });
 
   let phase2Report = null;
   if (semanticAccessiblePass) {
-    const out = semanticAccessiblePass({ html: fragment, ast: a, semantics });
+    const out = semanticAccessiblePass({ html: fragment, ast: renderAst, semantics });
     if (out && typeof out.html === "string") fragment = out.html;
     phase2Report = out?.report || null;
   }
@@ -241,6 +258,7 @@ export function buildMergedResponsivePreview({
   autoLayoutify,
   semanticAccessiblePass,
   previewHtml,
+  previewOnly,
 }) {
   const { variantsMap, available } = loadVariantsForGroup(groupKey);
 
@@ -262,16 +280,23 @@ export function buildMergedResponsivePreview({
 
   function renderVariant(ast, label) {
     if (!ast) return "";
-    const semantics = ast?.semantics || ast?.semanticsMap || ast?.meta?.semantics || {};
+    if (variantLinkPass) {
+      const out = variantLinkPass(ast, { viewport: label });
+      if (out) ast = out;
+    }
+    const focus = previewFocusPass(ast, { previewOnly });
+    const renderAst = focus?.ast || ast;
+    const semantics =
+      renderAst?.semantics || renderAst?.semanticsMap || renderAst?.meta?.semantics || {};
 
-    let html = autoLayoutify(ast, {
+    let html = autoLayoutify(renderAst, {
       semantics,
       wrap: true,
-      fontMap: ast?.meta?.fontMap || {},
+      fontMap: renderAst?.meta?.fontMap || {},
     });
 
     if (semanticAccessiblePass) {
-      const out = semanticAccessiblePass({ html, ast, semantics });
+      const out = semanticAccessiblePass({ html, ast: renderAst, semantics });
       if (out && typeof out.html === "string") html = out.html;
       phase2Reports[label] = out?.report || null;
     }
@@ -365,6 +390,7 @@ export async function buildPreviewFragment({
   preventNestedInteractive,
   interactiveStatesPass,
   previewHtml,
+  previewOnly,
 }) {
   try {
     if (!astInput || !astInput.tree) {
@@ -379,6 +405,7 @@ export async function buildPreviewFragment({
 
     const parsed = parseGroupVariant(nameSource);
     console.log("[variant]", { nameSource, parsed });
+    const viewport = parsed.isVariant ? parsed.variant : "desktop";
 
     ensurePreviewDir();
 
@@ -395,6 +422,8 @@ export async function buildPreviewFragment({
         buildIntentGraph,
         normalizeAst,
         interactiveStatesPass,
+        viewport,
+        previewOnly,
       });
 
       let variantAst = single.ast;
@@ -429,6 +458,7 @@ export async function buildPreviewFragment({
         autoLayoutify,
         semanticAccessiblePass,
         previewHtml,
+        previewOnly,
       });
 
       if (!merged.ok) return merged;
@@ -466,7 +496,9 @@ export async function buildPreviewFragment({
       preventNestedInteractive,
       buildIntentGraph,
       normalizeAst,
-        interactiveStatesPass,
+      interactiveStatesPass,
+      viewport,
+      previewOnly,
     });
 
     writeStage(single.ast.slug, single.ast);

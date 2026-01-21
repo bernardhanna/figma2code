@@ -23,6 +23,507 @@ import { viewportScript } from "./preview/preview.viewport.js";
 import { patchesScript } from "./preview/preview.patches.js";
 import { responsiveScript } from "./preview/preview.responsive.js";
 
+const ENABLE_NICESELECT = String(process.env.WIDGET_NICESELECT || "").trim() === "1";
+const NICESELECT_CSS =
+  String(process.env.WIDGET_NICESELECT_CSS || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/nice-select2@2.3.0/dist/css/nice-select2.css";
+const NICESELECT_CSS_FALLBACK =
+  String(process.env.WIDGET_NICESELECT_CSS_FALLBACK || "").trim() ||
+  "https://unpkg.com/nice-select2@2.3.0/dist/css/nice-select2.css";
+const NICESELECT_JS =
+  String(process.env.WIDGET_NICESELECT_JS || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/nice-select2@2.3.0/dist/js/nice-select2.js";
+const NICESELECT_JS_FALLBACK =
+  String(process.env.WIDGET_NICESELECT_JS_FALLBACK || "").trim() ||
+  "https://unpkg.com/nice-select2@2.3.0/dist/js/nice-select2.js";
+
+const ENABLE_SLICK = String(process.env.WIDGET_SLICK || "").trim() === "1";
+const SLICK_CSS =
+  String(process.env.WIDGET_SLICK_CSS || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css";
+const SLICK_CSS_FALLBACK =
+  String(process.env.WIDGET_SLICK_CSS_FALLBACK || "").trim() ||
+  "https://unpkg.com/slick-carousel@1.8.1/slick/slick.css";
+const SLICK_JS =
+  String(process.env.WIDGET_SLICK_JS || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js";
+const SLICK_JS_FALLBACK =
+  String(process.env.WIDGET_SLICK_JS_FALLBACK || "").trim() ||
+  "https://unpkg.com/slick-carousel@1.8.1/slick/slick.min.js";
+const JQUERY_JS =
+  String(process.env.WIDGET_SLICK_JQUERY || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js";
+const JQUERY_JS_FALLBACK =
+  String(process.env.WIDGET_SLICK_JQUERY_FALLBACK || "").trim() ||
+  "https://unpkg.com/jquery@3.7.1/dist/jquery.min.js";
+
+function niceSelectFrameHead() {
+  const cssLinks = [NICESELECT_CSS, NICESELECT_CSS_FALLBACK].filter(
+    (v, i, arr) => v && arr.indexOf(v) === i
+  );
+  return `
+  ${cssLinks.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  <style>
+    /* Fallback styles if nice-select2 CSS fails to load */
+    .nice-select {
+      position: relative;
+      display: block;
+      width: 100%;
+      cursor: pointer;
+      user-select: none;
+    }
+    .nice-select .current { display: block; }
+    .nice-select .list {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(100% + 4px);
+      display: none;
+      z-index: 50;
+      max-height: 260px;
+      overflow: auto;
+      background: #fff;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.12);
+    }
+    .nice-select.open .list { display: block; }
+    .nice-select .option { padding: 8px 12px; cursor: pointer; }
+    .nice-select .option.selected { font-weight: 600; }
+    .nice-select .option.disabled { color: rgba(0,0,0,.4); cursor: not-allowed; }
+  </style>
+  `;
+}
+
+function niceSelectFrameInit() {
+  return `
+  <script>
+    (function(){
+      function getImpl(){
+        return window.NiceSelect || window.NiceSelect2 || window.niceSelect || window.niceSelect2 || null;
+      }
+      function collectTargets(){
+        const nodes = Array.prototype.slice.call(
+          document.querySelectorAll('[data-widget="nice-select"]')
+        );
+        return nodes.filter((el) => el && el.dataset && el.dataset.niceSelectReady !== "1");
+      }
+      function markReady(el){
+        try { el.dataset.niceSelectReady = "1"; } catch {}
+      }
+      function applyFallback(el){
+        if (!el || el.dataset.niceSelectReady === "1") return;
+        const options = Array.prototype.slice.call(el.options || []);
+        if (!options.length) return;
+
+        const wrapper = document.createElement('div');
+        const cls = String(el.className || '').trim();
+        wrapper.className = ['nice-select', cls].filter(Boolean).join(' ');
+        wrapper.tabIndex = 0;
+
+        const current = document.createElement('span');
+        current.className = 'current';
+        const selected = options.find((o) => o && o.selected) || options[0];
+        current.textContent = selected ? String(selected.text || selected.label || '') : '';
+
+        const list = document.createElement('ul');
+        list.className = 'list';
+
+        options.forEach((opt) => {
+          const li = document.createElement('li');
+          li.className = [
+            'option',
+            opt.disabled ? 'disabled' : '',
+            opt.selected ? 'selected' : '',
+          ].filter(Boolean).join(' ');
+          li.dataset.value = String(opt.value ?? '');
+          li.textContent = String(opt.text || opt.label || '');
+          li.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (opt.disabled) return;
+            options.forEach((o) => { o.selected = false; });
+            opt.selected = true;
+            el.value = opt.value;
+            current.textContent = String(opt.text || opt.label || '');
+            Array.prototype.forEach.call(list.querySelectorAll('.option'), (n) => {
+              n.classList.toggle('selected', n === li);
+            });
+            wrapper.classList.remove('open');
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+          list.appendChild(li);
+        });
+
+        wrapper.addEventListener('click', (e) => {
+          e.stopPropagation();
+          wrapper.classList.toggle('open');
+        });
+
+        el.addEventListener('change', () => {
+          const opt = options.find((o) => o && o.value === el.value) || options[0];
+          if (opt) current.textContent = String(opt.text || opt.label || '');
+        });
+
+        wrapper.appendChild(current);
+        wrapper.appendChild(list);
+
+        el.style.display = 'none';
+        el.parentNode && el.parentNode.insertBefore(wrapper, el.nextSibling);
+        markReady(el);
+
+        if (!document.documentElement.__niceSelectFallbackBound) {
+          document.documentElement.__niceSelectFallbackBound = true;
+          document.addEventListener('click', () => {
+            Array.prototype.forEach.call(document.querySelectorAll('.nice-select.open'), (n) => {
+              n.classList.remove('open');
+            });
+          });
+        }
+      }
+      function applyFallbackAll(){
+        const els = collectTargets();
+        if (!els.length) return;
+        els.forEach(applyFallback);
+      }
+      function bindAll(impl, els){
+        if (!impl || !els || !els.length) return;
+        try {
+          if (typeof impl.bind === 'function') {
+            let ok = false;
+            for (const el of els) {
+              try { impl.bind(el); markReady(el); ok = true; } catch {}
+            }
+            if (!ok) {
+              try { impl.bind(els); els.forEach(markReady); } catch {}
+            }
+            return;
+          }
+          if (typeof impl === 'function') {
+            els.forEach((el) => {
+              try { new impl(el); markReady(el); } catch { try { impl(el); markReady(el); } catch {} }
+            });
+          }
+        } catch {
+          // graceful fallback
+        }
+      }
+      function init(){
+        const els = collectTargets();
+        if (!els.length) return;
+        const impl = getImpl();
+        if (!impl) return;
+        bindAll(impl, els);
+      }
+      function loadAndInit(){
+        if (getImpl()) { init(); return; }
+        const sources = ["${NICESELECT_JS}", "${NICESELECT_JS_FALLBACK}"].filter(Boolean);
+        let i = 0;
+        function loadNext(){
+          if (i >= sources.length) { applyFallbackAll(); return; }
+          const s = document.createElement('script');
+          s.src = sources[i++];
+          s.onload = () => init();
+          s.onerror = () => loadNext();
+          document.head.appendChild(s);
+        }
+        loadNext();
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', loadAndInit);
+      } else {
+        loadAndInit();
+      }
+    })();
+  </script>
+  `;
+}
+
+function niceSelectScript() {
+  return `
+  <script>
+    (function(){
+      function getImpl(){
+        return window.NiceSelect || window.NiceSelect2 || window.niceSelect || window.niceSelect2 || null;
+      }
+      function collectTargets(){
+        const nodes = Array.prototype.slice.call(
+          document.querySelectorAll('[data-widget="nice-select"]')
+        );
+        return nodes.filter((el) => el && el.dataset && el.dataset.niceSelectReady !== "1");
+      }
+      function markReady(el){
+        try { el.dataset.niceSelectReady = "1"; } catch {}
+      }
+      function applyFallback(el){
+        if (!el || el.dataset.niceSelectReady === "1") return;
+        const options = Array.prototype.slice.call(el.options || []);
+        if (!options.length) return;
+
+        const wrapper = document.createElement('div');
+        const cls = String(el.className || '').trim();
+        wrapper.className = ['nice-select', cls].filter(Boolean).join(' ');
+        wrapper.tabIndex = 0;
+
+        const current = document.createElement('span');
+        current.className = 'current';
+        const selected = options.find((o) => o && o.selected) || options[0];
+        current.textContent = selected ? String(selected.text || selected.label || '') : '';
+
+        const list = document.createElement('ul');
+        list.className = 'list';
+
+        options.forEach((opt) => {
+          const li = document.createElement('li');
+          li.className = [
+            'option',
+            opt.disabled ? 'disabled' : '',
+            opt.selected ? 'selected' : '',
+          ].filter(Boolean).join(' ');
+          li.dataset.value = String(opt.value ?? '');
+          li.textContent = String(opt.text || opt.label || '');
+          li.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (opt.disabled) return;
+            options.forEach((o) => { o.selected = false; });
+            opt.selected = true;
+            el.value = opt.value;
+            current.textContent = String(opt.text || opt.label || '');
+            Array.prototype.forEach.call(list.querySelectorAll('.option'), (n) => {
+              n.classList.toggle('selected', n === li);
+            });
+            wrapper.classList.remove('open');
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+          });
+          list.appendChild(li);
+        });
+
+        wrapper.addEventListener('click', (e) => {
+          e.stopPropagation();
+          wrapper.classList.toggle('open');
+        });
+
+        el.addEventListener('change', () => {
+          const opt = options.find((o) => o && o.value === el.value) || options[0];
+          if (opt) current.textContent = String(opt.text || opt.label || '');
+        });
+
+        wrapper.appendChild(current);
+        wrapper.appendChild(list);
+
+        el.style.display = 'none';
+        el.parentNode && el.parentNode.insertBefore(wrapper, el.nextSibling);
+        markReady(el);
+
+        if (!document.documentElement.__niceSelectFallbackBound) {
+          document.documentElement.__niceSelectFallbackBound = true;
+          document.addEventListener('click', () => {
+            Array.prototype.forEach.call(document.querySelectorAll('.nice-select.open'), (n) => {
+              n.classList.remove('open');
+            });
+          });
+        }
+      }
+      function applyFallbackAll(){
+        const els = collectTargets();
+        if (!els.length) return;
+        els.forEach(applyFallback);
+      }
+      function bindAll(impl, els){
+        if (!impl || !els || !els.length) return;
+        try {
+          if (typeof impl.bind === 'function') {
+            let ok = false;
+            for (const el of els) {
+              try { impl.bind(el); markReady(el); ok = true; } catch {}
+            }
+            if (!ok) {
+              try { impl.bind(els); els.forEach(markReady); } catch {}
+            }
+            return;
+          }
+          if (typeof impl === 'function') {
+            els.forEach((el) => {
+              try { new impl(el); markReady(el); } catch { try { impl(el); markReady(el); } catch {} }
+            });
+          }
+        } catch {
+          // graceful fallback
+        }
+      }
+      function initNiceSelect(){
+        const els = collectTargets();
+        if (!els.length) return;
+        const impl = getImpl();
+        if (!impl) { applyFallbackAll(); return; }
+        bindAll(impl, els);
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initNiceSelect);
+      } else {
+        initNiceSelect();
+      }
+    })();
+  </script>
+  `;
+}
+
+function slickFrameHead() {
+  const cssLinks = [SLICK_CSS, SLICK_CSS_FALLBACK].filter((v, i, arr) => v && arr.indexOf(v) === i);
+  return `
+  ${cssLinks.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  <style>
+    [data-widget="slick"] { min-width: 0; }
+    [data-widget="slick"].slick-initialized { display: block !important; }
+    [data-widget="slick"] .slick-list { overflow: hidden; }
+    [data-widget="slick"] .slick-track {
+      display: flex;
+      align-items: stretch;
+      gap: var(--slick-gap, 0px);
+    }
+    [data-widget="slick"] .slick-slide { height: auto; }
+    [data-slick-prev], [data-slick-next] {
+      background: transparent !important;
+      border: 0 !important;
+      padding: 0 !important;
+      width: auto !important;
+      height: auto !important;
+      line-height: normal !important;
+      cursor: pointer !important;
+      position: relative !important;
+      z-index: 1 !important;
+    }
+    [data-slick-prev]::before, [data-slick-next]::before {
+      content: none !important;
+    }
+    [data-slick-prev].slick-arrow, [data-slick-next].slick-arrow {
+      transform: none !important;
+    }
+    /* Apply state-based colors from CSS variables */
+    [data-slick-prev]:hover svg, [data-slick-next]:hover svg {
+      color: var(--hover-color, currentColor) !important;
+    }
+    [data-slick-prev]:active svg, [data-slick-next]:active svg {
+      color: var(--active-color, currentColor) !important;
+    }
+    [data-slick-prev]:focus-visible svg, [data-slick-next]:focus-visible svg {
+      color: var(--focus-color, currentColor) !important;
+    }
+  </style>
+  `;
+}
+
+function slickFrameInit() {
+  return `
+  <script>
+    (function(){
+      function getJq(){ return window.jQuery || window.$ || null; }
+      function hasSlick(){
+        const $ = getJq();
+        return !!($ && $.fn && typeof $.fn.slick === "function");
+      }
+      function collectSliders(){
+        return Array.prototype.slice.call(document.querySelectorAll('[data-widget="slick"]'));
+      }
+      function parseBool(v){
+        if (v === null || typeof v === "undefined") return null;
+        const s = String(v).trim().toLowerCase();
+        if (s === "1" || s === "true") return true;
+        if (s === "0" || s === "false") return false;
+        return null;
+      }
+      function parseNum(v){
+        const n = Number(v);
+        return Number.isFinite(n) && n > 0 ? n : null;
+      }
+      function findControl(el, attr){
+        const id = el.getAttribute("data-slick-id");
+        if (!id) return null;
+        return document.querySelector('[' + attr + '="' + id + '"]');
+      }
+      function initSlick(){
+        const $ = getJq();
+        if (!($ && $.fn && $.fn.slick)) return;
+        collectSliders().forEach((el) => {
+          if (el.dataset && el.dataset.slickReady === "1") return;
+          const dotsAttr = parseBool(el.getAttribute("data-slick-dots"));
+          const arrowsAttr = parseBool(el.getAttribute("data-slick-arrows"));
+          const autoplayAttr = parseBool(el.getAttribute("data-slick-autoplay"));
+          const slidesAttr = parseNum(el.getAttribute("data-slick-slides"));
+          const centerAttr = parseBool(el.getAttribute("data-slick-center"));
+          const fadeAttr = parseBool(el.getAttribute("data-slick-fade"));
+          const infiniteAttr = parseBool(el.getAttribute("data-slick-infinite"));
+
+          const opts = {};
+          if (dotsAttr !== null) opts.dots = dotsAttr;
+          if (arrowsAttr !== null) opts.arrows = arrowsAttr;
+          if (autoplayAttr !== null) opts.autoplay = autoplayAttr;
+          if (slidesAttr !== null) opts.slidesToShow = slidesAttr;
+          if (centerAttr !== null) opts.centerMode = centerAttr;
+          if (fadeAttr !== null) opts.fade = fadeAttr;
+          if (infiniteAttr !== null) opts.infinite = infiniteAttr;
+
+          const prev = findControl(el, "data-slick-prev");
+          const next = findControl(el, "data-slick-next");
+          const dots = findControl(el, "data-slick-dots");
+
+          if (prev) opts.prevArrow = $(prev);
+          if (next) opts.nextArrow = $(next);
+          if (dots) { opts.appendDots = $(dots); opts.dots = true; }
+
+          if (opts.fade) opts.slidesToShow = 1;
+          $(el).slick(opts);
+          if (el.dataset) el.dataset.slickReady = "1";
+        });
+      }
+      function applyFallback(){
+        collectSliders().forEach((el) => {
+          if (el.dataset && el.dataset.slickReady === "1") return;
+          const gapAttr = parseNum(el.getAttribute("data-slick-gap"));
+          el.style.display = "flex";
+          if (gapAttr !== null) el.style.gap = gapAttr + "px";
+          el.style.overflowX = "auto";
+          el.style.scrollSnapType = "x mandatory";
+          Array.prototype.forEach.call(el.children || [], (c) => {
+            if (!c || c.nodeType !== 1) return;
+            c.style.flex = "0 0 auto";
+            c.style.scrollSnapAlign = "start";
+          });
+          if (el.dataset) el.dataset.slickReady = "1";
+        });
+      }
+      function loadScriptSequence(urls, done){
+        let i = 0;
+        function next(){
+          if (i >= urls.length) return done(false);
+          const s = document.createElement("script");
+          s.src = urls[i++];
+          s.onload = () => done(true);
+          s.onerror = () => next();
+          document.head.appendChild(s);
+        }
+        next();
+      }
+      function loadAll(){
+        if (hasSlick()) { initSlick(); return; }
+        const jqUrls = ["${JQUERY_JS}", "${JQUERY_JS_FALLBACK}"].filter(Boolean);
+        const slickUrls = ["${SLICK_JS}", "${SLICK_JS_FALLBACK}"].filter(Boolean);
+        loadScriptSequence(jqUrls, () => {
+          loadScriptSequence(slickUrls, () => {
+            if (hasSlick()) initSlick();
+            else applyFallback();
+          });
+        });
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", loadAll);
+      } else {
+        loadAll();
+      }
+    })();
+  </script>
+  `;
+}
+
 export function previewHtml(ast, opts = {}) {
   const fragmentRaw = (opts.fragment || "").trim();
 
@@ -310,12 +811,16 @@ ${css}
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <script src="https://cdn.tailwindcss.com"></script>
   ${googleFonts || ""}
+  ${ENABLE_SLICK ? slickFrameHead() : ""}
+  ${ENABLE_NICESELECT ? niceSelectFrameHead() : ""}
   <style>
     html, body { margin:0; padding:0; background: transparent; }
   </style>
 </head>
 <body>
   ${fragment}
+  ${ENABLE_SLICK ? slickFrameInit() : ""}
+  ${ENABLE_NICESELECT ? niceSelectFrameInit() : ""}
 </body>
 </html>`)}"
   ></iframe>
@@ -374,6 +879,8 @@ ${css}
 
   <!-- Viewport sizing + bucket detection (reads window.__RESPONSIVE__) -->
   ${viewportScript({ designW, slug })}
+
+  ${ENABLE_NICESELECT ? niceSelectScript() : ""}
 
   ${
     overlaySrcInitial

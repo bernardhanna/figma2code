@@ -26,6 +26,8 @@ export function aiTagFor(node, semantics) {
     "ul",
     "ol",
     "li",
+    "select",
+    "option",
     "img",
     "div",
   ]);
