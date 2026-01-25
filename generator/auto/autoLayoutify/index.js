@@ -73,7 +73,7 @@ export function autoLayoutify(ast, opts = {}) {
     ? ` style="background-image: ${bgInfo.css}; background-size: cover; background-position: center; background-repeat: no-repeat;"`
     : "";
 
-  const sectionOpen = `<section class="relative flex overflow-hidden"${sectionStyle}>`;
+  const sectionOpen = `<section class="relative flex max-md:overflow-visible overflow-hidden"${sectionStyle}>`;
 
   // Content container:
   // Use max-width based on the root Figma frame width (NOT max-w-container).

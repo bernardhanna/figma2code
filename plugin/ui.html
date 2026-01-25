@@ -10,18 +10,164 @@
   </label>
 
   <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
-    <button id="previewOnly">Preview only</button>
-    <button id="generateWP">Generate WP</button>
-    <button id="exportPhase1" title="Export Phase-1 Raw AST + overlay proof">Export Phase-1</button>
-    <button id="setTheme" title="Open generator to set Theme Folder">Set Theme Folder</button>
+    <button id="generatePreview">Generate Preview</button>
   </div>
 
-  <pre id="status" style="margin-top:12px;background:#f6f7f9;padding:8px;max-height:220px;overflow:auto;"></pre>
+  <style>
+    .progress-item[data-state="pending"] { color:#6b7280; }
+    .progress-item[data-state="active"] { color:#0f172a; font-weight:600; }
+    .progress-item[data-state="done"] { color:#16a34a; }
+    .progress-item[data-state="error"] { color:#dc2626; font-weight:600; }
+  </style>
+
+  <div id="progressWrap" style="margin-top:12px;">
+    <div style="font-weight:600; margin-bottom:6px;">Progress</div>
+    <ul id="progressList" style="list-style:none; padding:0; margin:0; display:grid; gap:4px;"></ul>
+  </div>
+
+  <div id="previewWrap" style="margin-top:12px;">
+    <div style="font-weight:600; margin-bottom:6px;">Preview</div>
+    <div id="previewMeta" style="font-size:12px; color:#6b7280; margin-bottom:6px;">
+      No preview generated yet.
+    </div>
+    <div id="previewTabs" style="display:flex; gap:6px; margin-bottom:8px;">
+      <button class="preview-tab" data-key="desktop" type="button">Desktop</button>
+      <button class="preview-tab" data-key="tablet" type="button">Tablet</button>
+      <button class="preview-tab" data-key="mobile" type="button">Mobile</button>
+    </div>
+    <img id="previewImage" alt="Preview screenshot" style="display:none;width:100%;max-height:180px;object-fit:contain;border:1px solid #e5e7eb;border-radius:6px;background:#fff;" />
+  </div>
+
+  <div id="reportWrap" style="margin-top:12px;">
+    <div style="font-weight:600; margin-bottom:6px;">Warnings & Errors</div>
+    <pre id="report" style="margin:0;background:#f6f7f9;padding:8px;max-height:140px;overflow:auto;"></pre>
+  </div>
+
+  <pre id="status" style="margin-top:12px;background:#f6f7f9;padding:8px;max-height:160px;overflow:auto;"></pre>
+
+  <div style="display:flex; justify-content:flex-end; margin-top:12px;">
+    <button id="openPreview" disabled>Open Preview</button>
+  </div>
 
   <script>
     const status = document.getElementById("status");
+    const reportEl = document.getElementById("report");
+    const progressList = document.getElementById("progressList");
+    const previewMeta = document.getElementById("previewMeta");
+    const previewImage = document.getElementById("previewImage");
+    const previewTabs = document.getElementById("previewTabs");
+    const openPreviewBtn = document.getElementById("openPreview");
     const getSlug = () => document.getElementById("slug").value.trim();
     const BASE = "http://127.0.0.1:5173";
+    let lastPreviewUrl = "";
+    let lastScreenshotUrl = "";
+    let lastScreenshotUrls = {};
+    let lastReport = null;
+    let activeBreakpoint = "desktop";
+    let progressTimer = null;
+
+    const PROGRESS_STEPS = [
+      { id: "prepare", label: "Preparing AST…" },
+      { id: "generating", label: "Generating HTML…" },
+      { id: "repair", label: "Repairing Tailwind classes…" },
+      { id: "validate", label: "Running validation…" },
+      { id: "screenshot", label: "Rendering screenshot…" },
+      { id: "sending", label: "Sending payload…" },
+      { id: "done", label: "Done." },
+    ];
+
+    function renderProgressList() {
+      progressList.innerHTML = PROGRESS_STEPS.map(
+        (step) =>
+          `<li class="progress-item" id="progress_${step.id}" data-state="pending">• ${step.label}</li>`
+      ).join("");
+    }
+
+    function setProgressState(id, state) {
+      const el = document.getElementById(`progress_${id}`);
+      if (!el) return;
+      el.dataset.state = state;
+      const step = PROGRESS_STEPS.find((s) => s.id === id);
+      const label = step ? step.label : id;
+      const prefix = state === "done" ? "✓" : state === "active" ? "→" : state === "error" ? "!" : "•";
+      el.textContent = `${prefix} ${label}`;
+    }
+
+    function resetProgress() {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+      PROGRESS_STEPS.forEach((s) => setProgressState(s.id, "pending"));
+    }
+
+    function startServerProgress() {
+      const order = ["generating", "repair", "validate", "screenshot", "sending"];
+      let idx = 0;
+      if (progressTimer) clearInterval(progressTimer);
+      progressTimer = setInterval(() => {
+        if (idx > 0) setProgressState(order[idx - 1], "done");
+        if (idx < order.length) {
+          setProgressState(order[idx], "active");
+        } else {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+        idx += 1;
+      }, 450);
+    }
+
+    function finishProgress(ok) {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+      if (ok) {
+        ["prepare", "generating", "repair", "validate", "screenshot", "sending"].forEach((id) =>
+          setProgressState(id, "done")
+        );
+        setProgressState("done", "done");
+      } else {
+        setProgressState("done", "error");
+      }
+    }
+
+    function setPreviewState({ previewUrl, screenshotUrl, screenshotUrls, report }) {
+      lastPreviewUrl = previewUrl || "";
+      lastScreenshotUrl = screenshotUrl || "";
+      lastScreenshotUrls = screenshotUrls || {};
+      lastReport = report || null;
+
+      openPreviewBtn.disabled = !lastPreviewUrl;
+      previewMeta.textContent = lastPreviewUrl
+        ? `Preview ready: ${lastPreviewUrl}`
+        : "No preview generated yet.";
+
+      renderScreenshot();
+
+      renderReport(lastReport);
+    }
+
+    function renderReport(report) {
+      if (!report) {
+        reportEl.textContent = "No report yet.";
+        return;
+      }
+      const warnings = Array.isArray(report.warnings) ? report.warnings : [];
+      const errors = Array.isArray(report.errors) ? report.errors : [];
+      const fixes = Array.isArray(report.fixes) ? report.fixes : [];
+
+      const lines = [];
+      lines.push(`Errors: ${errors.length}`);
+      if (errors.length) lines.push("- " + errors.slice(0, 8).join("\n- "));
+      lines.push(`Warnings: ${warnings.length}`);
+      if (warnings.length) lines.push("- " + warnings.slice(0, 12).join("\n- "));
+      if (fixes.length) {
+        lines.push(`Fixes: ${fixes.length}`);
+        lines.push("- " + fixes.slice(0, 12).join("\n- "));
+      }
+      reportEl.textContent = lines.join("\n");
+    }
 
     async function postTo(endpoint, payload) {
       const res = await fetch(BASE + endpoint, {
@@ -40,24 +186,18 @@
       return JSON.parse(text);
     }
 
-    document.getElementById("setTheme").onclick = () => window.open(BASE + "/", "_blank");
-
-    document.getElementById("previewOnly").onclick = () => {
-      status.textContent = "Preparing AST (Preview)…";
+    document.getElementById("generatePreview").onclick = () => {
+      resetProgress();
+      setProgressState("prepare", "active");
+      status.textContent = "Preparing AST (Generate Preview)…";
+      setPreviewState({ previewUrl: "", screenshotUrl: "", screenshotUrls: {}, report: null });
       window.__pendingEndpoint = "/api/preview-only";
       parent.postMessage({ pluginMessage: { type: "EXPORT_SELECTION", slug: getSlug() } }, "*");
     };
 
-    document.getElementById("generateWP").onclick = () => {
-      status.textContent = "Preparing AST (Generate)…";
-      window.__pendingEndpoint = "/api/generate";
-      parent.postMessage({ pluginMessage: { type: "EXPORT_SELECTION", slug: getSlug() } }, "*");
-    };
-
-    document.getElementById("exportPhase1").onclick = () => {
-      status.textContent = "Preparing Phase-1 Raw AST…";
-      window.__pendingEndpoint = "/api/phase1/export";
-      parent.postMessage({ pluginMessage: { type: "EXPORT_PHASE1", slug: getSlug() } }, "*");
+    document.getElementById("openPreview").onclick = () => {
+      if (!lastPreviewUrl) return;
+      window.open(BASE + lastPreviewUrl, "_blank");
     };
 
     window.onmessage = async (event) => {
@@ -73,10 +213,15 @@
         try {
           const endpoint = window.__pendingEndpoint || "/api/preview-only";
           status.textContent = `Sending payload to ${endpoint}…`;
+          if (endpoint === "/api/preview-only") {
+            setProgressState("prepare", "done");
+            startServerProgress();
+          }
 
           const out = await postTo(endpoint, ast);
 
           if (!out || out.ok !== true) {
+            finishProgress(false);
             status.textContent = "Failed: " + (out?.error || out?.message || "unknown");
             return;
           }
@@ -90,12 +235,70 @@
             (out.paths?.raw ? ("Raw: " + out.paths.raw + "\n") : "") +
             (out.paths?.overlay ? ("Overlay file: " + out.paths.overlay + "\n") : "");
 
-          if (openUrl) window.open(BASE + openUrl, "_blank");
+          if (endpoint === "/api/preview-only") {
+            finishProgress(true);
+            setPreviewState({
+              previewUrl: out.previewUrl || out.overlayUrl || "",
+              screenshotUrl: out.screenshotUrl || "",
+              screenshotUrls: out.screenshotUrls || {},
+              report: out.report || null,
+            });
+          } else if (openUrl) {
+            window.open(BASE + openUrl, "_blank");
+          }
         } catch (e) {
+          finishProgress(false);
           status.textContent = String(e?.message || e);
         }
       }
     };
+
+    renderProgressList();
+    renderReport(null);
+    setupPreviewTabs();
+
+    function setupPreviewTabs() {
+      if (!previewTabs) return;
+      const buttons = Array.from(previewTabs.querySelectorAll(".preview-tab"));
+      buttons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const key = btn.dataset.key;
+          if (!key) return;
+          activeBreakpoint = key;
+          renderScreenshot();
+          updateTabState();
+        });
+      });
+      updateTabState();
+    }
+
+    function updateTabState() {
+      const buttons = previewTabs ? previewTabs.querySelectorAll(".preview-tab") : [];
+      buttons.forEach((btn) => {
+        const on = btn.dataset.key === activeBreakpoint;
+        btn.style.background = on ? "#0f172a" : "#fff";
+        btn.style.color = on ? "#fff" : "#0f172a";
+        btn.style.border = "1px solid rgba(0,0,0,.12)";
+        btn.style.borderRadius = "8px";
+        btn.style.padding = "4px 8px";
+        btn.style.fontSize = "12px";
+      });
+    }
+
+    function renderScreenshot() {
+      const url =
+        (lastScreenshotUrls && lastScreenshotUrls[activeBreakpoint]) ||
+        lastScreenshotUrl ||
+        "";
+
+      if (url) {
+        previewImage.src = BASE + url;
+        previewImage.style.display = "block";
+      } else {
+        previewImage.removeAttribute("src");
+        previewImage.style.display = "none";
+      }
+    }
   </script>
 </body>
 

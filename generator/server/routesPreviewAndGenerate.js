@@ -7,6 +7,9 @@ import { PREVIEW_DIR } from "./runtimePaths.js";
 import { getConfig } from "./configStore.js";
 import { ensureThemeOutputDirs } from "./themeOutputDirs.js";
 import { classStrip } from "./classSanitizer.js";
+import { repairTailwindClasses, validateTailwindClasses } from "./tailwindPreflight.js";
+import { capturePreviewScreenshot, capturePreviewScreenshots } from "./previewScreenshot.js";
+import { buildPreviewResponse } from "./previewResponse.js";
 import {
   buildPreviewFragment,
   buildMergedResponsivePreview,
@@ -24,7 +27,81 @@ import { frontendPhp } from "../templates/frontend.php.js";
 import { preventNestedInteractive } from "../auto/preventNestedInteractive.js";
 import { previewHtml } from "../templates/preview.html.js";
 
-export function registerPreviewAndGenerateRoutes(app) {
+function resolvePreviewViewport(ast) {
+  const widthRaw =
+    Number(ast?.meta?.responsive?.widths?.desktop) ||
+    Number(ast?.frame?.w) ||
+    Number(ast?.tree?.w) ||
+    1440;
+  const heightRaw = Number(ast?.frame?.h) || Number(ast?.tree?.h) || 900;
+
+  const width = Math.max(320, Math.round(widthRaw || 1440));
+  const height = Math.max(900, Math.round((heightRaw || 900) + 140));
+  const minHeight = Math.max(200, Math.round(heightRaw || 200));
+
+  return { viewport: { width, height }, minHeight };
+}
+
+function resolvePreviewViewports(ast) {
+  const base = resolvePreviewViewport(ast);
+  const widths = {
+    mobile: Number(ast?.meta?.responsive?.widths?.mobile) || 390,
+    tablet: Number(ast?.meta?.responsive?.widths?.tablet) || 1084,
+    desktop: Number(ast?.meta?.responsive?.widths?.desktop) || base.viewport.width || 1440,
+  };
+
+  const height = base.viewport.height || 900;
+
+  return {
+    minHeight: base.minHeight,
+    viewports: [
+      { key: "desktop", viewport: { width: Math.max(320, Math.round(widths.desktop)), height } },
+      { key: "tablet", viewport: { width: Math.max(320, Math.round(widths.tablet)), height } },
+      { key: "mobile", viewport: { width: Math.max(320, Math.round(widths.mobile)), height } },
+    ],
+  };
+}
+
+function buildPreviewReport({ preflight, validation, phase2Report, phase3 }) {
+  const warnings = [];
+  const errors = [];
+  const fixes = [];
+
+  if (preflight?.report?.fixes?.length) fixes.push(...preflight.report.fixes);
+
+  if (phase2Report?.fixes?.length) {
+    fixes.push(...phase2Report.fixes.map((f) => `semantic: ${f}`));
+  }
+
+  if (validation?.warnings?.length) warnings.push(...validation.warnings);
+
+  if (phase2Report?.warnings?.length) {
+    warnings.push(...phase2Report.warnings.map((w) => `semantic: ${w}`));
+  }
+
+  if (Array.isArray(phase3?.warnings) && phase3.warnings.length) {
+    warnings.push(
+      ...phase3.warnings.map((w) =>
+        typeof w === "string" ? `intent: ${w}` : `intent: ${w?.message || JSON.stringify(w)}`
+      )
+    );
+  }
+
+  return {
+    warnings,
+    errors,
+    fixes,
+    summary: { warnings: warnings.length, errors: errors.length, fixes: fixes.length },
+    details: {
+      tailwindPreflight: preflight?.report || null,
+      tailwindValidation: validation || null,
+      semantic: phase2Report || null,
+      intentWarnings: phase3?.warnings || null,
+    },
+  };
+}
+
+export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
   app.post("/api/preview-only", async (req, res) => {
     try {
       const r = await buildPreviewFragment({
@@ -41,20 +118,40 @@ export function registerPreviewAndGenerateRoutes(app) {
 
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });
 
-      const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
-      fs.writeFileSync(previewOut, r.preview, "utf8");
+      const preflight = repairTailwindClasses(r.fragment || "");
+      const previewFragment = preflight.html;
+      const validation = validateTailwindClasses(previewFragment);
+      const previewMarkup = previewHtml(r.ast, { fragment: previewFragment });
 
-      return res.json({
-        ok: true,
-        previewUrl: `/preview/${r.ast.slug}`,
-        phase2Report: r.phase2Report,
-        phase2Reports: r.phase2Reports || null,
-        phase2NormalizedPath: r.phase2NormalizedPath,
-        phase3IntentPath: r.phase3IntentPath,
-        rasterCtaOffenders: r.rasterCtaOffenders,
-        phase3: r.phase3,
-        responsive: r.responsive || null,
+      const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
+      fs.writeFileSync(previewOut, previewMarkup, "utf8");
+
+      const { viewports, minHeight } = resolvePreviewViewports(r.ast);
+      const screenshotUrls = await capturePreviewScreenshots({
+        slug: r.ast.slug,
+        port,
+        viewports,
+        minHeight,
       });
+      const screenshotUrl = screenshotUrls?.desktop || null;
+
+      const report = buildPreviewReport({
+        preflight,
+        validation,
+        phase2Report: r.phase2Report,
+        phase3: r.phase3,
+      });
+
+      return res.json(
+        buildPreviewResponse({
+          previewUrl: `/preview/${r.ast.slug}`,
+          screenshotUrl,
+          screenshotUrls,
+          report,
+          paths: { preview: previewOut },
+          result: r,
+        })
+      );
     } catch (e) {
       console.error(e);
       return res.status(500).json({ ok: false, error: String(e?.message || e) });
@@ -95,24 +192,43 @@ export function registerPreviewAndGenerateRoutes(app) {
 
       const acfOut = path.join(OUT_ACF, `acf_${r.ast.slug}.php`);
       const frontOut = path.join(phpDir, `${r.ast.slug}.php`);
+      const preflight = repairTailwindClasses(r.fragment || "");
+      const previewFragment = preflight.html;
+      const validation = validateTailwindClasses(previewFragment);
+      const previewMarkup = previewHtml(r.ast, { fragment: previewFragment });
+
       const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
 
       fs.writeFileSync(acfOut, acf, "utf8");
       fs.writeFileSync(frontOut, front, "utf8");
-      fs.writeFileSync(previewOut, r.preview, "utf8");
+      fs.writeFileSync(previewOut, previewMarkup, "utf8");
 
-      return res.json({
-        ok: true,
-        paths: { acf: acfOut, frontend: frontOut, preview: previewOut },
-        previewUrl: `/preview/${r.ast.slug}`,
-        phase2Report: r.phase2Report,
-        phase2Reports: r.phase2Reports || null,
-        phase2NormalizedPath: r.phase2NormalizedPath,
-        phase3IntentPath: r.phase3IntentPath,
-        rasterCtaOffenders: r.rasterCtaOffenders,
-        phase3: r.phase3,
-        responsive: r.responsive || null,
+      const { viewports, minHeight } = resolvePreviewViewports(r.ast);
+      const screenshotUrls = await capturePreviewScreenshots({
+        slug: r.ast.slug,
+        port,
+        viewports,
+        minHeight,
       });
+      const screenshotUrl = screenshotUrls?.desktop || null;
+
+      const report = buildPreviewReport({
+        preflight,
+        validation,
+        phase2Report: r.phase2Report,
+        phase3: r.phase3,
+      });
+
+      return res.json(
+        buildPreviewResponse({
+          previewUrl: `/preview/${r.ast.slug}`,
+          screenshotUrl,
+          screenshotUrls,
+          report,
+          paths: { acf: acfOut, frontend: frontOut, preview: previewOut },
+          result: r,
+        })
+      );
     } catch (e) {
       console.error(e);
       return res.status(500).json({ ok: false, error: String(e?.message || e) });
