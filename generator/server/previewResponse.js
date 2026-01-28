@@ -5,6 +5,7 @@ export function buildPreviewResponse({
   screenshotUrl,
   screenshotUrls,
   report,
+  contractsSummary,
   paths,
   result,
 }) {
@@ -14,6 +15,7 @@ export function buildPreviewResponse({
     screenshotUrl: screenshotUrl || null,
     screenshotUrls: screenshotUrls || null,
     report: report || { warnings: [], errors: [], fixes: [] },
+    contractsSummary: contractsSummary || null,
     paths: paths || null,
     phase2Report: result?.phase2Report || null,
     phase2Reports: result?.phase2Reports || null,

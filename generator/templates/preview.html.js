@@ -640,20 +640,22 @@ export function previewHtml(ast, opts = {}) {
   // -----------------------------
   // Fallback overlay convention
   // -----------------------------
-  const groupOverlayFixtures = {
-    mobile: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.mobile.png`,
-    tablet: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.tablet.png`,
-    desktop: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.desktop.png`,
-  };
+  const groupOverlayFixtures = isMergedGroup
+    ? {
+        mobile: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.mobile.png`,
+        tablet: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.tablet.png`,
+        desktop: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.desktop.png`,
+      }
+    : { mobile: "", tablet: "", desktop: "" };
 
   // Decide group overlay candidates for each bucket:
   // 1) responsive assets (if present)
   // 2) fixtures convention
   // 3) meta.overlay.src (legacy)
   const groupOverlay = {
-    mobile: assetOverlay.mobile || groupOverlayFixtures.mobile || overlaySrcMeta,
-    tablet: assetOverlay.tablet || groupOverlayFixtures.tablet || overlaySrcMeta,
-    desktop: assetOverlay.desktop || groupOverlayFixtures.desktop || overlaySrcMeta,
+    mobile: assetOverlay.mobile || overlaySrcMeta || groupOverlayFixtures.mobile,
+    tablet: assetOverlay.tablet || overlaySrcMeta || groupOverlayFixtures.tablet,
+    desktop: assetOverlay.desktop || overlaySrcMeta || groupOverlayFixtures.desktop,
   };
 
   // Choose initial overlay src:

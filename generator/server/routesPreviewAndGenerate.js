@@ -26,6 +26,7 @@ import { acfPhp } from "../templates/acf.php.js";
 import { frontendPhp } from "../templates/frontend.php.js";
 import { preventNestedInteractive } from "../auto/preventNestedInteractive.js";
 import { previewHtml } from "../templates/preview.html.js";
+import { applyContracts } from "../contracts/index.js";
 
 function resolvePreviewViewport(ast) {
   const widthRaw =
@@ -62,7 +63,7 @@ function resolvePreviewViewports(ast) {
   };
 }
 
-function buildPreviewReport({ preflight, validation, phase2Report, phase3 }) {
+function buildPreviewReport({ preflight, validation, phase2Report, phase3, contractsReport }) {
   const warnings = [];
   const errors = [];
   const fixes = [];
@@ -97,7 +98,27 @@ function buildPreviewReport({ preflight, validation, phase2Report, phase3 }) {
       tailwindValidation: validation || null,
       semantic: phase2Report || null,
       intentWarnings: phase3?.warnings || null,
+      contracts: contractsReport || null,
     },
+  };
+}
+
+function buildContractsSummary(contractsReport) {
+  if (!contractsReport) return null;
+  const contracts = Array.isArray(contractsReport.contracts)
+    ? contractsReport.contracts.map((entry) => ({
+        name: entry.name,
+        changedNodes: Number(entry.changedNodes || 0),
+        notesCount: Array.isArray(entry.notes) ? entry.notes.length : 0,
+      }))
+    : [];
+  const totals = contractsReport.totals || { changedNodes: 0, notes: 0 };
+  return {
+    totals: {
+      changedNodes: Number(totals.changedNodes || 0),
+      notes: Number(totals.notes || 0),
+    },
+    contracts,
   };
 }
 
@@ -119,7 +140,8 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });
 
       const preflight = repairTailwindClasses(r.fragment || "");
-      const previewFragment = preflight.html;
+      const contractsOut = applyContracts({ html: preflight.html, slug: r.ast.slug });
+      const previewFragment = contractsOut.html;
       const validation = validateTailwindClasses(previewFragment);
       const previewMarkup = previewHtml(r.ast, { fragment: previewFragment });
 
@@ -140,7 +162,9 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         validation,
         phase2Report: r.phase2Report,
         phase3: r.phase3,
+        contractsReport: contractsOut.report,
       });
+      const contractsSummary = buildContractsSummary(contractsOut.report);
 
       return res.json(
         buildPreviewResponse({
@@ -148,6 +172,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
           screenshotUrl,
           screenshotUrls,
           report,
+          contractsSummary,
           paths: { preview: previewOut },
           result: r,
         })
@@ -193,7 +218,8 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       const acfOut = path.join(OUT_ACF, `acf_${r.ast.slug}.php`);
       const frontOut = path.join(phpDir, `${r.ast.slug}.php`);
       const preflight = repairTailwindClasses(r.fragment || "");
-      const previewFragment = preflight.html;
+      const contractsOut = applyContracts({ html: preflight.html, slug: r.ast.slug });
+      const previewFragment = contractsOut.html;
       const validation = validateTailwindClasses(previewFragment);
       const previewMarkup = previewHtml(r.ast, { fragment: previewFragment });
 
@@ -217,7 +243,9 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         validation,
         phase2Report: r.phase2Report,
         phase3: r.phase3,
+        contractsReport: contractsOut.report,
       });
+      const contractsSummary = buildContractsSummary(contractsOut.report);
 
       return res.json(
         buildPreviewResponse({
@@ -225,6 +253,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
           screenshotUrl,
           screenshotUrls,
           report,
+          contractsSummary,
           paths: { acf: acfOut, frontend: frontOut, preview: previewOut },
           result: r,
         })
