@@ -10,7 +10,11 @@ const MAX_INLINE_DATA = Number(process.env.MAX_INLINE_DATA || 200000);
 export function escAttr(s = "") {
   const str = String(s);
   if (MAX_INLINE_DATA > 0 && str.length > MAX_INLINE_DATA) return "";
-  return str.replace(/"/g, "&quot;");
+  return str
+    .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 export function escCssUrl(url = "") {

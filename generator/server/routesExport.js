@@ -8,6 +8,7 @@ export function registerExportRoutes(app) {
       const slug = String(req.body?.slug || "").trim();
       const type = String(req.body?.type || "").trim();
       const componentsRoot = String(req.body?.componentsRoot || "").trim();
+      const fragmentHtml = String(req.body?.fragmentHtml || "").trim();
 
       if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
       if (!type) return res.status(400).json({ ok: false, error: "Missing type" });
@@ -19,6 +20,7 @@ export function registerExportRoutes(app) {
         slug,
         type,
         componentsRoot: resolvedComponentsRoot || undefined,
+        fragmentHtml: fragmentHtml || undefined,
       });
 
       return res.json(result);

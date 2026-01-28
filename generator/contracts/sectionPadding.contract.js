@@ -149,12 +149,12 @@ export const sectionPaddingContract = {
 
       if (ptOriginal !== "2.5rem") {
         const insertAt = ptNewIndex >= 0 ? ptNewIndex + 1 : nextTokens.length;
-        nextTokens.splice(insertAt, 0, `md:pt-[${ptOriginal}]`);
+        nextTokens.splice(insertAt, 0, `lg:pt-[${ptOriginal}]`);
         if (pbNewIndex >= insertAt) pbNewIndex += 1;
       }
       if (pbOriginal !== "2.5rem") {
         const insertAt = pbNewIndex >= 0 ? pbNewIndex + 1 : nextTokens.length;
-        nextTokens.splice(insertAt, 0, `md:pb-[${pbOriginal}]`);
+        nextTokens.splice(insertAt, 0, `lg:pb-[${pbOriginal}]`);
       }
 
       const attrs = { ...node.attrs };

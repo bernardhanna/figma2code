@@ -242,23 +242,40 @@ function getShadows(n) {
 function getStroke(n) {
     try {
         const anyN = n;
-        const weight = anyN.strokeWeight;
-        if (!weight || weight <= 0)
-            return undefined;
+        const weightRaw = anyN.strokeWeight;
+        const fallbackWeights = [
+            anyN.strokeTopWeight,
+            anyN.strokeRightWeight,
+            anyN.strokeBottomWeight,
+            anyN.strokeLeftWeight,
+        ].filter((v) => typeof v === "number" && v > 0);
+        const weight = typeof weightRaw === "number" && weightRaw > 0
+            ? weightRaw
+            : fallbackWeights.length
+                ? Math.max(...fallbackWeights)
+                : undefined;
         const align = anyN.strokeAlign;
         const s = (anyN.strokes || []);
         const visible = Array.isArray(s)
             ? s.filter((pp) => (pp === null || pp === void 0 ? void 0 : pp.visible) !== false)
             : [];
-        const p = visible.length ? visible[visible.length - 1] : undefined;
-        if (!p || p.type !== "SOLID")
+        const solid = visible.filter((p) => p && p.type === "SOLID");
+        const p = solid.length ? solid[solid.length - 1] : undefined;
+        if (!p)
             return undefined;
         const opacity = p.opacity;
         const vis = typeof opacity === "number" ? opacity > 0.001 : true;
         if (!vis)
             return undefined;
+        const effectiveWeight = typeof weight === "number" && weight > 0
+            ? weight
+            : visible.length
+                ? 1
+                : undefined;
+        if (!effectiveWeight)
+            return undefined;
         const color = rgbaFromRGB(p.color, opacity !== null && opacity !== void 0 ? opacity : 1);
-        return { weight, align, color };
+        return { weight: effectiveWeight, align, color };
     }
     catch (_a) {
         return;

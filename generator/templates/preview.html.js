@@ -716,6 +716,28 @@ export function previewHtml(ast, opts = {}) {
     : "";
   const css = previewCss({ bodyFontCss, designW });
 
+  const iframeSrcdoc = `<!doctype html>
+<html class="tw-loading">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  ${googleFonts || ""}
+  ${ENABLE_SLICK ? slickFrameHead() : ""}
+  ${ENABLE_NICESELECT ? niceSelectFrameHead() : ""}
+  <style>
+    html, body { margin:0; padding:0; background: transparent; }
+    html.tw-loading body { opacity: 0; }
+  </style>
+</head>
+<body>
+  ${fragment}
+  ${ENABLE_SLICK ? slickFrameInit() : ""}
+  ${ENABLE_NICESELECT ? niceSelectFrameInit() : ""}
+  ${tailwindCdnLoaderScript()}
+</body>
+</html>`;
+  const iframeSrcdocAttr = escapeAttr(iframeSrcdoc);
+
   return `<!doctype html>
 <html class="tw-loading">
 <head>
@@ -807,26 +829,7 @@ ${css}
     id="vp_iframe"
     title="Preview content"
     style="display:block; border:0; width:100%;"
-    srcdoc="${escapeAttr(`<!doctype html>
-<html class="tw-loading">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  ${googleFonts || ""}
-  ${ENABLE_SLICK ? slickFrameHead() : ""}
-  ${ENABLE_NICESELECT ? niceSelectFrameHead() : ""}
-  <style>
-    html, body { margin:0; padding:0; background: transparent; }
-    html.tw-loading body { opacity: 0; }
-  </style>
-</head>
-<body>
-  ${fragment}
-  ${ENABLE_SLICK ? slickFrameInit() : ""}
-  ${ENABLE_NICESELECT ? niceSelectFrameInit() : ""}
-  ${tailwindCdnLoaderScript()}
-</body>
-</html>`)}"
+    srcdoc="${iframeSrcdocAttr}"
   ></iframe>
 </div>
 
@@ -1207,6 +1210,15 @@ ${css}
 
       let componentsRoot = "";
 
+      function collectExportFragment() {
+        const iframe = document.getElementById('vp_iframe');
+        const doc = iframe ? iframe.contentDocument : null;
+        if (!doc) return "";
+        const root = doc.querySelector('[data-key="root"]');
+        if (root && root.outerHTML) return root.outerHTML;
+        return doc.body ? doc.body.innerHTML : "";
+      }
+
       async function loadComponents(){
         try {
           const r = await fetch('/api/components');
@@ -1249,11 +1261,14 @@ ${css}
         const type = String(typeSelect?.value || '').trim();
         if (!type) return alert('Select a component folder (e.g. hero).');
 
+        const fragmentHtml = collectExportFragment();
+        if (!fragmentHtml) return alert('Export error: preview iframe not ready.');
+
         try {
           exportBtn.disabled = true;
           exportBtn.textContent = 'Exporting...';
 
-          const payload = { slug, type };
+          const payload = { slug, type, fragmentHtml };
           if (componentsRoot) payload.componentsRoot = componentsRoot;
 
           const r = await fetch('/export', {

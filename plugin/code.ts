@@ -428,8 +428,21 @@ function getShadows(n: SceneNode): Shadow[] | undefined {
 function getStroke(n: SceneNode): Stroke | undefined {
   try {
     const anyN = n as any;
-    const weight = anyN.strokeWeight as number | undefined;
-    if (!weight || weight <= 0) return undefined;
+    const weightRaw = anyN.strokeWeight as number | undefined;
+
+    const fallbackWeights = [
+      anyN.strokeTopWeight,
+      anyN.strokeRightWeight,
+      anyN.strokeBottomWeight,
+      anyN.strokeLeftWeight,
+    ].filter((v: any) => typeof v === "number" && v > 0) as number[];
+
+    const weight =
+      typeof weightRaw === "number" && weightRaw > 0
+        ? weightRaw
+        : fallbackWeights.length
+          ? Math.max(...fallbackWeights)
+          : undefined;
 
     const align = anyN.strokeAlign as
       | "INSIDE"
@@ -441,16 +454,27 @@ function getStroke(n: SceneNode): Stroke | undefined {
     const visible = Array.isArray(s)
       ? s.filter((pp) => (pp as any)?.visible !== false)
       : [];
-    const p = visible.length ? visible[visible.length - 1] : undefined;
 
-    if (!p || p.type !== "SOLID") return undefined;
+    const solid = visible.filter((p) => p && (p as any).type === "SOLID") as SolidPaint[];
+    const p = solid.length ? solid[solid.length - 1] : undefined;
+
+    if (!p) return undefined;
 
     const opacity = (p as any).opacity as number | undefined;
     const vis = typeof opacity === "number" ? opacity > 0.001 : true;
     if (!vis) return undefined;
 
+    const effectiveWeight =
+      typeof weight === "number" && weight > 0
+        ? weight
+        : visible.length
+          ? 1
+          : undefined;
+
+    if (!effectiveWeight) return undefined;
+
     const color = rgbaFromRGB((p as SolidPaint).color as RGB, opacity ?? 1);
-    return { weight, align, color };
+    return { weight: effectiveWeight, align, color };
   } catch {
     return;
   }

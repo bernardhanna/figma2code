@@ -1,6 +1,27 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
+import flexWidthsContract from "../flexWidths.contract.js";
+
+test("flexWidths avoids corrupting nested flex descendants", () => {
+  const html = `
+    <section class="flex" data-key="root">
+      <div class="flex" data-key="left">
+        <div data-node-id="x1" class="w-[10rem] max-w-full" data-key="leaf"></div>
+        <div class="w-[5rem]" data-key="sibling"></div>
+      </div>
+      <div class="w-[5rem]" data-key="right"></div>
+    </section>
+  `;
+
+  const out = flexWidthsContract.apply(html)?.html || "";
+
+  assert.ok(out.includes('data-node-id="x1"'));
+  assert.doesNotMatch(out, />e-id="/);
+});
+import test from "node:test";
+import assert from "node:assert/strict";
+
 import { applyContracts } from "../index.js";
 
 function getTokensByDataKey(html, dataKey) {

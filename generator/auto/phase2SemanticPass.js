@@ -65,7 +65,11 @@ function parseTag(tagStr) {
 }
 
 function escAttr(s = "") {
-  return String(s).replace(/"/g, "&quot;");
+  return String(s)
+    .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
 function buildTag(name, attrs, kind) {
