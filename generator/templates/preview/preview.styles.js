@@ -59,6 +59,7 @@ ${bodyFontCss}
   display:flex;
   justify-content:center;
   padding: 16px 12px 40px;
+  overflow-x: hidden;
 }
 
 .device-frame{
@@ -76,7 +77,8 @@ ${bodyFontCss}
 .device-outline{
   border: 1px solid rgba(0,0,0,.08);
   box-shadow: 0 14px 38px rgba(0,0,0,.10);
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 #cmp_root{
@@ -88,7 +90,8 @@ ${bodyFontCss}
   margin-left: auto;
   margin-right: auto;
 
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
 }
 
 /* -------- Background layer (div-based, not <img>) -------- */

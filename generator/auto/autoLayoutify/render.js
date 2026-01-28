@@ -7,7 +7,7 @@
 // - SVG leaf rendering happens before text/button/img fallbacks
 // - IMPORTANT: layoutGridFlex import is declared ONCE (fixes "already been declared")
 
-import { cls, pos, remTypo } from "./precision.js";
+import { cls, num, pos, rem, remTypo } from "./precision.js";
 import { escAttr } from "./escape.js";
 import { twFontClassForFamily } from "./fonts.js";
 
@@ -73,13 +73,129 @@ function attrsFromMap(attrs) {
     .join("");
 }
 
-function attrsForNode(node, extra = "") {
-  const dn = node?.id ? ` data-node="${escAttr(node.id)}"` : "";
-  // NEW: stable merge key (from normalizeAst extracting "#key" tokens)
-  const dk = node?.key ? ` data-key="${escAttr(node.key)}"` : "";
-  const custom = attrsFromMap(node?.attrs || node?.dataAttrs || null);
-  return dn + dk + custom + (extra || "");
+function normalizeIntent(raw) {
+  const intent = String(raw || "").toUpperCase();
+  if (intent === "FILL" || intent === "FIXED" || intent === "HUG") return intent.toLowerCase();
+  return "";
 }
+
+function heightIntentRawFromNode(node, parentLayout) {
+  const parent = String(parentLayout || "").toUpperCase();
+
+  // IMPORTANT:
+  // In a GRID context, do NOT infer height intent from "counter" like a flex row.
+  // Grid children generally should be treated as HUG unless they *explicitly* opt into fixed/fill
+  // via their own auto layout. The heights contract will then strip wrapper heights.
+  if (parent === "GRID") {
+    const autoLayout = String(node?.auto?.layout || "").toUpperCase();
+    if (autoLayout === "VERTICAL") return node?.auto?.primarySizing;
+    if (autoLayout === "HORIZONTAL") return node?.auto?.counterSizing;
+    return ""; // default -> hug
+  }
+
+  // If the PARENT is a flex direction, use child sizing relative to that axis.
+  if (node?.size && (parent === "HORIZONTAL" || parent === "VERTICAL")) {
+    return parent === "VERTICAL" ? node.size.primary : node.size.counter;
+  }
+
+  // Otherwise fall back to the node’s own auto layout intent.
+  const autoLayout = String(node?.auto?.layout || "").toUpperCase();
+  if (autoLayout === "VERTICAL") return node?.auto?.primarySizing;
+  if (autoLayout === "HORIZONTAL") return node?.auto?.counterSizing;
+
+  return node?.auto?.counterSizing || node?.auto?.primarySizing || "";
+}
+
+function attrsForNode(node, extra = "", parentLayout = null) {
+  const dn = node?.id ? ` data-node="${escAttr(node.id)}"` : "";
+  const dk = node?.key ? ` data-key="${escAttr(node.key)}"` : "";
+
+  const widthIntentValue = normalizeIntent(
+    node?.size?.primary || node?.auto?.primarySizing
+  );
+  const widthIntent = widthIntentValue
+    ? ` data-w-intent="${widthIntentValue}"`
+    : "";
+
+  const rawHeightIntent = heightIntentRawFromNode(node, parentLayout);
+  let heightIntentValue = normalizeIntent(rawHeightIntent);
+
+  // ----------------------------
+  // Guard: DO NOT mark non-media wrappers as fixed height.
+  // If it's a container (has children), and it's not media/hero/root/decorative/button,
+  // treat fixed-height intent as "hug" so the heights contract can strip wrapper h-[...].
+  // ----------------------------
+  const nameLower = String(node?.name || "").toLowerCase();
+  const keyLower = String(node?.key || "").toLowerCase();
+  const tag = String(node?.tag || "").toLowerCase();
+
+  const hasChildren =
+    Array.isArray(node?.children) && node.children.length > 0;
+
+  const isRoot = keyLower === "root";
+  const isHero = nameLower.includes("hero") || keyLower.includes("hero");
+  const isDecorative =
+    nameLower.includes("decorativebar") ||
+    nameLower.includes("divider") ||
+    keyLower.includes("decorativebar") ||
+    keyLower.includes("divider");
+
+  const isButtonLike =
+    tag === "button" ||
+    (typeof node?.tw === "string" && node.tw.split(/\s+/g).includes("btn")) ||
+    (Array.isArray(node?.className) && node.className.includes("btn"));
+
+  // Media-ish detection (match the contract’s idea of media)
+  const isImgTag = tag === "img";
+  const isMediaish =
+    isImgTag ||
+    nameLower.includes("image") ||
+    nameLower.includes("img") ||
+    nameLower.includes("cover") ||
+    keyLower.includes("image") ||
+    keyLower.includes("img") ||
+    keyLower.includes("cover");
+
+  // Coerce fixed -> hug for non-media containers
+  if (
+    heightIntentValue === "fixed" &&
+    hasChildren &&
+    !isMediaish &&
+    !isRoot &&
+    !isHero &&
+    !isDecorative &&
+    !isButtonLike
+  ) {
+    heightIntentValue = "hug";
+  }
+
+  const heightIntent = heightIntentValue
+    ? ` data-h-intent="${heightIntentValue}"`
+    : "";
+
+  const widthPx = num(node?.size?.w)
+    ? node.size.w
+    : num(node?.w)
+      ? node.w
+      : null;
+  const widthRem = widthPx ? ` data-w-rem="${escAttr(rem(widthPx))}"` : "";
+
+  const decorativeAttr = isDecorative ? ` data-decorative="1"` : "";
+  const custom = attrsFromMap(node?.attrs || node?.dataAttrs || null);
+
+  return (
+    dn +
+    dk +
+    widthIntent +
+    heightIntent +
+    widthRem +
+    decorativeAttr +
+    custom +
+    (extra || "")
+  );
+}
+
+
 
 /* ------------------ CTA text helpers ------------------ */
 
@@ -446,7 +562,13 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   }
 
   return (
-    openTag(tag, container, attrsForNode(node, hrefAttr + typeAttr + aria), node, ctx) +
+    openTag(
+      tag,
+      container,
+      attrsForNode(node, hrefAttr + typeAttr + aria, parentLayout),
+      node,
+      ctx
+    ) +
     body +
     `</${tag}>`
   );
@@ -505,7 +627,8 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     const disabled = node?.option?.disabled ? " disabled" : "";
     const attrs = attrsForNode(
       node,
-      ` value="${escAttr(value)}"${selected}${disabled}`
+      ` value="${escAttr(value)}"${selected}${disabled}`,
+      parentLayout
     );
     return openTag("option", "", attrs, node, ctx) + escAttr(label) + `</option>`;
   }
@@ -521,7 +644,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
           .map((c) => renderNode(c, parentLayout, false, semantics, ctx))
           .join("\n");
     return (
-      openTag("select", classes, attrsForNode(node), node, ctx) +
+      openTag("select", classes, attrsForNode(node, "", parentLayout), node, ctx) +
       optionsHtml +
       `</select>`
     );
@@ -542,6 +665,10 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     const ta = aligns[t.align || "left"];
 
     const typo = node.typography || {};
+
+    const rawText = String(t.raw || "");
+    const needsPreserveWhitespace = rawText.includes("\n") || / {2,}/.test(rawText);
+    const whitespaceClass = needsPreserveWhitespace ? "whitespace-pre-wrap" : "";
 
     const family = String(
       typo.family || t.fontFamily || t.family || t.fontName?.family || ""
@@ -594,7 +721,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
       baseSize,
       deco,
       clip,
-      "whitespace-pre-wrap",
+      whitespaceClass,
       "break-words",
       ta,
       fs,
@@ -609,7 +736,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     );
 
     return (
-      openTag(tag, classes, attrsForNode(node, ffData), node, ctx) +
+      openTag(tag, classes, attrsForNode(node, ffData, parentLayout), node, ctx) +
       (t.raw || "") +
       `</${tag}>`
     );
@@ -708,7 +835,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
       openTag(
         tag,
         classes,
-        attrsForNode(node, hrefAttr + targetAttr + typeAttr + aria),
+        attrsForNode(node, hrefAttr + targetAttr + typeAttr + aria, parentLayout),
         node,
         ctx
       ) +
@@ -746,5 +873,9 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     .join("\n");
 
   const classes = cls(baseSize, deco, clip);
-  return openTag("div", classes, attrsForNode(node), node, ctx) + inner + `</div>`;
+  return (
+    openTag("div", classes, attrsForNode(node, "", parentLayout), node, ctx) +
+    inner +
+    `</div>`
+  );
 }

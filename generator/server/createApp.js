@@ -2,7 +2,7 @@
 import express from "express";
 
 import { corsMiddleware } from "./corsMiddleware.js";
-import { ensureRuntimeDirs, ASSETS_DIR, VDIFF_DIR } from "./runtimePaths.js";
+import { ensureRuntimeDirs, ASSETS_DIR, PREVIEW_SCREEN_DIR, VDIFF_DIR } from "./runtimePaths.js";
 
 import { registerHomeRoutes } from "./routesHome.js";
 import { registerConfigRoutes } from "./routesConfig.js";
@@ -39,6 +39,7 @@ export function createApp({ port, deps }) {
 
   // Static
   app.use("/assets", express.static(ASSETS_DIR));
+  app.use("/preview-screens", express.static(PREVIEW_SCREEN_DIR));
   app.use("/fixtures.out", express.static(VDIFF_DIR));
 
   // Routes

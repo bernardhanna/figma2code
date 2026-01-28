@@ -90,12 +90,13 @@ export function responsiveScript({
         }
 
         // Optional: overlay switching via data-group-ov-* attributes
+        const cmp = document.getElementById("cmp_root");
         const ovImg = document.getElementById("ov_img");
-        if (ovImg) {
+        if (cmp && ovImg) {
           const ov =
-            b === "mobile" ? (ovImg.getAttribute("data-group-ov-mobile") || "") :
-            b === "tablet" ? (ovImg.getAttribute("data-group-ov-tablet") || ovImg.getAttribute("data-group-ov-desktop") || "") :
-            (ovImg.getAttribute("data-group-ov-desktop") || "");
+            b === "mobile" ? (cmp.getAttribute("data-group-ov-mobile") || "") :
+            b === "tablet" ? (cmp.getAttribute("data-group-ov-tablet") || cmp.getAttribute("data-group-ov-desktop") || "") :
+            (cmp.getAttribute("data-group-ov-desktop") || "");
 
           // Only swap if we have something meaningful
           if (ov) ovImg.src = ov;

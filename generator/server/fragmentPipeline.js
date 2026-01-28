@@ -9,6 +9,7 @@ import { decideResponsiveStrategy } from "./variantDecision.js";
 import { mergeResponsiveFragments } from "../auto/mergeResponsiveFragments.js";
 import { variantLinkPass } from "../auto/variantLinkPass.js";
 import { previewFocusPass } from "../auto/previewFocusPass.js";
+import { applyContracts } from "../contracts/index.js";
 
 import { parseGroupVariant } from "./variantNaming.js";
 import {
@@ -364,7 +365,8 @@ export function buildMergedResponsivePreview({
   writeStage(groupKey, mergedAstWithMatch);
 
   // IMPORTANT: previewHtml must now render inside an iframe for Tailwind breakpoints
-  const preview = previewHtml(mergedAstWithMatch, { fragment: mergedFragment });
+  const contractsOut = applyContracts({ html: mergedFragment, slug: groupKey });
+  const preview = previewHtml(mergedAstWithMatch, { fragment: contractsOut.html });
 
   return {
     ok: true,

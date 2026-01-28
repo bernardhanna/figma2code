@@ -13,6 +13,7 @@ export const ROOT = path.resolve(__dirname, "..");
 export const PREVIEW_DIR = path.join(ROOT, ".preview");
 export const ASSETS_DIR = path.join(PREVIEW_DIR, "assets");
 export const STAGING_DIR = path.join(PREVIEW_DIR, "staging");
+export const PREVIEW_SCREEN_DIR = path.join(PREVIEW_DIR, "screens");
 
 // Visual diff output dir: generator/fixtures.out/<slug>/...
 export const VDIFF_DIR = path.join(ROOT, "fixtures.out");
@@ -22,7 +23,7 @@ export const LEARN_DIR = path.join(ROOT, "learn");
 export const RULES_PATH = path.join(LEARN_DIR, "rules.json");
 
 export function ensureRuntimeDirs() {
-  for (const d of [PREVIEW_DIR, ASSETS_DIR, STAGING_DIR, VDIFF_DIR, LEARN_DIR]) {
+  for (const d of [PREVIEW_DIR, ASSETS_DIR, STAGING_DIR, PREVIEW_SCREEN_DIR, VDIFF_DIR, LEARN_DIR]) {
     fs.mkdirSync(d, { recursive: true });
   }
 }

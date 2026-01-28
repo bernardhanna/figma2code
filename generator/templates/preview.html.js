@@ -640,20 +640,22 @@ export function previewHtml(ast, opts = {}) {
   // -----------------------------
   // Fallback overlay convention
   // -----------------------------
-  const groupOverlayFixtures = {
-    mobile: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.mobile.png`,
-    tablet: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.tablet.png`,
-    desktop: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.desktop.png`,
-  };
+  const groupOverlayFixtures = isMergedGroup
+    ? {
+        mobile: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.mobile.png`,
+        tablet: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.tablet.png`,
+        desktop: `/fixtures.out/${encodeURIComponent(groupSlug)}/figma.desktop.png`,
+      }
+    : { mobile: "", tablet: "", desktop: "" };
 
   // Decide group overlay candidates for each bucket:
   // 1) responsive assets (if present)
   // 2) fixtures convention
   // 3) meta.overlay.src (legacy)
   const groupOverlay = {
-    mobile: assetOverlay.mobile || groupOverlayFixtures.mobile || overlaySrcMeta,
-    tablet: assetOverlay.tablet || groupOverlayFixtures.tablet || overlaySrcMeta,
-    desktop: assetOverlay.desktop || groupOverlayFixtures.desktop || overlaySrcMeta,
+    mobile: assetOverlay.mobile || overlaySrcMeta || groupOverlayFixtures.mobile,
+    tablet: assetOverlay.tablet || overlaySrcMeta || groupOverlayFixtures.tablet,
+    desktop: assetOverlay.desktop || overlaySrcMeta || groupOverlayFixtures.desktop,
   };
 
   // Choose initial overlay src:
@@ -715,15 +717,16 @@ export function previewHtml(ast, opts = {}) {
   const css = previewCss({ bodyFontCss, designW });
 
   return `<!doctype html>
-<html>
+<html class="tw-loading">
 <head>
   <meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <script src="https://cdn.tailwindcss.com"></script>
   <title>Preview – ${escapeHtml(slug)}</title>
 
   ${googleFonts || ""}
 
   <style>
+html.tw-loading body { opacity: 0; }
+html.tw-loading #cmp_root { visibility: hidden; }
 ${css}
   </style>
 </head>
@@ -805,22 +808,23 @@ ${css}
     title="Preview content"
     style="display:block; border:0; width:100%;"
     srcdoc="${escapeAttr(`<!doctype html>
-<html>
+<html class="tw-loading">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <script src="https://cdn.tailwindcss.com"></script>
   ${googleFonts || ""}
   ${ENABLE_SLICK ? slickFrameHead() : ""}
   ${ENABLE_NICESELECT ? niceSelectFrameHead() : ""}
   <style>
     html, body { margin:0; padding:0; background: transparent; }
+    html.tw-loading body { opacity: 0; }
   </style>
 </head>
 <body>
   ${fragment}
   ${ENABLE_SLICK ? slickFrameInit() : ""}
   ${ENABLE_NICESELECT ? niceSelectFrameInit() : ""}
+  ${tailwindCdnLoaderScript()}
 </body>
 </html>`)}"
   ></iframe>
@@ -1287,8 +1291,63 @@ ${css}
       }
     })();
   </script>
+  ${tailwindCdnLoaderScript()}
 </body>
 </html>`;
+}
+
+function tailwindCdnLoaderScript() {
+  return `
+  <script>
+    (function(){
+      function markReady(){
+        try {
+          document.documentElement.classList.remove("tw-loading");
+          document.documentElement.classList.add("tw-ready");
+        } catch {}
+        window.__TAILWIND_READY__ = true;
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.__TAILWIND_IFRAME_READY__ = true;
+          }
+        } catch {}
+        try { document.dispatchEvent(new Event("tailwind:ready")); } catch {}
+      }
+      try { document.documentElement.classList.add("tw-loading"); } catch {}
+      var html = (document.body && document.body.innerHTML)
+        ? document.body.innerHTML
+        : document.documentElement.outerHTML;
+      window.tailwind = window.tailwind || {};
+      window.tailwind.config = {
+        content: [{ raw: html, extension: "html" }]
+      };
+      var s = document.createElement("script");
+      s.src = "https://cdn.tailwindcss.com";
+      s.async = true;
+      s.onload = function(){
+        var start = Date.now();
+        (function waitCss(){
+          if (document.querySelector("style#tailwindcss") ||
+              document.querySelector("style[data-tw]") ||
+              document.querySelector("style[data-tailwind]")) {
+            markReady();
+            return;
+          }
+          if (Date.now() - start > 2000) {
+            markReady();
+            return;
+          }
+          setTimeout(waitCss, 16);
+        })();
+      };
+      s.onerror = function(){ markReady(); };
+      document.head.appendChild(s);
+      setTimeout(function(){
+        if (!window.__TAILWIND_READY__) markReady();
+      }, 2500);
+    })();
+  </script>
+  `;
 }
 
 /* ---------------- helpers ---------------- */
