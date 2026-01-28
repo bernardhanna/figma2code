@@ -103,6 +103,7 @@ export const flexWidthsContract = {
     const nodes = parseHtmlNodes(html);
     const childrenMap = buildChildrenMap(nodes);
     const patches = [];
+    const patchIndexByNode = new Map();
     const notes = [];
     let changedNodes = 0;
 
@@ -131,9 +132,19 @@ export const flexWidthsContract = {
         const order = [...child.attrOrder];
         setClassTokens(attrs, order, cleaned);
         const replacement = buildOpenTag(child.tag, attrs, order, child.isSelfClosing);
-        patches.push(createPatch(child.openStart, child.openEnd, replacement));
-        changedNodes += 1;
-        notes.push("Normalized flex column widths.");
+        const patch = createPatch(child.openStart, child.openEnd, replacement);
+        const existing = patchIndexByNode.get(childIndex);
+        if (existing) {
+          if (existing.kind === "desc") {
+            patches[existing.index] = patch;
+            patchIndexByNode.set(childIndex, { kind: "child", index: existing.index });
+          }
+        } else {
+          patches.push(patch);
+          patchIndexByNode.set(childIndex, { kind: "child", index: patches.length - 1 });
+          changedNodes += 1;
+          notes.push("Normalized flex column widths.");
+        }
 
         const stack = [...(childrenMap.get(childIndex) || [])];
         while (stack.length) {
@@ -166,9 +177,16 @@ export const flexWidthsContract = {
               orderDesc,
               descendant.isSelfClosing
             );
-            patches.push(createPatch(descendant.openStart, descendant.openEnd, replacementDesc));
-            changedNodes += 1;
-            notes.push("Removed nested bracket width.");
+            const patchDesc = createPatch(descendant.openStart, descendant.openEnd, replacementDesc);
+            if (!patchIndexByNode.has(descendantIndex)) {
+              patches.push(patchDesc);
+              patchIndexByNode.set(descendantIndex, {
+                kind: "desc",
+                index: patches.length - 1,
+              });
+              changedNodes += 1;
+              notes.push("Removed nested bracket width.");
+            }
           }
 
           const kids = childrenMap.get(descendantIndex) || [];

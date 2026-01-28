@@ -68,6 +68,10 @@ function isButtonLike(tokens) {
   return tokens.includes("btn");
 }
 
+function hasOverflowTokens(tokens) {
+  return tokens.some((token) => splitToken(token).base.startsWith("overflow-"));
+}
+
 function hasDisqualifyingTokens(tokens) {
   return tokens.some((token) => {
     const { base } = splitToken(token);
@@ -105,6 +109,7 @@ export const widthNoiseContract = {
       if (isButtonLike(tokens)) return;
       if (isDecorativeOrDivider(node)) return;
       if (hasDisqualifyingTokens(tokens)) return;
+      if (hasOverflowTokens(tokens)) return;
 
       const parentIndex = node.parentIndex;
       if (parentIndex === null || parentIndex === undefined) return;
@@ -155,21 +160,27 @@ export const widthNoiseContract = {
         const { variant, base } = splitToken(token);
         if (!isAllowedVariant(variant)) return true;
         const key = variant || "";
+        const widthBases = childWidthByVariant.get(key) || new Set();
+        const widthCount = widthBases.size;
 
         if (base.startsWith("w-")) {
+          if (widthCount > 1) return true;
           const parentSet = parentWidthByVariant.get(key);
-          if (parentSet && parentSet.has(base)) return false;
+          if (!parentSet || !parentSet.has(base)) return true;
+          if (base === "w-full" && widthCount === 1) return false;
+          if (base !== "w-full" && widthCount === 1) return false;
+          return true;
         }
 
         if (base === "max-w-full") {
           if (!parentMaxWFull.has(key)) return true;
-          const widthBases = childWidthByVariant.get(key) || new Set();
           const hasBracket = childBracketByVariant.has(key);
-          const onlyWFullOrNone =
-            widthBases.size === 0 || (widthBases.size === 1 && widthBases.has("w-full"));
+          const onlyWFullOrNone = widthCount === 0 || (widthCount === 1 && widthBases.has("w-full"));
           const parentSet = parentWidthByVariant.get(key) || new Set();
-          const childHasDuplicateWidth = Array.from(widthBases).some((w) => parentSet.has(w));
+          const childHasDuplicateWidth =
+            widthCount === 1 && Array.from(widthBases).some((w) => parentSet.has(w));
 
+          if (widthCount > 1) return true;
           if (childHasDuplicateWidth || (!hasBracket && onlyWFullOrNone)) return false;
         }
 

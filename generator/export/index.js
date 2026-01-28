@@ -5,6 +5,7 @@ import process from "node:process";
 
 import { PREVIEW_DIR, ROOT as GENERATOR_ROOT, VDIFF_DIR } from "../server/runtimePaths.js";
 import { groupDir } from "../server/variantStore.js";
+import { getAttrValue, parseHtmlNodes } from "../contracts/contractTypes.js";
 
 const EXPORT_DEBUG = String(process.env.EXPORT_DEBUG || "").trim() === "1";
 
@@ -21,7 +22,7 @@ function decodeSrcdocAttr(value) {
     .replace(/&amp;/g, "&");
 }
 
-function extractPreviewFragment(previewHtml) {
+export function extractPreviewFragment(previewHtml) {
   const html = String(previewHtml || "");
   if (!html) return "";
 
@@ -40,8 +41,20 @@ function extractPreviewFragment(previewHtml) {
   return bodyMatch ? String(bodyMatch[1] || "").trim() : srcdoc.trim();
 }
 
+export function selectRootFragment(fragmentHtml) {
+  const html = String(fragmentHtml || "");
+  if (!html) return "";
+  const nodes = parseHtmlNodes(html);
+  const root = nodes.find((node) => getAttrValue(node.attrs, "data-key") === "root");
+  if (!root || root.openStart == null || root.end == null) return html.trim();
+  return html.slice(root.openStart, root.end).trim();
+}
+
 function stripDebugDataAttrs(html) {
-  return String(html || "").replace(/\sdata-[a-z0-9_-]+(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi, "");
+  return String(html || "").replace(
+    /\sdata-(?!key\b)[a-z0-9_-]+(?:=(?:"[^"]*"|'[^']*'|[^\s>]+))?/gi,
+    ""
+  );
 }
 
 function sanitizeClassAttrValue(value) {
@@ -327,7 +340,7 @@ export function copyOverlayImages({ slug, destDir, componentBaseName }) {
   return output;
 }
 
-export async function exportComponent({ slug, type, componentsRoot }) {
+export async function exportComponent({ slug, type, componentsRoot, fragmentHtml }) {
   const safeSlug = String(slug || "").trim();
   const safeType = String(type || "").trim();
 
@@ -335,13 +348,18 @@ export async function exportComponent({ slug, type, componentsRoot }) {
   if (!safeType) throw new Error("exportComponent: missing type");
 
   const previewPath = path.join(PREVIEW_DIR, `${safeSlug}.html`);
-  if (!fs.existsSync(previewPath)) {
-    throw new Error(`Preview not found for slug "${safeSlug}" (${previewPath})`);
+  let previewHtml = "";
+
+  if (!fragmentHtml) {
+    if (!fs.existsSync(previewPath)) {
+      throw new Error(`Preview not found for slug "${safeSlug}" (${previewPath})`);
+    }
+    previewHtml = fs.readFileSync(previewPath, "utf8");
   }
 
-  const previewHtml = fs.readFileSync(previewPath, "utf8");
-  const fragment = extractPreviewFragment(previewHtml);
-  const sanitizedHtml = sanitizePreviewHtml(fragment);
+  const fragmentSource = fragmentHtml ? String(fragmentHtml || "") : extractPreviewFragment(previewHtml);
+  const rootFragment = selectRootFragment(fragmentSource);
+  const sanitizedHtml = sanitizePreviewHtml(rootFragment);
 
   const componentsBase = resolveComponentsRoot(componentsRoot);
   const typeDir = path.join(componentsBase, safeType);

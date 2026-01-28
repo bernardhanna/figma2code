@@ -28,6 +28,14 @@ export function parseAttributes(attrString) {
   return { attrs, order };
 }
 
+function escapeAttr(value) {
+  return String(value || "")
+    .replace(/&(?!(?:[a-zA-Z]+|#\d+|#x[a-fA-F0-9]+);)/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export function serializeAttributes(attrs, order) {
   const parts = [];
   for (const key of order) {
@@ -36,7 +44,7 @@ export function serializeAttributes(attrs, order) {
     if (value === null || typeof value === "undefined") {
       parts.push(` ${key}`);
     } else {
-      parts.push(` ${key}="${String(value)}"`);
+      parts.push(` ${key}="${escapeAttr(value)}"`);
     }
   }
   return parts.join("");

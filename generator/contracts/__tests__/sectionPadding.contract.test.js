@@ -21,8 +21,8 @@ test("section padding applies to section-like container", () => {
   const tokens = getTokensByDataKey(out.html, "root");
   assert.ok(tokens.includes("pt-[2.5rem]"));
   assert.ok(tokens.includes("pb-[2.5rem]"));
-  assert.ok(tokens.includes("md:pt-[5rem]"));
-  assert.ok(tokens.includes("md:pb-[5rem]"));
+  assert.ok(tokens.includes("lg:pt-[5rem]"));
+  assert.ok(tokens.includes("lg:pb-[5rem]"));
   assert.ok(tokens.includes("pr-[5rem]"));
   assert.ok(tokens.includes("pl-[5rem]"));
   assert.ok(tokens.includes("max-xl:px-5"));
