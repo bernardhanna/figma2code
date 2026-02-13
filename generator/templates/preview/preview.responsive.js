@@ -90,7 +90,6 @@ export function responsiveScript({
         }
 
         // Optional: overlay switching via data-group-ov-* attributes
-        const cmp = document.getElementById("cmp_root");
         const ovImg = document.getElementById("ov_img");
         if (cmp && ovImg) {
           const ov =

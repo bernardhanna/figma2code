@@ -57,6 +57,21 @@ const JQUERY_JS_FALLBACK =
   String(process.env.WIDGET_SLICK_JQUERY_FALLBACK || "").trim() ||
   "https://unpkg.com/jquery@3.7.1/dist/jquery.min.js";
 
+const CODEMIRROR_CSS =
+  String(process.env.CODEMIRROR_CSS || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.css";
+const CODEMIRROR_JS =
+  String(process.env.CODEMIRROR_JS || "").trim() ||
+  "https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.min.js";
+const CODEMIRROR_MODE_XML =
+  "https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/xml/xml.min.js";
+const CODEMIRROR_MODE_JAVASCRIPT =
+  "https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/javascript/javascript.min.js";
+const CODEMIRROR_MODE_CSS =
+  "https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/css/css.min.js";
+const CODEMIRROR_MODE_HTML =
+  "https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/htmlmixed/htmlmixed.min.js";
+
 function niceSelectFrameHead() {
   const cssLinks = [NICESELECT_CSS, NICESELECT_CSS_FALLBACK].filter(
     (v, i, arr) => v && arr.indexOf(v) === i
@@ -92,6 +107,24 @@ function niceSelectFrameHead() {
     .nice-select .option.selected { font-weight: 600; }
     .nice-select .option.disabled { color: rgba(0,0,0,.4); cursor: not-allowed; }
   </style>
+  `;
+}
+
+function codeMirrorAssets() {
+  const scripts = [
+    CODEMIRROR_JS,
+    CODEMIRROR_MODE_XML,
+    CODEMIRROR_MODE_JAVASCRIPT,
+    CODEMIRROR_MODE_CSS,
+    CODEMIRROR_MODE_HTML,
+  ];
+
+  const uniqueScripts = scripts.filter((v, i, arr) => v && arr.indexOf(v) === i);
+  const uniqueCss = [CODEMIRROR_CSS].filter((v, i, arr) => v && arr.indexOf(v) === i);
+
+  return `
+  ${uniqueCss.map((href) => `<link rel="stylesheet" href="${href}">`).join("\n  ")}
+  ${uniqueScripts.map((src) => `<script src="${src}"></script>`).join("\n  ")}
   `;
 }
 
@@ -745,6 +778,7 @@ export function previewHtml(ast, opts = {}) {
   <title>Preview – ${escapeHtml(slug)}</title>
 
   ${googleFonts || ""}
+  ${codeMirrorAssets()}
 
   <style>
 html.tw-loading body { opacity: 0; }
@@ -772,6 +806,19 @@ ${css}
       </div>
 
       <div class="flex items-center gap-2 ml-auto flex-wrap" id="toolbar_actions">
+        <div class="stagebar" id="stage_toggle">
+          <span class="vpmeta">Stage:</span>
+          <button class="stagebtn" type="button" data-stage="generate" data-stage-btn="1">
+            Generate
+          </button>
+          <button class="stagebtn" type="button" data-stage="codeit" data-stage-btn="1">
+            Code it
+          </button>
+          <button class="stagebtn" type="button" data-stage="improve" data-stage-btn="1">
+            Improve
+          </button>
+        </div>
+        <button id="improve_run" class="vpbtn" type="button">Improve further</button>
       ${
         overlaySrcInitial
           ? `
@@ -868,6 +915,66 @@ ${css}
     </div>
   </div>
 
+  <div class="overlay-toolbar" id="editor_root">
+    <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-col gap-3">
+      <div class="editor-row">
+        <button id="editor_select" class="vpbtn" type="button">Select element</button>
+        <span class="vpmeta editor-selected" id="editor_selected">No selection</span>
+        <input id="editor_node_input" class="editor-input" type="text" placeholder="data-node-id or data-key" />
+        <button id="editor_pick" class="vpbtn" type="button">Select by ID</button>
+        <button id="editor_clear" class="vpbtn" type="button">Clear</button>
+      </div>
+
+      <div class="editor-row">
+        <div class="editor-field">
+          <label class="vpmeta" for="editor_classes">Classes</label>
+          <textarea id="editor_classes" class="editor-textarea" placeholder="Tailwind classes"></textarea>
+        </div>
+        <div class="editor-field">
+          <label class="vpmeta" for="editor_aria_label">aria-label</label>
+          <input id="editor_aria_label" class="editor-input" type="text" placeholder="Accessible label" />
+        </div>
+        <div class="editor-field">
+          <label class="vpmeta" for="editor_aria_labelledby">aria-labelledby</label>
+          <input id="editor_aria_labelledby" class="editor-input" type="text" placeholder="Element IDs" />
+        </div>
+        <div class="editor-field">
+          <label class="vpmeta" for="editor_aria_describedby">aria-describedby</label>
+          <input id="editor_aria_describedby" class="editor-input" type="text" placeholder="Element IDs" />
+        </div>
+        <div class="editor-field">
+          <label class="vpmeta">
+            <input id="editor_aria_hidden" type="checkbox" />
+            aria-hidden
+          </label>
+        </div>
+      </div>
+
+      <div class="editor-row">
+        <button id="editor_apply" class="vpbtn" type="button">Apply & Save</button>
+        <span class="vpmeta" id="editor_status"></span>
+      </div>
+
+      <div class="editor-row">
+        <div class="editor-field" style="flex:1; min-width:260px;">
+          <label class="vpmeta">Change log</label>
+          <div id="editor_ledger" class="editor-ledger"></div>
+        </div>
+      </div>
+
+      <div class="editor-row editor-code">
+        <div class="editor-field" style="flex:1; min-width:260px;">
+          <label class="vpmeta">Stage HTML (read-only)</label>
+          <textarea id="editor_html" class="editor-textarea" placeholder="Stage HTML"></textarea>
+          <div class="editor-row">
+            <button id="editor_html_refresh" class="vpbtn" type="button">Refresh code</button>
+            <button id="editor_html_copy" class="vpbtn" type="button">Copy</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- =========================================================
        Responsive config + minimal bucket hook (NO HTML swapping)
        ========================================================= -->
@@ -886,6 +993,834 @@ ${css}
 
   <!-- Viewport sizing + bucket detection (reads window.__RESPONSIVE__) -->
   ${viewportScript({ designW, slug })}
+
+  <div id="pipeline_modal_backdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pipeline_modal_title">
+      <div class="modal-hd">
+        <div>
+          <div id="pipeline_modal_title" class="modal-title">Pipeline progress</div>
+          <div class="modal-sub">
+            Stage: <span class="mono" id="pipeline_stage_label">—</span>
+          </div>
+        </div>
+        <button id="pipeline_modal_close" class="btn2" aria-label="Close">Close</button>
+      </div>
+
+      <div class="modal-bd">
+        <div class="progress-status" id="pipeline_status">Waiting…</div>
+        <div id="pipeline_steps" class="progress-steps"></div>
+        <div id="pipeline_log" class="progress-log">Progress log will appear here.</div>
+        <div class="progress-preview">
+          Preview ready: <a id="pipeline_preview_link" href="#" rel="noreferrer">—</a>
+        </div>
+      </div>
+
+      <div class="modal-ft">
+        <div class="progress-status" id="pipeline_status_footer"></div>
+        <div class="progress-actions">
+          <button id="pipeline_open_preview" class="btn2 primary" disabled>Open preview</button>
+          <button id="pipeline_modal_close_footer" class="btn2">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function(){
+      const allowed = ["generate", "codeit", "improve"];
+      const qs = new URLSearchParams(location.search);
+      const raw = String(qs.get("stage") || "generate").toLowerCase();
+      const active = allowed.includes(raw) ? raw : "generate";
+      const buttons = Array.prototype.slice.call(document.querySelectorAll("[data-stage-btn]"));
+      if (!buttons.length) return;
+
+      const stageLabels = {
+        generate: "Generate",
+        codeit: "Code it",
+        improve: "Improve",
+      };
+
+      const STAGE_STEPS = {
+        generate: [
+          "Preparing AST…",
+          "Generating HTML…",
+          "Repairing Tailwind classes…",
+          "Running validation…",
+          "Rendering screenshot…",
+          "Sending payload…",
+          "Done.",
+        ],
+        codeit: [
+          "Loading artifact.generate.json…",
+          "Preparing contract runner…",
+          "Running validation (post-clean)…",
+          "Running Evaluate (regression gate)…",
+          "Writing artifact.codeit.json…",
+          "Done.",
+        ],
+        /* codeit contract steps are injected from log (Contract: <id>…) */
+        improve: [
+          "Loading artifact.codeit.json…",
+          "Running Evaluate (find offenders)…",
+          "Selecting top offenders (N=25)…",
+          "Generating patch plan…",
+          "Validating patch plan (bounded ops only)…",
+          "Applying patches…",
+          "Running Evaluate (verify improvement)…",
+          "Accepting patches (score gate)…",
+          "Writing artifact.improve.json…",
+          "Done.",
+        ],
+      };
+
+      const modalBackdrop = document.getElementById("pipeline_modal_backdrop");
+      const modalClose = document.getElementById("pipeline_modal_close");
+      const modalCloseFooter = document.getElementById("pipeline_modal_close_footer");
+      const modalTitle = document.getElementById("pipeline_modal_title");
+      const stageLabel = document.getElementById("pipeline_stage_label");
+      const statusEl = document.getElementById("pipeline_status");
+      const statusFooter = document.getElementById("pipeline_status_footer");
+      const stepsEl = document.getElementById("pipeline_steps");
+      const logEl = document.getElementById("pipeline_log");
+      const previewLink = document.getElementById("pipeline_preview_link");
+      const openPreviewBtn = document.getElementById("pipeline_open_preview");
+
+      let stepMap = new Map();
+      let progressTimer = null;
+      let progressIndex = 0;
+      let progressStage = "";
+
+      const slug = String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+
+      const setModalOpen = (isOpen) => {
+        if (!modalBackdrop) return;
+        modalBackdrop.dataset.open = isOpen ? "1" : "0";
+        modalBackdrop.setAttribute("aria-hidden", isOpen ? "false" : "true");
+      };
+
+      const setStatus = (msg) => {
+        if (statusEl) statusEl.textContent = msg || "";
+        if (statusFooter) statusFooter.textContent = msg || "";
+      };
+
+      const setLog = (text) => {
+        if (logEl) logEl.textContent = text || "";
+      };
+
+      const setPreviewUrl = (url) => {
+        if (previewLink) {
+          previewLink.textContent = url || "—";
+          previewLink.href = url || "#";
+        }
+        if (openPreviewBtn) {
+          openPreviewBtn.disabled = !url;
+          openPreviewBtn.dataset.url = url || "";
+        }
+      };
+
+      const renderSteps = (stage) => {
+        if (!stepsEl) return;
+        stepMap = new Map();
+        stepsEl.innerHTML = "";
+        const steps = STAGE_STEPS[stage] || [];
+        steps.forEach((label, index) => {
+          const el = document.createElement("div");
+          el.className = "progress-step";
+          el.dataset.state = index === 0 ? "active" : "pending";
+          el.dataset.label = label;
+          el.textContent = label;
+          stepMap.set(label, el);
+          stepsEl.appendChild(el);
+        });
+      };
+
+      const updateStepText = (el) => {
+        if (!el) return;
+        const label = el.dataset.label || el.textContent || "";
+        const state = el.dataset.state || "pending";
+        if (state === "done") {
+          el.textContent = "✓ " + label;
+        } else {
+          el.textContent = label;
+        }
+      };
+
+      const setStepState = (label, state) => {
+        const el = stepMap.get(label);
+        if (!el) return;
+        el.dataset.state = state;
+        updateStepText(el);
+      };
+
+      const markStepsFromLog = (stage, logText) => {
+        const steps = STAGE_STEPS[stage] || [];
+        let matched = false;
+        steps.forEach((label) => {
+          const el = stepMap.get(label);
+          if (!el) return;
+          if (logText.includes(label)) {
+            el.dataset.state = "done";
+            updateStepText(el);
+            matched = true;
+          }
+        });
+        if (!matched && logText) {
+          stepMap.forEach((el) => {
+            el.dataset.state = "done";
+            updateStepText(el);
+          });
+        }
+        if (stage === "codeit" && stepsEl && logText) {
+          injectCodeitContractStepsFromLog(logText);
+        }
+      };
+
+      const injectCodeitContractStepsFromLog = (logText) => {
+        const re = /✓\\s+(Contract: [^\\n]+)/g;
+        const labels = [];
+        let m;
+        while ((m = re.exec(logText)) !== null) labels.push(m[1]);
+        if (!labels.length) return;
+        const preparingLabel = "Preparing contract runner…";
+        const preparingEl = Array.prototype.find.call(
+          stepsEl.children,
+          (el) => (el.dataset.label || "") === preparingLabel
+        );
+        if (!preparingEl) return;
+        let insertAfter = preparingEl;
+        labels.forEach((label) => {
+          if (stepMap.get(label)) return;
+          const el = document.createElement("div");
+          el.className = "progress-step";
+          el.dataset.state = "done";
+          el.dataset.label = label;
+          el.textContent = "✓ " + label;
+          stepMap.set(label, el);
+          insertAfter.parentNode.insertBefore(el, insertAfter.nextSibling);
+          insertAfter = el;
+        });
+      };
+
+      const startProgress = (stage) => {
+        const steps = STAGE_STEPS[stage] || [];
+        progressIndex = 0;
+        progressStage = stage;
+        if (progressTimer) {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+        if (!steps.length) return;
+        steps.forEach((label, index) => {
+          setStepState(label, index === 0 ? "active" : "pending");
+        });
+        progressTimer = setInterval(() => {
+          if (progressStage !== stage) return;
+          const currentLabel = steps[progressIndex];
+          if (currentLabel) {
+            setStepState(currentLabel, "done");
+          }
+          progressIndex += 1;
+          const nextLabel = steps[progressIndex];
+          if (nextLabel) {
+            setStepState(nextLabel, "active");
+          } else {
+            clearInterval(progressTimer);
+            progressTimer = null;
+          }
+        }, 900);
+      };
+
+      const stopProgress = () => {
+        if (progressTimer) {
+          clearInterval(progressTimer);
+          progressTimer = null;
+        }
+      };
+
+      const runPipelineStage = async (stage) => {
+        if (!modalBackdrop) {
+          const next = new URLSearchParams(location.search);
+          next.set("stage", stage);
+          const nextUrl = location.pathname + "?" + next.toString() + location.hash;
+          location.href = nextUrl;
+          return;
+        }
+
+        const label = stageLabels[stage] || stage;
+        setModalOpen(true);
+        if (modalTitle) modalTitle.textContent = label + " progress";
+        if (stageLabel) stageLabel.textContent = label;
+        setStatus("Running " + label + "…");
+        setLog("Running pipeline…");
+        setPreviewUrl("");
+        renderSteps(stage);
+        startProgress(stage);
+
+        try {
+          const response = await fetch("/api/pipeline/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, stage }),
+          });
+
+          const payload = await response.json().catch(() => null);
+          const logText = String(payload?.log || payload?.error || "");
+          setLog(logText || "No log output.");
+          stopProgress();
+          markStepsFromLog(stage, logText);
+
+          if (payload?.ok) {
+            const previewUrl =
+              payload.previewUrl ||
+              (location.pathname +
+                "?stage=" +
+                encodeURIComponent(stage) +
+                location.hash);
+            setStatus("Done.");
+            setPreviewUrl(previewUrl);
+            setStepState("Done.", "done");
+          } else {
+            setStatus(payload?.error || "Pipeline failed.");
+          }
+        } catch (error) {
+          setStatus("Pipeline failed.");
+          setLog(String(error?.message || error));
+          stopProgress();
+        }
+      };
+
+      buttons.forEach((btn) => {
+        const stage = String(btn.getAttribute("data-stage") || "").toLowerCase();
+        btn.dataset.active = stage === active ? "1" : "0";
+        btn.addEventListener("click", (event) => {
+          event.preventDefault();
+          if (!stage) return;
+          runPipelineStage(stage);
+        });
+      });
+
+      if (modalClose) modalClose.addEventListener("click", () => setModalOpen(false));
+      if (modalCloseFooter) modalCloseFooter.addEventListener("click", () => setModalOpen(false));
+      if (modalBackdrop) {
+        modalBackdrop.addEventListener("click", (event) => {
+          if (event.target === modalBackdrop) setModalOpen(false);
+        });
+      }
+
+      if (openPreviewBtn) {
+        openPreviewBtn.addEventListener("click", () => {
+          const url = String(openPreviewBtn.dataset.url || "");
+          if (!url) return;
+          location.href = url;
+        });
+      }
+
+      const improveBtn = document.getElementById("improve_run");
+      if (improveBtn) {
+        improveBtn.addEventListener("click", () => {
+          runPipelineStage("improve");
+        });
+      }
+    })();
+  </script>
+
+  <script>
+    (function(){
+      const helpers = window.__patchHelpers__;
+      const editorRoot = document.getElementById("editor_root");
+      if (!helpers || !editorRoot) return;
+
+      const allowedStages = ["generate", "codeit", "improve"];
+      const qs = new URLSearchParams(location.search);
+      const stage = allowedStages.includes(String(qs.get("stage") || "generate").toLowerCase())
+        ? String(qs.get("stage") || "generate").toLowerCase()
+        : "generate";
+
+      const slug = String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+      if (!slug) return;
+
+      const selectBtn = document.getElementById("editor_select");
+      const pickBtn = document.getElementById("editor_pick");
+      const clearBtn = document.getElementById("editor_clear");
+      const nodeInput = document.getElementById("editor_node_input");
+      const classesInput = document.getElementById("editor_classes");
+      const ariaLabelInput = document.getElementById("editor_aria_label");
+      const ariaLabelledByInput = document.getElementById("editor_aria_labelledby");
+      const ariaDescribedByInput = document.getElementById("editor_aria_describedby");
+      const ariaHiddenInput = document.getElementById("editor_aria_hidden");
+      const applyBtn = document.getElementById("editor_apply");
+      const statusEl = document.getElementById("editor_status");
+      const ledgerEl = document.getElementById("editor_ledger");
+      const selectedLabel = document.getElementById("editor_selected");
+      const htmlInput = document.getElementById("editor_html");
+      const htmlRefreshBtn = document.getElementById("editor_html_refresh");
+      const htmlCopyBtn = document.getElementById("editor_html_copy");
+
+      let selecting = false;
+      let selectedEl = null;
+      let selectedNodeId = "";
+      let selectedSelector = "";
+      let baseMap = new Map();
+      let userData = { patches: [], ledger: [] };
+      let classEditor = null;
+      let htmlEditor = null;
+
+      const setStatus = (msg) => {
+        if (statusEl) statusEl.textContent = msg || "";
+      };
+
+      const escapeSelector = (v) => String(v || "").replace(/"/g, '\\"');
+
+      const setClassesValue = (value) => {
+        if (classEditor) classEditor.setValue(String(value || ""));
+        else if (classesInput) classesInput.value = String(value || "");
+      };
+
+      const getClassesValue = () => {
+        if (classEditor) return classEditor.getValue();
+        return classesInput ? String(classesInput.value || "") : "";
+      };
+
+      const setHtmlValue = (value) => {
+        if (htmlEditor) htmlEditor.setValue(String(value || ""));
+        else if (htmlInput) htmlInput.value = String(value || "");
+      };
+
+      const getHtmlValue = () => {
+        if (htmlEditor) return htmlEditor.getValue();
+        return htmlInput ? String(htmlInput.value || "") : "";
+      };
+
+      const initEditors = () => {
+        if (!window.CodeMirror) return false;
+        if (classesInput && !classEditor) {
+          classEditor = window.CodeMirror.fromTextArea(classesInput, {
+            lineWrapping: true,
+            mode: "text/plain",
+          });
+        }
+        if (htmlInput && !htmlEditor) {
+          htmlEditor = window.CodeMirror.fromTextArea(htmlInput, {
+            lineWrapping: true,
+            lineNumbers: true,
+            mode: "htmlmixed",
+            readOnly: true,
+          });
+        }
+        return true;
+      };
+
+      const waitForCodeMirror = () => {
+        if (initEditors()) return;
+        setTimeout(waitForCodeMirror, 300);
+      };
+
+      const ensureHighlightStyle = (doc) => {
+        if (!doc || !doc.head) return;
+        if (doc.getElementById("editor_highlight_style")) return;
+        const style = doc.createElement("style");
+        style.id = "editor_highlight_style";
+        style.textContent = '[data-editor-selected="1"]{ outline:2px solid #f59e0b; outline-offset:2px; }';
+        doc.head.appendChild(style);
+      };
+
+      const findEditableNode = (el) => {
+        if (!el) return null;
+        if (el.hasAttribute("data-node-id") || el.hasAttribute("data-key")) return el;
+        return el.closest("[data-node-id],[data-key]");
+      };
+
+      const getNodeId = (el) =>
+        (el && (el.getAttribute("data-node-id") || el.getAttribute("data-key"))) || "";
+
+      const setSelectedEl = (el) => {
+        ensureHighlightStyle(helpers.resolveDoc());
+        if (selectedEl && selectedEl !== el) {
+          try { selectedEl.removeAttribute("data-editor-selected"); } catch {}
+        }
+        selectedEl = el;
+        selectedNodeId = el ? getNodeId(el) : "";
+        selectedSelector = selectedNodeId
+          ? (el.hasAttribute("data-node-id")
+              ? '[data-node-id="' + escapeSelector(selectedNodeId) + '"]'
+              : '[data-key="' + escapeSelector(selectedNodeId) + '"]')
+          : "";
+        if (el) {
+          try { el.setAttribute("data-editor-selected", "1"); } catch {}
+        }
+        if (selectedLabel) {
+          selectedLabel.textContent = selectedNodeId ? selectedNodeId : "No selection";
+        }
+        if (nodeInput) nodeInput.value = selectedNodeId || "";
+        setClassesValue(el ? String(el.getAttribute("class") || "") : "");
+        if (ariaLabelInput) {
+          ariaLabelInput.value = el ? String(el.getAttribute("aria-label") || "") : "";
+        }
+        if (ariaLabelledByInput) {
+          ariaLabelledByInput.value = el ? String(el.getAttribute("aria-labelledby") || "") : "";
+        }
+        if (ariaDescribedByInput) {
+          ariaDescribedByInput.value = el ? String(el.getAttribute("aria-describedby") || "") : "";
+        }
+        if (ariaHiddenInput) {
+          ariaHiddenInput.checked = el ? el.getAttribute("aria-hidden") === "true" : false;
+        }
+      };
+
+      const attachSelectionListener = () => {
+        const doc = helpers.resolveDoc();
+        if (!doc) return;
+        ensureHighlightStyle(doc);
+        doc.addEventListener(
+          "click",
+          (event) => {
+            if (!selecting) return;
+            const target = findEditableNode(event.target);
+            if (!target) return;
+            event.preventDefault();
+            event.stopPropagation();
+            selecting = false;
+            if (selectBtn) selectBtn.textContent = "Select element";
+            setSelectedEl(target);
+          },
+          true
+        );
+      };
+
+      const tokenPrefix = (token) => {
+        const core = String(token || "").split(":").pop();
+        const dash = core.indexOf("-");
+        if (dash > 0) return core.slice(0, dash);
+        const bracket = core.indexOf("[");
+        if (bracket > 0) return core.slice(0, bracket);
+        return core;
+      };
+
+      const diffClasses = (baseTokens, nextTokens) => {
+        const baseSet = new Set(baseTokens);
+        const nextSet = new Set(nextTokens);
+        const added = nextTokens.filter((t) => !baseSet.has(t));
+        const removed = baseTokens.filter((t) => !nextSet.has(t));
+        const classReplace = {};
+        const remainingAdd = [...added];
+        const remainingRemove = [];
+
+        removed.forEach((rm) => {
+          const prefix = tokenPrefix(rm);
+          const idx = remainingAdd.findIndex((ad) => tokenPrefix(ad) === prefix);
+          if (idx >= 0) {
+            classReplace[rm] = remainingAdd[idx];
+            remainingAdd.splice(idx, 1);
+          } else {
+            remainingRemove.push(rm);
+          }
+        });
+
+        return {
+          classAdd: remainingAdd,
+          classRemove: remainingRemove,
+          classReplace,
+        };
+      };
+
+      const parseTokens = (value) =>
+        String(value || "")
+          .split(/\\s+/g)
+          .map((t) => t.trim())
+          .filter(Boolean);
+
+      const buildBaseMap = async () => {
+        const artifact = await helpers.loadStageArtifact(slug, stage);
+        if (!artifact || !artifact.html) return;
+        try {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(String(artifact.html || ""), "text/html");
+          if (artifact.patches) {
+            helpers.applyAll(doc, artifact.patches, stage);
+          }
+          const nodes = Array.from(doc.querySelectorAll("[data-node-id],[data-key]"));
+          nodes.forEach((node) => {
+            const id = node.getAttribute("data-node-id") || node.getAttribute("data-key");
+            if (!id) return;
+            baseMap.set(String(id), {
+              classes: parseTokens(node.getAttribute("class") || ""),
+              ariaLabel: String(node.getAttribute("aria-label") || ""),
+              ariaLabelledBy: String(node.getAttribute("aria-labelledby") || ""),
+              ariaDescribedBy: String(node.getAttribute("aria-describedby") || ""),
+              ariaHidden: node.getAttribute("aria-hidden") === "true",
+            });
+          });
+        } catch {}
+      };
+
+      const refreshHtmlView = async () => {
+        if (!htmlInput) return;
+        const iframe = document.getElementById("vp_iframe");
+        if (iframe && iframe.contentDocument && iframe.contentDocument.documentElement) {
+          const doc = iframe.contentDocument;
+          const root = doc.documentElement;
+          const isReady = root && root.classList && root.classList.contains("tw-ready");
+          if (isReady) {
+            const body = doc.body ? doc.body.outerHTML : "";
+            setHtmlValue(String(body || "").trim());
+            return;
+          }
+          setHtmlValue("Waiting for preview iframe to be ready...");
+          setTimeout(refreshHtmlView, 400);
+          return;
+        }
+
+        setHtmlValue("Waiting for preview iframe...");
+      };
+
+      const loadUserData = async () => {
+        const data = await helpers.loadUserPatches(slug);
+        if (data && typeof data === "object") {
+          userData = {
+            patches: Array.isArray(data.patches) ? data.patches : [],
+            ledger: Array.isArray(data.ledger) ? data.ledger : [],
+          };
+        }
+        renderLedger();
+      };
+
+      const renderLedger = () => {
+        if (!ledgerEl) return;
+        const entries = Array.isArray(userData.ledger) ? userData.ledger.slice(-50).reverse() : [];
+        if (!entries.length) {
+          ledgerEl.innerHTML = '<div class="editor-ledger-item">No changes yet.</div>';
+          return;
+        }
+        ledgerEl.innerHTML = entries
+          .map((entry) => {
+            const at = String(entry.at || "").replace("T", " ").replace("Z", "");
+            const nodeId = entry.nodeId || "";
+            const op = entry.op || "";
+            const value = entry.value || "";
+            return '<div class="editor-ledger-item"><span class="mono">' +
+              at +
+              "</span> " +
+              nodeId +
+              " " +
+              op +
+              " " +
+              value +
+              "</div>";
+          })
+          .join("");
+      };
+
+      const upsertPatch = (patch) => {
+        if (!patch || !patch.nodeId) return;
+        const idx = userData.patches.findIndex(
+          (entry) => entry.nodeId === patch.nodeId && (entry.stage || "") === patch.stage
+        );
+        const hasOps =
+          (patch.ops.classAdd && patch.ops.classAdd.length) ||
+          (patch.ops.classRemove && patch.ops.classRemove.length) ||
+          Object.keys(patch.ops.classReplace || {}).length ||
+          Object.keys(patch.ops.attrAdd || {}).length ||
+          (patch.ops.attrRemove && patch.ops.attrRemove.length);
+
+        if (!hasOps) {
+          if (idx >= 0) userData.patches.splice(idx, 1);
+          return;
+        }
+
+        if (idx >= 0) userData.patches[idx] = patch;
+        else userData.patches.push(patch);
+      };
+
+      const recordLedger = (nodeId, selector, op, value) => {
+        userData.ledger.push({
+          at: new Date().toISOString(),
+          nodeId,
+          selector,
+          op,
+          value,
+        });
+      };
+
+      const saveUserData = async () => {
+        try {
+          setStatus("Saving...");
+          const payload = {
+            slug,
+            stage,
+            updatedAt: new Date().toISOString(),
+            patches: userData.patches,
+            ledger: userData.ledger,
+          };
+          const r = await fetch("/api/patches/" + encodeURIComponent(slug), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          if (!r.ok) throw new Error("Save failed");
+          setStatus("Saved");
+          setTimeout(() => setStatus(""), 1200);
+        } catch (e) {
+          setStatus("Save failed");
+        }
+      };
+
+      const applyPatch = () => {
+        if (!selectedEl || !selectedNodeId) return;
+
+        const base = baseMap.get(selectedNodeId) || {
+          classes: parseTokens(selectedEl.getAttribute("class") || ""),
+          ariaLabel: "",
+          ariaLabelledBy: "",
+          ariaDescribedBy: "",
+          ariaHidden: false,
+        };
+        const desiredClasses = parseTokens(getClassesValue());
+        const classOps = diffClasses(base.classes, desiredClasses);
+
+        const attrAdd = {};
+        const attrRemove = [];
+        const desiredLabel = String(ariaLabelInput ? ariaLabelInput.value : "").trim();
+        if (desiredLabel && desiredLabel !== base.ariaLabel) {
+          attrAdd["aria-label"] = desiredLabel;
+        } else if (!desiredLabel && base.ariaLabel) {
+          attrRemove.push("aria-label");
+        }
+
+        const desiredLabelledBy = String(ariaLabelledByInput ? ariaLabelledByInput.value : "").trim();
+        if (desiredLabelledBy && desiredLabelledBy !== base.ariaLabelledBy) {
+          attrAdd["aria-labelledby"] = desiredLabelledBy;
+        } else if (!desiredLabelledBy && base.ariaLabelledBy) {
+          attrRemove.push("aria-labelledby");
+        }
+
+        const desiredDescribedBy = String(ariaDescribedByInput ? ariaDescribedByInput.value : "").trim();
+        if (desiredDescribedBy && desiredDescribedBy !== base.ariaDescribedBy) {
+          attrAdd["aria-describedby"] = desiredDescribedBy;
+        } else if (!desiredDescribedBy && base.ariaDescribedBy) {
+          attrRemove.push("aria-describedby");
+        }
+
+        const desiredHidden = Boolean(ariaHiddenInput && ariaHiddenInput.checked);
+        if (desiredHidden && !base.ariaHidden) {
+          attrAdd["aria-hidden"] = "true";
+        } else if (!desiredHidden && base.ariaHidden) {
+          attrRemove.push("aria-hidden");
+        }
+
+        const patch = {
+          nodeId: selectedNodeId,
+          selector: selectedSelector,
+          stage,
+          ops: {
+            classAdd: classOps.classAdd,
+            classRemove: classOps.classRemove,
+            classReplace: classOps.classReplace,
+            attrAdd,
+            attrRemove,
+          },
+        };
+
+        upsertPatch(patch);
+
+        classOps.classAdd.forEach((cls) => recordLedger(selectedNodeId, selectedSelector, "classAdd", cls));
+        classOps.classRemove.forEach((cls) => recordLedger(selectedNodeId, selectedSelector, "classRemove", cls));
+        Object.keys(classOps.classReplace).forEach((from) => {
+          recordLedger(selectedNodeId, selectedSelector, "classReplace", from + " -> " + classOps.classReplace[from]);
+        });
+        Object.keys(attrAdd).forEach((key) => {
+          recordLedger(selectedNodeId, selectedSelector, "attrAdd", key + "=" + attrAdd[key]);
+        });
+        attrRemove.forEach((key) => recordLedger(selectedNodeId, selectedSelector, "attrRemove", key));
+
+        helpers.applyAll(helpers.resolveDoc(), [patch], stage);
+        renderLedger();
+        saveUserData();
+        refreshHtmlView();
+      };
+
+      if (selectBtn) {
+        selectBtn.addEventListener("click", () => {
+          selecting = !selecting;
+          selectBtn.textContent = selecting ? "Click element…" : "Select element";
+          if (selecting) attachSelectionListener();
+        });
+      }
+
+      if (pickBtn) {
+        pickBtn.addEventListener("click", () => {
+          const doc = helpers.resolveDoc();
+          if (!doc) return;
+          const id = String(nodeInput ? nodeInput.value : "").trim();
+          if (!id) return;
+          const el =
+            doc.querySelector('[data-node-id="' + escapeSelector(id) + '"]') ||
+            doc.querySelector('[data-key="' + escapeSelector(id) + '"]');
+          if (el) setSelectedEl(el);
+        });
+      }
+
+      if (clearBtn) {
+        clearBtn.addEventListener("click", () => {
+          if (selectedEl) {
+            try { selectedEl.removeAttribute("data-editor-selected"); } catch {}
+          }
+          selectedEl = null;
+          selectedNodeId = "";
+          selectedSelector = "";
+          if (selectedLabel) selectedLabel.textContent = "No selection";
+          setClassesValue("");
+          if (ariaLabelInput) ariaLabelInput.value = "";
+          if (ariaLabelledByInput) ariaLabelledByInput.value = "";
+          if (ariaDescribedByInput) ariaDescribedByInput.value = "";
+          if (ariaHiddenInput) ariaHiddenInput.checked = false;
+        });
+      }
+
+      if (applyBtn) {
+        applyBtn.addEventListener("click", () => applyPatch());
+      }
+
+      if (htmlRefreshBtn) {
+        htmlRefreshBtn.addEventListener("click", () => refreshHtmlView());
+      }
+
+      if (htmlCopyBtn) {
+        htmlCopyBtn.addEventListener("click", async () => {
+          try {
+            const text = getHtmlValue();
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              await navigator.clipboard.writeText(text);
+              setStatus("Copied");
+              setTimeout(() => setStatus(""), 1200);
+            }
+          } catch {
+            setStatus("Copy failed");
+          }
+        });
+      }
+
+      waitForCodeMirror();
+
+      buildBaseMap().then(loadUserData).then(() => {
+        const doc = helpers.resolveDoc();
+        if (doc) attachSelectionListener();
+        refreshHtmlView();
+      });
+
+      const iframe = document.getElementById("vp_iframe");
+      if (iframe) {
+        iframe.addEventListener("load", () => {
+          refreshHtmlView();
+          try {
+            const doc = iframe.contentDocument;
+            if (doc) {
+              doc.addEventListener("tailwind:ready", () => refreshHtmlView());
+            }
+          } catch {}
+        });
+      }
+    })();
+  </script>
 
   ${ENABLE_NICESELECT ? niceSelectScript() : ""}
 
@@ -1303,6 +2238,8 @@ ${css}
         if (tb) tb.style.display = 'none';
         const eb = document.getElementById('export_root');
         if (eb) eb.style.display = 'none';
+        const ed = document.getElementById('editor_root');
+        if (ed) ed.style.display = 'none';
       }
     })();
   </script>

@@ -60,7 +60,7 @@
     const openPreviewBtn = document.getElementById("openPreview");
     const clearPreviewBtn = document.getElementById("clearPreview");
     const getSlug = () => document.getElementById("slug").value.trim();
-    const BASE = "http://127.0.0.1:5173";
+    const BASE = "http://localhost:5173";
     let lastPreviewUrl = "";
     let lastScreenshotUrl = "";
     let lastScreenshotUrls = {};
@@ -171,21 +171,39 @@
       reportEl.textContent = lines.join("\n");
     }
 
-    async function postTo(endpoint, payload) {
-      const res = await fetch(BASE + endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const REQUEST_TIMEOUT_MS = 90000;
 
-      const ct = res.headers.get("content-type") || "";
-      const text = await res.text();
-      if (!ct.includes("application/json")) {
-        throw new Error(
-          `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
-        );
+    async function postTo(endpoint, payload, options = {}) {
+      const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+
+      try {
+        const res = await fetch(BASE + endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
+        const ct = res.headers.get("content-type") || "";
+        const text = await res.text();
+        if (!ct.includes("application/json")) {
+          throw new Error(
+            `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
+          );
+        }
+        return JSON.parse(text);
+      } catch (err) {
+        clearTimeout(timeoutId);
+        if (err.name === "AbortError") {
+          throw new Error(
+            "Request timed out after " + (timeoutMs / 1000) + "s. Check: (1) Generator is running: cd generator && npm start. (2) Open " + BASE + " in your browser – if it loads, Figma may be blocking localhost."
+          );
+        }
+        throw err;
       }
-      return JSON.parse(text);
     }
 
     document.getElementById("generatePreview").onclick = () => {
@@ -220,6 +238,10 @@
       }
 
       if (type === "AST_READY" || type === "PHASE1_READY") {
+        let waitingInterval = null;
+        const clearWaiting = () => {
+          if (waitingInterval) { clearInterval(waitingInterval); waitingInterval = null; }
+        };
         try {
           const endpoint = window.__pendingEndpoint || "/api/preview-only";
           status.textContent = `Sending payload to ${endpoint}…`;
@@ -227,19 +249,53 @@
             setProgressState("prepare", "done");
             startServerProgress();
           }
+          let waitedSec = 0;
+          waitingInterval = setInterval(() => {
+            waitedSec += 5;
+            if (status.textContent.indexOf("Request failed") === -1 && status.textContent.indexOf("Preview:") === -1)
+              status.textContent = `Waiting for server… (${waitedSec}s) If this hangs, check the generator terminal for "[preview-only] request received".`;
+          }, 5000);
 
-          const out = await postTo(endpoint, ast);
+          let out;
+          try {
+            out = await postTo(endpoint, ast, { timeoutMs: REQUEST_TIMEOUT_MS });
+          } catch (fetchErr) {
+            clearWaiting();
+            finishProgress(false);
+            let errMsg = String(fetchErr?.message || fetchErr);
+            const isNetwork = /failed to fetch|network|timeout|abort/i.test(errMsg);
+            if (isNetwork) {
+              errMsg += " Make sure the generator is running: in the project run 'cd generator && npm start' (server: " + BASE + ").";
+            }
+            status.textContent = "Request failed: " + errMsg;
+            setPreviewState({
+              previewUrl: "",
+              screenshotUrl: "",
+              screenshotUrls: {},
+              report: { warnings: [], errors: [errMsg], fixes: [] },
+            });
+            return;
+          }
+          clearWaiting();
 
           if (!out || out.ok !== true) {
             finishProgress(false);
-            status.textContent = "Failed: " + (out?.error || out?.message || "unknown");
+            const errMsg = out?.error || out?.message || "unknown";
+            status.textContent = "Failed: " + errMsg;
+            setPreviewState({
+              previewUrl: "",
+              screenshotUrl: "",
+              screenshotUrls: {},
+              report: { warnings: [], errors: ["Server error: " + errMsg], fixes: [] },
+            });
             return;
           }
 
           const openUrl = out.overlayUrl || out.previewUrl;
+          const previewUrl = out.previewUrl || out.overlayUrl || (out.result?.ast?.slug ? "/preview/" + encodeURIComponent(out.result.ast.slug) : "");
 
           status.textContent =
-            (out.overlayUrl ? "Overlay: " : "Preview: ") + (openUrl || "(none)") + "\n" +
+            (out.overlayUrl ? "Overlay: " : "Preview: ") + (openUrl || previewUrl || "(none)") + "\n" +
             (out.paths?.acf ? ("ACF: " + out.paths.acf + "\n") : "") +
             (out.paths?.frontend ? ("Frontend: " + out.paths.frontend + "\n") : "") +
             (out.paths?.raw ? ("Raw: " + out.paths.raw + "\n") : "") +
@@ -248,7 +304,7 @@
           if (endpoint === "/api/preview-only") {
             finishProgress(true);
             setPreviewState({
-              previewUrl: out.previewUrl || out.overlayUrl || "",
+              previewUrl: previewUrl,
               screenshotUrl: out.screenshotUrl || "",
               screenshotUrls: out.screenshotUrls || {},
               report: out.report || null,
@@ -257,8 +313,16 @@
             window.open(BASE + openUrl, "_blank");
           }
         } catch (e) {
+          if (typeof clearWaiting === "function") clearWaiting();
           finishProgress(false);
-          status.textContent = String(e?.message || e);
+          const errMsg = String(e?.message || e);
+          status.textContent = errMsg;
+          setPreviewState({
+            previewUrl: "",
+            screenshotUrl: "",
+            screenshotUrls: {},
+            report: { warnings: [], errors: [errMsg], fixes: [] },
+          });
         }
       }
     };

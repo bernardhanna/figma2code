@@ -28,6 +28,7 @@ import { initComponentLibrary } from "./componentLibrary/index.js";
 getConfig();
 
 const port = 5173;
+const host = String(process.env.HOST || "127.0.0.1").trim() || "127.0.0.1";
 
 const DEBUG_COMPONENT_LIB = String(process.env.COMPONENT_LIB_DEBUG || "").trim() === "1";
 
@@ -53,4 +54,6 @@ const deps = {
 
 const app = createApp({ port, deps });
 
-app.listen(port, () => console.log(`Generator running: http://localhost:${port}`));
+app.listen(port, host, () =>
+  console.log(`Generator running: http://${host}:${port}`)
+);

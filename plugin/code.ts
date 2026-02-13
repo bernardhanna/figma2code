@@ -11,6 +11,9 @@
 
 figma.showUI(__html__, { width: 440, height: 420 });
 
+/** Generator base URL (must match manifest networkAccess allowedDomains, e.g. localhost not 127.0.0.1) */
+const GENERATOR_BASE = "http://localhost:5173";
+
 /** ===== Exported AST types ===== */
 type SolidFill = { kind: "solid"; r: number; g: number; b: number; a: number };
 type ImageFill = {
@@ -690,7 +693,7 @@ async function uploadBytesAsAsset(
   try {
     const b64 = figma.base64Encode(bytes);
 
-    const resp: any = await fetch("http://127.0.0.1:5173/api/upload", {
+    const resp: any = await fetch(`${GENERATOR_BASE}/api/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -748,7 +751,7 @@ async function exportPNG(n: SceneNode): Promise<ExportedImage | undefined> {
         .replace(/^_+|_+$/g, "") || "img";
 
     // PATCH: use any-typed fetch response to avoid TS headers typing issues
-    const resp: any = await fetch("http://127.0.0.1:5173/api/upload", {
+    const resp: any = await fetch(`${GENERATOR_BASE}/api/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

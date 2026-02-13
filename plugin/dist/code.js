@@ -19,6 +19,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 figma.showUI(__html__, { width: 440, height: 420 });
+/** Generator base URL (must match manifest networkAccess allowedDomains, e.g. localhost not 127.0.0.1) */
+const GENERATOR_BASE = "http://localhost:5173";
 /** ===== Helpers ===== */
 const round = (n) => Math.round(n * 1000) / 1000;
 function rgbaFromRGB(rgb, alpha) {
@@ -465,7 +467,7 @@ function uploadBytesAsAsset(filename, mime, bytes) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const b64 = figma.base64Encode(bytes);
-            const resp = yield fetch("http://127.0.0.1:5173/api/upload", {
+            const resp = yield fetch(`${GENERATOR_BASE}/api/upload`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -518,7 +520,7 @@ function exportPNG(n) {
                 .replace(/[^a-z0-9._-]+/g, "_")
                 .replace(/^_+|_+$/g, "") || "img";
             // PATCH: use any-typed fetch response to avoid TS headers typing issues
-            const resp = yield fetch("http://127.0.0.1:5173/api/upload", {
+            const resp = yield fetch(`${GENERATOR_BASE}/api/upload`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

@@ -1,0 +1,154 @@
+const {
+  applyPatches,
+  buildOpenTag,
+  createPatch,
+  getAttrValue,
+  getClassTokens,
+  parseHtmlNodes,
+  setClassTokens,
+} = require("../../utils/html");
+const { removeTokens } = require("../../utilities/mutateClasses");
+const { getNodeMeta, isInteractiveTag, isMediaTag } = require("../../utilities/select");
+
+const id = "layout/height/removeFixedHeights";
+
+const HEIGHT_TOKEN = /^(min-h|h)-\[[0-9.]+rem\]$/;
+const DATA_KEY_MEDIA = /hero|image|media|bg|banner/i;
+
+const buildChildrenMap = (nodes) => {
+  const map = new Map();
+  nodes.forEach((node, index) => {
+    const parent = node.parentIndex;
+    if (parent === null || parent === undefined) return;
+    if (!map.has(parent)) map.set(parent, []);
+    map.get(parent).push(index);
+  });
+  return map;
+};
+
+const hasMediaDescendant = (nodes, childrenMap, nodeIndex) => {
+  const queue = [...(childrenMap.get(nodeIndex) || [])];
+  while (queue.length) {
+    const idx = queue.shift();
+    const node = nodes[idx];
+    if (!node) continue;
+    if (isMediaTag(node.tag)) return true;
+    const kids = childrenMap.get(idx) || [];
+    queue.push(...kids);
+  }
+  return false;
+};
+
+/** True if any descendant has position absolute + inset-0 (e.g. background layer) */
+const hasAbsoluteInset0Descendant = (nodes, childrenMap, nodeIndex) => {
+  const queue = [...(childrenMap.get(nodeIndex) || [])];
+  while (queue.length) {
+    const idx = queue.shift();
+    const node = nodes[idx];
+    if (!node?.attrs) {
+      queue.push(...(childrenMap.get(idx) || []));
+      continue;
+    }
+    const tokens = getClassTokens(node.attrs);
+    const normalized = tokens.map((t) => String(t).split(":").pop());
+    const hasAbsolute = normalized.some((t) => t === "absolute" || t === "fixed");
+    const hasInset0 = normalized.some((t) => /^inset-0$/.test(t) || /^inset-\[0\]$/.test(t));
+    if (hasAbsolute && hasInset0) return true;
+    queue.push(...(childrenMap.get(idx) || []));
+  }
+  return false;
+};
+
+/** True if node has overflow-hidden and rounded-* (e.g. image mask) */
+const hasOverflowHiddenAndRounded = (attrs) => {
+  const tokens = getClassTokens(attrs);
+  const normalized = tokens.map((t) => String(t).split(":").pop());
+  const overflowHidden = normalized.some((t) => t === "overflow-hidden");
+  const rounded = normalized.some((t) => /^rounded/.test(t));
+  return overflowHidden && rounded;
+};
+
+const isCardContainer = (attrs) => {
+  const tokens = getClassTokens(attrs);
+  const normalized = tokens.map((t) => String(t).split(":").pop());
+  const hasBg = normalized.some((t) => /^bg-/.test(t));
+  const hasPadding = normalized.some((t) => /^p-/.test(t) || /^px-/.test(t) || /^py-/.test(t));
+  return hasBg && hasPadding;
+};
+
+/** Do NOT remove height if any of these hold (preserve layout fidelity). */
+const shouldKeepHeight = (node, nodes, childrenMap, nodeIndex) => {
+  if (isMediaTag(node.tag)) return true;
+  const hIntent = getAttrValue(node.attrs, "data-h-intent");
+  if (hIntent === "fixed") return true;
+  const dataKey = String(getAttrValue(node.attrs, "data-key") || "");
+  if (DATA_KEY_MEDIA.test(dataKey)) return true;
+  if (hasAbsoluteInset0Descendant(nodes, childrenMap, nodeIndex)) return true;
+  if (hasOverflowHiddenAndRounded(node.attrs)) return true;
+  return false;
+};
+
+const isHeightToken = (token) => {
+  const core = String(token || "").split(":").pop();
+  return HEIGHT_TOKEN.test(core);
+};
+
+const apply = ({ html }) => {
+  const source = String(html || "");
+  if (!source) return { html: source, changes: [], warnings: [], stats: { removed: 0 } };
+
+  const nodes = parseHtmlNodes(source);
+  const childrenMap = buildChildrenMap(nodes);
+  const patches = [];
+  const changes = [];
+  const warnings = [];
+  let removed = 0;
+
+  nodes.forEach((node, nodeIndex) => {
+    if (!node?.attrs) return;
+    if (isMediaTag(node.tag)) return;
+    if (isInteractiveTag(node.tag)) return;
+    if (hasMediaDescendant(nodes, childrenMap, nodeIndex)) return;
+    const cardLike = isCardContainer(node.attrs);
+    const hasAbsolute = hasAbsoluteInset0Descendant(nodes, childrenMap, nodeIndex);
+    if (!cardLike || hasAbsolute) {
+      if (shouldKeepHeight(node, nodes, childrenMap, nodeIndex)) return;
+    }
+
+    const tokens = getClassTokens(node.attrs);
+    const { cleaned, removed: removedTokens } = removeTokens(tokens, isHeightToken);
+    if (!removedTokens.length) return;
+
+    setClassTokens(node.attrs, node.attrOrder, cleaned);
+
+    patches.push(createPatch(node.openStart, node.openEnd, buildOpenTag(node.tag, node.attrs, node.attrOrder, node.isSelfClosing)));
+
+    const meta = getNodeMeta(node);
+    removedTokens.forEach((token) => {
+      changes.push({
+        contractId: id,
+        nodeId: meta.nodeId,
+        selector: meta.selector,
+        op: "classRemove",
+        value: token,
+        reason: "Removed fixed-height tokens from non-media wrappers",
+      });
+    });
+
+    removed += removedTokens.length;
+  });
+
+  const output = applyPatches(source, patches);
+
+  return {
+    html: output,
+    changes,
+    warnings,
+    stats: { removed },
+  };
+};
+
+module.exports = {
+  id,
+  apply,
+};

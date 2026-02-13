@@ -2,8 +2,9 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
-import { PREVIEW_DIR } from "./runtimePaths.js";
+import { PREVIEW_DIR, ROOT } from "./runtimePaths.js";
 import { getConfig } from "./configStore.js";
 import { ensureThemeOutputDirs } from "./themeOutputDirs.js";
 import { classStrip } from "./classSanitizer.js";
@@ -122,8 +123,124 @@ function buildContractsSummary(contractsReport) {
   };
 }
 
+const PIPELINE_FIXTURES_DIR = path.resolve(ROOT, "..", "fixtures.out");
+const PIPELINE_ROOT = path.resolve(ROOT, "..");
+const ALLOWED_STAGES = new Set(["generate", "codeit", "improve"]);
+
+function resolveStageParam(req) {
+  const raw = String(req?.query?.stage || "").trim().toLowerCase();
+  if (!raw) return "generate";
+  return ALLOWED_STAGES.has(raw) ? raw : "generate";
+}
+
+function artifactPath(slug, stage) {
+  return path.join(PIPELINE_FIXTURES_DIR, slug, `artifact.${stage}.json`);
+}
+
+function readArtifact(slug, stage) {
+  if (!stage) return null;
+  const file = artifactPath(slug, stage);
+  if (!fs.existsSync(file)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(file, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function resolvePipelineStageToRun(slug, stage) {
+  if (stage === "generate") return "generate";
+  if (stage === "codeit") {
+    const inputPath = artifactPath(slug, "generate");
+    return fs.existsSync(inputPath) ? "codeit" : "all";
+  }
+  if (stage === "improve") {
+    const inputPath = artifactPath(slug, "codeit");
+    return fs.existsSync(inputPath) ? "improve" : "all";
+  }
+  return stage;
+}
+
+function maybeBuildArtifact(slug, stage) {
+  const stageToRun = stage === "generate" ? "generate" : "all";
+  try {
+    execFileSync(
+      process.execPath,
+      ["pipeline/orchestrator/cli.js", "--slug", slug, "--stage", stageToRun],
+      { cwd: PIPELINE_ROOT, stdio: "pipe" }
+    );
+    return { ok: true };
+  } catch (error) {
+    const stderr = String(error?.stderr || "");
+    const stdout = String(error?.stdout || "");
+    return { ok: false, error: stderr || stdout || error?.message || "Pipeline failed." };
+  }
+}
+
+function userPatchesPath(slug) {
+  return path.join(PIPELINE_FIXTURES_DIR, slug, "patches.user.json");
+}
+
+function sanitizeUserPatchPayload(payload) {
+  const safeAria = new Set(["aria-label", "aria-labelledby", "aria-describedby", "aria-hidden"]);
+  const out = {
+    slug: String(payload?.slug || "").trim(),
+    stage: String(payload?.stage || "").trim().toLowerCase(),
+    updatedAt: new Date().toISOString(),
+    patches: [],
+    ledger: Array.isArray(payload?.ledger) ? payload.ledger : [],
+  };
+
+  const patches = Array.isArray(payload?.patches) ? payload.patches : [];
+  out.patches = patches
+    .map((patch) => {
+      const nodeId = String(patch?.nodeId || "").trim();
+      if (!nodeId) return null;
+
+      const ops = patch?.ops && typeof patch.ops === "object" ? patch.ops : {};
+      const classAdd = Array.isArray(ops.classAdd) ? ops.classAdd.map((v) => String(v || "").trim()).filter(Boolean) : [];
+      const classRemove = Array.isArray(ops.classRemove)
+        ? ops.classRemove.map((v) => String(v || "").trim()).filter(Boolean)
+        : [];
+      const classReplace = ops.classReplace && typeof ops.classReplace === "object" ? ops.classReplace : {};
+
+      const attrAdd = {};
+      if (ops.attrAdd && typeof ops.attrAdd === "object") {
+        for (const key of Object.keys(ops.attrAdd)) {
+          if (!safeAria.has(String(key).toLowerCase())) continue;
+          attrAdd[key] = String(ops.attrAdd[key] || "").trim();
+        }
+      }
+
+      const attrRemove = Array.isArray(ops.attrRemove)
+        ? ops.attrRemove.map((v) => String(v || "").trim()).filter((v) => safeAria.has(v.toLowerCase()))
+        : [];
+
+      const patchOut = {
+        nodeId,
+        selector: String(patch?.selector || "").trim(),
+        stage: ALLOWED_STAGES.has(String(patch?.stage || "").toLowerCase())
+          ? String(patch.stage).toLowerCase()
+          : "",
+        ops: {
+          classAdd,
+          classRemove,
+          classReplace,
+          attrAdd,
+          attrRemove,
+        },
+      };
+
+      return patchOut;
+    })
+    .filter(Boolean);
+
+  return out;
+}
+
 export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
   app.post("/api/preview-only", async (req, res) => {
+    console.log("[preview-only] request received");
     try {
       const r = await buildPreviewFragment({
         astInput: req.body,
@@ -149,12 +266,17 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       fs.writeFileSync(previewOut, previewMarkup, "utf8");
 
       const { viewports, minHeight } = resolvePreviewViewports(r.ast);
-      const screenshotUrls = await capturePreviewScreenshots({
-        slug: r.ast.slug,
-        port,
-        viewports,
-        minHeight,
-      });
+      let screenshotUrls = {};
+      try {
+        screenshotUrls = await capturePreviewScreenshots({
+          slug: r.ast.slug,
+          port,
+          viewports,
+          minHeight,
+        });
+      } catch (screenshotErr) {
+        console.warn("[preview-only] Screenshot capture failed (browser may be unavailable):", screenshotErr?.message || screenshotErr);
+      }
       const screenshotUrl = screenshotUrls?.desktop || null;
 
       const report = buildPreviewReport({
@@ -166,6 +288,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       });
       const contractsSummary = buildContractsSummary(contractsOut.report);
 
+      console.log("[preview-only] sending response, slug:", r.ast.slug);
       return res.json(
         buildPreviewResponse({
           previewUrl: `/preview/${r.ast.slug}`,
@@ -178,8 +301,45 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         })
       );
     } catch (e) {
-      console.error(e);
+      console.error("[preview-only] error:", e);
       return res.status(500).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
+  app.post("/api/pipeline/run", async (req, res) => {
+    const slug = String(req?.body?.slug || "").trim();
+    const stage = String(req?.body?.stage || "").trim().toLowerCase();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    if (!ALLOWED_STAGES.has(stage)) {
+      return res.status(400).json({ ok: false, error: "Invalid stage" });
+    }
+
+    const stageToRun = resolvePipelineStageToRun(slug, stage);
+
+    try {
+      const stdout = execFileSync(
+        process.execPath,
+        ["pipeline/orchestrator/cli.js", "--slug", slug, "--stage", stageToRun],
+        { cwd: PIPELINE_ROOT, stdio: "pipe" }
+      );
+
+      return res.json({
+        ok: true,
+        stage,
+        stageRun: stageToRun,
+        log: String(stdout || ""),
+        previewUrl: `/preview/${encodeURIComponent(slug)}?stage=${encodeURIComponent(stage)}`,
+      });
+    } catch (error) {
+      const stdout = String(error?.stdout || "");
+      const stderr = String(error?.stderr || "");
+      return res.status(500).json({
+        ok: false,
+        stage,
+        stageRun: stageToRun,
+        log: stdout + stderr,
+        error: stderr || stdout || error?.message || "Pipeline failed.",
+      });
     }
   });
 
@@ -230,12 +390,17 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       fs.writeFileSync(previewOut, previewMarkup, "utf8");
 
       const { viewports, minHeight } = resolvePreviewViewports(r.ast);
-      const screenshotUrls = await capturePreviewScreenshots({
-        slug: r.ast.slug,
-        port,
-        viewports,
-        minHeight,
-      });
+      let screenshotUrls = {};
+      try {
+        screenshotUrls = await capturePreviewScreenshots({
+          slug: r.ast.slug,
+          port,
+          viewports,
+          minHeight,
+        });
+      } catch (screenshotErr) {
+        console.warn("[preview/generate] Screenshot capture failed (browser may be unavailable):", screenshotErr?.message || screenshotErr);
+      }
       const screenshotUrl = screenshotUrls?.desktop || null;
 
       const report = buildPreviewReport({
@@ -264,11 +429,38 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
     }
   });
 
-  // Serve previews (with on-demand rebuild from variants)
+  // Serve previews (with stage-aware artifacts or on-demand rebuild)
   app.get("/preview/:slug", (req, res) => {
     try {
       const slug = String(req.params.slug || "").trim();
       const file = path.join(PREVIEW_DIR, `${slug}.html`);
+      const stageParam = resolveStageParam(req);
+
+      if (stageParam) {
+        let artifact = readArtifact(slug, stageParam);
+        if (!artifact) {
+          const build = maybeBuildArtifact(slug, stageParam);
+          if (build.ok) {
+            artifact = readArtifact(slug, stageParam);
+          } else {
+            return res
+              .status(500)
+              .send(
+                `<pre>Failed to build artifact for stage "${stageParam}".\n${build.error}</pre>`
+              );
+          }
+        }
+        if (artifact?.html) {
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.send(String(artifact.html || ""));
+        }
+
+        return res
+          .status(404)
+          .send(
+            `<pre>Missing artifact: fixtures.out/${slug}/artifact.${stageParam}.json\nRun: node pipeline/orchestrator/cli.js --slug ${slug} --stage ${stageParam}</pre>`
+          );
+      }
 
       // Serve cached preview if present
       if (fs.existsSync(file)) {
@@ -296,6 +488,34 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       return res.status(404).send("Not found");
     } catch (e) {
       return res.status(500).send(String(e?.message || e));
+    }
+  });
+
+  app.get("/api/patches/:slug", (req, res) => {
+    const slug = String(req.params.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    const file = userPatchesPath(slug);
+    if (!fs.existsSync(file)) return res.status(404).json({ ok: false, error: "Not found" });
+    try {
+      const json = JSON.parse(fs.readFileSync(file, "utf8"));
+      return res.json({ ok: true, data: json });
+    } catch (e) {
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
+  app.post("/api/patches/:slug", (req, res) => {
+    const slug = String(req.params.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    try {
+      const outDir = path.join(PIPELINE_FIXTURES_DIR, slug);
+      fs.mkdirSync(outDir, { recursive: true });
+      const payload = sanitizeUserPatchPayload({ ...req.body, slug });
+      const file = userPatchesPath(slug);
+      fs.writeFileSync(file, JSON.stringify(payload, null, 2), "utf8");
+      return res.json({ ok: true, path: file });
+    } catch (e) {
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
     }
   });
 

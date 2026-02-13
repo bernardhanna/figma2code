@@ -1,0 +1,23 @@
+{
+  "iteration": 1,
+  "createdAt": "2026-02-12T15:21:22.903Z",
+  "inputHash": "42e6ff116e07e35af2e3137bb9ec6b6ae81c97fb66fd42dc72e0f99fda4d8c35",
+  "acceptedPatches": [],
+  "rejectedPatches": [],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {},
+      "tablet": {},
+      "desktop": {}
+    },
+    "offenders": []
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {},
+      "tablet": {},
+      "desktop": {}
+    },
+    "offenders": []
+  }
+}
