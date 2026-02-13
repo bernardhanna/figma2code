@@ -22,6 +22,10 @@ import { writeStage } from "./stageStore.js";
 
 import { getComponentLibrary } from "../componentLibrary/index.js";
 import { annotateAstWithComponentMatch } from "../componentLibrary/match.js";
+import {
+  applyNamedBackgroundFallback,
+  setVideoBgFromTree,
+} from "./backgroundFallback.js";
 
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
@@ -166,6 +170,13 @@ export function renderOneFragment({
     const r = normalizeAst(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
+  }
+
+  setVideoBgFromTree(a);
+
+  const hasBgSrc = a?.__bg?.src && String(a.__bg.src).trim();
+  if (!hasBgSrc) {
+    applyNamedBackgroundFallback(a);
   }
 
   if (previewOnly) {

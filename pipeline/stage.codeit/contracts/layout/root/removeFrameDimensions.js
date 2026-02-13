@@ -13,24 +13,10 @@ const { getNodeMeta, isMediaTag } = require("../../utilities/select");
 
 const id = "layout/root/removeFrameDimensions";
 
-const LAYOUT_WRAPPER_TAGS = new Set([
-  "section",
-  "div",
-  "article",
-  "header",
-  "footer",
-  "nav",
-  "main",
-  "aside",
-  "p",
-]);
+const WIDTH_TOKEN = /^(w|max-w|min-w)-/;
+const HEIGHT_TOKEN = /^h-/;
 
-/** Base (unprefixed) fixed width: w-[number rem|px] */
-const BASE_FIXED_WIDTH = /^w-\[[0-9.]+(rem|px)\]$/;
-/** Base (unprefixed) fixed height: h-[number rem|px] */
-const BASE_FIXED_HEIGHT = /^h-\[[0-9.]+(rem|px)\]$/;
-
-const DATA_KEY_MEDIA_OR_DECORATIVE = /image|img|media|hero|background|divider|decorativebar/i;
+const normalizeToken = (token) => String(token || "").split(":").pop();
 
 const buildChildrenMap = (nodes) => {
   const map = new Map();
@@ -43,103 +29,117 @@ const buildChildrenMap = (nodes) => {
   return map;
 };
 
-const normalizeToken = (token) => String(token || "").split(":").pop();
+const isDecorative = (node) => getAttrValue(node?.attrs, "data-decorative") === "1";
 
-const isBaseFixedWidth = (token) => {
-  if (String(token).includes(":")) return false;
-  return BASE_FIXED_WIDTH.test(normalizeToken(token));
+const hasObjectCoverOrAspect = (attrs) => {
+  const tokens = getClassTokens(attrs || {});
+  return tokens.some((t) => {
+    const core = normalizeToken(t);
+    return core === "object-cover" || core.startsWith("aspect-");
+  });
 };
 
-const isBaseFixedHeight = (token) => {
-  if (String(token).includes(":")) return false;
-  return BASE_FIXED_HEIGHT.test(normalizeToken(token));
+const isExplicitMediaWrapper = (node) => {
+  if (!node?.attrs) return false;
+  const keys = ["data-bg-type", "data-fill-type", "data-media", "data-video-url", "data-poster-url"];
+  return keys.some((key) => {
+    if (!(key in node.attrs)) return false;
+    const value = getAttrValue(node.attrs, key);
+    if (value === null) return true;
+    return String(value ?? "").trim() !== "";
+  });
 };
 
-const isRootLayout = (node, nodes) => {
-  const dataKey = String(getAttrValue(node?.attrs, "data-key") || "");
-  if (dataKey === "root") return true;
-  const tag = (node?.tag || "").toLowerCase();
-  if (tag !== "section") return false;
-  const parentIndex = node.parentIndex;
-  if (parentIndex == null) return true;
-  const parent = nodes[parentIndex];
-  return (parent?.tag || "").toLowerCase() !== "section";
+const hasLayoutChildren = (nodes, childrenMap, nodeIndex) => {
+  const children = childrenMap.get(nodeIndex) || [];
+  return children.some((idx) => {
+    const child = nodes[idx];
+    if (!child?.attrs) return false;
+    const tokens = getClassTokens(child.attrs);
+    return tokens.some((t) => {
+      const core = normalizeToken(t);
+      return core === "flex" || core === "grid";
+    });
+  });
 };
 
-/** Direct child is a media element. */
-const hasDirectMediaChild = (nodes, childrenMap, nodeIndex) => {
-  const childIndices = childrenMap.get(nodeIndex) || [];
-  return childIndices.some((idx) => isMediaTag(nodes[idx]?.tag));
+const isFrameRootContainer = (node, nodes, childrenMap, nodeIndex) => {
+  if (!node?.attrs) return false;
+  if (isMediaTag(node.tag)) return false;
+  if (isDecorative(node)) return false;
+  if (isExplicitMediaWrapper(node)) return false;
+  if (hasObjectCoverOrAspect(node.attrs)) return false;
+
+  const tag = (node.tag || "").toLowerCase();
+  const isSectionOrHeader = tag === "section" || tag === "header";
+  const isTopLevelWrapper =
+    tag === "div" && node.parentIndex != null && (nodes[node.parentIndex]?.tag || "").toLowerCase() === "section";
+  if (!isSectionOrHeader && !isTopLevelWrapper) return false;
+
+  const wIntent = String(getAttrValue(node.attrs, "data-w-intent") || "").trim().toLowerCase();
+  if (wIntent !== "fixed" && wIntent !== "hug") return false;
+
+  if (!hasLayoutChildren(nodes, childrenMap, nodeIndex)) return false;
+
+  return true;
 };
 
-const isMediaWrapper = (node, nodes, childrenMap, nodeIndex) => {
-  const dataKey = String(getAttrValue(node?.attrs, "data-key") || "");
-  if (DATA_KEY_MEDIA_OR_DECORATIVE.test(dataKey)) return true;
-  return hasDirectMediaChild(nodes, childrenMap, nodeIndex);
+const isWidthToken = (token) => WIDTH_TOKEN.test(normalizeToken(token));
+const isHeightToken = (token) => HEIGHT_TOKEN.test(normalizeToken(token));
+
+const tokensEqual = (a, b) => {
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (a[i] !== b[i]) return false;
+  }
+  return true;
 };
 
-const isDecorativeBar = (node) => {
-  if (getAttrValue(node?.attrs, "data-decorative") === "1") return true;
-  const dataKey = String(getAttrValue(node?.attrs, "data-key") || "");
-  return /decorativebar|divider/i.test(dataKey);
-};
-
-/** Keep width/height on media, media wrappers, decorative bars. Do not strip from these. */
-const isKeepCase = (node, nodes, childrenMap, nodeIndex) => {
-  if (isMediaTag(node.tag)) return true;
-  if (isDecorativeBar(node)) return true;
-  if (isMediaWrapper(node, nodes, childrenMap, nodeIndex)) return true;
-  return false;
-};
-
+/**
+ * Remove Figma-derived fixed frame dimensions from section-level layout containers.
+ * Applies only to frame-root containers (section/header/top-level wrapper inside section).
+ * Removes width/height utilities and enforces w-full.
+ * @param {{ html: string, artifact?: object, options?: object }} input
+ * @returns {{ html: string, changes: array, warnings: array, stats: object }}
+ */
 const apply = ({ html }) => {
-  const source = String(html || "");
-  if (!source) return { html: source, changes: [], warnings: [], stats: { removed: 0 } };
+  const source = String(html ?? "");
+  if (!source) {
+    return { html: source, changes: [], warnings: [], stats: { adjusted: 0 } };
+  }
 
   const nodes = parseHtmlNodes(source);
   const childrenMap = buildChildrenMap(nodes);
   const patches = [];
   const changes = [];
-  const warnings = [];
-  let removed = 0;
+  let adjusted = 0;
 
-  nodes.forEach((node, nodeIndex) => {
-    if (!node?.attrs) return;
-    const tag = (node?.tag || "").toLowerCase();
-    if (!LAYOUT_WRAPPER_TAGS.has(tag)) return;
-    if (isKeepCase(node, nodes, childrenMap, nodeIndex)) return;
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    if (!node?.attrs) continue;
 
+    if (!isFrameRootContainer(node, nodes, childrenMap, i)) continue;
     const tokens = getClassTokens(node.attrs);
-    const removedWidth = [];
-    const removedHeight = [];
-    const cleaned = [];
+    const widthTokens = tokens.filter(isWidthToken);
+    const hasNonFullWidth = widthTokens.some((t) => normalizeToken(t) !== "w-full");
 
-    for (const token of tokens) {
-      if (isBaseFixedWidth(token)) {
-        removedWidth.push(token);
-        continue;
-      }
-      if (isBaseFixedHeight(token)) {
-        removedHeight.push(token);
-        continue;
-      }
-      cleaned.push(token);
+    let out = tokens.filter((t) => {
+      if (!isWidthToken(t)) return true;
+      if (!hasNonFullWidth && normalizeToken(t) === "w-full") return true;
+      return false;
+    });
+
+    if (!out.some((t) => normalizeToken(t) === "w-full")) {
+      out.push("w-full");
     }
 
-    const rootLayout = isRootLayout(node, nodes);
-    const hadAnyWidth = removedWidth.length > 0;
-    const hadAnyHeight = removedHeight.length > 0;
-    if (rootLayout) {
-      if (!hadAnyWidth && !hadAnyHeight) return;
-    } else {
-      if (!hadAnyWidth && !hadAnyHeight) return;
+    if (!isMediaTag(node.tag) && !isDecorative(node) && !isExplicitMediaWrapper(node)) {
+      out = out.filter((t) => !isHeightToken(t));
     }
 
-    if (hadAnyWidth && !cleaned.some((t) => normalizeToken(t) === "w-full")) {
-      cleaned.push("w-full");
-    }
+    if (tokensEqual(out, tokens)) continue;
 
-    setClassTokens(node.attrs, node.attrOrder, cleaned);
+    setClassTokens(node.attrs, node.attrOrder, out);
     patches.push(
       createPatch(
         node.openStart,
@@ -147,27 +147,24 @@ const apply = ({ html }) => {
         buildOpenTag(node.tag, node.attrs, node.attrOrder, node.isSelfClosing)
       )
     );
-
     const meta = getNodeMeta(node);
-    [...removedWidth, ...removedHeight].forEach((token) => {
-      changes.push({
-        contractId: id,
-        nodeId: meta.nodeId,
-        selector: meta.selector,
-        op: "classRemove",
-        value: token,
-        reason: "Removed frame dimension from layout/root wrapper",
-      });
+    changes.push({
+      contractId: id,
+      nodeId: meta.nodeId,
+      selector: meta.selector,
+      op: "removeFixedDimensions",
+      value: "w-full",
+      reason: "Removed fixed frame dimensions from layout root",
     });
-    removed += removedWidth.length + removedHeight.length;
-  });
+    adjusted += 1;
+  }
 
   const output = applyPatches(source, patches);
   return {
     html: output,
     changes,
-    warnings,
-    stats: { removed },
+    warnings: [],
+    stats: { adjusted },
   };
 };
 

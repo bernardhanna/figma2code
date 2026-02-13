@@ -4,8 +4,12 @@ const assert = require("node:assert/strict");
 const { apply } = require("../layout/width/fluidizeFixedRem");
 
 const getClass = (html, dataKey) => {
-  const regex = new RegExp(`data-key="${dataKey}"[^>]*class="([^"]*)"`, "i");
-  const match = String(html || "").match(regex);
+  const str = String(html || "");
+  // data-key before class
+  let match = str.match(new RegExp(`data-key="${dataKey}"[^>]*class="([^"]*)"`, "i"));
+  if (match) return match[1].trim();
+  // class before data-key
+  match = str.match(new RegExp(`class="([^"]*)"[^>]*data-key="${dataKey}"`, "i"));
   return match ? match[1].trim() : "";
 };
 

@@ -52,6 +52,7 @@ const apply = ({ html }) => {
 
   nodes.forEach((node) => {
     if (!node?.attrs) return;
+    if (!Array.isArray(node.attrOrder)) node.attrOrder = Object.keys(node.attrs);
     const style = getAttrValue(node.attrs, "style");
     if (!style) return;
 
@@ -72,7 +73,7 @@ const apply = ({ html }) => {
 
     const serialized = serializeStyle(styleMap);
     if (serialized) {
-      setAttrValue(node.attrs, "style", serialized);
+      setAttrValue(node.attrs, node.attrOrder, "style", serialized);
     } else {
       removeAttr(node.attrs, node.attrOrder, "style");
     }

@@ -271,6 +271,93 @@ function niceSelectFrameInit() {
   `;
 }
 
+function videoFillPreviewInit() {
+  return `
+  <script>
+    (function(){
+      const markers = ["data-bg-type", "data-fill-type", "data-media"];
+      function isVideoLike(el){
+        if (!el) return false;
+        for (const key of markers) {
+          const v = String(el.getAttribute(key) || "").trim().toLowerCase();
+          if (v === "video") return true;
+        }
+        return false;
+      }
+      function ensureRelative(el){
+        if (!el.classList.contains("relative")) el.classList.add("relative");
+      }
+      function stripBackgroundImage(el){
+        const style = String(el.getAttribute("style") || "");
+        if (!style) return;
+        const cleaned = style
+          .replace(/\\s*background-image\\s*:\\s*[^;]+;?/gi, "")
+          .replace(/\\s*background-size\\s*:\\s*[^;]+;?/gi, "")
+          .replace(/\\s*background-position\\s*:\\s*[^;]+;?/gi, "")
+          .replace(/\\s*background-repeat\\s*:\\s*[^;]+;?/gi, "")
+          .trim()
+          .replace(/;\\s*;+/g, ";")
+          .replace(/^\\s*;\\s*|\\s*;\\s*$/g, "");
+        if (!cleaned) el.removeAttribute("style");
+        else el.setAttribute("style", cleaned);
+      }
+      function alreadyInjected(el){
+        if (el.dataset && el.dataset.videoPreviewReady === "1") return true;
+        const first = el.firstElementChild;
+        return !!(first && (first.tagName === "VIDEO" || (first.classList && first.classList.contains("absolute"))));
+      }
+      function buildMedia(el){
+        const videoUrl = String(el.getAttribute("data-video-url") || el.getAttribute("data-src") || "").trim();
+        const posterUrl = String(el.getAttribute("data-poster-url") || "").trim();
+        if (videoUrl) {
+          const v = document.createElement("video");
+          v.setAttribute("autoplay", "");
+          v.setAttribute("muted", "");
+          v.setAttribute("loop", "");
+          v.setAttribute("playsinline", "");
+          v.className = "absolute inset-0 w-full h-full object-cover";
+          v.src = videoUrl;
+          if (posterUrl) v.setAttribute("poster", posterUrl);
+          return v;
+        }
+        if (posterUrl) {
+          const d = document.createElement("div");
+          d.className = "absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat";
+          d.style.backgroundImage = "url('" + posterUrl.replace(/'/g, "&#39;") + "')";
+          return d;
+        }
+        const d = document.createElement("div");
+        d.className = "absolute inset-0 w-full h-full bg-[#1a1a1a]";
+        return d;
+      }
+      function inject(el){
+        if (!isVideoLike(el) || alreadyInjected(el)) return;
+        ensureRelative(el);
+        stripBackgroundImage(el);
+        const media = buildMedia(el);
+        const wrapper = document.createElement("div");
+        wrapper.className = "relative z-10";
+        while (el.firstChild) {
+          wrapper.appendChild(el.firstChild);
+        }
+        el.appendChild(media);
+        el.appendChild(wrapper);
+        try { el.dataset.videoPreviewReady = "1"; } catch {}
+      }
+      function init(){
+        const nodes = Array.prototype.slice.call(document.querySelectorAll("[data-bg-type],[data-fill-type],[data-media]"));
+        nodes.forEach(inject);
+      }
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", init);
+      } else {
+        init();
+      }
+    })();
+  </script>
+  `;
+}
+
 function niceSelectScript() {
   return `
   <script>
@@ -766,6 +853,7 @@ export function previewHtml(ast, opts = {}) {
   ${fragment}
   ${ENABLE_SLICK ? slickFrameInit() : ""}
   ${ENABLE_NICESELECT ? niceSelectFrameInit() : ""}
+  ${videoFillPreviewInit()}
   ${tailwindCdnLoaderScript()}
 </body>
 </html>`;

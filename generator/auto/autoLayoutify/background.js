@@ -4,13 +4,29 @@ import { gradientToCss } from "./paint.js";
 import { hasImageFill, hasGradientFill, firstFill } from "./styles.js";
 
 export function detectSectionBackground(root, ast) {
-  // Determine the best *real* background image source:
+  // Determine the best *real* background source (video or image):
   // Priority:
+  // 0) Root VIDEO fill → section gets data-bg-type="video" (codeit renders <video> or placeholder)
   // 1) Root IMAGE fill src
   // 2) Covering decorative child IMAGE fill src (and suppress that child)
-  // 3) ast.__bg.src (named fallback) — assumed to be fill-derived, not a frame snapshot
+  // 3) ast.__bg.src (named fallback)
   // 4) placeholder
   const picked = pickBackgroundSource(root, ast);
+
+  if (picked?.kind === "video") {
+    const suppressChildIds = new Set(findDecorativeBgChildIds(root));
+    if (picked.sourceNodeId && picked.sourceNodeId !== root?.id) {
+      suppressChildIds.add(picked.sourceNodeId);
+    }
+    return {
+      kind: "video",
+      videoUrl: picked.src || "",
+      posterUrl: picked.poster || "",
+      css: "",
+      suppressRootBgId: null,
+      suppressChildIds: Array.from(suppressChildIds),
+    };
+  }
 
   const css = cssBackgroundFromPick(root, ast, picked, {
     includeGradient: true,
@@ -28,9 +44,6 @@ export function detectSectionBackground(root, ast) {
 
   return {
     css,
-    // Only suppress root paints when we actually have a real background image/gradient
-    // to render on the outer <section>. For pure solid-color sections, let boxDeco()
-    // render the background color from fills instead.
     suppressRootBgId: hasBgCss ? root?.id || null : null,
     suppressChildIds: Array.from(suppressChildIds),
   };
@@ -38,7 +51,52 @@ export function detectSectionBackground(root, ast) {
 
 /* ================== Picking logic ================== */
 
+function isVideoFill(f) {
+  if (!f || typeof f !== "object") return false;
+  if (String(f.kind || "").toLowerCase() === "video") return true;
+  if (String(f.type || f.fillType || "").toUpperCase() === "VIDEO") return true;
+  return false;
+}
+
+function pickVideoFromFills(node) {
+  const fills = Array.isArray(node?.fills) ? node.fills : [];
+  for (const f of fills) {
+    if (!isVideoFill(f)) continue;
+    const src = [f?.src, f?.url, f?.video?.src].find((s) => typeof s === "string" && s.trim());
+    const poster = [f?.poster, f?.posterUrl, f?.poster?.src].find((s) => typeof s === "string" && s.trim());
+    return { kind: "video", src: src ? String(src).trim() : "", poster: poster ? String(poster).trim() : "", sourceNodeId: node?.id || null };
+  }
+  return null;
+}
+
 function pickBackgroundSource(root, ast) {
+  // 0) Root VIDEO fill (explicit marker from upstream) — section gets data-bg-type="video"
+  const videoPick = pickVideoFromFills(root);
+  if (videoPick) return videoPick;
+
+  // 0b) ast.__bg with kind "video" (e.g. from named fallback or normalizer)
+  if (ast?.__bg?.kind === "video") {
+    const src = typeof ast.__bg.src === "string" ? ast.__bg.src.trim() : "";
+    const poster = typeof ast.__bg.poster === "string" ? ast.__bg.poster.trim() : "";
+    return {
+      kind: "video",
+      src: src || "",
+      poster: poster || "",
+      sourceNodeId: ast.__bg.sourceNodeId || root?.id || null,
+    };
+  }
+
+  // 0c) Covering child with VIDEO fill (e.g. root is a wrapper, video is on child frame)
+  const childVideo = findCoveringVideoFillChild(root);
+  if (childVideo) {
+    return {
+      kind: "video",
+      src: childVideo.src || "",
+      poster: childVideo.poster || "",
+      sourceNodeId: childVideo.id,
+    };
+  }
+
   // 1) Root fill image is always the best signal
   const rootFillSrc = pickSrcFromFills(root);
   if (rootFillSrc) {
@@ -124,6 +182,37 @@ function findCoveringBgFillChild(root) {
   }
 
   return best;
+}
+
+function findCoveringVideoFillChild(root) {
+  const kids = root?.children || [];
+  if (!kids.length) return null;
+
+  const pw = root?.bb?.w ?? root?.w ?? 0;
+  const ph = root?.bb?.h ?? root?.h ?? 0;
+
+  for (const c of kids) {
+    if (!c?.id) continue;
+    const videoPick = pickVideoFromFills(c);
+    if (!videoPick) continue;
+
+    const name = String(c?.name || "").toLowerCase();
+    const namedBg = /\b(bg|background|overlay|video|hero)\b/.test(name);
+    const cw = c?.bb?.w ?? c?.w ?? 0;
+    const ch = c?.bb?.h ?? c?.h ?? 0;
+    const wr = pw ? cw / pw : 0;
+    const hr = ph ? ch / ph : 0;
+    const covers = wr >= 0.75 && hr >= 0.75;
+    if (!covers && !namedBg) continue;
+    if (c.text) continue;
+
+    return {
+      id: c.id,
+      src: videoPick.src || "",
+      poster: videoPick.poster || "",
+    };
+  }
+  return null;
 }
 
 /* ================== CSS layering ================== */

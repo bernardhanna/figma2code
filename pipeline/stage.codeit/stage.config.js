@@ -24,6 +24,9 @@ module.exports = {
     { id: "layout/width/widthRedundancyCollapseContract", path: "./contracts/layout/width/widthRedundancyCollapseContract.js", options: {} },
     { id: "layout/text/textFixedWidthGuardContract", path: "./contracts/layout/text/textFixedWidthGuardContract.js", options: {} },
     { id: "layout/root/removeFrameDimensions", path: "./contracts/layout/root/removeFrameDimensions.js", options: {} },
+    { id: "media/fill/applyBackgroundFromFigmaFill", path: "./contracts/media/fill/applyBackgroundFromFigmaFill.js", options: {} },
+    { id: "media/fill/preserveBackgroundContainerHeight", path: "./contracts/media/fill/preserveBackgroundContainerHeight.js", options: {} },
+    { id: "media/videoFillSupport", path: "./contracts/media/videoFillSupport.js", options: {} },
     { id: "layout/section/enforceMobileVerticalPadding", path: "./contracts/layout/section/enforceMobileVerticalPadding.js", options: {} },
     { id: "layout/text/nowrapGuard", path: "./contracts/layout/text/nowrapGuard.js", options: {} },
     { id: "layout/text/shrinkGuard", path: "./contracts/layout/text/shrinkGuard.js", options: {} },
@@ -36,6 +39,7 @@ module.exports = {
     { id: "semantics/landmarks/upgradeLandmarks", path: "./contracts/semantics/landmarks/upgradeLandmarks.js", options: {} },
     { id: "semantics/interactive/cardToLinkOrButton", path: "./contracts/semantics/interactive/cardToLinkOrButton.js", options: {} },
     { id: "semantics/interactive/preventNestedInteractive", path: "./contracts/semantics/interactive/preventNestedInteractive.js", options: {} },
+    { id: "layout/section/containerPattern", path: "./contracts/layout/section/containerPattern.js", options: {} },
     { id: "layout/section/containerNormalize", path: "./contracts/layout/section/containerNormalize.js", options: {} },
   ],
 };

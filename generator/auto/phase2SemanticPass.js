@@ -605,7 +605,9 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
   const anyBgCue =
     !!ast?.__bg?.enabled ||
     (Array.isArray(rootAst?.fills) &&
-      rootAst.fills.some((f) => f?.kind === "image" || f?.kind === "gradient")) ||
+      rootAst.fills.some(
+        (f) => f?.kind === "image" || f?.kind === "video" || f?.kind === "gradient"
+      )) ||
     htmlHasAnyBgImageStyle(tokens);
 
   if (sectionIdx >= 0 && anyBgCue) {

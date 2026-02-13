@@ -58,7 +58,7 @@ test("reporter writeImproveSummary includes offenders, proposed/accepted/rejecte
   const log = reporter.getLog();
   assert.ok(log.includes("Improve summary:"));
   assert.ok(log.includes("Offenders found: 5"));
-  assert.ok(log.includes("Patches proposed: 3 | accepted: 1 | rejected: 2"));
+  assert.ok(log.includes("Patches proposed: 3 / accepted: 1 / rejected: 2"));
   assert.ok(log.includes("Rejected (1): Patch has no bounded ops. [node-1]"));
   assert.ok(log.includes("Rejected (1): blocked: protected media/hero height [frame:hero#1]"));
 });

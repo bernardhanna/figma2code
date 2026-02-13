@@ -1,6 +1,60 @@
 // generator/server/backgroundFallback.js
 
 /**
+ * If any node in the tree has a video fill (kind "video" or type "VIDEO"),
+ * set ast.__bg to video so the section gets data-bg-type="video" and a placeholder.
+ * Call this before applyNamedBackgroundFallback so video is not overwritten by image fallback.
+ */
+export function setVideoBgFromTree(ast) {
+  if (!ast?.tree) return ast;
+  if (ast?.__bg?.kind === "video") return ast;
+
+  function hasVideoFill(node) {
+    const fills = Array.isArray(node?.fills) ? node.fills : [];
+    for (const f of fills) {
+      if (String(f?.kind || "").toLowerCase() === "video") return true;
+      const t = String(f?.type || f?.fillType || "").toUpperCase();
+      if (t === "VIDEO") return true;
+    }
+    return false;
+  }
+
+  let found = null;
+  (function walk(n) {
+    if (!n || found) return;
+    if (hasVideoFill(n)) {
+      found = n;
+      return;
+    }
+    for (const c of n.children || []) walk(c);
+  })(ast.tree);
+
+  if (found) {
+    const videoFill = (found.fills || []).find(
+      (f) =>
+        String(f?.kind || "").toLowerCase() === "video" ||
+        String(f?.type || f?.fillType || "").toUpperCase() === "VIDEO"
+    );
+    const src = typeof videoFill?.src === "string" ? videoFill.src.trim() : "";
+    let poster = typeof videoFill?.poster === "string" ? videoFill.poster.trim() : "";
+    if (!poster) {
+      const overlayPoster = String(ast?.meta?.overlay?.src || "").trim();
+      if (overlayPoster) poster = overlayPoster;
+    }
+    ast.__bg = {
+      enabled: true,
+      kind: "video",
+      src: typeof src === "string" ? src.trim() : "",
+      poster: typeof poster === "string" ? poster.trim() : "",
+      sourceNodeId: found.id,
+      objectFit: "cover",
+      objectPosition: "center",
+    };
+  }
+  return ast;
+}
+
+/**
  * Fallback background-image detection via naming convention.
  * If any node name matches common background patterns (case-insensitive),
  * we attach ast.__bg with the best-available image source.
@@ -8,8 +62,10 @@
  * IMPORTANT:
  * - Prefer IMAGE FILLS first (these are the real "fill" backgrounds in Figma)
  * - Avoid accidentally using exported frame snapshots
+ * - Do not overwrite when ast.__bg.kind is already "video"
  */
 export function applyNamedBackgroundFallback(ast) {
+  if (ast?.__bg?.kind === "video") return ast;
   const NAMES = [
     "backgroundimage",
     "bgimage",
@@ -140,7 +196,67 @@ export function applyNamedBackgroundFallback(ast) {
     return best;
   }
 
-  // Find a node by naming convention anywhere in the tree
+  function pickVideoFromNode(node) {
+    const fills = Array.isArray(node?.fills) ? node.fills : [];
+    for (const f of fills) {
+      if (String(f?.kind || "").toLowerCase() !== "video") continue;
+      const s = [f?.src, f?.url, f?.video?.src].find((x) => typeof x === "string" && x.trim());
+      const p = [f?.poster, f?.posterUrl, f?.poster?.src].find((x) => typeof x === "string" && x.trim());
+      return { src: s ? String(s).trim() : "", poster: p ? String(p).trim() : "" };
+    }
+    return null;
+  }
+
+  function findBestVideoDeep(root) {
+    let best = { src: "", poster: "" };
+    (function walk(n) {
+      if (!n || (best.src && best.poster)) return;
+      const v = pickVideoFromNode(n);
+      if (v && (v.src || v.poster)) {
+        best = v;
+        return;
+      }
+      for (const c of n.children || []) walk(c);
+    })(root);
+    return best.src || best.poster ? best : null;
+  }
+
+  const VIDEO_NAMES = ["hero video", "background video", "video", "videobg", "herovideo", "backgroundvideo"];
+  function matchesVideoName(name) {
+    const n = String(name || "").trim().toLowerCase();
+    if (!n) return false;
+    return VIDEO_NAMES.some((k) => n.includes(k));
+  }
+
+  let videoFound = null;
+  (function walk(n) {
+    if (!n || videoFound) return;
+    if (matchesVideoName(n.name)) {
+      const v = pickVideoFromNode(n) || findBestVideoDeep(n);
+      videoFound = {
+        node: n,
+        src: v?.src ?? "",
+        poster: v?.poster ?? "",
+      };
+      return;
+    }
+    for (const c of n.children || []) walk(c);
+  })(ast?.tree);
+
+  if (videoFound) {
+    ast.__bg = {
+      enabled: true,
+      kind: "video",
+      src: videoFound.src,
+      poster: videoFound.poster,
+      sourceNodeId: videoFound.node.id,
+      objectFit: "cover",
+      objectPosition: "center",
+    };
+    return ast;
+  }
+
+  // Find a node by naming convention anywhere in the tree (image)
   let found = null;
 
   (function walk(n) {

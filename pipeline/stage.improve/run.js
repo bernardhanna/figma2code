@@ -358,6 +358,14 @@ const selectPatchProvider = (stageConfig, generatePatchPlanFn) => {
   };
 };
 
+const formatProviderLabel = (providerId) => {
+  const id = String(providerId || "").trim().toLowerCase();
+  if (!id) return "";
+  if (id === "ai") return "AI";
+  if (id === "rules") return "Rules";
+  return id.slice(0, 1).toUpperCase() + id.slice(1);
+};
+
 const resolveGateConfig = (gate) => {
   const base = isPlainObject(gate) ? gate : {};
   const maxVisualDeltaRaw = process.env.IMPROVE_VISUAL_TOLERANCE ?? base.maxVisualDelta;
@@ -637,6 +645,7 @@ const run = async ({
 
   reporter.succeed(IMPROVE.GENERATE_PLAN);
   const provider = selectPatchProvider(stageConfig, generatePatchPlanFn);
+  const providerLabel = formatProviderLabel(provider.id);
   const planResult = provider.generate({
     html: currentFragment,
     offenders: topOffenders,
@@ -730,6 +739,7 @@ const run = async ({
   reporter.succeed(IMPROVE.ACCEPT_GATE);
   const gate = resolveGateConfig(stageConfig.gate);
   let gateAccepted = true;
+  let gateMessage = "";
   if (acceptedPatches.length && gate.enabled) {
     const gateResult = assessScoreGate(
       evaluationBefore?.metrics,
@@ -738,6 +748,7 @@ const run = async ({
     );
     if (!gateResult.accept) {
       gateAccepted = false;
+      gateMessage = gateResult.reason || "";
       warnings.push({ message: gateResult.reason });
       rejectedEntries.push(
         ...acceptedEntries.map((entry) => ({
@@ -759,6 +770,7 @@ const run = async ({
   const patchesProposed = planEntries.length;
   const patchesAccepted = gateAccepted ? acceptedEntries.length : 0;
   const patchesRejected = rejectedEntries.length;
+  const gateRejected = !gateAccepted && acceptedEntries.length > 0;
 
   const rejectionReasonGroups = [];
   const reasonToEntries = new Map();
@@ -779,6 +791,17 @@ const run = async ({
     ? inputArtifact.diagnostics
     : {};
 
+  const patchPlanSummary = {
+    offendersFound: offenders.length,
+    selectedOffenders: topOffenders.length,
+    generated: planEntries.length,
+    accepted: patchesAccepted,
+    rejected: patchesRejected,
+    provider: provider.id,
+    gateAccepted,
+    gateMessage: gateMessage || undefined,
+  };
+
   const historyEntry = {
     iteration,
     createdAt: new Date().toISOString(),
@@ -787,6 +810,7 @@ const run = async ({
     rejectedPatches: rejectedEntries,
     scoreBefore: evaluationBefore?.metrics || {},
     scoreAfter: finalEvaluation?.metrics || {},
+    patchPlan: patchPlanSummary,
   };
 
   const artifact = {
@@ -810,10 +834,15 @@ const run = async ({
         generated: planEntries.length,
         accepted: gateAccepted ? acceptedEntries.length : 0,
         rejected: rejectedEntries.length,
+        provider: provider.id,
+        gateAccepted,
+        gateMessage: gateMessage || undefined,
       },
-      improveSummary: `Offenders: ${offenders.length} | Proposed: ${patchesProposed} | Accepted: ${patchesAccepted} | Rejected: ${patchesRejected}`,
+      improveSummary: `Offenders: ${offenders.length} | Proposed: ${patchesProposed} | Accepted: ${patchesAccepted} | Rejected: ${patchesRejected} | Provider: ${provider.id}`,
       offendersFoundButRejected:
         offenders.length > 0 && patchesAccepted === 0,
+      offendersFoundButGateRejected: gateRejected,
+      noOffendersFound: offenders.length === 0,
       rejectionReasonGroups,
       planDiagnostics: Array.isArray(planResult?.diagnostics) ? planResult.diagnostics : [],
       history: [...previousHistory, historyEntry],
@@ -842,16 +871,23 @@ const run = async ({
 
   reporter.succeed(IMPROVE.DONE);
 
+  const noOffendersMessage = offenders.length === 0 ? "No offenders found." : undefined;
+  const noPatchesAcceptedMessage =
+    offenders.length > 0 && patchesAccepted === 0
+      ? gateRejected
+        ? "Offenders found but rejected by score gate."
+        : "Offenders found but no patches accepted (validation or guards)."
+      : undefined;
+
   reporter.writeImproveSummary({
     offendersFound: offenders.length,
     patchesProposed,
     patchesAccepted,
     patchesRejected,
     rejectionReasonGroups,
-    noPatchesAcceptedMessage:
-      offenders.length > 0 && patchesAccepted === 0
-        ? "Offenders found but no patches accepted (validation or score gate)."
-        : undefined,
+    providerLabel,
+    noOffendersMessage,
+    noPatchesAcceptedMessage,
   });
 
   const fixGroups = summarizeLedger(ledgerEntries).sort((a, b) => b.count - a.count);

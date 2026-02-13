@@ -51,17 +51,26 @@ function createReporter(logFn = () => {}) {
       patchesAccepted = 0,
       patchesRejected = 0,
       rejectionReasonGroups = [],
+      providerLabel,
+      noOffendersMessage,
       noPatchesAcceptedMessage,
     }) {
       write("");
       write("Improve summary:");
       write(`  Offenders found: ${offendersFound}`);
-      write(`  Patches proposed: ${patchesProposed} | accepted: ${patchesAccepted} | rejected: ${patchesRejected}`);
+      const label = providerLabel ? `${providerLabel} patches` : "Patches";
+      write(
+        `  ${label} proposed: ${patchesProposed} / accepted: ${patchesAccepted} / rejected: ${patchesRejected}`
+      );
       (rejectionReasonGroups || []).forEach((group) => {
         const list = (group.nodeIds || []).slice(0, 4).join(", ") + ((group.nodeIds || []).length > 4 ? ", …" : "");
         write(`  Rejected (${group.count}): ${String(group.reason || "").trim()}${list ? ` [${list}]` : ""}`);
       });
-      if (noPatchesAcceptedMessage) write(`  ${noPatchesAcceptedMessage}`);
+      if (noOffendersMessage) {
+        write(`  ${noOffendersMessage}`);
+      } else if (noPatchesAcceptedMessage) {
+        write(`  ${noPatchesAcceptedMessage}`);
+      }
     },
 
     /** Append Warnings & Errors, Fixes, bullets, Artifacts written, Score per breakpoint. */

@@ -9,7 +9,7 @@
 // - NEW (CTA fix): INSTANCE nodes are rasterized, but we ALSO export their descendant TEXT runs
 //   as `__instanceText` so the generator can render button labels (instead of empty <button/>).
 
-figma.showUI(__html__, { width: 440, height: 420 });
+figma.showUI(__html__, { width: 440, height: 560 });
 
 /** Generator base URL (must match manifest networkAccess allowedDomains, e.g. localhost not 127.0.0.1) */
 const GENERATOR_BASE = "http://localhost:5173";
@@ -40,7 +40,16 @@ type RadialGradient = {
   stops: { r: number; g: number; b: number; a: number; pos: number }[];
 };
 type NoneFill = { kind: "none" };
-type Fill = SolidFill | ImageFill | LinearGradient | RadialGradient | NoneFill;
+/** Video background: native VideoPaint (videoHash, no URL from API) or plugin data/component property (src, poster). */
+type VideoFill = {
+  kind: "video";
+  /** Set when fill comes from Figma VideoPaint; no API to get URL from hash, so generator uses placeholder. */
+  videoHash?: string;
+  scaleMode?: "FILL" | "FIT" | "TILE" | "CROP";
+  src?: string;
+  poster?: string;
+};
+type Fill = SolidFill | ImageFill | LinearGradient | RadialGradient | VideoFill | NoneFill;
 
 type AutoLayout = {
   layout: "NONE" | "HORIZONTAL" | "VERTICAL";
@@ -552,44 +561,96 @@ function isSolidVisible(p: SolidPaint | undefined): boolean {
  * PATCH: export ALL visible paints, not just the last one.
  * This is critical for gradient + image background combos.
  * TEXT nodes return none (their fill is text color).
+ *
+ * Video fills:
+ * - Native Figma VideoPaint (type "VIDEO"): push { kind: "video", videoHash, scaleMode }.
+ *   Figma has no getVideoByHash(), so we cannot resolve a URL; generator emits data-bg-type="video"
+ *   with empty URL and codeit shows a placeholder.
+ * - Plugin data or component property: push { kind: "video", src, poster } when URLs are provided.
  */
+function getVideoFromNode(n: SceneNode): { src: string; poster: string } | null {
+  const anyN = n as any;
+  let src = "";
+  let poster = "";
+
+  if (typeof anyN.getPluginData === "function") {
+    const u = anyN.getPluginData("figma2wp:videoUrl") as string | undefined;
+    const p = anyN.getPluginData("figma2wp:posterUrl") as string | undefined;
+    if (typeof u === "string" && u.trim()) src = u.trim();
+    if (typeof p === "string" && p.trim()) poster = p.trim();
+  }
+
+  const compProps = anyN.componentProperties as Record<string, { value?: string; type?: string }> | undefined;
+  if (compProps && typeof compProps === "object") {
+    for (const key of Object.keys(compProps)) {
+      const name = String(key).split("#")[0].toLowerCase();
+      if (!/video|herovideo|backgroundvideo|videourl|poster/.test(name)) continue;
+      const val = compProps[key]?.value;
+      if (typeof val !== "string" || !val.trim()) continue;
+      if (/poster|posterurl|posterurl/i.test(name)) poster = val.trim();
+      else src = val.trim();
+    }
+  }
+
+  if (src || poster) return { src, poster };
+  return null;
+}
+
 function getFills(n: SceneNode): Fill[] {
   try {
     if (n.type === "TEXT") return [{ kind: "none" }];
 
     const anyN = n as any;
     const paints = (anyN.fills || []) as Paint[];
-    if (!Array.isArray(paints) || !paints.length) return [{ kind: "none" }];
-
-    const visible = paints.filter((pp) => (pp as any)?.visible !== false);
-    if (!visible.length) return [{ kind: "none" }];
-
+    const hasPaints = Array.isArray(paints) && paints.length > 0;
+    const visible = hasPaints ? paints.filter((pp: any) => pp?.visible !== false) : [];
     const out: Fill[] = [];
 
-    for (const p of visible) {
-      if (p.type === "SOLID") {
-        if (!isSolidVisible(p as SolidPaint)) continue;
-        out.push(solidFromPaint(p as SolidPaint));
-        continue;
+    if (visible.length > 0) {
+      for (const p of visible) {
+        if (p.type === "SOLID") {
+          if (!isSolidVisible(p as SolidPaint)) continue;
+          out.push(solidFromPaint(p as SolidPaint));
+          continue;
+        }
+
+        if (p.type === "IMAGE") {
+          const mode = (p as any).scaleMode as ImageFill["scaleMode"];
+          const imageHash = (p as any).imageHash as string | undefined;
+
+          out.push({
+            kind: "image",
+            scaleMode: mode,
+            imageHash: imageHash || undefined,
+          });
+
+          continue;
+        }
+
+        if (String((p as any).type || "").startsWith("GRADIENT")) {
+          const g = gradientFromPaint(p as GradientPaint);
+          if (g.kind !== "none") out.push(g);
+          continue;
+        }
+
+        if ((p as any).type === "VIDEO") {
+          const videoHash = (p as any).videoHash as string | undefined;
+          const scaleMode = (p as any).scaleMode as VideoFill["scaleMode"];
+          out.push({
+            kind: "video",
+            videoHash: videoHash || undefined,
+            scaleMode: scaleMode || "FILL",
+          });
+          continue;
+        }
       }
+    }
 
-      if (p.type === "IMAGE") {
-        const mode = (p as any).scaleMode as ImageFill["scaleMode"];
-        const imageHash = (p as any).imageHash as string | undefined;
-
-        out.push({
-          kind: "image",
-          scaleMode: mode,
-          imageHash: imageHash || undefined,
-        });
-
-        continue;
-      }
-
-      if (String((p as any).type || "").startsWith("GRADIENT")) {
-        const g = gradientFromPaint(p as GradientPaint);
-        if (g.kind !== "none") out.push(g);
-        continue;
+    const hasVideoFill = out.some((f) => f.kind === "video");
+    if (!hasVideoFill) {
+      const video = getVideoFromNode(n);
+      if (video) {
+        out.push({ kind: "video", src: video.src || undefined, poster: video.poster || undefined });
       }
     }
 
@@ -1481,9 +1542,39 @@ function findChildByName(
 
 /** ===== UI messaging ===== */
 figma.ui.onmessage = async (msg: {
-  type: "EXPORT_SELECTION" | "EXPORT_PHASE1" | "CLOSE";
+  type: "EXPORT_SELECTION" | "EXPORT_PHASE1" | "CLOSE" | "SET_VIDEO_BG" | "CLEAR_VIDEO_BG";
   slug?: string;
+  videoUrl?: string;
+  posterUrl?: string;
 }) => {
+  if (msg.type === "SET_VIDEO_BG" || msg.type === "CLEAR_VIDEO_BG") {
+    const selection = figma.currentPage.selection || [];
+    if (!selection.length) {
+      figma.notify("Select a frame (or any node) to set video background.");
+      return;
+    }
+
+    const videoUrl = String(msg.videoUrl || "").trim();
+    const posterUrl = String(msg.posterUrl || "").trim();
+    const clearing = msg.type === "CLEAR_VIDEO_BG";
+
+    for (const node of selection) {
+      if (clearing) {
+        node.setPluginData("figma2wp:videoUrl", "");
+        node.setPluginData("figma2wp:posterUrl", "");
+      } else {
+        node.setPluginData("figma2wp:videoUrl", videoUrl);
+        node.setPluginData("figma2wp:posterUrl", posterUrl);
+      }
+    }
+
+    figma.notify(
+      clearing
+        ? `Cleared video background on ${selection.length} node(s).`
+        : `Video background set on ${selection.length} node(s).`
+    );
+    return;
+  }
   if (msg.type === "EXPORT_SELECTION" || msg.type === "EXPORT_PHASE1") {
     try {
       const sel = figma.currentPage.selection;

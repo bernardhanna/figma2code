@@ -18,6 +18,7 @@
 // - Use high precision for typography rem values to avoid drift (e.g. 0.0625rem must stay exact).
 
 import { rem } from "./precision.js";
+import { escAttr } from "./escape.js";
 import { detectSectionBackground } from "./background.js";
 import { renderNode } from "./render.js";
 
@@ -68,12 +69,18 @@ export function autoLayoutify(ast, opts = {}) {
 
   if (!wrap) return html;
 
-  // Required outer section (full bleed bg when present)
-  const sectionStyle = bgInfo?.css
-    ? ` style="background-image: ${bgInfo.css}; background-size: cover; background-position: center; background-repeat: no-repeat;"`
-    : "";
-
-  const sectionOpen = `<section class="relative flex max-md:overflow-visible overflow-hidden"${sectionStyle}>`;
+  // Required outer section (full bleed bg when present, or video fill markers for codeit)
+  let sectionOpen;
+  if (bgInfo?.kind === "video") {
+    const videoUrl = escAttr(bgInfo.videoUrl || "");
+    const posterUrl = escAttr(bgInfo.posterUrl || "");
+    sectionOpen = `<section class="relative flex max-md:overflow-visible overflow-hidden" data-bg-type="video" data-video-url="${videoUrl}" data-poster-url="${posterUrl}">`;
+  } else {
+    const sectionStyle = bgInfo?.css
+      ? ` style="background-image: ${bgInfo.css}; background-size: cover; background-position: center; background-repeat: no-repeat;"`
+      : "";
+    sectionOpen = `<section class="relative flex max-md:overflow-visible overflow-hidden"${sectionStyle}>`;
+  }
 
   // Content container:
   // Use max-width based on the root Figma frame width (NOT max-w-container).

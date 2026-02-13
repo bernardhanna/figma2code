@@ -18,7 +18,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-figma.showUI(__html__, { width: 440, height: 420 });
+figma.showUI(__html__, { width: 440, height: 560 });
 /** Generator base URL (must match manifest networkAccess allowedDomains, e.g. localhost not 127.0.0.1) */
 const GENERATOR_BASE = "http://localhost:5173";
 /** ===== Helpers ===== */
@@ -347,41 +347,95 @@ function isSolidVisible(p) {
  * PATCH: export ALL visible paints, not just the last one.
  * This is critical for gradient + image background combos.
  * TEXT nodes return none (their fill is text color).
+ *
+ * Video fills:
+ * - Native Figma VideoPaint (type "VIDEO"): push { kind: "video", videoHash, scaleMode }.
+ *   Figma has no getVideoByHash(), so we cannot resolve a URL; generator emits data-bg-type="video"
+ *   with empty URL and codeit shows a placeholder.
+ * - Plugin data or component property: push { kind: "video", src, poster } when URLs are provided.
  */
+function getVideoFromNode(n) {
+    var _a;
+    const anyN = n;
+    let src = "";
+    let poster = "";
+    if (typeof anyN.getPluginData === "function") {
+        const u = anyN.getPluginData("figma2wp:videoUrl");
+        const p = anyN.getPluginData("figma2wp:posterUrl");
+        if (typeof u === "string" && u.trim())
+            src = u.trim();
+        if (typeof p === "string" && p.trim())
+            poster = p.trim();
+    }
+    const compProps = anyN.componentProperties;
+    if (compProps && typeof compProps === "object") {
+        for (const key of Object.keys(compProps)) {
+            const name = String(key).split("#")[0].toLowerCase();
+            if (!/video|herovideo|backgroundvideo|videourl|poster/.test(name))
+                continue;
+            const val = (_a = compProps[key]) === null || _a === void 0 ? void 0 : _a.value;
+            if (typeof val !== "string" || !val.trim())
+                continue;
+            if (/poster|posterurl|posterurl/i.test(name))
+                poster = val.trim();
+            else
+                src = val.trim();
+        }
+    }
+    if (src || poster)
+        return { src, poster };
+    return null;
+}
 function getFills(n) {
     try {
         if (n.type === "TEXT")
             return [{ kind: "none" }];
         const anyN = n;
         const paints = (anyN.fills || []);
-        if (!Array.isArray(paints) || !paints.length)
-            return [{ kind: "none" }];
-        const visible = paints.filter((pp) => (pp === null || pp === void 0 ? void 0 : pp.visible) !== false);
-        if (!visible.length)
-            return [{ kind: "none" }];
+        const hasPaints = Array.isArray(paints) && paints.length > 0;
+        const visible = hasPaints ? paints.filter((pp) => (pp === null || pp === void 0 ? void 0 : pp.visible) !== false) : [];
         const out = [];
-        for (const p of visible) {
-            if (p.type === "SOLID") {
-                if (!isSolidVisible(p))
+        if (visible.length > 0) {
+            for (const p of visible) {
+                if (p.type === "SOLID") {
+                    if (!isSolidVisible(p))
+                        continue;
+                    out.push(solidFromPaint(p));
                     continue;
-                out.push(solidFromPaint(p));
-                continue;
+                }
+                if (p.type === "IMAGE") {
+                    const mode = p.scaleMode;
+                    const imageHash = p.imageHash;
+                    out.push({
+                        kind: "image",
+                        scaleMode: mode,
+                        imageHash: imageHash || undefined,
+                    });
+                    continue;
+                }
+                if (String(p.type || "").startsWith("GRADIENT")) {
+                    const g = gradientFromPaint(p);
+                    if (g.kind !== "none")
+                        out.push(g);
+                    continue;
+                }
+                if (p.type === "VIDEO") {
+                    const videoHash = p.videoHash;
+                    const scaleMode = p.scaleMode;
+                    out.push({
+                        kind: "video",
+                        videoHash: videoHash || undefined,
+                        scaleMode: scaleMode || "FILL",
+                    });
+                    continue;
+                }
             }
-            if (p.type === "IMAGE") {
-                const mode = p.scaleMode;
-                const imageHash = p.imageHash;
-                out.push({
-                    kind: "image",
-                    scaleMode: mode,
-                    imageHash: imageHash || undefined,
-                });
-                continue;
-            }
-            if (String(p.type || "").startsWith("GRADIENT")) {
-                const g = gradientFromPaint(p);
-                if (g.kind !== "none")
-                    out.push(g);
-                continue;
+        }
+        const hasVideoFill = out.some((f) => f.kind === "video");
+        if (!hasVideoFill) {
+            const video = getVideoFromNode(n);
+            if (video) {
+                out.push({ kind: "video", src: video.src || undefined, poster: video.poster || undefined });
             }
         }
         return out.length ? out : [{ kind: "none" }];
@@ -1139,6 +1193,30 @@ function findChildByName(root, nameLower) {
 /** ===== UI messaging ===== */
 figma.ui.onmessage = (msg) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
+    if (msg.type === "SET_VIDEO_BG" || msg.type === "CLEAR_VIDEO_BG") {
+        const selection = figma.currentPage.selection || [];
+        if (!selection.length) {
+            figma.notify("Select a frame (or any node) to set video background.");
+            return;
+        }
+        const videoUrl = String(msg.videoUrl || "").trim();
+        const posterUrl = String(msg.posterUrl || "").trim();
+        const clearing = msg.type === "CLEAR_VIDEO_BG";
+        for (const node of selection) {
+            if (clearing) {
+                node.setPluginData("figma2wp:videoUrl", "");
+                node.setPluginData("figma2wp:posterUrl", "");
+            }
+            else {
+                node.setPluginData("figma2wp:videoUrl", videoUrl);
+                node.setPluginData("figma2wp:posterUrl", posterUrl);
+            }
+        }
+        figma.notify(clearing
+            ? `Cleared video background on ${selection.length} node(s).`
+            : `Video background set on ${selection.length} node(s).`);
+        return;
+    }
     if (msg.type === "EXPORT_SELECTION" || msg.type === "EXPORT_PHASE1") {
         try {
             const sel = figma.currentPage.selection;

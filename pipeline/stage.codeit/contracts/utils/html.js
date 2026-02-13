@@ -88,7 +88,8 @@ const removeAttr = (attrs, order, key) => {
 const parseHtmlNodes = (html) => {
   const nodes = [];
   const stack = [];
-  const tagRegex = /<\/?([a-zA-Z][a-zA-Z0-9-]*)(\s[^>]*?)?>/g;
+  const tagRegex =
+    /<\/?([a-zA-Z][a-zA-Z0-9-]*)(\s+(?:[^"'<>]+|"[^"]*"|'[^']*')*)?\s*\/?>/g;
   let match;
 
   while ((match = tagRegex.exec(html))) {

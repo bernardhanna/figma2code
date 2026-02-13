@@ -9,6 +9,25 @@
     <input id="slug" placeholder="hero_demo" style="width:100%" />
   </label>
 
+  <div style="margin-top:12px; padding:8px; border:1px solid #e5e7eb; border-radius:6px;">
+    <div style="font-weight:600; margin-bottom:6px;">Video Background</div>
+    <label style="display:block; margin-bottom:6px;">
+      Video URL
+      <input id="videoUrl" placeholder="https://cdn.example.com/hero.mp4" style="width:100%" />
+    </label>
+    <label style="display:block; margin-bottom:6px;">
+      Poster URL
+      <input id="videoPoster" placeholder="https://cdn.example.com/hero.jpg" style="width:100%" />
+    </label>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="setVideo" type="button">Set on Selection</button>
+      <button id="clearVideo" type="button">Clear</button>
+    </div>
+    <div style="font-size:11px; color:#6b7280; margin-top:6px;">
+      Figma doesn’t expose video URLs from native fills; paste a public URL here to play video in preview/output.
+    </div>
+  </div>
+
   <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
     <button id="generatePreview">Generate Preview</button>
   </div>
@@ -59,6 +78,8 @@
     const previewTabs = document.getElementById("previewTabs");
     const openPreviewBtn = document.getElementById("openPreview");
     const clearPreviewBtn = document.getElementById("clearPreview");
+    const videoUrlInput = document.getElementById("videoUrl");
+    const videoPosterInput = document.getElementById("videoPoster");
     const getSlug = () => document.getElementById("slug").value.trim();
     const BASE = "http://localhost:5173";
     let lastPreviewUrl = "";
@@ -213,6 +234,21 @@
       setPreviewState({ previewUrl: "", screenshotUrl: "", screenshotUrls: {}, report: null });
       window.__pendingEndpoint = "/api/preview-only";
       parent.postMessage({ pluginMessage: { type: "EXPORT_SELECTION", slug: getSlug() } }, "*");
+    };
+
+    document.getElementById("setVideo").onclick = () => {
+      const videoUrl = String(videoUrlInput?.value || "").trim();
+      const posterUrl = String(videoPosterInput?.value || "").trim();
+      parent.postMessage(
+        { pluginMessage: { type: "SET_VIDEO_BG", videoUrl, posterUrl } },
+        "*"
+      );
+      status.textContent = "Applied video background to selection.";
+    };
+
+    document.getElementById("clearVideo").onclick = () => {
+      parent.postMessage({ pluginMessage: { type: "CLEAR_VIDEO_BG" } }, "*");
+      status.textContent = "Cleared video background on selection.";
     };
 
     clearPreviewBtn.onclick = () => {

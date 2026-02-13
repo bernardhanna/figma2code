@@ -68,23 +68,23 @@ const hasOverflowHiddenAndRounded = (attrs) => {
   return overflowHidden && rounded;
 };
 
-const isCardContainer = (attrs) => {
-  const tokens = getClassTokens(attrs);
-  const normalized = tokens.map((t) => String(t).split(":").pop());
-  const hasBg = normalized.some((t) => /^bg-/.test(t));
-  const hasPadding = normalized.some((t) => /^p-/.test(t) || /^px-/.test(t) || /^py-/.test(t));
-  return hasBg && hasPadding;
+/** Media wrapper heuristics (preserve height for design fidelity). */
+const isMediaWrapper = (node, nodes, childrenMap, nodeIndex) => {
+  const dataKey = String(getAttrValue(node.attrs, "data-key") || "");
+  if (DATA_KEY_MEDIA.test(dataKey)) return true;
+  if (hasMediaDescendant(nodes, childrenMap, nodeIndex)) return true;
+  if (hasAbsoluteInset0Descendant(nodes, childrenMap, nodeIndex)) return true;
+  if (hasOverflowHiddenAndRounded(node.attrs)) return true;
+  return false;
 };
 
 /** Do NOT remove height if any of these hold (preserve layout fidelity). */
 const shouldKeepHeight = (node, nodes, childrenMap, nodeIndex) => {
   if (isMediaTag(node.tag)) return true;
+  if (isInteractiveTag(node.tag)) return true;
   const hIntent = getAttrValue(node.attrs, "data-h-intent");
   if (hIntent === "fixed") return true;
-  const dataKey = String(getAttrValue(node.attrs, "data-key") || "");
-  if (DATA_KEY_MEDIA.test(dataKey)) return true;
-  if (hasAbsoluteInset0Descendant(nodes, childrenMap, nodeIndex)) return true;
-  if (hasOverflowHiddenAndRounded(node.attrs)) return true;
+  if (isMediaWrapper(node, nodes, childrenMap, nodeIndex)) return true;
   return false;
 };
 
@@ -106,14 +106,7 @@ const apply = ({ html }) => {
 
   nodes.forEach((node, nodeIndex) => {
     if (!node?.attrs) return;
-    if (isMediaTag(node.tag)) return;
-    if (isInteractiveTag(node.tag)) return;
-    if (hasMediaDescendant(nodes, childrenMap, nodeIndex)) return;
-    const cardLike = isCardContainer(node.attrs);
-    const hasAbsolute = hasAbsoluteInset0Descendant(nodes, childrenMap, nodeIndex);
-    if (!cardLike || hasAbsolute) {
-      if (shouldKeepHeight(node, nodes, childrenMap, nodeIndex)) return;
-    }
+    if (shouldKeepHeight(node, nodes, childrenMap, nodeIndex)) return;
 
     const tokens = getClassTokens(node.attrs);
     const { cleaned, removed: removedTokens } = removeTokens(tokens, isHeightToken);
@@ -131,7 +124,7 @@ const apply = ({ html }) => {
         selector: meta.selector,
         op: "classRemove",
         value: token,
-        reason: "Removed fixed-height tokens from non-media wrappers",
+        reason: "Removed fixed-height tokens (non-media wrapper)",
       });
     });
 

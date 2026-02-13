@@ -1,5 +1,7 @@
 const path = require("path");
 const { pathToFileURL } = require("url");
+const { spawnSync } = require("child_process");
+const fs = require("fs");
 
 const { PIPELINE_ARTIFACT_SCHEMA_VERSION, assertValidArtifact } = require(
   "../artifacts/validate"
@@ -225,6 +227,28 @@ const run = async ({
   const logFn = typeof log === "function" ? log : () => {};
   const reporter = createReporter(logFn);
   const stageConfig = configOverride ? { ...config, ...configOverride } : config;
+
+  const repoRoot = path.resolve(__dirname, "..", "..");
+  const testsDir = path.join(__dirname, "contracts", "__tests__");
+  if (fs.existsSync(testsDir)) {
+    reporter.step(CODEIT.CONTRACT_TESTS);
+    const testResult = spawnSync(process.execPath, ["--test", testsDir], {
+      cwd: repoRoot,
+      encoding: "utf8",
+      maxBuffer: 4 * 1024 * 1024,
+    });
+    const out = [testResult.stdout, testResult.stderr].filter(Boolean).join("\n");
+    if (testResult.status !== 0) {
+      const failed = (out.match(/^not ok \d+ - (.+)$/gm) || []).map((line) => line.replace(/^not ok \d+ - /, "").trim());
+      const summary = failed.length
+        ? `Failed (${failed.length}): ${failed.slice(0, 10).join("; ")}${failed.length > 10 ? "…" : ""}`
+        : `Exit ${testResult.status}`;
+      if (logFn && out) logFn(out);
+      reporter.fail(CODEIT.CONTRACT_TESTS, new Error(summary));
+      throw new Error(`Contract tests failed. ${summary}. Code it aborted.`);
+    }
+    reporter.succeed(CODEIT.CONTRACT_TESTS);
+  }
 
   reporter.succeed(CODEIT.LOAD_ARTIFACT);
   const inputArtifact = readInputArtifactFn(slug);

@@ -1,9 +1,25 @@
 {
   "iteration": 1,
-  "createdAt": "2026-02-13T10:43:05.010Z",
-  "inputHash": "84cdd035dfb114553f8cd5be710f69f6a9d7972d11a2545b77a6c9ffe21f3e35",
+  "createdAt": "2026-02-13T13:54:00.423Z",
+  "inputHash": "81f0095aa9f352f3e6118258c9b76744882c6d69e8255a26eb6bae1e05ab9715",
   "acceptedPatches": [],
   "rejectedPatches": [
+    {
+      "patch": {
+        "nodeId": "I161:5432;16:2840",
+        "selector": "[data-node-id=\"I161:5432;16:2840\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Patch has no bounded ops."
+    },
     {
       "patch": {
         "nodeId": "I161:5432;16:2841",
@@ -130,6 +146,16 @@
     },
     "offenders": [
       {
+        "nodeId": "I161:5432;16:2840",
+        "selector": "[data-node-id=\"I161:5432;16:2840\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
         "nodeId": "I161:5432;16:2841",
         "selector": "[data-node-id=\"I161:5432;16:2841\"]",
         "breakpoint": "all",
@@ -152,16 +178,6 @@
       {
         "nodeId": "I161:5432;29:253",
         "selector": "[data-node-id=\"I161:5432;29:253\"]",
-        "breakpoint": "all",
-        "category": "layout",
-        "impact": 60,
-        "suggestedStage": "codeit",
-        "suggestedContract": "layout/width/dedupeWidths",
-        "hint": "Conflicting width utilities"
-      },
-      {
-        "nodeId": "div@85",
-        "selector": "div",
         "breakpoint": "all",
         "category": "layout",
         "impact": 60,
@@ -248,6 +264,16 @@
     },
     "offenders": [
       {
+        "nodeId": "I161:5432;16:2840",
+        "selector": "[data-node-id=\"I161:5432;16:2840\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
         "nodeId": "I161:5432;16:2841",
         "selector": "[data-node-id=\"I161:5432;16:2841\"]",
         "breakpoint": "all",
@@ -276,17 +302,16 @@
         "suggestedStage": "codeit",
         "suggestedContract": "layout/width/dedupeWidths",
         "hint": "Conflicting width utilities"
-      },
-      {
-        "nodeId": "div@85",
-        "selector": "div",
-        "breakpoint": "all",
-        "category": "layout",
-        "impact": 60,
-        "suggestedStage": "codeit",
-        "suggestedContract": "layout/width/dedupeWidths",
-        "hint": "Conflicting width utilities"
       }
     ]
+  },
+  "patchPlan": {
+    "offendersFound": 4,
+    "selectedOffenders": 4,
+    "generated": 4,
+    "accepted": 0,
+    "rejected": 4,
+    "provider": "rules",
+    "gateAccepted": true
   }
 }

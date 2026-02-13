@@ -6,6 +6,7 @@
  */
 
 const CODEIT = {
+  CONTRACT_TESTS: "Running contract tests…",
   LOAD_ARTIFACT: "Loading artifact.generate.json…",
   PREPARE_RUNNER: "Preparing contract runner…",
   CONTRACT_PREFIX: "Contract:",
