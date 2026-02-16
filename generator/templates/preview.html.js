@@ -875,7 +875,7 @@ ${css}
   </style>
 </head>
 
-<body class="antialiased bg-white">
+<body class="antialiased bg-white" data-preview-slug="${escapeAttr(slug)}">
   <div class="overlay-toolbar" id="toolbar_root">
     <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
       <div class="vpbar">
@@ -907,6 +907,8 @@ ${css}
           </button>
         </div>
         <button id="improve_run" class="vpbtn" type="button">Improve further</button>
+        <button id="qa_gate_btn" class="vpbtn" type="button" title="Run QA fix loop and apply fixes">Fix pain points</button>
+        <button id="qa_fix_root_width_btn" class="vpbtn" type="button" title="Remove conflicting root fixed width when max-w is present">Fix root width</button>
       ${
         overlaySrcInitial
           ? `
@@ -1077,10 +1079,10 @@ ${css}
   })}
 
   <!-- Apply patches (shared implementation) -->
-  ${patchesScript(slug)}
+  ${patchesScript()}
 
   <!-- Viewport sizing + bucket detection (reads window.__RESPONSIVE__) -->
-  ${viewportScript({ designW, slug })}
+  ${viewportScript({ designW })}
 
   <div id="pipeline_modal_backdrop" class="modal-backdrop" aria-hidden="true">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pipeline_modal_title">
@@ -1113,14 +1115,81 @@ ${css}
     </div>
   </div>
 
+  <div id="qa_gate_modal_backdrop" class="modal-backdrop" aria-hidden="true">
+    <div class="modal qa-gate-modal" role="dialog" aria-modal="true" aria-labelledby="qa_gate_modal_title" style="max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-hd">
+        <div>
+          <div id="qa_gate_modal_title" class="modal-title">QA Gate – Clean &amp; Verify</div>
+          <div class="modal-sub"><span id="qa_gate_slug" class="mono">—</span></div>
+        </div>
+        <button id="qa_gate_modal_close" class="btn2" aria-label="Close">Close</button>
+      </div>
+      <div class="modal-bd" style="overflow: auto; flex: 1;">
+        <div id="qa_gate_remaining" class="text-sm font-semibold text-slate-800 mb-2 hidden"></div>
+        <section class="qa-gate-section">
+          <h3 class="text-sm font-semibold text-slate-700 mb-1">0. QA Fix Loop</h3>
+          <div id="qa_gate_loop_status" class="progress-log text-sm">—</div>
+          <div id="qa_gate_iterations" class="progress-log text-xs whitespace-pre-wrap" style="max-height: 220px; overflow: auto;"></div>
+        </section>
+        <section class="qa-gate-section">
+          <h3 class="text-sm font-semibold text-slate-700 mb-1">1. Audit report (before)</h3>
+          <div id="qa_gate_report_before" class="progress-log text-sm"></div>
+        </section>
+        <section class="qa-gate-section">
+          <h3 class="text-sm font-semibold text-slate-700 mb-1">2. Proposed auto-fixes</h3>
+          <div id="qa_gate_fixes" class="progress-log text-sm"></div>
+        </section>
+        <section class="qa-gate-section">
+          <h3 class="text-sm font-semibold text-slate-700 mb-1">3. Diff preview</h3>
+          <pre id="qa_gate_diff" class="progress-log text-xs whitespace-pre-wrap" style="max-height: 240px; overflow: auto;"></pre>
+        </section>
+        <section class="qa-gate-section">
+          <h3 class="text-sm font-semibold text-slate-700 mb-1">4. Audit report (after)</h3>
+          <div id="qa_gate_report_after" class="progress-log text-sm"></div>
+        </section>
+      </div>
+      <div class="modal-ft">
+        <div class="progress-actions flex gap-2 flex-wrap">
+          <button id="qa_gate_run_loop" class="btn2 primary">Run QA Fix Loop</button>
+          <button id="qa_gate_apply" class="btn2 primary">Apply fixes</button>
+          <button id="qa_gate_eject" class="btn2">Open preview</button>
+          <button id="qa_gate_eject_clean" class="btn2">Eject clean fragment</button>
+          <button id="qa_gate_copy_preview_html" class="btn2">Copy Preview HTML</button>
+          <button id="qa_gate_copy_clean_html" class="btn2">Copy Clean Fragment</button>
+          <button id="qa_gate_back" class="btn2">Back</button>
+          <button id="qa_gate_export" class="btn2">Export report</button>
+          <button id="qa_gate_modal_close_footer" class="btn2">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script>
     (function(){
       const allowed = ["generate", "codeit", "improve"];
       const qs = new URLSearchParams(location.search);
       const raw = String(qs.get("stage") || "generate").toLowerCase();
-      const active = allowed.includes(raw) ? raw : "generate";
+      let activeStage = allowed.includes(raw) ? raw : "generate";
       const buttons = Array.prototype.slice.call(document.querySelectorAll("[data-stage-btn]"));
-      if (!buttons.length) return;
+      const setStageActive = (stage, syncUrl = true) => {
+        const next = allowed.includes(String(stage || "").toLowerCase())
+          ? String(stage).toLowerCase()
+          : activeStage;
+        activeStage = next;
+        buttons.forEach((btn) => {
+          const s = String(btn.getAttribute("data-stage") || "").toLowerCase();
+          btn.dataset.active = s === activeStage ? "1" : "0";
+        });
+        if (syncUrl) {
+          const params = new URLSearchParams(location.search);
+          params.set("stage", activeStage);
+          const nextUrl = location.pathname + "?" + params.toString() + location.hash;
+          try {
+            history.replaceState(null, "", nextUrl);
+          } catch (_) {}
+        }
+      };
+
 
       const stageLabels = {
         generate: "Generate",
@@ -1178,7 +1247,7 @@ ${css}
       let progressIndex = 0;
       let progressStage = "";
 
-      const slug = String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+      const slug = String(window.__CURRENT_PREVIEW_SLUG__ || (document.body && document.body.getAttribute("data-preview-slug")) || "").trim();
 
       const setModalOpen = (isOpen) => {
         if (!modalBackdrop) return;
@@ -1204,6 +1273,11 @@ ${css}
           openPreviewBtn.disabled = !url;
           openPreviewBtn.dataset.url = url || "";
         }
+      };
+      const buildPreviewUrl = (stage) => {
+        const params = new URLSearchParams(location.search);
+        params.set("stage", String(stage || "improve").toLowerCase());
+        return location.pathname + "?" + params.toString() + location.hash;
       };
 
       const renderSteps = (stage) => {
@@ -1326,6 +1400,7 @@ ${css}
       };
 
       const runPipelineStage = async (stage) => {
+        setStageActive(stage, true);
         if (!modalBackdrop) {
           const next = new URLSearchParams(location.search);
           next.set("stage", stage);
@@ -1364,9 +1439,10 @@ ${css}
                 "?stage=" +
                 encodeURIComponent(stage) +
                 location.hash);
-            setStatus("Done.");
+            setStatus("Done. Review output in this modal, then use Open preview.");
             setPreviewUrl(previewUrl);
             setStepState("Done.", "done");
+            setStageActive(stage, true);
           } else {
             setStatus(payload?.error || "Pipeline failed.");
           }
@@ -1377,9 +1453,9 @@ ${css}
         }
       };
 
+      setStageActive(activeStage, false);
       buttons.forEach((btn) => {
         const stage = String(btn.getAttribute("data-stage") || "").toLowerCase();
-        btn.dataset.active = stage === active ? "1" : "0";
         btn.addEventListener("click", (event) => {
           event.preventDefault();
           if (!stage) return;
@@ -1404,9 +1480,569 @@ ${css}
       }
 
       const improveBtn = document.getElementById("improve_run");
+      const qaFixRootWidthBtn = document.getElementById("qa_fix_root_width_btn");
+      const qaCleanFragmentBtn = document.getElementById("qa_clean_fragment_btn");
       if (improveBtn) {
         improveBtn.addEventListener("click", () => {
           runPipelineStage("improve");
+        });
+      }
+
+      const qaGateBtn = document.getElementById("qa_gate_btn");
+      const qaGateBackdrop = document.getElementById("qa_gate_modal_backdrop");
+      const qaGateClose = document.getElementById("qa_gate_modal_close");
+      const qaGateCloseFooter = document.getElementById("qa_gate_modal_close_footer");
+      const qaGateApply = document.getElementById("qa_gate_apply");
+      const qaGateRunLoop = document.getElementById("qa_gate_run_loop");
+      const qaGateEject = document.getElementById("qa_gate_eject");
+      const qaGateEjectClean = document.getElementById("qa_gate_eject_clean");
+      const qaGateCopyPreviewHtml = document.getElementById("qa_gate_copy_preview_html");
+      const qaGateCopyCleanHtml = document.getElementById("qa_gate_copy_clean_html");
+      const qaGateBack = document.getElementById("qa_gate_back");
+      const qaGateExport = document.getElementById("qa_gate_export");
+      const qaGateSlugEl = document.getElementById("qa_gate_slug");
+      const qaGateLoopStatus = document.getElementById("qa_gate_loop_status");
+      const qaGateIterations = document.getElementById("qa_gate_iterations");
+      const qaGateReportBefore = document.getElementById("qa_gate_report_before");
+      const qaGateFixes = document.getElementById("qa_gate_fixes");
+      const qaGateDiff = document.getElementById("qa_gate_diff");
+      const qaGateReportAfter = document.getElementById("qa_gate_report_after");
+      const qaGateRemaining = document.getElementById("qa_gate_remaining");
+
+      let qaGatePayload = null;
+      let qaCleanFragmentHtml = "";
+
+      function formatReport(report, groupedByRule) {
+        if (!report) return "—";
+        const s = report.summary;
+        const lines = [
+          "Errors: " + (s?.error ?? 0) + ", Warnings: " + (s?.warn ?? 0) + ", Info: " + (s?.info ?? 0),
+          "",
+        ];
+        if (groupedByRule && report.byRule && Object.keys(report.byRule).length) {
+          lines.push("By rule: " + Object.entries(report.byRule).map(([r, n]) => r + ": " + n).join(", "));
+          lines.push("");
+        }
+        (report.issues || []).forEach((i) => {
+          lines.push("[" + (i.severity || "?") + "] " + (i.rule || "") + ": " + (i.message || ""));
+          if (i.selector) lines.push("  " + i.selector);
+          if (i.snippet) lines.push("  " + (i.snippet.length > 60 ? i.snippet.slice(0, 60) + "\u2026" : i.snippet));
+          if (i.fatal && i.minimalReport) {
+            lines.push("  ---");
+            lines.push("  Diff-like report (node ids + snippet); auto-fix blocked if not adjacent/identical:");
+            String(i.minimalReport).split("\\n").forEach((line) => lines.push("  " + line));
+          }
+        });
+        return lines.join("\\n");
+      }
+
+      function escapeHtmlText(v) {
+        return String(v || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      function normalizeForCompare(v) {
+        return String(v || "").replace(/\s+/g, " ").trim();
+      }
+
+      function renderIterations(iterations) {
+        if (!qaGateIterations) return;
+        const list = Array.isArray(iterations) ? iterations : [];
+        if (!list.length) {
+          qaGateIterations.innerHTML = "—";
+          return;
+        }
+        qaGateIterations.innerHTML = list
+          .map((it) => {
+            const before = Number(it?.issuesBefore || 0);
+            const after = Number(it?.issuesAfter || 0);
+            const fixes = Array.isArray(it?.appliedFixes) ? it.appliedFixes : [];
+            const byRule = (it?.reportAfter && it.reportAfter.byRule && typeof it.reportAfter.byRule === "object")
+              ? it.reportAfter.byRule
+              : {};
+            const byRuleLine = Object.keys(byRule).length
+              ? "Remaining by rule: " + Object.entries(byRule).map(([k, v]) => k + "=" + v).join(", ")
+              : "Remaining by rule: none";
+            const header = "Iteration " + Number(it?.iteration || 0) + " — " + before + " -> " + after + " issues";
+            const fixLines = fixes.length
+              ? fixes
+                  .map((f) => "Issue " + (f.issueId || "—") + " -> " + (f.action || "applied"))
+                  .join("\\n")
+              : "No fixes applied.";
+            const body = byRuleLine + "\\n\\n" + fixLines;
+            return '<details><summary>' + escapeHtmlText(header) + '</summary><pre style="margin:8px 0 0 0;white-space:pre-wrap;">' + escapeHtmlText(body) + '</pre></details>';
+          })
+          .join("");
+      }
+
+      function setQAGateModalOpen(open) {
+        if (!qaGateBackdrop) return;
+        qaGateBackdrop.dataset.open = open ? "1" : "0";
+        qaGateBackdrop.setAttribute("aria-hidden", open ? "false" : "true");
+      }
+
+      function getPreviewFinalHtml() {
+        const iframe = document.getElementById("vp_iframe");
+        if (!iframe || !iframe.contentDocument || !iframe.contentDocument.body) return "";
+        const doc = iframe.contentDocument;
+        const root = doc.querySelector('[data-key="root"]');
+        if (root) {
+          const section = root.closest("section");
+          return String((section && section.outerHTML) || root.outerHTML || "").trim();
+        }
+        const bodyClone = doc.body.cloneNode(true);
+        Array.prototype.forEach.call(
+          bodyClone.querySelectorAll("script,style,link,meta,#mackeeper-extension,[id$='-extension']"),
+          (n) => n.remove()
+        );
+        const section = bodyClone.querySelector("section");
+        if (section) return String(section.outerHTML || "").trim();
+        return String(bodyClone.innerHTML || "").trim();
+      }
+
+      function applyFixedHtmlToIframe(fixedHtml) {
+        const iframe = document.getElementById("vp_iframe");
+        if (!iframe || !fixedHtml) return false;
+        try {
+          const doc = iframe.contentDocument;
+          if (!doc || !doc.body) return false;
+          const body = doc.body;
+          const html = String(fixedHtml || "").trim();
+          if (!html) return false;
+
+          // Replace only the rendered fragment so Tailwind/widget scripts in <body> stay intact.
+          const root = doc.querySelector('[data-key="root"]');
+          const target = (root && (root.closest("section") || root)) || null;
+          if (target) {
+            target.outerHTML = html;
+            return true;
+          }
+
+          // Fallback: remove non-script nodes, keep script/runtime nodes.
+          Array.from(body.children).forEach((el) => {
+            if ((el.tagName || "").toLowerCase() !== "script") el.remove();
+          });
+          const anchor = body.querySelector("script");
+          const tmp = doc.createElement("div");
+          tmp.innerHTML = html;
+          while (tmp.firstChild) {
+            body.insertBefore(tmp.firstChild, anchor || null);
+          }
+          return true;
+        } catch (_) {}
+        return false;
+      }
+
+      function resolveSourceStageForApply() {
+        const fromPayload = String((qaGatePayload && qaGatePayload.sourceStage) || "").trim().toLowerCase();
+        if (fromPayload === "generate" || fromPayload === "codeit" || fromPayload === "improve") return fromPayload;
+        const fromQs = String(new URLSearchParams(location.search).get("stage") || "").trim().toLowerCase();
+        if (fromQs === "generate" || fromQs === "codeit" || fromQs === "improve") return fromQs;
+        return "improve";
+      }
+
+      function normalizeRootFixedWidthHtml(html) {
+        const source = String(html || "").trim();
+        if (!source) return { changed: false, reason: "empty-html", html: source };
+
+        const openTagMatch = source.match(/<([a-zA-Z][a-zA-Z0-9-]*)([^>]*data-key=(?:"root"|'root')[^>]*)>/i);
+        if (!openTagMatch) return { changed: false, reason: "root-not-found", html: source };
+        const fullOpenTag = String(openTagMatch[0] || "");
+        const classMatch = fullOpenTag.match(/\bclass=(?:"([\s\S]*?)"|'([\s\S]*?)')/i);
+        if (!classMatch) return { changed: false, reason: "root-no-class", html: source };
+
+        const quote = classMatch[0].includes('class="') ? '"' : "'";
+        const classValue = String(classMatch[1] || classMatch[2] || "").trim();
+        if (!classValue) return { changed: false, reason: "root-no-class", html: source };
+        const tokens = classValue.split(/\s+/).filter(Boolean);
+
+        const cleaned = tokens.filter((token) => {
+          const core = String(token || "").split(":").pop();
+          if (core === "w-full") return true;
+          if (/^w-\[.+\]$/.test(core)) return false;
+          if (/^w-(?:\d+|px)$/.test(core)) return false;
+          return true;
+        });
+        if (cleaned.length === tokens.length) return { changed: false, reason: "nothing-to-remove", html: source };
+
+        const nextClassAttr = "class=" + quote + cleaned.join(" ") + quote;
+        const updatedOpenTag = fullOpenTag.replace(classMatch[0], nextClassAttr);
+        const nextHtml = source.replace(fullOpenTag, updatedOpenTag);
+        return { changed: true, reason: "applied", html: nextHtml };
+      }
+
+      if (qaGateBtn) {
+        qaGateBtn.addEventListener("click", () => runQAFixLoop(10));
+      }
+
+      async function runQAFixLoop(maxIterations) {
+        const slugForQa = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!slugForQa) {
+          alert("No slug available for QA Fix Loop.");
+          return;
+        }
+        qaGateSlugEl.textContent = slugForQa;
+        qaGateReportBefore.textContent = "Running QA fix loop…";
+        qaGateFixes.textContent = "—";
+        qaGateDiff.textContent = "—";
+        qaGateReportAfter.textContent = "—";
+        renderIterations([]);
+        qaGatePayload = null;
+        qaCleanFragmentHtml = "";
+        if (qaGateApply) qaGateApply.disabled = true;
+        if (qaGateLoopStatus) qaGateLoopStatus.textContent = "Running...";
+        setQAGateModalOpen(true);
+
+        try {
+          const finalHtml = getPreviewFinalHtml();
+          if (!finalHtml) {
+            qaGateReportBefore.textContent = "QA Fix Loop failed: preview finalHtml is empty/unavailable.";
+            return;
+          }
+          const res = await fetch("/api/qa-gate/fix-loop", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              slug: slugForQa,
+              finalHtml,
+              previewHtml: finalHtml,
+              maxIterations: Number(maxIterations || 10),
+            }),
+          });
+          const data = await res.json().catch(() => null);
+          if (!res.ok || !data?.ok) {
+            qaGateReportBefore.textContent = data?.error || "QA Fix Loop failed.";
+            if (qaGateLoopStatus) qaGateLoopStatus.textContent = "Failed.";
+            return;
+          }
+          qaGatePayload = data;
+          if (data.currentHtml != null) data.originalHtmlSnapshot = data.currentHtml;
+
+          if (qaGateLoopStatus) {
+            const iter = Number(data.iterationsCount || (Array.isArray(data.iterations) ? data.iterations.length : 0));
+            const remain = Number(data.remainingIssues || 0);
+            const suffix = data.hitLimit && remain > 0 ? " (limit reached)" : "";
+            qaGateLoopStatus.textContent = "Iterations: " + iter + " | Remaining issues: " + remain + suffix;
+          }
+          renderIterations(data.iterations || []);
+
+          if (qaGateRemaining) {
+            const err = data.remainingErrors ?? (data.reportAfter?.summary?.error ?? 0);
+            const warn = data.reportAfter?.summary?.warn ?? 0;
+            const info = data.reportAfter?.summary?.info ?? 0;
+            const total = (data.reportAfter?.issues || []).length;
+            qaGateRemaining.textContent = "Remaining issues after fix loop: " + total + " (errors: " + err + ", warnings: " + warn + ", info: " + info + ")";
+            qaGateRemaining.classList.remove("hidden");
+            if (err > 0) qaGateRemaining.classList.add("text-red-600"); else qaGateRemaining.classList.remove("text-red-600");
+          }
+          qaGateReportBefore.textContent = formatReport(data.reportBefore, true);
+          qaGateFixes.textContent = Array.isArray(data.appliedFixes) && data.appliedFixes.length
+            ? data.appliedFixes
+                .map((f) => f.issueId + " – " + (f.action || "") + "\\n  before: " + (f.beforeSnippet || "").slice(0, 50) + "\\n  after: " + (f.afterSnippet || "").slice(0, 50))
+                .join("\\n\\n")
+            : "No auto-fixes applied.";
+          qaGateDiff.textContent = data.diff || "—";
+          qaGateReportAfter.textContent = formatReport(data.reportAfter, true);
+          if (qaGateApply) qaGateApply.disabled = !!data.blockApply;
+
+          // Persist and render best fragment in preview state immediately.
+          if (data.fixedHtml) {
+            let persisted = false;
+            if (!data.blockApply && data.slug && data.sourceStage) {
+              const saveRes = await fetch("/api/qa-gate/apply", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ slug: data.slug, fixedHtml: data.fixedHtml, sourceStage: data.sourceStage }),
+              }).catch(() => null);
+              persisted = Boolean(saveRes && saveRes.ok);
+            }
+            const fixCount = Array.isArray(data.appliedFixes) ? data.appliedFixes.length : 0;
+            if (qaGateLoopStatus) {
+              let status = qaGateLoopStatus.textContent || "";
+              if (fixCount > 0) status += " | " + fixCount + " fix(es) applied.";
+              status += persisted
+                ? " Saved. Use Open preview (or refresh manually) to view updated stage output."
+                : ' Could not persist automatically - use "Copy Preview HTML" to copy the updated code.';
+              qaGateLoopStatus.textContent = status;
+            }
+            if (persisted && data.slug && data.sourceStage) {
+              setStageActive(data.sourceStage, true);
+              const nextPreviewUrl =
+                "/preview/" +
+                encodeURIComponent(data.slug) +
+                "?stage=" +
+                encodeURIComponent(data.sourceStage);
+              setPreviewUrl(nextPreviewUrl);
+            }
+          }
+        } catch (err) {
+          qaGateReportBefore.textContent = "Error: " + String(err?.message || err);
+          if (qaGateLoopStatus) qaGateLoopStatus.textContent = "Error.";
+        }
+      }
+
+      if (qaGateRunLoop) {
+        qaGateRunLoop.addEventListener("click", () => runQAFixLoop(10));
+      }
+
+      if (qaFixRootWidthBtn) {
+        qaFixRootWidthBtn.addEventListener("click", async () => {
+          const currentHtml = getPreviewFinalHtml();
+          if (!currentHtml) {
+            if (qaGateLoopStatus) qaGateLoopStatus.textContent = "Root width check completed. Preview HTML unavailable.";
+            return;
+          }
+          const out = normalizeRootFixedWidthHtml(currentHtml);
+          const fixedHtml = String((out && out.html) || currentHtml || "");
+          const slugForQa = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+          const sourceStage = resolveSourceStageForApply();
+          let persisted = false;
+          if (slugForQa) {
+            const saveRes = await fetch("/api/qa-gate/apply", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ slug: slugForQa, fixedHtml, sourceStage }),
+            }).catch(() => null);
+            persisted = Boolean(saveRes && saveRes.ok);
+          }
+          if (qaGateLoopStatus) {
+            if (persisted) {
+              qaGateLoopStatus.textContent = out.changed
+                ? "Root width fix applied and saved. Use Open preview (or refresh manually) to view changes."
+                : "Root width check completed (no conflicts found). Stage saved unchanged.";
+            } else {
+              qaGateLoopStatus.textContent = out.changed
+                ? "Root width fix found changes but could not be saved automatically."
+                : "Root width check completed (no conflicts found).";
+            }
+          }
+          if (persisted && slugForQa) {
+            setStageActive(sourceStage, true);
+            const nextPreviewUrl =
+              "/preview/" +
+              encodeURIComponent(slugForQa) +
+              "?stage=" +
+              encodeURIComponent(sourceStage);
+            setPreviewUrl(nextPreviewUrl);
+          }
+        });
+      }
+
+      async function prepareCleanFragment() {
+        const slugForQa = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!slugForQa) return null;
+        const finalHtml = getPreviewFinalHtml();
+        if (!finalHtml) {
+          alert("Clean fragment failed: preview finalHtml is empty/unavailable.");
+          return null;
+        }
+        const res = await fetch("/api/qa-gate/clean-fragment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ slug: slugForQa, finalHtml }),
+        });
+        const data = await res.json().catch(() => null);
+        if (!res.ok || !data?.ok || !data.cleanedHtml) {
+          throw new Error(data?.error || "Clean fragment export failed.");
+        }
+        qaCleanFragmentHtml = String(data.cleanedHtml || "");
+        return { slugForQa, html: qaCleanFragmentHtml };
+      }
+
+      if (qaCleanFragmentBtn) {
+        qaCleanFragmentBtn.addEventListener("click", async () => {
+          try {
+            setQAGateModalOpen(true);
+            if (qaGateLoopStatus) qaGateLoopStatus.textContent = "Preparing clean fragment...";
+            const prepared = await prepareCleanFragment();
+            if (!prepared) return;
+            if (qaGateLoopStatus) qaGateLoopStatus.textContent = "Clean fragment ready. Use copy/eject actions.";
+          } catch (err) {
+            alert(String(err?.message || err));
+          }
+        });
+      }
+
+      if (qaGateClose) qaGateClose.addEventListener("click", () => setQAGateModalOpen(false));
+      if (qaGateCloseFooter) qaGateCloseFooter.addEventListener("click", () => setQAGateModalOpen(false));
+      if (qaGateBackdrop) {
+        qaGateBackdrop.addEventListener("click", (e) => {
+          if (e.target === qaGateBackdrop) setQAGateModalOpen(false);
+        });
+      }
+
+      if (qaGateEject) {
+        qaGateEject.addEventListener("click", async () => {
+          const p = qaGatePayload;
+          if (!p?.fixedHtml || !p?.slug || !p?.sourceStage) return;
+          try {
+            const res = await fetch("/api/qa-gate/apply", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ slug: p.slug, fixedHtml: p.fixedHtml, sourceStage: p.sourceStage }),
+            });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.ok) {
+              setStageActive(p.sourceStage, true);
+              const nextPreviewUrl =
+                "/preview/" +
+                encodeURIComponent(p.slug) +
+                "?stage=" +
+                encodeURIComponent(p.sourceStage);
+              setPreviewUrl(nextPreviewUrl);
+              applyFixedHtmlToIframe(p.fixedHtml);
+              setQAGateModalOpen(false);
+            } else {
+              alert(data?.error || "Open preview failed.");
+            }
+          } catch (err) {
+            alert(String(err?.message || err));
+          }
+        });
+      }
+
+      if (qaGateEjectClean) {
+        qaGateEjectClean.addEventListener("click", async () => {
+          try {
+            qaGateEjectClean.disabled = true;
+            qaGateEjectClean.textContent = "Preparing...";
+            const prepared = qaCleanFragmentHtml
+              ? { slugForQa: String(window.__CURRENT_PREVIEW_SLUG__ || slug || "fragment").trim() || "fragment", html: qaCleanFragmentHtml }
+              : await prepareCleanFragment();
+            if (!prepared) return;
+
+            const a = document.createElement("a");
+            const htmlBlob = new Blob([String(prepared.html || "")], { type: "text/html" });
+            a.href = URL.createObjectURL(htmlBlob);
+            a.download = String(prepared.slugForQa || "fragment") + ".clean.html";
+            a.click();
+            URL.revokeObjectURL(a.href);
+          } catch (err) {
+            alert(String(err?.message || err));
+          } finally {
+            qaGateEjectClean.disabled = false;
+            qaGateEjectClean.textContent = "Eject clean fragment";
+          }
+        });
+      }
+
+      if (qaGateCopyPreviewHtml) {
+        qaGateCopyPreviewHtml.addEventListener("click", async () => {
+          const html = String(getPreviewFinalHtml() || (qaGatePayload && qaGatePayload.fixedHtml) || "");
+          if (!html) return;
+          try {
+            await navigator.clipboard.writeText(html);
+            qaGateCopyPreviewHtml.textContent = "Copied";
+            setTimeout(() => {
+              qaGateCopyPreviewHtml.textContent = "Copy Preview HTML";
+            }, 1200);
+          } catch (_) {
+            alert("Copy failed.");
+          }
+        });
+      }
+
+      if (qaGateCopyCleanHtml) {
+        qaGateCopyCleanHtml.addEventListener("click", async () => {
+          try {
+            if (!qaCleanFragmentHtml) {
+              await prepareCleanFragment();
+            }
+            if (!qaCleanFragmentHtml) return;
+            await navigator.clipboard.writeText(qaCleanFragmentHtml);
+            qaGateCopyCleanHtml.textContent = "Copied";
+            setTimeout(() => {
+              qaGateCopyCleanHtml.textContent = "Copy Clean Fragment";
+            }, 1200);
+          } catch (err) {
+            alert(String(err?.message || err));
+          }
+        });
+      }
+
+      if (qaGateBack) {
+        qaGateBack.addEventListener("click", () => {
+          setQAGateModalOpen(false);
+          const next = location.pathname + "?stage=improve" + (location.hash || "");
+          location.href = next;
+        });
+      }
+
+      if (qaGateApply) {
+        qaGateApply.addEventListener("click", async function applyHandler() {
+          const p = qaGatePayload;
+          if (p?.blockApply) {
+            alert("QA apply is blocked: QA_INPUT_MISMATCH (fatal). Re-open QA Gate once preview and audit input are aligned.");
+            return;
+          }
+          if (!p?.fixedHtml || !p?.slug || !p?.sourceStage) return;
+          try {
+            const res = await fetch("/api/qa-gate/apply", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ slug: p.slug, fixedHtml: p.fixedHtml, sourceStage: p.sourceStage }),
+            });
+            const data = await res.json().catch(() => null);
+            if (res.ok && data?.ok) {
+              applyFixedHtmlToIframe(p.fixedHtml);
+              setStageActive(p.sourceStage, true);
+              const nextPreviewUrl =
+                "/preview/" +
+                encodeURIComponent(p.slug) +
+                "?stage=" +
+                encodeURIComponent(p.sourceStage);
+              setPreviewUrl(nextPreviewUrl);
+              if (qaGateLoopStatus) {
+                qaGateLoopStatus.textContent = "Fixes applied. Click Open preview to reload this stage with overlay.";
+              }
+            } else {
+              alert(data?.error || "Apply failed.");
+            }
+          } catch (err) {
+            alert(String(err?.message || err));
+          }
+        });
+      }
+
+      if (qaGateExport) {
+        qaGateExport.addEventListener("click", () => {
+          const p = qaGatePayload;
+          if (!p) return;
+          const report = {
+            reportBefore: p.reportBefore,
+            reportAfter: p.reportAfter,
+            appliedFixes: p.appliedFixes,
+          };
+          const jsonBlob = new Blob([JSON.stringify(report, null, 2)], { type: "application/json" });
+          const textLines = [
+            "QA Gate Report",
+            "Slug: " + (p.slug || "—"),
+            "Source stage: " + (p.sourceStage || "—"),
+            "",
+            "=== Audit (before) ===",
+            formatReport(p.reportBefore, true),
+            "",
+            "=== Applied fixes ===",
+            Array.isArray(p.appliedFixes) ? p.appliedFixes.map((f) => f.issueId + " " + (f.action || "")).join("\\n") : "—",
+            "",
+            "=== Audit (after) ===",
+            formatReport(p.reportAfter, true),
+            "",
+            "=== Diff (excerpt) ===",
+            p.diff || "—",
+          ];
+          const textBlob = new Blob([textLines.join("\\n")], { type: "text/plain" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(jsonBlob);
+          a.download = "qa-report.json";
+          a.click();
+          URL.revokeObjectURL(a.href);
+          a.href = URL.createObjectURL(textBlob);
+          a.download = "qa-report.txt";
+          a.click();
+          URL.revokeObjectURL(a.href);
         });
       }
     })();
@@ -1424,7 +2060,7 @@ ${css}
         ? String(qs.get("stage") || "generate").toLowerCase()
         : "generate";
 
-      const slug = String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+      const slug = String(window.__CURRENT_PREVIEW_SLUG__ || (document.body && document.body.getAttribute("data-preview-slug")) || "").trim();
       if (!slug) return;
 
       const selectBtn = document.getElementById("editor_select");
@@ -1987,7 +2623,7 @@ ${css}
       const qs = new URLSearchParams(location.search);
       const ovForcedOff = qs.get('ov') === '0';
 
-      const getSlug = () => String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+      const getSlug = () => String(window.__CURRENT_PREVIEW_SLUG__ || (document.body && document.body.getAttribute("data-preview-slug")) || "").trim();
 
       const cmp = document.getElementById('cmp_root');
       const img = document.getElementById('ov_img');
@@ -2229,7 +2865,7 @@ ${css}
       const qs = new URLSearchParams(location.search);
       const qsType = String(qs.get('type') || '').trim();
 
-      const getSlug = () => String(window.__CURRENT_PREVIEW_SLUG__ || ${JSON.stringify(slug)} || "").trim();
+      const getSlug = () => String(window.__CURRENT_PREVIEW_SLUG__ || (document.body && document.body.getAttribute("data-preview-slug")) || "").trim();
 
       let componentsRoot = "";
 
@@ -2489,5 +3125,13 @@ function escapeAttr(s) {
     .replace(/"/g, "&quot;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
+}
+
+/** Safe for embedding in inline <script> inside a template literal: avoids </script>, `, and ${. */
+function safeScriptString(value) {
+  return JSON.stringify(String(value ?? ""))
+    .replace(/<\//g, "<\\/")
+    .replace(/`/g, "\\`")
+    .replace(/\$/g, "\\$");
 }
 

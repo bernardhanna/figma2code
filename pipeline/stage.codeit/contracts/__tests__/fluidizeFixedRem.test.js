@@ -91,7 +91,8 @@ test("card inner wrapper with w-[30.25rem] max-w-full becomes w-full", () => {
   `;
   const out = apply({ html, artifact: {}, options: {} });
   const cls = getClass(out.html, "inner");
+  const tokens = cls.split(/\s+/).filter(Boolean);
   assert.ok(cls.includes("w-full"));
-  assert.ok(!cls.includes("w-[30.25rem]"));
+  assert.ok(!tokens.includes("w-[30.25rem]"), "width token removed (max-w-[30.25rem] may remain)");
   assert.ok(cls.includes("max-w-[30.25rem]"));
 });

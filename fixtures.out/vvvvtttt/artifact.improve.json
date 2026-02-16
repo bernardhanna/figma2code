@@ -1,0 +1,4377 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "vvvvtttt",
+  "stage": "improve",
+  "createdAt": "2026-02-16T09:35:55.981Z",
+  "html": "<section class=\"flex relative max-md:overflow-visible overflow-hidden\">\n<div class=\"w-full max-w-[80rem] mx-auto\">\n<section data-node-id=\"I483:18562;411:10950\" data-node=\"I483:18562;411:10950\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"80rem\" class=\"flex flex-col md:justify-start md:items-start gap-[3rem] pt-[2.5rem] md:pt-[5rem] pb-[2.5rem] md:pb-[5rem] pr-[5rem] pl-[5rem] max-xl:px-5 w-full\" data-key=\"root\"><div data-node-id=\"I483:18562;411:10951;127:2091\" data-node=\"I483:18562;411:10951;127:2091\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"70rem\" class=\"flex flex-col md:justify-start md:items-start gap-[1.5rem] self-start w-full\" data-key=\"instance:h2#1/frame:h2#1\" data-merged-from=\"data-node-id=I483:18562;411:10951;data-node=I483:18562;411:10951;data-w-intent=hug;data-h-intent=hug;data-w-rem=70rem;data-key=instance:h2#1\"><h2 data-node-id=\"I483:18562;411:10951;126:1676\" data-node=\"I483:18562;411:10951;126:1676\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"70rem\" data-ff=\"Playfair\" class=\"break-words text-left text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-['Playfair'] w-full max-w-[70rem]\" data-key=\"instance:h2#1/frame:h2#1/text:we-take-care-of-it-all#1\">We take care of it all</h2>\n<div data-node-id=\"I483:18562;411:10951;126:1677\" data-node=\"I483:18562;411:10951;126:1677\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"4.4375rem\" data-decorative=\"1\" class=\"flex flex-row justify-between items-start h-[0.3125rem] self-start w-full max-w-[4.4375rem]\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1\"><div data-node-id=\"I483:18562;411:10951;126:1677;7543:2626\" data-node=\"I483:18562;411:10951;126:1677;7543:2626\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#ef7b10] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-4#1\"></div>\n<div data-node-id=\"I483:18562;411:10951;126:1677;7543:2622\" data-node=\"I483:18562;411:10951;126:1677;7543:2622\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#0098d8] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-1#1\"></div>\n<div data-node-id=\"I483:18562;411:10951;126:1677;7543:2624\" data-node=\"I483:18562;411:10951;126:1677;7543:2624\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#b6c0cb] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-2#1\"></div>\n<div data-node-id=\"I483:18562;411:10951;126:1677;7543:2625\" data-node=\"I483:18562;411:10951;126:1677;7543:2625\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#74af27] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-3#1\"></div></div></div>\n<p data-node-id=\"I483:18562;411:10952\" data-node=\"I483:18562;411:10952\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"70rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[1rem] font-[400] leading-[1.625rem] text-[#000000] font-['Montserrat'] w-full max-w-[70rem]\" data-key=\"text:we-offer-a-comprehensive-property-letting-and-managing-servi#1\">We offer a comprehensive Property Letting and Managing service relieving the commitment of being a full-time landlord. We cover all areas of Dublin and our properties range from City Centre Apartments to Family homes and many Country houses. As Letting and Management specialists we have carefully put together different fee options to suit different budgets and the requirements of our clients.</p>\n<div data-node-id=\"I483:18562;411:10953\" data-node=\"I483:18562;411:10953\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"70rem\" class=\"flex flex-col md:justify-start md:items-start gap-[1.5rem] self-start w-full\" data-key=\"frame:frame-1895#1\"><div data-node-id=\"I483:18562;411:10954\" data-node=\"I483:18562;411:10954\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"70rem\" class=\"md:justify-start md:items-start self-start w-full max-w-[70rem] grid grid-cols-1 md:grid-cols-2 gap-[1.5rem]\" data-key=\"frame:frame-1895#1/frame:points#1\"><button data-node-id=\"I483:18562;411:10955\" data-node=\"I483:18562;411:10955\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"34.25rem\" class=\"flex flex-col md:justify-start justify-center gap-[1rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#ededed] bg-center btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 hover:bg-[#d9f1fc] h-auto items-center\" data-key=\"frame:frame-1895#1/frame:points#1/instance:1#1\" type=\"button\"><span data-node-id=\"I483:18562;411:10955;400:8382\" data-node=\"I483:18562;411:10955;400:8382\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"30.25rem\" class=\"flex flex-col md:justify-center md:items-center gap-[0.75rem] w-full max-w-[30.25rem]\"><span data-node-id=\"I483:18562;411:10955;400:8383\" data-node=\"I483:18562;411:10955;400:8383\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"20rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center w-full max-w-[20rem]\"><span data-node-id=\"I483:18562;411:10955;400:8384\" data-node=\"I483:18562;411:10955;400:8384\" data-w-rem=\"20rem\" data-ff=\"Playfair\" class=\"break-words text-center text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] font-['Playfair']\">We can refurbish and dress your property for market</span></span>\n<span data-node-id=\"I483:18562;411:10955;405:8535\" data-node=\"I483:18562;411:10955;405:8535\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"6.25rem\" class=\"h-auto w-full max-w-[6.25rem] h-[10px] bg-[rgba(0,152,216,1)]\"></span></span></button>\n<button data-node-id=\"I483:18562;411:10956\" data-node=\"I483:18562;411:10956\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"34.25rem\" class=\"flex flex-col md:justify-start justify-center gap-[1rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#ededed] bg-center btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 hover:bg-[#e0f4c5] h-auto items-center\" data-key=\"frame:frame-1895#1/frame:points#1/instance:we-take-care-box2#1\" type=\"button\"><span data-node-id=\"I483:18562;411:10956;406:8550\" data-node=\"I483:18562;411:10956;406:8550\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"30.25rem\" class=\"flex flex-col md:justify-center md:items-center gap-[0.75rem] w-full max-w-[30.25rem]\"><span data-node-id=\"I483:18562;411:10956;406:8551\" data-node=\"I483:18562;411:10956;406:8551\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"20rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center w-full max-w-[20rem]\"><span data-node-id=\"I483:18562;411:10956;406:8552\" data-node=\"I483:18562;411:10956;406:8552\" data-w-rem=\"22.875rem\" data-ff=\"Playfair\" class=\"w-[22.875rem] whitespace-pre-wrap break-words text-center text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] font-['Playfair']\">Full management service \nas if it was your own</span></span>\n<span data-node-id=\"I483:18562;411:10956;406:8553\" data-node=\"I483:18562;411:10956;406:8553\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"6.25rem\" class=\"h-auto w-full max-w-[6.25rem] h-[10px] bg-[rgba(116,175,39,1)]\"></span></span></button></div>\n<div data-node-id=\"I483:18562;411:10957\" data-node=\"I483:18562;411:10957\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"70rem\" class=\"flex flex-col md:flex-row md:justify-start md:items-start gap-[1.5rem] md:flex-wrap self-start w-full max-w-[70rem]\" data-key=\"frame:frame-1895#1/frame:points#2\"><button data-node-id=\"I483:18562;411:11098\" data-node=\"I483:18562;411:11098\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"22.333313rem\" class=\"flex flex-col md:justify-start justify-center gap-[1rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#ededed] bg-center btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 hover:bg-[#ffe5cc] grow basis-0 min-w-0 self-center h-auto items-center\" data-key=\"frame:frame-1895#1/frame:points#2/instance:3#1\" type=\"button\"><span data-node-id=\"I483:18562;411:11098;406:8580\" data-node=\"I483:18562;411:11098;406:8580\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"18.333313rem\" class=\"flex flex-col md:justify-center md:items-center gap-[0.75rem] w-full max-w-[18.333313rem]\"><span data-node-id=\"I483:18562;411:11098;406:8581\" data-node=\"I483:18562;411:11098;406:8581\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"20rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center w-full\"><span data-node-id=\"I483:18562;411:11098;406:8582\" data-node=\"I483:18562;411:11098;406:8582\" data-w-rem=\"20rem\" data-ff=\"Playfair\" class=\"break-words text-center text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] font-['Playfair']\">Detailed and comprehensive marketing process for your property</span></span>\n<span data-node-id=\"I483:18562;411:11098;406:8583\" data-node=\"I483:18562;411:11098;406:8583\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"6.25rem\" class=\"h-auto w-full max-w-[6.25rem] h-[10px] bg-[rgba(239,123,16,1)]\"></span></span></button>\n<button data-node-id=\"I483:18562;411:10958\" data-node=\"I483:18562;411:10958\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"22.333313rem\" class=\"flex flex-col md:justify-start justify-center gap-[1rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#ededed] bg-center btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 hover:bg-[#e0e0e0] grow basis-0 min-w-0 self-center h-auto items-center\" data-key=\"frame:frame-1895#1/frame:points#2/instance:4#1\" type=\"button\"><span data-node-id=\"I483:18562;411:10958;406:8610\" data-node=\"I483:18562;411:10958;406:8610\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"18.333313rem\" class=\"flex flex-col md:justify-center md:items-center gap-[0.75rem] w-full max-w-[18.333313rem]\"><span data-node-id=\"I483:18562;411:10958;406:8611\" data-node=\"I483:18562;411:10958;406:8611\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"20rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center w-full\"><span data-node-id=\"I483:18562;411:10958;406:8612\" data-node=\"I483:18562;411:10958;406:8612\" data-w-rem=\"20rem\" data-ff=\"Playfair\" class=\"break-words text-center text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] font-['Playfair']\">Prospective buyers thoroughly vetted</span></span>\n<span data-node-id=\"I483:18562;411:10958;406:8613\" data-node=\"I483:18562;411:10958;406:8613\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"6.25rem\" class=\"h-auto w-full max-w-[6.25rem] h-[10px] bg-[rgba(182,192,203,1)]\"></span></span></button>\n<button data-node-id=\"I483:18562;411:10959\" data-node=\"I483:18562;411:10959\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"22.333313rem\" class=\"flex flex-col md:justify-start justify-center gap-[1rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#ededed] bg-center btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 px-8 hover:bg-[#d4d4d4] grow basis-0 min-w-0 self-center h-auto items-center\" data-key=\"frame:frame-1895#1/frame:points#2/instance:5#1\" type=\"button\"><span data-node-id=\"I483:18562;411:10959;573:30889\" data-node=\"I483:18562;411:10959;573:30889\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"18.333313rem\" class=\"flex flex-col md:justify-center md:items-center gap-[0.75rem] w-full max-w-[18.333313rem]\"><span data-node-id=\"I483:18562;411:10959;573:30890\" data-node=\"I483:18562;411:10959;573:30890\" data-w-intent=\"fixed\" data-h-intent=\"hug\" data-w-rem=\"20rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center w-full\"><span data-node-id=\"I483:18562;411:10959;573:30891\" data-node=\"I483:18562;411:10959;573:30891\" data-w-rem=\"20rem\" data-ff=\"Playfair\" class=\"break-words text-center text-[1.5rem] font-[600] leading-[1.625rem] tracking-[-0.01rem] font-['Playfair']\">Our average sale completion time is just 8 weeks</span></span>\n<span data-node-id=\"I483:18562;411:10959;573:30892\" data-node=\"I483:18562;411:10959;573:30892\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"6.25rem\" class=\"h-auto w-full max-w-[6.25rem] h-[10px] bg-[rgba(10,17,25,1)]\"></span></span></button></div></div></section></div>\n\n</section>\n  \n  \n  <script>\n    (function(){\n      function getImpl(){\n        return window.NiceSelect || window.NiceSelect2 || window.niceSelect || window.niceSelect2 || null;\n      }\n      function collectTargets(){\n        const nodes = Array.prototype.slice.call(\n          document.querySelectorAll('[data-widget=\"nice-select\"]')\n        );\n        return nodes.filter((el) => el && el.dataset && el.dataset.niceSelectReady !== \"1\");\n      }\n      function markReady(el){\n        try { el.dataset.niceSelectReady = \"1\"; } catch {}\n      }\n      function applyFallback(el){\n        if (!el || el.dataset.niceSelectReady === \"1\") return;\n        const options = Array.prototype.slice.call(el.options || []);\n        if (!options.length) return;\n\n        const wrapper = document.createElement('div');\n        const cls = String(el.className || '').trim();\n        wrapper.className = ['nice-select', cls].filter(Boolean).join(' ');\n        wrapper.tabIndex = 0;\n\n        const current = document.createElement('span');\n        current.className = 'current';\n        const selected = options.find((o) => o && o.selected) || options[0];\n        current.textContent = selected ? String(selected.text || selected.label || '') : '';\n\n        const list = document.createElement('ul');\n        list.className = 'list';\n\n        options.forEach((opt) => {\n          const li = document.createElement('li');\n          li.className = [\n            'option',\n            opt.disabled ? 'disabled' : '',\n            opt.selected ? 'selected' : '',\n          ].filter(Boolean).join(' ');\n          li.dataset.value = String(opt.value ?? '');\n          li.textContent = String(opt.text || opt.label || '');\n          li.addEventListener('click', (e) => {\n            e.stopPropagation();\n            if (opt.disabled) return;\n            options.forEach((o) => { o.selected = false; });\n            opt.selected = true;\n            el.value = opt.value;\n            current.textContent = String(opt.text || opt.label || '');\n            Array.prototype.forEach.call(list.querySelectorAll('.option'), (n) => {\n              n.classList.toggle('selected', n === li);\n            });\n            wrapper.classList.remove('open');\n            el.dispatchEvent(new Event('change', { bubbles: true }));\n          });\n          list.appendChild(li);\n        });\n\n        wrapper.addEventListener('click', (e) => {\n          e.stopPropagation();\n          wrapper.classList.toggle('open');\n        });\n\n        el.addEventListener('change', () => {\n          const opt = options.find((o) => o && o.value === el.value) || options[0];\n          if (opt) current.textContent = String(opt.text || opt.label || '');\n        });\n\n        wrapper.appendChild(current);\n        wrapper.appendChild(list);\n\n        el.style.display = 'none';\n        el.parentNode && el.parentNode.insertBefore(wrapper, el.nextSibling);\n        markReady(el);\n\n        if (!document.documentElement.__niceSelectFallbackBound) {\n          document.documentElement.__niceSelectFallbackBound = true;\n          document.addEventListener('click', () => {\n            Array.prototype.forEach.call(document.querySelectorAll('.nice-select.open'), (n) => {\n              n.classList.remove('open');\n            });\n          });\n        }\n      }\n      function applyFallbackAll(){\n        const els = collectTargets();\n        if (!els.length) return;\n        els.forEach(applyFallback);\n      }\n      function bindAll(impl, els){\n        if (!impl || !els || !els.length) return;\n        try {\n          if (typeof impl.bind === 'function') {\n            let ok = false;\n            for (const el of els) {\n              try { impl.bind(el); markReady(el); ok = true; } catch {}\n            }\n            if (!ok) {\n              try { impl.bind(els); els.forEach(markReady); } catch {}\n            }\n            return;\n          }\n          if (typeof impl === 'function') {\n            els.forEach((el) => {\n              try { new impl(el); markReady(el); } catch { try { impl(el); markReady(el); } catch {} }\n            });\n          }\n        } catch {\n          // graceful fallback\n        }\n      }\n      function init(){\n        const els = collectTargets();\n        if (!els.length) return;\n        const impl = getImpl();\n        if (!impl) return;\n        bindAll(impl, els);\n      }\n      function loadAndInit(){\n        if (getImpl()) { init(); return; }\n        const sources = [\"https://cdn.jsdelivr.net/npm/nice-select2@2.3.0/dist/js/nice-select2.js\", \"https://unpkg.com/nice-select2@2.3.0/dist/js/nice-select2.js\"].filter(Boolean);\n        let i = 0;\n        function loadNext(){\n          if (i >= sources.length) { applyFallbackAll(); return; }\n          const s = document.createElement('script');\n          s.src = sources[i++];\n          s.onload = () => init();\n          s.onerror = () => loadNext();\n          document.head.appendChild(s);\n        }\n        loadNext();\n      }\n      if (document.readyState === 'loading') {\n        document.addEventListener('DOMContentLoaded', loadAndInit);\n      } else {\n        loadAndInit();\n      }\n    })();\n  </script>\n  \n  \n  <script>\n    (function(){\n      const markers = [\"data-bg-type\", \"data-fill-type\", \"data-media\"];\n      function isVideoLike(el){\n        if (!el) return false;\n        for (const key of markers) {\n          const v = String(el.getAttribute(key) || \"\").trim().toLowerCase();\n          if (v === \"video\") return true;\n        }\n        return false;\n      }\n      function ensureRelative(el){\n        if (!el.classList.contains(\"relative\")) el.classList.add(\"relative\");\n      }\n      function stripBackgroundImage(el){\n        const style = String(el.getAttribute(\"style\") || \"\");\n        if (!style) return;\n        const cleaned = style\n          .replace(/\\s*background-image\\s*:\\s*[^;]+;?/gi, \"\")\n          .replace(/\\s*background-size\\s*:\\s*[^;]+;?/gi, \"\")\n          .replace(/\\s*background-position\\s*:\\s*[^;]+;?/gi, \"\")\n          .replace(/\\s*background-repeat\\s*:\\s*[^;]+;?/gi, \"\")\n          .trim()\n          .replace(/;\\s*;+/g, \";\")\n          .replace(/^\\s*;\\s*|\\s*;\\s*$/g, \"\");\n        if (!cleaned) el.removeAttribute(\"style\");\n        else el.setAttribute(\"style\", cleaned);\n      }\n      function alreadyInjected(el){\n        if (el.dataset && el.dataset.videoPreviewReady === \"1\") return true;\n        const first = el.firstElementChild;\n        return !!(first && (first.tagName === \"VIDEO\" || (first.classList && first.classList.contains(\"absolute\"))));\n      }\n      function buildMedia(el){\n        const videoUrl = String(el.getAttribute(\"data-video-url\") || el.getAttribute(\"data-src\") || \"\").trim();\n        const posterUrl = String(el.getAttribute(\"data-poster-url\") || \"\").trim();\n        if (videoUrl) {\n          const v = document.createElement(\"video\");\n          v.setAttribute(\"autoplay\", \"\");\n          v.setAttribute(\"muted\", \"\");\n          v.setAttribute(\"loop\", \"\");\n          v.setAttribute(\"playsinline\", \"\");\n          v.className = \"absolute inset-0 w-full h-full object-cover\";\n          v.src = videoUrl;\n          if (posterUrl) v.setAttribute(\"poster\", posterUrl);\n          return v;\n        }\n        if (posterUrl) {\n          const d = document.createElement(\"div\");\n          d.className = \"absolute inset-0 w-full h-full bg-cover bg-center bg-no-repeat\";\n          d.style.backgroundImage = \"url('\" + posterUrl.replace(/'/g, \"&#39;\") + \"')\";\n          return d;\n        }\n        const d = document.createElement(\"div\");\n        d.className = \"absolute inset-0 w-full h-full bg-[#1a1a1a]\";\n        return d;\n      }\n      function inject(el){\n        if (!isVideoLike(el) || alreadyInjected(el)) return;\n        ensureRelative(el);\n        stripBackgroundImage(el);\n        const media = buildMedia(el);\n        const wrapper = document.createElement(\"div\");\n        wrapper.className = \"relative z-10\";\n        while (el.firstChild) {\n          wrapper.appendChild(el.firstChild);\n        }\n        el.appendChild(media);\n        el.appendChild(wrapper);\n        try { el.dataset.videoPreviewReady = \"1\"; } catch {}\n      }\n      function init(){\n        const nodes = Array.prototype.slice.call(document.querySelectorAll(\"[data-bg-type],[data-fill-type],[data-media]\"));\n        nodes.forEach(inject);\n      }\n      if (document.readyState === \"loading\") {\n        document.addEventListener(\"DOMContentLoaded\", init);\n      } else {\n        init();\n      }\n    })();\n  </script>\n  \n  \n  <script>\n    (function(){\n      function markReady(){\n        try {\n          document.documentElement.classList.remove(\"tw-loading\");\n          document.documentElement.classList.add(\"tw-ready\");\n        } catch {}\n        window.__TAILWIND_READY__ = true;\n        try {\n          if (window.parent && window.parent !== window) {\n            window.parent.__TAILWIND_IFRAME_READY__ = true;\n          }\n        } catch {}\n        try { document.dispatchEvent(new Event(\"tailwind:ready\")); } catch {}\n      }\n      try { document.documentElement.classList.add(\"tw-loading\"); } catch {}\n      var html = (document.body && document.body.innerHTML)\n        ? document.body.innerHTML\n        : document.documentElement.outerHTML;\n      window.tailwind = window.tailwind || {};\n      window.tailwind.config = {\n        content: [{ raw: html, extension: \"html\" }]\n      };\n      var s = document.createElement(\"script\");\n      s.src = \"https://cdn.tailwindcss.com\";\n      s.async = true;\n      s.onload = function(){\n        var start = Date.now();\n        (function waitCss(){\n          if (document.querySelector(\"style#tailwindcss\") ||\n              document.querySelector(\"style[data-tw]\") ||\n              document.querySelector(\"style[data-tailwind]\")) {\n            markReady();\n            return;\n          }\n          if (Date.now() - start > 2000) {\n            markReady();\n            return;\n          }\n          setTimeout(waitCss, 16);\n        })();\n      };\n      s.onerror = function(){ markReady(); };\n      document.head.appendChild(s);\n      setTimeout(function(){\n        if (!window.__TAILWIND_READY__) markReady();\n      }, 2500);\n    })();\n  </script>",
+  "patches": [],
+  "assets": {
+    "images": {
+      "overlay": "/assets/section_solutions-mlozb28a.png"
+    }
+  },
+  "diagnostics": {
+    "offendersCount": 56,
+    "source": "fragment",
+    "warnings": [
+      {
+        "message": "Missing node for offender div@72."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10951;126:1676: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10951;126:1677: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10952: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10954: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10955;400:8382: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10955;400:8383: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10955;405:8535: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10956;406:8550: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10956;406:8551: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10956;406:8553: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10957: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10958;406:8610: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10958;406:8613: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10959;573:30889: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:10959;573:30892: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:11098;406:8580: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18562;411:11098;406:8583: Patch has no bounded ops."
+      }
+    ],
+    "errors": [],
+    "validation": {
+      "warnings": [
+        "Found 5 conflicting Tailwind class token(s) sharing the same modifier group."
+      ],
+      "stats": {
+        "elements": 32,
+        "tokens": 299,
+        "duplicateTokens": 0,
+        "conflictTokens": 5
+      }
+    },
+    "ledger": [],
+    "contracts": {
+      "order": [
+        "layout/classes/dedupeUtilities",
+        "layout/classes/dedupeConflictsHard",
+        "layout/display/dedupeDisplay",
+        "style/inline/stripRedundantInlineStyles",
+        "layout/wrappers/mergeLayoutSignature",
+        "layout/container/addMxAuto",
+        "layout/height/removeFixedHeights",
+        "layout/height/removeArbitraryWrapperHeights",
+        "layout/height/stripWrapperFixedHeightsStrict",
+        "layout/underline/normalizeBars",
+        "layout/width/fluidizeFixedRem",
+        "layout/width/dedupeWidths",
+        "layout/width/normalizeContainerWidths",
+        "layout/width/normalizeCenteredContainers",
+        "layout/width/enforceWidthIntent",
+        "layout/width/innerWrapperFixedWidthToMax",
+        "layout/width/widthRedundancyCollapseContract",
+        "layout/text/textFixedWidthGuardContract",
+        "layout/root/removeFrameDimensions",
+        "media/fill/applyBackgroundFromFigmaFill",
+        "media/fill/preserveBackgroundContainerHeight",
+        "media/videoFillSupport",
+        "layout/section/enforceMobileVerticalPadding",
+        "layout/text/nowrapGuard",
+        "layout/text/shrinkGuard",
+        "layout/align/centerCardContent",
+        "layout/grid/upgradeToGridForMatrices",
+        "layout/layoutModel/inferGridFromRepeatingCards",
+        "layout/grid/stripFlexChildSizing",
+        "layout/wrappers/flattenRedundant",
+        "layout/cleanup/previewNormalize",
+        "semantics/landmarks/upgradeLandmarks",
+        "semantics/interactive/cardToLinkOrButton",
+        "semantics/interactive/preventNestedInteractive",
+        "semantics/interactive/upgradeDivButtons",
+        "semantics/interactive/normalizeButtonContent",
+        "semantics/buttons/normalizeButtonChildren",
+        "semantics/buttons/promoteInteractiveFrames",
+        "semantics/buttons/centerButtonLabelWhenCentered",
+        "layout/section/containerPattern",
+        "layout/section/containerNormalize"
+      ],
+      "results": [
+        {
+          "id": "layout/classes/dedupeUtilities",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2626",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2626\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2626",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2626\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2626",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2626\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2622",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2622\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2622",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2622\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2622",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2622\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2624",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2624\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2624",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2624\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2624",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2624\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2625",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2625\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2625",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2625\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10951;126:1677;7543:2625",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2625\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10955;400:8384",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8384\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10955;400:8384",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8384\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10956;406:8552",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8552\"]",
+              "op": "classRemove",
+              "value": "w-[22.875rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10956;406:8552",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8552\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:11098;406:8582",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8582\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:11098;406:8582",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8582\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10958;406:8612",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8612\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10958;406:8612",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8612\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10959;573:30891",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30891\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18562;411:10959;573:30891",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30891\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 22
+          }
+        },
+        {
+          "id": "layout/classes/dedupeConflictsHard",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/classes/dedupeConflictsHard",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "classReplace",
+              "value": "dedupe conflicts",
+              "reason": "Resolved conflicting gap/items/justify utilities"
+            },
+            {
+              "contractId": "layout/classes/dedupeConflictsHard",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "classReplace",
+              "value": "dedupe conflicts",
+              "reason": "Resolved conflicting gap/items/justify utilities"
+            },
+            {
+              "contractId": "layout/classes/dedupeConflictsHard",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "classReplace",
+              "value": "dedupe conflicts",
+              "reason": "Resolved conflicting gap/items/justify utilities"
+            },
+            {
+              "contractId": "layout/classes/dedupeConflictsHard",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "classReplace",
+              "value": "dedupe conflicts",
+              "reason": "Resolved conflicting gap/items/justify utilities"
+            },
+            {
+              "contractId": "layout/classes/dedupeConflictsHard",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "classReplace",
+              "value": "dedupe conflicts",
+              "reason": "Resolved conflicting gap/items/justify utilities"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "resolved": 5
+          }
+        },
+        {
+          "id": "layout/display/dedupeDisplay",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "section@3",
+              "selector": "",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10950",
+              "selector": "[data-node-id=\"I483:18562;411:10950\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10951",
+              "selector": "[data-node-id=\"I483:18562;411:10951\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10951;127:2091",
+              "selector": "[data-node-id=\"I483:18562;411:10951;127:2091\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10953",
+              "selector": "[data-node-id=\"I483:18562;411:10953\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "classReplace",
+              "value": "dedupe display",
+              "reason": "Resolved conflicting display classes"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "classReplace",
+              "value": "dedupe display",
+              "reason": "Resolved conflicting display classes"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "classReplace",
+              "value": "dedupe display",
+              "reason": "Resolved conflicting display classes"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "classReplace",
+              "value": "dedupe display",
+              "reason": "Resolved conflicting display classes"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "classReplace",
+              "value": "dedupe display",
+              "reason": "Resolved conflicting display classes"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "deduped": 16
+          }
+        },
+        {
+          "id": "style/inline/stripRedundantInlineStyles",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "stripped": 0
+          }
+        },
+        {
+          "id": "layout/wrappers/mergeLayoutSignature",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "merged": 0
+          }
+        },
+        {
+          "id": "layout/container/addMxAuto",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/container/addMxAuto",
+              "nodeId": "div@75",
+              "selector": "",
+              "op": "classAdd",
+              "value": "mx-auto",
+              "reason": "Container canonicalizer: w-full + max-w without mx-auto"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "added": 1
+          }
+        },
+        {
+          "id": "layout/height/removeFixedHeights",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10950",
+              "selector": "[data-node-id=\"I483:18562;411:10950\"]",
+              "op": "classRemove",
+              "value": "h-[45.5625rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10951",
+              "selector": "[data-node-id=\"I483:18562;411:10951\"]",
+              "op": "classRemove",
+              "value": "h-[4.3125rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10951;127:2091",
+              "selector": "[data-node-id=\"I483:18562;411:10951;127:2091\"]",
+              "op": "classRemove",
+              "value": "h-[4.3125rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10953",
+              "selector": "[data-node-id=\"I483:18562;411:10953\"]",
+              "op": "classRemove",
+              "value": "h-[20.375rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "op": "classRemove",
+              "value": "h-[8.625rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "op": "classRemove",
+              "value": "h-[4.625rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "op": "classRemove",
+              "value": "h-[3.25rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "op": "classRemove",
+              "value": "h-[4.625rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "op": "classRemove",
+              "value": "h-[3.25rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "op": "classRemove",
+              "value": "h-[10.25rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "op": "classRemove",
+              "value": "h-[6.25rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:11098;406:8581",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8581\"]",
+              "op": "classRemove",
+              "value": "h-[4.875rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "op": "classRemove",
+              "value": "h-[4.625rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10958;406:8611",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8611\"]",
+              "op": "classRemove",
+              "value": "h-[3.25rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "op": "classRemove",
+              "value": "h-[4.625rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18562;411:10959;573:30890",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30890\"]",
+              "op": "classRemove",
+              "value": "h-[3.25rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 16
+          }
+        },
+        {
+          "id": "layout/height/removeArbitraryWrapperHeights",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "heightRemove",
+              "value": "lg:h-[8.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "op": "heightRemove",
+              "value": "h-[0.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "heightRemove",
+              "value": "lg:h-[8.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "op": "heightRemove",
+              "value": "h-[0.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "heightRemove",
+              "value": "lg:h-[10.25rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "op": "heightRemove",
+              "value": "h-[0.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "heightRemove",
+              "value": "lg:h-[10.25rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "op": "heightRemove",
+              "value": "h-[0.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "heightRemove",
+              "value": "lg:h-[10.25rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "op": "heightRemove",
+              "value": "h-[0.625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 10
+          }
+        },
+        {
+          "id": "layout/height/stripWrapperFixedHeightsStrict",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/height/stripWrapperFixedHeightsStrict",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "stripFixedHeight",
+              "value": "remove fixed height from wrapper",
+              "reason": "Non-media wrapper: fixed height removed, h-auto ensured"
+            },
+            {
+              "contractId": "layout/height/stripWrapperFixedHeightsStrict",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "stripFixedHeight",
+              "value": "remove fixed height from wrapper",
+              "reason": "Non-media wrapper: fixed height removed, h-auto ensured"
+            },
+            {
+              "contractId": "layout/height/stripWrapperFixedHeightsStrict",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "stripFixedHeight",
+              "value": "remove fixed height from wrapper",
+              "reason": "Non-media wrapper: fixed height removed, h-auto ensured"
+            },
+            {
+              "contractId": "layout/height/stripWrapperFixedHeightsStrict",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "stripFixedHeight",
+              "value": "remove fixed height from wrapper",
+              "reason": "Non-media wrapper: fixed height removed, h-auto ensured"
+            },
+            {
+              "contractId": "layout/height/stripWrapperFixedHeightsStrict",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "stripFixedHeight",
+              "value": "remove fixed height from wrapper",
+              "reason": "Non-media wrapper: fixed height removed, h-auto ensured"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "stripped": 10
+          }
+        },
+        {
+          "id": "layout/underline/normalizeBars",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/underline/normalizeBars",
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "op": "classReplace",
+              "value": "normalize bar to w-[100px] h-[10px] bg or border-b",
+              "reason": "Normalized underline/marker bar; removed padding from bar"
+            },
+            {
+              "contractId": "layout/underline/normalizeBars",
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "op": "classReplace",
+              "value": "normalize bar to w-[100px] h-[10px] bg or border-b",
+              "reason": "Normalized underline/marker bar; removed padding from bar"
+            },
+            {
+              "contractId": "layout/underline/normalizeBars",
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "op": "classReplace",
+              "value": "normalize bar to w-[100px] h-[10px] bg or border-b",
+              "reason": "Normalized underline/marker bar; removed padding from bar"
+            },
+            {
+              "contractId": "layout/underline/normalizeBars",
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "op": "classReplace",
+              "value": "normalize bar to w-[100px] h-[10px] bg or border-b",
+              "reason": "Normalized underline/marker bar; removed padding from bar"
+            },
+            {
+              "contractId": "layout/underline/normalizeBars",
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "op": "classReplace",
+              "value": "normalize bar to w-[100px] h-[10px] bg or border-b",
+              "reason": "Normalized underline/marker bar; removed padding from bar"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "normalized": 5
+          }
+        },
+        {
+          "id": "layout/width/fluidizeFixedRem",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10951",
+              "selector": "[data-node-id=\"I483:18562;411:10951\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10951;127:2091",
+              "selector": "[data-node-id=\"I483:18562;411:10951;127:2091\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10953",
+              "selector": "[data-node-id=\"I483:18562;411:10953\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10955;400:8384",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8384\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:11098;406:8582",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8582\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10958;406:8612",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8612\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18562;411:10959;573:30891",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30891\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "fluidized": 15
+          }
+        },
+        {
+          "id": "layout/width/dedupeWidths",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10950",
+              "selector": "[data-node-id=\"I483:18562;411:10950\"]",
+              "op": "classRemove",
+              "value": "w-[80rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "op": "classRemove",
+              "value": "w-[4.4375rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "classRemove",
+              "value": "lg:w-[22.333313rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:11098;406:8581",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8581\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "classRemove",
+              "value": "lg:w-[22.333313rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10958;406:8611",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8611\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "classRemove",
+              "value": "lg:w-[22.333313rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18562;411:10959;573:30890",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30890\"]",
+              "op": "classRemove",
+              "value": "w-[20rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            }
+          ],
+          "warnings": [
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18562;411:10956;406:8552",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8552\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]"
+            }
+          ],
+          "stats": {
+            "removed": 10
+          }
+        },
+        {
+          "id": "layout/width/normalizeContainerWidths",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "layout/width/normalizeCenteredContainers",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "layout/width/enforceWidthIntent",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:11098;406:8581",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8581\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10958;406:8611",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8611\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18562;411:10959;573:30890",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30890\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "enforced": 10
+          }
+        },
+        {
+          "id": "layout/width/innerWrapperFixedWidthToMax",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:11098;406:8581",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8581\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10958;406:8611",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8611\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10959;573:30890",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30890\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 16
+          }
+        },
+        {
+          "id": "layout/width/widthRedundancyCollapseContract",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10951",
+              "selector": "[data-node-id=\"I483:18562;411:10951\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10951;127:2091",
+              "selector": "[data-node-id=\"I483:18562;411:10951;127:2091\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10953",
+              "selector": "[data-node-id=\"I483:18562;411:10953\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10955;400:8384",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8384\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10956;406:8552",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8552\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:11098;406:8581",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8581\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:11098;406:8582",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8582\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10958;406:8611",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8611\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10958;406:8612",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8612\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10959;573:30890",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30890\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18562;411:10959;573:30891",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30891\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 19
+          }
+        },
+        {
+          "id": "layout/text/textFixedWidthGuardContract",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 2
+          }
+        },
+        {
+          "id": "layout/root/removeFrameDimensions",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/root/removeFrameDimensions",
+              "nodeId": "I483:18562;411:10950",
+              "selector": "[data-node-id=\"I483:18562;411:10950\"]",
+              "op": "removeFixedDimensions",
+              "value": "w-full",
+              "reason": "Removed fixed frame dimensions from layout root"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 1
+          }
+        },
+        {
+          "id": "media/fill/applyBackgroundFromFigmaFill",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0,
+            "wrapped": 0
+          }
+        },
+        {
+          "id": "media/fill/preserveBackgroundContainerHeight",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0
+          }
+        },
+        {
+          "id": "media/videoFillSupport",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0
+          }
+        },
+        {
+          "id": "layout/section/enforceMobileVerticalPadding",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/section/enforceMobileVerticalPadding",
+              "nodeId": "I483:18562;411:10950",
+              "selector": "[data-node-id=\"I483:18562;411:10950\"]",
+              "op": "paddingNormalize",
+              "value": "enforce mobile vertical padding",
+              "reason": "Normalized base pt/pb to 2.5rem and preserved md values"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 1
+          }
+        },
+        {
+          "id": "layout/text/nowrapGuard",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/text/nowrapGuard",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "classRemove",
+              "value": "whitespace-nowrap",
+              "reason": "Removed nowrap to avoid clipping in constrained layouts"
+            },
+            {
+              "contractId": "layout/text/nowrapGuard",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "classRemove",
+              "value": "whitespace-nowrap",
+              "reason": "Removed nowrap to avoid clipping in constrained layouts"
+            },
+            {
+              "contractId": "layout/text/nowrapGuard",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "classRemove",
+              "value": "whitespace-nowrap",
+              "reason": "Removed nowrap to avoid clipping in constrained layouts"
+            },
+            {
+              "contractId": "layout/text/nowrapGuard",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "classRemove",
+              "value": "whitespace-nowrap",
+              "reason": "Removed nowrap to avoid clipping in constrained layouts"
+            },
+            {
+              "contractId": "layout/text/nowrapGuard",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "classRemove",
+              "value": "whitespace-nowrap",
+              "reason": "Removed nowrap to avoid clipping in constrained layouts"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 5
+          }
+        },
+        {
+          "id": "layout/text/shrinkGuard",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/text/shrinkGuard",
+              "nodeId": "I483:18562;411:10955;400:8384",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8384\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed shrink-0 to allow text wrapping"
+            },
+            {
+              "contractId": "layout/text/shrinkGuard",
+              "nodeId": "I483:18562;411:10956;406:8552",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8552\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed shrink-0 to allow text wrapping"
+            },
+            {
+              "contractId": "layout/text/shrinkGuard",
+              "nodeId": "I483:18562;411:11098;406:8582",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8582\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed shrink-0 to allow text wrapping"
+            },
+            {
+              "contractId": "layout/text/shrinkGuard",
+              "nodeId": "I483:18562;411:10958;406:8612",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8612\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed shrink-0 to allow text wrapping"
+            },
+            {
+              "contractId": "layout/text/shrinkGuard",
+              "nodeId": "I483:18562;411:10959;573:30891",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30891\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed shrink-0 to allow text wrapping"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 5
+          }
+        },
+        {
+          "id": "layout/align/centerCardContent",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/align/centerCardContent",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "classAdd",
+              "value": "items-center",
+              "reason": "Center card content on mobile when descendants are centered"
+            },
+            {
+              "contractId": "layout/align/centerCardContent",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "classAdd",
+              "value": "items-center",
+              "reason": "Center card content on mobile when descendants are centered"
+            },
+            {
+              "contractId": "layout/align/centerCardContent",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "classAdd",
+              "value": "items-center",
+              "reason": "Center card content on mobile when descendants are centered"
+            },
+            {
+              "contractId": "layout/align/centerCardContent",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "classAdd",
+              "value": "items-center",
+              "reason": "Center card content on mobile when descendants are centered"
+            },
+            {
+              "contractId": "layout/align/centerCardContent",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "classAdd",
+              "value": "items-center",
+              "reason": "Center card content on mobile when descendants are centered"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "added": 5
+          }
+        },
+        {
+          "id": "layout/grid/upgradeToGridForMatrices",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "upgraded": 0
+          }
+        },
+        {
+          "id": "layout/layoutModel/inferGridFromRepeatingCards",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/layoutModel/inferGridFromRepeatingCards",
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "op": "classReplace",
+              "value": "infer grid from repeating cards",
+              "reason": "Converted repeating cards to grid layout"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "upgraded": 1
+          }
+        },
+        {
+          "id": "layout/grid/stripFlexChildSizing",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/grid/stripFlexChildSizing",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "classReplace",
+              "value": "strip flex sizing for grid child",
+              "reason": "Removed flex sizing tokens from grid children"
+            },
+            {
+              "contractId": "layout/grid/stripFlexChildSizing",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "classReplace",
+              "value": "strip flex sizing for grid child",
+              "reason": "Removed flex sizing tokens from grid children"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "stripped": 2
+          }
+        },
+        {
+          "id": "layout/wrappers/flattenRedundant",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "flattened": 0
+          }
+        },
+        {
+          "id": "layout/cleanup/previewNormalize",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10951",
+              "selector": "[data-node-id=\"I483:18562;411:10951\"]",
+              "op": "collapseWrapper",
+              "value": "merged wrapper into child",
+              "reason": "Redundant wrapper with no unique semantics"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "merged": 1,
+            "normalized": 7
+          }
+        },
+        {
+          "id": "semantics/landmarks/upgradeLandmarks",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "upgraded": 0
+          }
+        },
+        {
+          "id": "semantics/interactive/cardToLinkOrButton",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            },
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            },
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            },
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            },
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "updated": 5
+          }
+        },
+        {
+          "id": "semantics/interactive/preventNestedInteractive",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "demoted": 0
+          }
+        },
+        {
+          "id": "semantics/interactive/upgradeDivButtons",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18562;411:10955",
+              "selector": "[data-node-id=\"I483:18562;411:10955\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            },
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18562;411:10956",
+              "selector": "[data-node-id=\"I483:18562;411:10956\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            },
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18562;411:11098",
+              "selector": "[data-node-id=\"I483:18562;411:11098\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            },
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18562;411:10958",
+              "selector": "[data-node-id=\"I483:18562;411:10958\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            },
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18562;411:10959",
+              "selector": "[data-node-id=\"I483:18562;411:10959\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "upgraded": 5,
+            "fallback": 0
+          }
+        },
+        {
+          "id": "semantics/interactive/normalizeButtonContent",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10955;400:8384",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8384\"]",
+              "op": "blockToSpan",
+              "value": "h3→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10956;406:8552",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8552\"]",
+              "op": "blockToSpan",
+              "value": "h3→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:11098;406:8581",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8581\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:11098;406:8582",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8582\"]",
+              "op": "blockToSpan",
+              "value": "h3→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10958;406:8611",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8611\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10958;406:8612",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8612\"]",
+              "op": "blockToSpan",
+              "value": "h3→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10959;573:30890",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30890\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18562;411:10959;573:30891",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30891\"]",
+              "op": "blockToSpan",
+              "value": "h3→span",
+              "reason": "Button may only contain phrasing content"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "normalized": 20
+          }
+        },
+        {
+          "id": "semantics/buttons/normalizeButtonChildren",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "semantics/buttons/promoteInteractiveFrames",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "promoted": 0
+          }
+        },
+        {
+          "id": "semantics/buttons/centerButtonLabelWhenCentered",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0
+          }
+        },
+        {
+          "id": "layout/section/containerPattern",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "wrapped": 0,
+            "adjusted": 0,
+            "gridAdjusted": 0
+          }
+        },
+        {
+          "id": "layout/section/containerNormalize",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        }
+      ],
+      "totals": {
+        "changes": 210,
+        "warnings": 6
+      }
+    },
+    "evaluation": {
+      "offendersCount": 18,
+      "source": "fragment"
+    },
+    "iteration": 2,
+    "provider": "rules",
+    "patchPlan": {
+      "offendersFound": 18,
+      "selectedOffenders": 18,
+      "generated": 17,
+      "accepted": 0,
+      "rejected": 17,
+      "provider": "rules",
+      "gateAccepted": true
+    },
+    "improveSummary": "Offenders: 18 | Proposed: 17 | Accepted: 0 | Rejected: 17 | Provider: rules",
+    "offendersFoundButRejected": true,
+    "offendersFoundButGateRejected": false,
+    "noOffendersFound": false,
+    "rejectionReasonGroups": [
+      {
+        "reason": "Patch has no bounded ops.",
+        "count": 17,
+        "nodeIds": [
+          "I483:18562;411:10951;126:1676",
+          "I483:18562;411:10951;126:1677",
+          "I483:18562;411:10952",
+          "I483:18562;411:10954",
+          "I483:18562;411:10955;400:8382",
+          "I483:18562;411:10955;400:8383",
+          "I483:18562;411:10955;405:8535",
+          "I483:18562;411:10956;406:8550",
+          "I483:18562;411:10956;406:8551",
+          "I483:18562;411:10956;406:8553",
+          "I483:18562;411:10957",
+          "I483:18562;411:10958;406:8610",
+          "I483:18562;411:10958;406:8613",
+          "I483:18562;411:10959;573:30889",
+          "I483:18562;411:10959;573:30892",
+          "I483:18562;411:11098;406:8580",
+          "I483:18562;411:11098;406:8583"
+        ]
+      }
+    ],
+    "planDiagnostics": [],
+    "history": [
+      {
+        "iteration": 1,
+        "createdAt": "2026-02-16T09:35:47.233Z",
+        "inputHash": "6a9f36baee08cb44f95086ca8903565ef4234c28062fe703f77464a6c3ff5afe",
+        "acceptedPatches": [],
+        "rejectedPatches": [
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          }
+        ],
+        "scoreBefore": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "scoreAfter": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "patchPlan": {
+          "offendersFound": 18,
+          "selectedOffenders": 18,
+          "generated": 17,
+          "accepted": 0,
+          "rejected": 17,
+          "provider": "rules",
+          "gateAccepted": true
+        }
+      },
+      {
+        "iteration": 2,
+        "createdAt": "2026-02-16T09:35:55.980Z",
+        "inputHash": "6a9f36baee08cb44f95086ca8903565ef4234c28062fe703f77464a6c3ff5afe",
+        "acceptedPatches": [],
+        "rejectedPatches": [
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          }
+        ],
+        "scoreBefore": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "scoreAfter": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 18
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18562;411:10951;126:1676",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10951;126:1677",
+              "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10952",
+              "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10954",
+              "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8382",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;400:8383",
+              "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10955;405:8535",
+              "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8550",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8551",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10956;406:8553",
+              "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10957",
+              "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8610",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10958;406:8613",
+              "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30889",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:10959;573:30892",
+              "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8580",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18562;411:11098;406:8583",
+              "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "patchPlan": {
+          "offendersFound": 18,
+          "selectedOffenders": 18,
+          "generated": 17,
+          "accepted": 0,
+          "rejected": 17,
+          "provider": "rules",
+          "gateAccepted": true
+        }
+      }
+    ]
+  },
+  "metrics": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": null,
+            "source": "placeholder",
+            "diffPixels": 0,
+            "totalPixels": 0,
+            "at": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 18
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": null,
+            "source": "placeholder",
+            "diffPixels": 0,
+            "totalPixels": 0,
+            "at": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 18
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": null,
+            "source": "placeholder",
+            "diffPixels": 0,
+            "totalPixels": 0,
+            "at": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 18
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I483:18562;411:10951;126:1676",
+        "selector": "[data-node-id=\"I483:18562;411:10951;126:1676\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10951;126:1677",
+        "selector": "[data-node-id=\"I483:18562;411:10951;126:1677\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10952",
+        "selector": "[data-node-id=\"I483:18562;411:10952\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10954",
+        "selector": "[data-node-id=\"I483:18562;411:10954\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10955;400:8382",
+        "selector": "[data-node-id=\"I483:18562;411:10955;400:8382\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10955;400:8383",
+        "selector": "[data-node-id=\"I483:18562;411:10955;400:8383\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10955;405:8535",
+        "selector": "[data-node-id=\"I483:18562;411:10955;405:8535\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10956;406:8550",
+        "selector": "[data-node-id=\"I483:18562;411:10956;406:8550\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10956;406:8551",
+        "selector": "[data-node-id=\"I483:18562;411:10956;406:8551\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10956;406:8553",
+        "selector": "[data-node-id=\"I483:18562;411:10956;406:8553\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10957",
+        "selector": "[data-node-id=\"I483:18562;411:10957\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10958;406:8610",
+        "selector": "[data-node-id=\"I483:18562;411:10958;406:8610\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10958;406:8613",
+        "selector": "[data-node-id=\"I483:18562;411:10958;406:8613\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10959;573:30889",
+        "selector": "[data-node-id=\"I483:18562;411:10959;573:30889\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:10959;573:30892",
+        "selector": "[data-node-id=\"I483:18562;411:10959;573:30892\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:11098;406:8580",
+        "selector": "[data-node-id=\"I483:18562;411:11098;406:8580\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18562;411:11098;406:8583",
+        "selector": "[data-node-id=\"I483:18562;411:11098;406:8583\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@72",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ],
+    "deltas": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "before": null,
+            "after": null,
+            "delta": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 0
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "before": null,
+            "after": null,
+            "delta": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 0
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "before": null,
+            "after": null,
+            "delta": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 0
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "total": 0
+        }
+      }
+    },
+    "iteration": 2,
+    "fallbackScore": 82
+  },
+  "nodeIndex": {
+    "I483:18562;411:10950": [
+      "[data-node-id=\"I483:18562;411:10950\"]"
+    ],
+    "I483:18562;411:10951": [
+      "[data-node-id=\"I483:18562;411:10951\"]"
+    ],
+    "I483:18562;411:10951;127:2091": [
+      "[data-node-id=\"I483:18562;411:10951;127:2091\"]"
+    ],
+    "I483:18562;411:10951;126:1676": [
+      "[data-node-id=\"I483:18562;411:10951;126:1676\"]"
+    ],
+    "I483:18562;411:10951;126:1677": [
+      "[data-node-id=\"I483:18562;411:10951;126:1677\"]"
+    ],
+    "I483:18562;411:10951;126:1677;7543:2626": [
+      "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2626\"]"
+    ],
+    "I483:18562;411:10951;126:1677;7543:2622": [
+      "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2622\"]"
+    ],
+    "I483:18562;411:10951;126:1677;7543:2624": [
+      "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2624\"]"
+    ],
+    "I483:18562;411:10951;126:1677;7543:2625": [
+      "[data-node-id=\"I483:18562;411:10951;126:1677;7543:2625\"]"
+    ],
+    "I483:18562;411:10952": [
+      "[data-node-id=\"I483:18562;411:10952\"]"
+    ],
+    "I483:18562;411:10953": [
+      "[data-node-id=\"I483:18562;411:10953\"]"
+    ],
+    "I483:18562;411:10954": [
+      "[data-node-id=\"I483:18562;411:10954\"]"
+    ],
+    "I483:18562;411:10955": [
+      "[data-node-id=\"I483:18562;411:10955\"]"
+    ],
+    "I483:18562;411:10955;400:8382": [
+      "[data-node-id=\"I483:18562;411:10955;400:8382\"]"
+    ],
+    "I483:18562;411:10955;400:8383": [
+      "[data-node-id=\"I483:18562;411:10955;400:8383\"]"
+    ],
+    "I483:18562;411:10955;400:8384": [
+      "[data-node-id=\"I483:18562;411:10955;400:8384\"]"
+    ],
+    "I483:18562;411:10955;405:8535": [
+      "[data-node-id=\"I483:18562;411:10955;405:8535\"]"
+    ],
+    "I483:18562;411:10956": [
+      "[data-node-id=\"I483:18562;411:10956\"]"
+    ],
+    "I483:18562;411:10956;406:8550": [
+      "[data-node-id=\"I483:18562;411:10956;406:8550\"]"
+    ],
+    "I483:18562;411:10956;406:8551": [
+      "[data-node-id=\"I483:18562;411:10956;406:8551\"]"
+    ],
+    "I483:18562;411:10956;406:8552": [
+      "[data-node-id=\"I483:18562;411:10956;406:8552\"]"
+    ],
+    "I483:18562;411:10956;406:8553": [
+      "[data-node-id=\"I483:18562;411:10956;406:8553\"]"
+    ],
+    "I483:18562;411:10957": [
+      "[data-node-id=\"I483:18562;411:10957\"]"
+    ],
+    "I483:18562;411:11098": [
+      "[data-node-id=\"I483:18562;411:11098\"]"
+    ],
+    "I483:18562;411:11098;406:8580": [
+      "[data-node-id=\"I483:18562;411:11098;406:8580\"]"
+    ],
+    "I483:18562;411:11098;406:8581": [
+      "[data-node-id=\"I483:18562;411:11098;406:8581\"]"
+    ],
+    "I483:18562;411:11098;406:8582": [
+      "[data-node-id=\"I483:18562;411:11098;406:8582\"]"
+    ],
+    "I483:18562;411:11098;406:8583": [
+      "[data-node-id=\"I483:18562;411:11098;406:8583\"]"
+    ],
+    "I483:18562;411:10958": [
+      "[data-node-id=\"I483:18562;411:10958\"]"
+    ],
+    "I483:18562;411:10958;406:8610": [
+      "[data-node-id=\"I483:18562;411:10958;406:8610\"]"
+    ],
+    "I483:18562;411:10958;406:8611": [
+      "[data-node-id=\"I483:18562;411:10958;406:8611\"]"
+    ],
+    "I483:18562;411:10958;406:8612": [
+      "[data-node-id=\"I483:18562;411:10958;406:8612\"]"
+    ],
+    "I483:18562;411:10958;406:8613": [
+      "[data-node-id=\"I483:18562;411:10958;406:8613\"]"
+    ],
+    "I483:18562;411:10959": [
+      "[data-node-id=\"I483:18562;411:10959\"]"
+    ],
+    "I483:18562;411:10959;573:30889": [
+      "[data-node-id=\"I483:18562;411:10959;573:30889\"]"
+    ],
+    "I483:18562;411:10959;573:30890": [
+      "[data-node-id=\"I483:18562;411:10959;573:30890\"]"
+    ],
+    "I483:18562;411:10959;573:30891": [
+      "[data-node-id=\"I483:18562;411:10959;573:30891\"]"
+    ],
+    "I483:18562;411:10959;573:30892": [
+      "[data-node-id=\"I483:18562;411:10959;573:30892\"]"
+    ]
+  }
+}

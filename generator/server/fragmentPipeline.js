@@ -149,6 +149,124 @@ function ensurePreviewDir() {
   fs.mkdirSync(PREVIEW_DIR, { recursive: true });
 }
 
+const VOID_TAGS = new Set([
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+  "meta", "param", "source", "track", "wbr",
+]);
+
+function parseLightHtmlNodes(html) {
+  const source = String(html || "");
+  const nodes = [];
+  const stack = [];
+  const tagRe =
+    /<\/?([a-zA-Z][a-zA-Z0-9-]*)(\s+(?:[^"'<>]+|"[^"]*"|'[^']*')*)?\s*\/?>/g;
+  let m;
+  while ((m = tagRe.exec(source))) {
+    const raw = m[0];
+    const tag = String(m[1] || "").toLowerCase();
+    const attrsRaw = m[2] || "";
+    const start = m.index;
+    const end = start + raw.length;
+    const isClose = raw.startsWith("</");
+    const isSelf = raw.endsWith("/>") || VOID_TAGS.has(tag);
+    if (isClose) {
+      let idx = -1;
+      for (let i = stack.length - 1; i >= 0; i -= 1) {
+        if (stack[i].tag === tag) {
+          idx = i;
+          break;
+        }
+      }
+      if (idx === -1) continue;
+      const open = stack[idx];
+      stack.splice(idx, stack.length - idx);
+      const node = nodes[open.nodeIndex];
+      node.closeStart = start;
+      node.closeEnd = end;
+      node.end = end;
+      continue;
+    }
+    const parentIndex = stack.length ? stack[stack.length - 1].nodeIndex : null;
+    const nodeIndex = nodes.length;
+    const node = {
+      tag,
+      attrsRaw,
+      start,
+      end,
+      openStart: start,
+      openEnd: end,
+      closeStart: null,
+      closeEnd: null,
+      parentIndex,
+      isSelfClosing: isSelf,
+    };
+    nodes.push(node);
+    if (!isSelf) stack.push({ tag, nodeIndex });
+  }
+  return nodes;
+}
+
+function getAttrRaw(attrsRaw, key) {
+  const s = String(attrsRaw || "");
+  let m = s.match(new RegExp(`\\b${key}\\s*=\\s*"([^"]*)"`, "i"));
+  if (m && m[1] != null) return m[1];
+  m = s.match(new RegExp(`\\b${key}\\s*=\\s*'([^']*)'`, "i"));
+  if (m && m[1] != null) return m[1];
+  return "";
+}
+
+function hasRootSignatureLight(node) {
+  const dataKey = String(getAttrRaw(node?.attrsRaw, "data-key") || "").trim().toLowerCase();
+  if (dataKey === "root") return true;
+  const classAttr = String(getAttrRaw(node?.attrsRaw, "class") || "");
+  const tokens = classAttr.split(/\s+/g).filter(Boolean).map((t) => String(t).split(":").pop());
+  const hasWFull = tokens.includes("w-full");
+  const hasMxAuto = tokens.includes("mx-auto");
+  const hasMaxW = tokens.some((t) => /^max-w-/.test(t));
+  return hasWFull && hasMxAuto && hasMaxW;
+}
+
+function blockSnippet(html, node, len = 200) {
+  const source = String(html || "");
+  const start = node?.start ?? node?.openStart ?? 0;
+  const end = node?.end ?? node?.openEnd ?? start;
+  const out = source.slice(start, end).replace(/\s+/g, " ").trim();
+  return out.slice(0, len);
+}
+
+export function assertMergedHtmlIntegrity(html) {
+  const source = String(html || "");
+  const nodes = parseLightHtmlNodes(source);
+
+  const seenDataNode = new Map();
+  for (const node of nodes) {
+    const dnid = String(getAttrRaw(node.attrsRaw, "data-node-id") || "").trim();
+    if (!dnid) continue;
+    if (!seenDataNode.has(dnid)) {
+      seenDataNode.set(dnid, node);
+      continue;
+    }
+    const first = seenDataNode.get(dnid);
+    throw new Error(
+      `MERGE_INTEGRITY_DUPLICATE_DATA_NODE_ID: duplicated data-node-id="${dnid}". first="${blockSnippet(source, first)}" second="${blockSnippet(source, node)}"`
+    );
+  }
+
+  const rootNodes = nodes.filter((n) => String(getAttrRaw(n.attrsRaw, "data-key") || "").trim().toLowerCase() === "root");
+  if (rootNodes.length > 1) {
+    throw new Error(
+      `MERGE_INTEGRITY_DUPLICATE_ROOT_KEY: duplicated data-key="root". first="${blockSnippet(source, rootNodes[0])}" second="${blockSnippet(source, rootNodes[1])}"`
+    );
+  }
+
+  const topRoots = nodes.filter((n) => n.parentIndex == null && hasRootSignatureLight(n));
+  if (topRoots.length > 1) {
+    throw new Error(
+      `MERGE_INTEGRITY_MULTIPLE_TOP_LEVEL_ROOTS: detected ${topRoots.length} top-level roots. first="${blockSnippet(source, topRoots[0])}" second="${blockSnippet(source, topRoots[1])}"`
+    );
+  }
+}
+
 /**
  * Build a single fragment (legacy path) from one AST using your existing passes.
  * IMPORTANT: applies semanticAccessiblePass() to the rendered HTML fragment.
@@ -339,6 +457,9 @@ export function buildMergedResponsivePreview({
     baseVariant: "desktop",
     breakpoints: { mobileMax: 768, tabletMax: 1084 },
   });
+
+  // Guard against bad merge concatenation/duplication.
+  assertMergedHtmlIntegrity(mergedFragment);
 
   // Build merged AST (metadata carrier)
   const mergedAst = compositeAstForMerged({ groupKey, variantsMap });

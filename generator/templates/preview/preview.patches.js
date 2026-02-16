@@ -1,10 +1,10 @@
 // generator/templates/preview/preview.patches.js
 
-export function patchesScript(fallbackSlug) {
+export function patchesScript() {
   return `
   <script>
     (function(){
-      const fallback = ${JSON.stringify(String(fallbackSlug || ""))};
+      const fallback = (document.body && document.body.getAttribute("data-preview-slug")) || "";
       const allowedStages = ["generate", "codeit", "improve"];
       const safeAria = new Set(["aria-label", "aria-labelledby", "aria-describedby", "aria-hidden"]);
 

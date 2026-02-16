@@ -1,11 +1,11 @@
 // generator/templates/preview/preview.viewport.js
 
-export function viewportScript({ designW, slug }) {
+export function viewportScript({ designW }) {
   return `
   <script>
     (function(){
       const FALLBACK_DESIGN_W = ${JSON.stringify(Number(designW) || 1200)};
-      const pageSlug = ${JSON.stringify(String(slug || ""))};
+      const pageSlug = (document.body && document.body.getAttribute("data-preview-slug")) || "";
 
       const resp = (window.__RESPONSIVE__ && typeof window.__RESPONSIVE__ === "object")
         ? window.__RESPONSIVE__

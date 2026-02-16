@@ -2,7 +2,19 @@
 
 import fs from "node:fs";
 import path from "node:path";
+import crypto from "node:crypto";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 import { execFileSync } from "node:child_process";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const require = createRequire(import.meta.url);
+const REPO_ROOT = path.resolve(__dirname, "..", "..");
+const qaGate = require(path.join(REPO_ROOT, "pipeline", "qaGate", "index.js"));
+const runQAGate = qaGate.runQAGate;
+const runQAFixLoop = qaGate.runQAFixLoop;
+const fixQAGate = qaGate.fix;
+const auditQAGate = qaGate.audit;
 
 import { PREVIEW_DIR, ROOT } from "./runtimePaths.js";
 import { getConfig } from "./configStore.js";
@@ -148,6 +160,55 @@ function readArtifact(slug, stage) {
   }
 }
 
+const shortChecksum = (value) =>
+  crypto.createHash("sha1").update(String(value || ""), "utf8").digest("hex").slice(0, 10);
+
+const summarizeIssues = (issues) => ({
+  error: issues.filter((i) => i.severity === "error").length,
+  warn: issues.filter((i) => i.severity === "warn").length,
+  info: issues.filter((i) => i.severity === "info").length,
+});
+
+const byRuleFromIssues = (issues) => {
+  const out = {};
+  (issues || []).forEach((i) => {
+    const key = String(i?.rule || "").trim();
+    if (!key) return;
+    out[key] = (out[key] || 0) + 1;
+  });
+  return out;
+};
+
+const QA_FATAL_RULES = new Set([
+  "DUPLICATE_DATA_NODE_ID",
+  "DUPLICATE_DATA_KEY_ROOT",
+  "MULTIPLE_TOP_LEVEL_ROOTS",
+  "STRUCTURAL_CORRUPTION_ESCAPED_TAG_BOUNDARY",
+  "UNBALANCED_HTML_TAGS",
+]);
+
+function validateFixedHtmlForApply(html) {
+  const report = auditQAGate(String(html || ""));
+  const fatalIssues = (report?.issues || []).filter((issue) => issue?.fatal || QA_FATAL_RULES.has(String(issue?.rule || "")));
+  return {
+    ok: fatalIssues.length === 0,
+    report,
+    fatalIssues,
+  };
+}
+
+function repairCachedPreviewHtml(rawHtml) {
+  let html = String(rawHtml || "");
+  // Repair stale previews where newline was emitted as a literal newline inside a JS string (invalid).
+  // .join(" \n ") or .join("\n") with real newline → .join("\n")
+  html = html.replace(/\.join\("\s*\r?\n\s*"\)/g, '.join("\\n")');
+  html = html.replace(/\.join\('\s*\r?\n\s*'\)/g, ".join('\\n')");
+  // .split(" \n ") with real newline → .split("\n")
+  html = html.replace(/\.split\("\s*\r?\n\s*"\)/g, '.split("\\n")');
+  html = html.replace(/\.split\('\s*\r?\n\s*'\)/g, ".split('\\n')");
+  return html;
+}
+
 function resolvePipelineStageToRun(slug, stage) {
   if (stage === "generate") return "generate";
   if (stage === "codeit") {
@@ -260,7 +321,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       const contractsOut = applyContracts({ html: preflight.html, slug: r.ast.slug });
       const previewFragment = contractsOut.html;
       const validation = validateTailwindClasses(previewFragment);
-      const previewMarkup = previewHtml(r.ast, { fragment: previewFragment });
+      const previewMarkup = repairCachedPreviewHtml(previewHtml(r.ast, { fragment: previewFragment }));
 
       const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
       fs.writeFileSync(previewOut, previewMarkup, "utf8");
@@ -323,6 +384,16 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         { cwd: PIPELINE_ROOT, stdio: "pipe" }
       );
 
+      // Invalidate preview cache so next load rebuilds from updated artifacts
+      const previewCacheFile = path.join(PREVIEW_DIR, `${slug}.html`);
+      if (fs.existsSync(previewCacheFile)) {
+        try {
+          fs.unlinkSync(previewCacheFile);
+        } catch {
+          // Non-fatal: next load will still serve stale cache, but user can hard refresh
+        }
+      }
+
       return res.json({
         ok: true,
         stage,
@@ -340,6 +411,274 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         log: stdout + stderr,
         error: stderr || stdout || error?.message || "Pipeline failed.",
       });
+    }
+  });
+
+  app.post("/api/qa-gate/run", (req, res) => {
+    const slug = String(req?.body?.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+
+    const sourceStage = readArtifact(slug, "improve")?.html != null ? "improve" : readArtifact(slug, "codeit")?.html != null ? "codeit" : null;
+    if (!sourceStage) {
+      return res.status(404).json({
+        ok: false,
+        error: "No artifact found for slug (run Improve or Code it first)",
+      });
+    }
+
+    const artifact = readArtifact(slug, sourceStage);
+    // QA runs in PREVIEW MODE on the exact HTML used to render the preview (finalHtml from iframe body).
+    // Integrity rules (DUPLICATE_DATA_NODE_ID, DUPLICATE_DATA_KEY_ROOT) run on this string only.
+    const finalHtml = typeof req?.body?.finalHtml === "string" ? req.body.finalHtml : null;
+    const previewHtml = typeof req?.body?.previewHtml === "string" ? req.body.previewHtml : finalHtml;
+    if (finalHtml == null) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing finalHtml (QA must run against preview source-of-truth HTML).",
+      });
+    }
+    const html = String(finalHtml || "");
+    const previewHtmlStr = String(previewHtml || "");
+
+    try {
+      const result = runQAGate(html, {
+        artifact,
+        cleanMetadata: false,
+      });
+      const auditedLen = html.length;
+      const previewLen = previewHtmlStr.length;
+      const auditedHash = shortChecksum(html);
+      const previewHash = shortChecksum(previewHtmlStr);
+      const inputMismatch = auditedHash !== previewHash;
+
+      if (process.env.NODE_ENV !== "production") {
+        console.debug("[qa-gate] html-check", {
+          slug,
+          auditedLen,
+          auditedHash,
+          previewLen,
+          previewHash,
+        });
+      }
+
+      let reportBefore = result.reportBefore;
+      let reportAfter = result.reportAfter;
+      let blockApply = false;
+
+      if (inputMismatch) {
+        const fatal = {
+          id: "qa-QA_INPUT_MISMATCH",
+          severity: "error",
+          rule: "QA_INPUT_MISMATCH",
+          message: "QA input mismatch: audited HTML differs from preview HTML",
+          selector: null,
+          snippet: null,
+          fatal: true,
+        };
+        const beforeIssues = [...(reportBefore?.issues || []), fatal];
+        const afterIssues = [...(reportAfter?.issues || []), fatal];
+        reportBefore = {
+          ...(reportBefore || {}),
+          issues: beforeIssues,
+          summary: summarizeIssues(beforeIssues),
+          byRule: byRuleFromIssues(beforeIssues),
+        };
+        reportAfter = {
+          ...(reportAfter || {}),
+          issues: afterIssues,
+          summary: summarizeIssues(afterIssues),
+          byRule: byRuleFromIssues(afterIssues),
+        };
+        blockApply = true;
+      }
+
+      const hasFatalAfter = (reportAfter?.issues || []).some((i) => i && i.fatal);
+      if (hasFatalAfter) blockApply = true;
+
+      return res.json({
+        ok: true,
+        slug,
+        sourceStage,
+        reportBefore,
+        reportAfter,
+        appliedFixes: result.appliedFixes,
+        diff: result.diff,
+        diffTruncated: result.diffTruncated,
+        totalChanges: result.totalChanges,
+        fixedHtml: result.fixedHtml,
+        currentHtml: result.currentHtml,
+        remainingErrors: reportAfter?.summary?.error || 0,
+        remainingFatal: (reportAfter?.issues || []).filter((i) => i && i.fatal).length,
+        byRule: reportAfter?.byRule || {},
+        blockApply,
+        qaInputMismatch: inputMismatch,
+        debug: {
+          auditedLen,
+          auditedHash,
+          previewLen,
+          previewHash,
+        },
+      });
+    } catch (e) {
+      return res.status(500).json({
+        ok: false,
+        error: String(e?.message || e),
+      });
+    }
+  });
+
+  app.post("/api/qa-gate/fix-loop", (req, res) => {
+    const slug = String(req?.body?.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+
+    const sourceStage = readArtifact(slug, "improve")?.html != null ? "improve" : readArtifact(slug, "codeit")?.html != null ? "codeit" : null;
+    if (!sourceStage) {
+      return res.status(404).json({
+        ok: false,
+        error: "No artifact found for slug (run Improve or Code it first)",
+      });
+    }
+
+    const artifact = readArtifact(slug, sourceStage);
+    const finalHtml = typeof req?.body?.finalHtml === "string" ? req.body.finalHtml : null;
+    const previewHtml = typeof req?.body?.previewHtml === "string" ? req.body.previewHtml : finalHtml;
+    if (finalHtml == null) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing finalHtml (QA fix loop must run against preview source-of-truth HTML).",
+      });
+    }
+    const html = String(finalHtml || "");
+    const previewHtmlStr = String(previewHtml || "");
+    const maxIterations = Math.max(1, Math.min(50, Number(req?.body?.maxIterations || 10)));
+    const maxFixesPerIteration = Math.max(1, Math.min(500, Number(req?.body?.maxFixesPerIteration || 200)));
+
+    try {
+      const result = runQAFixLoop(html, {
+        artifact,
+        maxIterations,
+        maxFixesPerIteration,
+      });
+      const auditedLen = html.length;
+      const previewLen = previewHtmlStr.length;
+      const auditedHash = shortChecksum(html);
+      const previewHash = shortChecksum(previewHtmlStr);
+      const inputMismatch = auditedHash !== previewHash;
+      const hasFatalAfter = (result.reportAfter?.issues || []).some((i) => i && i.fatal);
+      const blockApply = inputMismatch || hasFatalAfter;
+
+      return res.json({
+        ok: true,
+        slug,
+        sourceStage,
+        ...result,
+        blockApply,
+        qaInputMismatch: inputMismatch,
+        debug: {
+          auditedLen,
+          auditedHash,
+          previewLen,
+          previewHash,
+        },
+      });
+    } catch (e) {
+      return res.status(500).json({
+        ok: false,
+        error: String(e?.message || e),
+      });
+    }
+  });
+
+  app.post("/api/qa-gate/apply", (req, res) => {
+    const slug = String(req?.body?.slug || "").trim();
+    const fixedHtml = req?.body?.fixedHtml;
+    const sourceStage = String(req?.body?.sourceStage || "improve").trim().toLowerCase();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    if (typeof fixedHtml !== "string") return res.status(400).json({ ok: false, error: "Missing fixedHtml" });
+    if (!ALLOWED_STAGES.has(sourceStage)) return res.status(400).json({ ok: false, error: "Invalid sourceStage" });
+
+    const file = artifactPath(slug, sourceStage);
+    if (!fs.existsSync(file)) {
+      return res.status(404).json({ ok: false, error: "Artifact not found" });
+    }
+
+    try {
+      const artifact = JSON.parse(fs.readFileSync(file, "utf8"));
+      const validation = validateFixedHtmlForApply(fixedHtml);
+      if (!validation.ok) {
+        return res.status(400).json({
+          ok: false,
+          error: "Refusing to apply structurally invalid QA output.",
+          fatalIssues: validation.fatalIssues,
+          reportAfter: validation.report,
+        });
+      }
+      artifact.html = fixedHtml;
+      fs.writeFileSync(file, JSON.stringify(artifact, null, 2), "utf8");
+
+      // Invalidate preview cache so next load rebuilds from updated artifact
+      const previewCacheFile = path.join(PREVIEW_DIR, `${slug}.html`);
+      if (fs.existsSync(previewCacheFile)) {
+        try {
+          fs.unlinkSync(previewCacheFile);
+        } catch {
+          // Non-fatal: next load will still serve stale cache, but user can hard refresh
+        }
+      }
+
+      return res.json({
+        ok: true,
+        slug,
+        sourceStage,
+        previewUrl: `/preview/${encodeURIComponent(slug)}?stage=${encodeURIComponent(sourceStage)}`,
+      });
+    } catch (e) {
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
+  app.post("/api/qa-gate/clean-fragment", (req, res) => {
+    const slug = String(req?.body?.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+
+    const sourceStage = readArtifact(slug, "improve")?.html != null ? "improve" : readArtifact(slug, "codeit")?.html != null ? "codeit" : null;
+    if (!sourceStage) {
+      return res.status(404).json({
+        ok: false,
+        error: "No artifact found for slug (run Improve or Code it first)",
+      });
+    }
+
+    const finalHtml = typeof req?.body?.finalHtml === "string" ? req.body.finalHtml : null;
+    const artifact = readArtifact(slug, sourceStage);
+    const baseHtml = String(artifact?.html || finalHtml || "");
+    if (!baseHtml) {
+      return res.status(400).json({
+        ok: false,
+        error: "Missing fragment HTML source.",
+      });
+    }
+
+    try {
+      const cleaned = fixQAGate(baseHtml, [], { cleanMetadata: true });
+      const validation = validateFixedHtmlForApply(cleaned.fixedHtml);
+      if (!validation.ok) {
+        return res.status(400).json({
+          ok: false,
+          error: "Clean fragment failed structural validation.",
+          fatalIssues: validation.fatalIssues,
+          reportAfter: validation.report,
+        });
+      }
+      return res.json({
+        ok: true,
+        slug,
+        sourceStage,
+        cleanedHtml: cleaned.fixedHtml,
+        appliedFixes: cleaned.appliedFixes || [],
+      });
+    } catch (e) {
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
     }
   });
 
@@ -381,7 +720,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       const contractsOut = applyContracts({ html: preflight.html, slug: r.ast.slug });
       const previewFragment = contractsOut.html;
       const validation = validateTailwindClasses(previewFragment);
-      const previewMarkup = previewHtml(r.ast, { fragment: previewFragment });
+      const previewMarkup = repairCachedPreviewHtml(previewHtml(r.ast, { fragment: previewFragment }));
 
       const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
 
@@ -430,11 +769,14 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
   });
 
   // Serve previews (with stage-aware artifacts or on-demand rebuild)
+  // When ?stage= is present: serve raw artifact HTML for iframe.
+  // When ?stage= is absent: serve full preview shell (toolbar + modal + iframe) so stage buttons work.
   app.get("/preview/:slug", (req, res) => {
     try {
       const slug = String(req.params.slug || "").trim();
       const file = path.join(PREVIEW_DIR, `${slug}.html`);
-      const stageParam = resolveStageParam(req);
+      const stageQuery = String(req?.query?.stage ?? "").trim().toLowerCase();
+      const stageParam = stageQuery && ALLOWED_STAGES.has(stageQuery) ? stageQuery : null;
 
       if (stageParam) {
         let artifact = readArtifact(slug, stageParam);
@@ -464,8 +806,17 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
 
       // Serve cached preview if present
       if (fs.existsSync(file)) {
+        const raw = fs.readFileSync(file, "utf8");
+        const repaired = repairCachedPreviewHtml(raw);
+        if (repaired !== raw) {
+          try {
+            fs.writeFileSync(file, repaired, "utf8");
+          } catch {
+            // Non-fatal: still serve repaired content from memory.
+          }
+        }
         res.setHeader("Content-Type", "text/html; charset=utf-8");
-        return res.send(fs.readFileSync(file, "utf8"));
+        return res.send(repaired);
       }
 
       // If preview missing, try to build from stored variants
@@ -479,9 +830,10 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         });
 
         if (built.ok) {
-          fs.writeFileSync(file, built.preview, "utf8");
+          const repaired = repairCachedPreviewHtml(built.preview);
+          fs.writeFileSync(file, repaired, "utf8");
           res.setHeader("Content-Type", "text/html; charset=utf-8");
-          return res.send(built.preview);
+          return res.send(repaired);
         }
       }
 

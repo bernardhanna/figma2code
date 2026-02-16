@@ -28,11 +28,18 @@ export function responsiveScript({
 } = {}) {
   const safeSlug = String(slug || "").trim();
 
+  function safeScriptString(value) {
+    return JSON.stringify(String(value ?? ""))
+      .replace(/<\//g, "<\\/")
+      .replace(/`/g, "\\`")
+      .replace(/\$/g, "\\$");
+  }
+
   return `
   <script>
     (function(){
-      const CURRENT_SLUG = ${JSON.stringify(safeSlug)};
-      const FRAME_NAME = ${JSON.stringify(String(frameName || ""))};
+      const CURRENT_SLUG = (document.body && document.body.getAttribute("data-preview-slug")) || "";
+      const FRAME_NAME = ${safeScriptString(frameName || "")};
 
       // Derive groupKey from frame name "Home v3@desktop" => "Home v3"
       const derivedGroupKey = (function(){
@@ -43,7 +50,7 @@ export function responsiveScript({
         return CURRENT_SLUG;
       })();
 
-      const groupKey = ${JSON.stringify(String(groupKeyOverride || "").trim())} || derivedGroupKey;
+      const groupKey = ${safeScriptString(String(groupKeyOverride || "").trim())} || derivedGroupKey;
 
       // In merged mode we keep scoring/patches scoped to the groupKey
       window.__CURRENT_PREVIEW_SLUG__ = ${JSON.stringify(Boolean(mergedGroup))} ? groupKey : CURRENT_SLUG;

@@ -222,6 +222,18 @@ ${bodyFontCss}
   padding: 24px;
 }
 .modal-backdrop[data-open="1"]{ display:flex; }
+.modal-backdrop:not([data-open="1"]){ pointer-events:none; }
+.modal-backdrop[data-open="1"]{ pointer-events:auto; }
+
+/* Keep stage controls interactive even if an overlay is stuck. */
+#toolbar_root{
+  position: relative;
+  z-index: 1200;
+  pointer-events: auto;
+}
+#toolbar_root *{
+  pointer-events: auto;
+}
 
 .modal{
   width: min(920px, 100%);

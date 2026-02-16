@@ -166,7 +166,42 @@ const setClassTokens = (attrs, order, tokens) => {
 
 const applyPatches = (html, patches) => {
   if (!patches.length) return html;
-  const ordered = [...patches].sort((a, b) => b.start - a.start);
+
+  const normalized = patches
+    .map((patch, idx) => ({
+      start: Number(patch?.start),
+      end: Number(patch?.end),
+      replacement: String(patch?.replacement ?? ""),
+      idx,
+    }))
+    .filter((patch) => Number.isFinite(patch.start) && Number.isFinite(patch.end) && patch.end >= patch.start);
+
+  if (!normalized.length) return String(html || "");
+
+  // Resolve overlaps against original coordinates before applying.
+  // Earlier ranges win; when starts are equal, wider ranges win.
+  const nonOverlapping = [];
+  const sorted = normalized.sort((a, b) => {
+    if (a.start !== b.start) return a.start - b.start;
+    if (a.end !== b.end) return b.end - a.end;
+    return a.idx - b.idx;
+  });
+
+  for (const patch of sorted) {
+    const prev = nonOverlapping[nonOverlapping.length - 1];
+    if (!prev || patch.start >= prev.end) {
+      nonOverlapping.push(patch);
+      continue;
+    }
+
+    // If same start and current patch is wider, replace previous.
+    if (patch.start === prev.start && patch.end > prev.end) {
+      nonOverlapping[nonOverlapping.length - 1] = patch;
+    }
+    // Otherwise skip overlapping patch to avoid index corruption.
+  }
+
+  const ordered = nonOverlapping.sort((a, b) => b.start - a.start);
   let out = String(html || "");
   for (const patch of ordered) {
     out = out.slice(0, patch.start) + patch.replacement + out.slice(patch.end);

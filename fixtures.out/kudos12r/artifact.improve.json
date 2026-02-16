@@ -1,0 +1,3843 @@
+{
+  "schemaVersion": "1.0",
+  "slug": "kudos12r",
+  "stage": "improve",
+  "createdAt": "2026-02-16T13:57:14.606Z",
+  "html": "<section data-node-id=\"I483:18577;136:7102\" data-node=\"I483:18577;136:7102\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"80rem\" class=\"flex flex-col md:justify-start gap-[3rem] pt-[2.5rem] md:pt-[5rem] pb-[2.5rem] md:pb-[5rem] pr-[5rem] pl-[5rem] max-xl:px-5 bg-[#ededed] bg-center w-full items-center\" data-key=\"root\"><div data-node-id=\"I483:18577;136:7103;127:2091\" data-node=\"I483:18577;136:7103;127:2091\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"70rem\" class=\"flex flex-col md:items-center gap-[1.5rem] self-center w-full md:justify-center\" data-key=\"instance:h2#1/frame:h2#1\" data-merged-from=\"data-node-id=I483:18577;136:7103;data-node=I483:18577;136:7103;data-w-intent=hug;data-h-intent=hug;data-w-rem=70rem;data-key=instance:h2#1\"><h2 data-node-id=\"I483:18577;136:7103;126:1676\" data-node=\"I483:18577;136:7103;126:1676\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"70rem\" data-ff=\"Playfair\" class=\"break-words text-center text-[2.125rem] font-[600] leading-[2.5rem] tracking-[-0.01rem] text-[#0a1119] font-['Playfair'] w-full max-w-[70rem]\" data-key=\"instance:h2#1/frame:h2#1/text:what-people-say-about-us#1\">What people say about us</h2>\n<div data-node-id=\"I483:18577;136:7103;126:1677\" data-node=\"I483:18577;136:7103;126:1677\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"4.4375rem\" data-decorative=\"1\" class=\"flex flex-row justify-between items-center h-[0.3125rem] self-center w-full max-w-[4.4375rem]\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1\"><div data-node-id=\"I483:18577;136:7103;126:1677;7543:2626\" data-node=\"I483:18577;136:7103;126:1677;7543:2626\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#ef7b10] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-4#1\"></div>\n<div data-node-id=\"I483:18577;136:7103;126:1677;7543:2622\" data-node=\"I483:18577;136:7103;126:1677;7543:2622\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#0098d8] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-1#1\"></div>\n<div data-node-id=\"I483:18577;136:7103;126:1677;7543:2624\" data-node=\"I483:18577;136:7103;126:1677;7543:2624\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#b6c0cb] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-2#1\"></div>\n<div data-node-id=\"I483:18577;136:7103;126:1677;7543:2625\" data-node=\"I483:18577;136:7103;126:1677;7543:2625\" data-w-intent=\"fill\" data-h-intent=\"fixed\" data-w-rem=\"1.109375rem\" class=\"grow basis-0 min-w-0 h-[0.3125rem] bg-[#74af27] bg-center\" data-key=\"instance:h2#1/frame:h2#1/instance:decorativebarhorizontal#1/rectangle:rectangle-3#1\"></div></div></div>\n<div data-node-id=\"I483:18577;136:7104\" data-node=\"I483:18577;136:7104\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"71.5rem\" class=\"flex flex-col md:flex-row md:justify-start md:items-center gap-[3rem] md:flex-wrap self-center w-full\" data-key=\"frame:testim#1\"><div data-node-id=\"I483:18577;137:7205\" data-node=\"I483:18577;137:7205\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"2.5rem\" class=\"flex flex-col md:flex-row md:justify-end md:items-center gap-[1rem] shrink-0 self-center h-auto\" data-key=\"frame:testim#1/frame:nav#1\"><button data-node-id=\"I483:18577;137:7206\" data-node=\"I483:18577;137:7206\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"2.5rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center gap-[0.5rem] pt-[0.75rem] pr-[0.75rem] pb-[0.75rem] pl-[0.75rem] bg-[#0a1119] bg-center w-full max-w-[2.5rem] text-[#f6faff] hover:bg-[#40bff5] shrink-0 self-center h-auto\" data-key=\"frame:testim#1/frame:nav#1/instance:button#1\" type=\"button\" aria-label=\"Button\"><span data-node-id=\"I483:18577;137:7206;5509:2897\" data-node=\"I483:18577;137:7206;5509:2897\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"1rem\" class=\"max-w-full shrink-0 max-sm:h-auto h-[1rem] overflow-hidden\"><img data-node-id=\"I483:18577;137:7206;5509:2897;7593:6297\" src=\"/assets/vector-mlp8n0ql.png\" alt=\"Vector\" loading=\"lazy\" decoding=\"async\" class=\"basis-[0.291688rem] shrink-0 max-sm:h-auto h-[0.583313rem] border-[0.125rem] border-[rgba(246,250,255,1)] max-sm:object-contain object-cover\"></span></button></div>\n<div data-node-id=\"I483:18577;136:7106\" data-node=\"I483:18577;136:7106\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"28.75rem\" class=\"flex flex-col md:justify-start md:items-start gap-[0.625rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#f9fafb] bg-center shrink-0 self-start relative h-auto\" data-key=\"frame:testim#1/frame:text#1\"><div data-node-id=\"I483:18577;137:7226\" data-node=\"I483:18577;137:7226\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"2.75rem\" class=\"bg-[#f9fafb] bg-center absolute inset-0 pointer-events-none h-auto w-[2.75rem]\" data-key=\"frame:testim#1/frame:text#1/rectangle:rectangle-35#1\" aria-hidden=\"true\"></div>\n<h1 data-node-id=\"I483:18577;137:7203\" data-node=\"I483:18577;137:7203\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"2.5rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[5rem] font-[700] leading-[5.75rem] tracking-[-0.01rem] text-[#d4d4d4] font-['Montserrat'] uppercase w-full max-w-[2.5rem]\" data-key=\"frame:testim#1/frame:text#1/text:#1\">”</h1>\n<p data-node-id=\"I483:18577;136:7108\" data-node=\"I483:18577;136:7108\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"24.75rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[1rem] font-[400] leading-[1.5rem] text-[#000000] font-['Montserrat'] w-full max-w-[24.75rem]\" data-key=\"frame:testim#1/frame:text#1/text:from-refurbishment-and-tenant-sourcing-to-management-rent-co#1\">“From refurbishment and tenant sourcing to management, rent collection, sales, and tax agent services, all handled for you.”</p>\n<h1 data-node-id=\"I483:18577;136:7107\" data-node=\"I483:18577;136:7107\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"24.75rem\" data-ff=\"Playfair\" class=\"break-words text-left text-[4rem] font-[400] leading-[3.5rem] tracking-[-0.01rem] text-[#0a1119] font-['Playfair'] w-full max-w-[24.75rem]\" data-key=\"frame:testim#1/frame:text#1/text:ned-burke#1\">Ned Burke</h1>\n<p data-node-id=\"I483:18577;136:7195\" data-node=\"I483:18577;136:7195\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"24.75rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[1rem] font-[600] leading-[1.5rem] tracking-[0.005rem] text-[#0a1119] font-['Montserrat'] w-full max-w-[24.75rem]\" data-key=\"frame:testim#1/frame:text#1/text:barrister-at-law-society-ireland-august-2025#1\">Barrister at Law Society Ireland, August 2025</p></div>\n<div data-node-id=\"I483:18577;311:4608\" data-node=\"I483:18577;311:4608\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"28.75rem\" class=\"flex flex-col md:justify-start md:items-start gap-[0.625rem] pt-[2rem] pr-[2rem] pb-[2rem] pl-[2rem] bg-[#f9fafb] bg-center shrink-0 self-start relative h-auto\" data-key=\"frame:testim#1/frame:text#2\"><div data-node-id=\"I483:18577;311:4609\" data-node=\"I483:18577;311:4609\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"2.75rem\" class=\"bg-[#f9fafb] bg-center absolute inset-0 pointer-events-none h-auto w-[2.75rem]\" data-key=\"frame:testim#1/frame:text#2/rectangle:rectangle-35#1\" aria-hidden=\"true\"></div>\n<h1 data-node-id=\"I483:18577;311:4610\" data-node=\"I483:18577;311:4610\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"2.5rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[5rem] font-[700] leading-[5.75rem] tracking-[-0.01rem] text-[#d4d4d4] font-['Montserrat'] uppercase w-full max-w-[2.5rem]\" data-key=\"frame:testim#1/frame:text#2/text:#1\">”</h1>\n<p data-node-id=\"I483:18577;311:4613\" data-node=\"I483:18577;311:4613\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"24.75rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[1rem] font-[400] leading-[1.5rem] text-[#000000] font-['Montserrat'] w-full max-w-[24.75rem]\" data-key=\"frame:testim#1/frame:text#2/text:from-refurbishment-and-tenant-sourcing-to-management-rent-co#1\">“From refurbishment and tenant sourcing to management, rent collection, sales, and tax agent services, all handled for you.”</p>\n<h1 data-node-id=\"I483:18577;311:4611\" data-node=\"I483:18577;311:4611\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"24.75rem\" data-ff=\"Playfair\" class=\"break-words text-left text-[4rem] font-[400] leading-[3.5rem] tracking-[-0.01rem] text-[#0a1119] font-['Playfair'] uppercase w-full max-w-[24.75rem]\" data-key=\"frame:testim#1/frame:text#2/text:tg#1\">T.G.</h1>\n<p data-node-id=\"I483:18577;311:4612\" data-node=\"I483:18577;311:4612\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"24.75rem\" data-ff=\"Montserrat\" class=\"break-words text-left text-[1rem] font-[600] leading-[1.5rem] tracking-[0.005rem] text-[#0a1119] font-['Montserrat'] w-full max-w-[24.75rem]\" data-key=\"frame:testim#1/frame:text#2/text:barrister-at-law-society-ireland-august-2025#1\">Barrister at Law Society Ireland, August 2025</p></div>\n<div data-node-id=\"I483:18577;137:7217\" data-node=\"I483:18577;137:7217\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"2.5rem\" class=\"flex flex-col md:flex-row md:justify-end md:items-center gap-[1rem] shrink-0 self-center h-auto\" data-key=\"frame:testim#1/frame:nav#2\"><button data-node-id=\"I483:18577;137:7219\" data-node=\"I483:18577;137:7219\" data-w-intent=\"fixed\" data-h-intent=\"fixed\" data-w-rem=\"2.5rem\" class=\"flex flex-col md:flex-row md:justify-center md:items-center gap-[0.5rem] pt-[0.75rem] pr-[0.75rem] pb-[0.75rem] pl-[0.75rem] bg-[#0a1119] bg-center w-full max-w-[2.5rem] text-[#f6faff] hover:bg-[#40bff5] shrink-0 self-center h-auto\" data-key=\"frame:testim#1/frame:nav#2/instance:button#1\" type=\"button\" aria-label=\"Button\"><span data-node-id=\"I483:18577;137:7219;5509:2897\" data-node=\"I483:18577;137:7219;5509:2897\" data-w-intent=\"hug\" data-h-intent=\"hug\" data-w-rem=\"1rem\" class=\"max-w-full shrink-0 max-sm:h-auto h-[1rem] overflow-hidden\"><img data-node-id=\"I483:18577;137:7219;5509:2897;7593:6292\" src=\"/assets/vector-mlp8n0ut.png\" alt=\"Vector\" loading=\"lazy\" decoding=\"async\" class=\"basis-[0.291688rem] shrink-0 max-sm:h-auto h-[0.583313rem] border-[0.125rem] border-[rgba(246,250,255,1)] max-sm:object-contain object-cover\"></span></button></div></div></section>",
+  "patches": [],
+  "assets": {
+    "images": {
+      "overlay": "/assets/section_testim-mlp8n0yy.png"
+    }
+  },
+  "diagnostics": {
+    "offendersCount": 25,
+    "source": "fragment",
+    "warnings": [
+      {
+        "message": "Missing node for offender div@72."
+      },
+      {
+        "message": "Rejected patch for I483:18577;136:7103;126:1676: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;136:7103;126:1677: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;136:7107: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;136:7108: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;136:7195: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;137:7203: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;137:7206: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;137:7219: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;311:4610: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;311:4611: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;311:4612: Patch has no bounded ops."
+      },
+      {
+        "message": "Rejected patch for I483:18577;311:4613: Patch has no bounded ops."
+      }
+    ],
+    "errors": [],
+    "validation": {
+      "warnings": [
+        "Found 1 conflicting Tailwind class token(s) sharing the same modifier group."
+      ],
+      "stats": {
+        "elements": 22,
+        "tokens": 197,
+        "duplicateTokens": 0,
+        "conflictTokens": 1
+      }
+    },
+    "ledger": [],
+    "contracts": {
+      "order": [
+        "layout/classes/dedupeUtilities",
+        "layout/classes/dedupeConflictsHard",
+        "layout/display/dedupeDisplay",
+        "style/inline/stripRedundantInlineStyles",
+        "layout/wrappers/mergeLayoutSignature",
+        "layout/container/addMxAuto",
+        "layout/height/removeFixedHeights",
+        "layout/height/removeArbitraryWrapperHeights",
+        "layout/height/stripWrapperFixedHeightsStrict",
+        "layout/underline/normalizeBars",
+        "layout/width/fluidizeFixedRem",
+        "layout/width/dedupeWidths",
+        "layout/width/normalizeContainerWidths",
+        "layout/width/normalizeCenteredContainers",
+        "layout/width/enforceWidthIntent",
+        "layout/width/innerWrapperFixedWidthToMax",
+        "layout/width/widthRedundancyCollapseContract",
+        "layout/text/textFixedWidthGuardContract",
+        "layout/root/removeFrameDimensions",
+        "media/fill/applyBackgroundFromFigmaFill",
+        "media/fill/preserveBackgroundContainerHeight",
+        "media/videoFillSupport",
+        "media/img/objectContainOnSmall",
+        "layout/section/enforceMobileVerticalPadding",
+        "layout/text/nowrapGuard",
+        "layout/text/shrinkGuard",
+        "layout/align/centerCardContent",
+        "layout/grid/upgradeToGridForMatrices",
+        "layout/layoutModel/inferGridFromRepeatingCards",
+        "layout/grid/stripFlexChildSizing",
+        "layout/wrappers/flattenRedundant",
+        "layout/cleanup/previewNormalize",
+        "semantics/landmarks/upgradeLandmarks",
+        "semantics/interactive/cardToLinkOrButton",
+        "semantics/interactive/preventNestedInteractive",
+        "semantics/interactive/upgradeDivButtons",
+        "semantics/interactive/normalizeButtonContent",
+        "semantics/buttons/normalizeButtonChildren",
+        "semantics/buttons/promoteInteractiveFrames",
+        "semantics/buttons/centerButtonLabelWhenCentered",
+        "layout/section/containerPattern",
+        "layout/section/containerNormalize"
+      ],
+      "results": [
+        {
+          "id": "layout/classes/dedupeUtilities",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2626",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2626\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2626",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2626\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2626",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2626\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2622",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2622\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2622",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2622\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2622",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2622\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2624",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2624\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2624",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2624\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2624",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2624\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2625",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2625\"]",
+              "op": "classRemove",
+              "value": "grow",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2625",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2625\"]",
+              "op": "classRemove",
+              "value": "basis-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;136:7103;126:1677;7543:2625",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2625\"]",
+              "op": "classRemove",
+              "value": "min-w-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7205",
+              "selector": "[data-node-id=\"I483:18577;137:7205\"]",
+              "op": "classRemove",
+              "value": "w-[2.5rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7205",
+              "selector": "[data-node-id=\"I483:18577;137:7205\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "classRemove",
+              "value": "w-[2.5rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7206;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897\"]",
+              "op": "classRemove",
+              "value": "w-[1rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7206;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7206;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7217",
+              "selector": "[data-node-id=\"I483:18577;137:7217\"]",
+              "op": "classRemove",
+              "value": "w-[2.5rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7217",
+              "selector": "[data-node-id=\"I483:18577;137:7217\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "classRemove",
+              "value": "w-[2.5rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7219;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897\"]",
+              "op": "classRemove",
+              "value": "w-[1rem]",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7219;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897\"]",
+              "op": "classRemove",
+              "value": "max-w-full",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/classes/dedupeUtilities",
+              "nodeId": "I483:18577;137:7219;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897\"]",
+              "op": "classRemove",
+              "value": "shrink-0",
+              "reason": "Removed duplicate Tailwind class token(s)"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 26
+          }
+        },
+        {
+          "id": "layout/classes/dedupeConflictsHard",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "resolved": 0
+          }
+        },
+        {
+          "id": "layout/display/dedupeDisplay",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "section@3",
+              "selector": "",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18577;136:7103",
+              "selector": "[data-node-id=\"I483:18577;136:7103\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18577;136:7103;127:2091",
+              "selector": "[data-node-id=\"I483:18577;136:7103;127:2091\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18577;136:7104",
+              "selector": "[data-node-id=\"I483:18577;136:7104\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18577;136:7106",
+              "selector": "[data-node-id=\"I483:18577;136:7106\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            },
+            {
+              "contractId": "layout/display/dedupeDisplay",
+              "nodeId": "I483:18577;311:4608",
+              "selector": "[data-node-id=\"I483:18577;311:4608\"]",
+              "op": "classAdd",
+              "value": "canonical order/dedupe",
+              "reason": "Added flex/grid for direction/cols or canonicalized display"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "deduped": 7
+          }
+        },
+        {
+          "id": "style/inline/stripRedundantInlineStyles",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "stripped": 0
+          }
+        },
+        {
+          "id": "layout/wrappers/mergeLayoutSignature",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "merged": 0
+          }
+        },
+        {
+          "id": "layout/container/addMxAuto",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/container/addMxAuto",
+              "nodeId": "div@75",
+              "selector": "",
+              "op": "classAdd",
+              "value": "mx-auto",
+              "reason": "Container canonicalizer: w-full + max-w without mx-auto"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "added": 1
+          }
+        },
+        {
+          "id": "layout/height/removeFixedHeights",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18577;136:7103",
+              "selector": "[data-node-id=\"I483:18577;136:7103\"]",
+              "op": "classRemove",
+              "value": "h-[4.3125rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            },
+            {
+              "contractId": "layout/height/removeFixedHeights",
+              "nodeId": "I483:18577;136:7103;127:2091",
+              "selector": "[data-node-id=\"I483:18577;136:7103;127:2091\"]",
+              "op": "classRemove",
+              "value": "h-[4.3125rem]",
+              "reason": "Removed fixed-height tokens (non-media wrapper)"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 2
+          }
+        },
+        {
+          "id": "layout/height/removeArbitraryWrapperHeights",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "heightRemove",
+              "value": "h-[32.0625rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;136:7104",
+              "selector": "[data-node-id=\"I483:18577;136:7104\"]",
+              "op": "heightRemove",
+              "value": "h-[14.75rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;137:7205",
+              "selector": "[data-node-id=\"I483:18577;137:7205\"]",
+              "op": "heightRemove",
+              "value": "h-[2.5rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "heightRemove",
+              "value": "h-[2.5rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;136:7106",
+              "selector": "[data-node-id=\"I483:18577;136:7106\"]",
+              "op": "heightRemove",
+              "value": "h-[14.75rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;137:7226",
+              "selector": "[data-node-id=\"I483:18577;137:7226\"]",
+              "op": "heightRemove",
+              "value": "h-[2.75rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;311:4608",
+              "selector": "[data-node-id=\"I483:18577;311:4608\"]",
+              "op": "heightRemove",
+              "value": "h-[14.75rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;311:4609",
+              "selector": "[data-node-id=\"I483:18577;311:4609\"]",
+              "op": "heightRemove",
+              "value": "h-[2.75rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;137:7217",
+              "selector": "[data-node-id=\"I483:18577;137:7217\"]",
+              "op": "heightRemove",
+              "value": "h-[2.5rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            },
+            {
+              "contractId": "layout/height/removeArbitraryWrapperHeights",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "heightRemove",
+              "value": "h-[2.5rem]",
+              "reason": "Removed arbitrary wrapper height, added h-auto"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 10
+          }
+        },
+        {
+          "id": "layout/height/stripWrapperFixedHeightsStrict",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "stripped": 0
+          }
+        },
+        {
+          "id": "layout/underline/normalizeBars",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "layout/width/fluidizeFixedRem",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18577;136:7103",
+              "selector": "[data-node-id=\"I483:18577;136:7103\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18577;136:7103;127:2091",
+              "selector": "[data-node-id=\"I483:18577;136:7103;127:2091\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            },
+            {
+              "contractId": "layout/width/fluidizeFixedRem",
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "op": "classReplace",
+              "value": "fluidize fixed rem widths",
+              "reason": "Replaced fixed rem widths with fluid rules"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "fluidized": 3
+          }
+        },
+        {
+          "id": "layout/width/dedupeWidths",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "classRemove",
+              "value": "w-[80rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "op": "classRemove",
+              "value": "w-[4.4375rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;137:7205",
+              "selector": "[data-node-id=\"I483:18577;137:7205\"]",
+              "op": "classRemove",
+              "value": "w-[2.5rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;137:7206;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897\"]",
+              "op": "classRemove",
+              "value": "w-[1rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;136:7106",
+              "selector": "[data-node-id=\"I483:18577;136:7106\"]",
+              "op": "classRemove",
+              "value": "w-[28.75rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;311:4608",
+              "selector": "[data-node-id=\"I483:18577;311:4608\"]",
+              "op": "classRemove",
+              "value": "w-[28.75rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;137:7217",
+              "selector": "[data-node-id=\"I483:18577;137:7217\"]",
+              "op": "classRemove",
+              "value": "w-[2.5rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "nodeId": "I483:18577;137:7219;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897\"]",
+              "op": "classRemove",
+              "value": "w-[1rem]",
+              "reason": "Resolved conflicting Tailwind class token(s)"
+            }
+          ],
+          "warnings": [
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;136:7104",
+              "selector": "[data-node-id=\"I483:18577;136:7104\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]"
+            },
+            {
+              "contractId": "layout/width/dedupeWidths",
+              "message": "Skipped width dedupe: parent width control not detected.",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]"
+            }
+          ],
+          "stats": {
+            "removed": 8
+          }
+        },
+        {
+          "id": "layout/width/normalizeContainerWidths",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "layout/width/normalizeCenteredContainers",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "layout/width/enforceWidthIntent",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18577;137:7226",
+              "selector": "[data-node-id=\"I483:18577;137:7226\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            },
+            {
+              "contractId": "layout/width/enforceWidthIntent",
+              "nodeId": "I483:18577;311:4609",
+              "selector": "[data-node-id=\"I483:18577;311:4609\"]",
+              "op": "enforceWidthIntent",
+              "value": "fixed intent normalized",
+              "reason": "Fixed width intent without matching width constraint"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "enforced": 4
+          }
+        },
+        {
+          "id": "layout/width/innerWrapperFixedWidthToMax",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18577;136:7104",
+              "selector": "[data-node-id=\"I483:18577;136:7104\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            },
+            {
+              "contractId": "layout/width/innerWrapperFixedWidthToMax",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "widthNormalize",
+              "value": "w-[X] -> w-full max-w-[X]",
+              "reason": "Fixed width made responsive for inner wrapper"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 4
+          }
+        },
+        {
+          "id": "layout/width/widthRedundancyCollapseContract",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7103",
+              "selector": "[data-node-id=\"I483:18577;136:7103\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7103;127:2091",
+              "selector": "[data-node-id=\"I483:18577;136:7103;127:2091\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7104",
+              "selector": "[data-node-id=\"I483:18577;136:7104\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;137:7205",
+              "selector": "[data-node-id=\"I483:18577;137:7205\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7106",
+              "selector": "[data-node-id=\"I483:18577;136:7106\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;311:4608",
+              "selector": "[data-node-id=\"I483:18577;311:4608\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;137:7217",
+              "selector": "[data-node-id=\"I483:18577;137:7217\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            },
+            {
+              "contractId": "layout/width/widthRedundancyCollapseContract",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "widthRedundancyCollapse",
+              "value": "removed redundant width constraints",
+              "reason": "Ancestor already enforces equivalent or stricter width"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "removed": 17
+          }
+        },
+        {
+          "id": "layout/text/textFixedWidthGuardContract",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            },
+            {
+              "contractId": "layout/text/textFixedWidthGuardContract",
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "op": "textWidthNormalize",
+              "value": "w-[X] -> w-full max-w-[X] max-w-full",
+              "reason": "Text width made responsive without changing content or typography"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 9
+          }
+        },
+        {
+          "id": "layout/root/removeFrameDimensions",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/root/removeFrameDimensions",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "removeFixedDimensions",
+              "value": "w-full",
+              "reason": "Removed fixed frame dimensions from layout root"
+            },
+            {
+              "contractId": "layout/root/removeFrameDimensions",
+              "nodeId": "I483:18577;136:7104",
+              "selector": "[data-node-id=\"I483:18577;136:7104\"]",
+              "op": "removeFixedDimensions",
+              "value": "w-full",
+              "reason": "Removed fixed frame dimensions from layout root"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 2
+          }
+        },
+        {
+          "id": "media/fill/applyBackgroundFromFigmaFill",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0,
+            "wrapped": 0
+          }
+        },
+        {
+          "id": "media/fill/preserveBackgroundContainerHeight",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0
+          }
+        },
+        {
+          "id": "media/videoFillSupport",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0
+          }
+        },
+        {
+          "id": "media/img/objectContainOnSmall",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "media/img/objectContainOnSmall",
+              "nodeId": "I483:18577;137:7206;5509:2897;7593:6297",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897;7593:6297\"]",
+              "op": "classAdd",
+              "value": "max-sm:object-contain",
+              "reason": "Add max-sm overrides for object fit and height on small screens"
+            },
+            {
+              "contractId": "media/img/objectContainOnSmall",
+              "nodeId": "I483:18577;137:7219;5509:2897;7593:6292",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897;7593:6292\"]",
+              "op": "classAdd",
+              "value": "max-sm:object-contain",
+              "reason": "Add max-sm overrides for object fit and height on small screens"
+            },
+            {
+              "contractId": "media/img/objectContainOnSmall",
+              "nodeId": "I483:18577;137:7206;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897\"]",
+              "op": "classAdd",
+              "value": "max-sm:h-auto",
+              "reason": "Relax wrapper height at max-sm when img uses object-contain"
+            },
+            {
+              "contractId": "media/img/objectContainOnSmall",
+              "nodeId": "I483:18577;137:7219;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897\"]",
+              "op": "classAdd",
+              "value": "max-sm:h-auto",
+              "reason": "Relax wrapper height at max-sm when img uses object-contain"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 4
+          }
+        },
+        {
+          "id": "layout/section/enforceMobileVerticalPadding",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/section/enforceMobileVerticalPadding",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "paddingNormalize",
+              "value": "enforce mobile vertical padding",
+              "reason": "Normalized base pt/pb to 2.5rem and preserved md values"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "adjusted": 1
+          }
+        },
+        {
+          "id": "layout/text/nowrapGuard",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "removed": 0
+          }
+        },
+        {
+          "id": "layout/text/shrinkGuard",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "removed": 0
+          }
+        },
+        {
+          "id": "layout/align/centerCardContent",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/align/centerCardContent",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "classAdd",
+              "value": "items-center",
+              "reason": "Center card content on mobile when descendants are centered"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "added": 1
+          }
+        },
+        {
+          "id": "layout/grid/upgradeToGridForMatrices",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "upgraded": 0
+          }
+        },
+        {
+          "id": "layout/layoutModel/inferGridFromRepeatingCards",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "upgraded": 0
+          }
+        },
+        {
+          "id": "layout/grid/stripFlexChildSizing",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "stripped": 0
+          }
+        },
+        {
+          "id": "layout/wrappers/flattenRedundant",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "flattened": 0
+          }
+        },
+        {
+          "id": "layout/cleanup/previewNormalize",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;136:7103",
+              "selector": "[data-node-id=\"I483:18577;136:7103\"]",
+              "op": "collapseWrapper",
+              "value": "merged wrapper into child",
+              "reason": "Redundant wrapper with no unique semantics"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;136:7102",
+              "selector": "[data-node-id=\"I483:18577;136:7102\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            },
+            {
+              "contractId": "layout/cleanup/previewNormalize",
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "op": "dedupeClasses",
+              "value": "removed duplicates",
+              "reason": "Removed redundant class tokens"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "merged": 1,
+            "normalized": 10
+          }
+        },
+        {
+          "id": "semantics/landmarks/upgradeLandmarks",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "upgraded": 0
+          }
+        },
+        {
+          "id": "semantics/interactive/cardToLinkOrButton",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            },
+            {
+              "contractId": "semantics/interactive/cardToLinkOrButton",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "stripAffordances",
+              "value": "preserved state styles",
+              "reason": "State styles preserved on non-interactive card"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "updated": 2
+          }
+        },
+        {
+          "id": "semantics/interactive/preventNestedInteractive",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "demoted": 0
+          }
+        },
+        {
+          "id": "semantics/interactive/upgradeDivButtons",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            },
+            {
+              "contractId": "semantics/interactive/upgradeDivButtons",
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "op": "upgradeToButton",
+              "value": "button type=button",
+              "reason": "Button-like div/span converted to semantic button"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "upgraded": 2,
+            "fallback": 0
+          }
+        },
+        {
+          "id": "semantics/interactive/normalizeButtonContent",
+          "accepted": true,
+          "regressed": false,
+          "changes": [
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18577;137:7206;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7206;5509:2897\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            },
+            {
+              "contractId": "semantics/interactive/normalizeButtonContent",
+              "nodeId": "I483:18577;137:7219;5509:2897",
+              "selector": "[data-node-id=\"I483:18577;137:7219;5509:2897\"]",
+              "op": "blockToSpan",
+              "value": "div→span",
+              "reason": "Button may only contain phrasing content"
+            }
+          ],
+          "warnings": [],
+          "stats": {
+            "normalized": 2
+          }
+        },
+        {
+          "id": "semantics/buttons/normalizeButtonChildren",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        },
+        {
+          "id": "semantics/buttons/promoteInteractiveFrames",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "promoted": 0
+          }
+        },
+        {
+          "id": "semantics/buttons/centerButtonLabelWhenCentered",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "adjusted": 0
+          }
+        },
+        {
+          "id": "layout/section/containerPattern",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "wrapped": 0,
+            "adjusted": 0,
+            "gridAdjusted": 0
+          }
+        },
+        {
+          "id": "layout/section/containerNormalize",
+          "accepted": true,
+          "regressed": false,
+          "changes": [],
+          "warnings": [],
+          "stats": {
+            "normalized": 0
+          }
+        }
+      ],
+      "totals": {
+        "changes": 116,
+        "warnings": 13
+      }
+    },
+    "evaluation": {
+      "offendersCount": 13,
+      "source": "fragment"
+    },
+    "iteration": 3,
+    "provider": "rules",
+    "patchPlan": {
+      "offendersFound": 13,
+      "selectedOffenders": 13,
+      "generated": 12,
+      "accepted": 0,
+      "rejected": 12,
+      "provider": "rules",
+      "gateAccepted": true
+    },
+    "improveSummary": "Offenders: 13 | Proposed: 12 | Accepted: 0 | Rejected: 12 | Provider: rules",
+    "offendersFoundButRejected": true,
+    "offendersFoundButGateRejected": false,
+    "noOffendersFound": false,
+    "rejectionReasonGroups": [
+      {
+        "reason": "Patch has no bounded ops.",
+        "count": 12,
+        "nodeIds": [
+          "I483:18577;136:7103;126:1676",
+          "I483:18577;136:7103;126:1677",
+          "I483:18577;136:7107",
+          "I483:18577;136:7108",
+          "I483:18577;136:7195",
+          "I483:18577;137:7203",
+          "I483:18577;137:7206",
+          "I483:18577;137:7219",
+          "I483:18577;311:4610",
+          "I483:18577;311:4611",
+          "I483:18577;311:4612",
+          "I483:18577;311:4613"
+        ]
+      }
+    ],
+    "planDiagnostics": [],
+    "history": [
+      {
+        "iteration": 1,
+        "createdAt": "2026-02-16T13:57:04.357Z",
+        "inputHash": "5173f5c2d6e1aa01a2236e427de4f92332357f158ba88b4c7a54390cec06664f",
+        "acceptedPatches": [],
+        "rejectedPatches": [
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "stage": "improve",
+              "iteration": 1,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          }
+        ],
+        "scoreBefore": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "scoreAfter": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "patchPlan": {
+          "offendersFound": 13,
+          "selectedOffenders": 13,
+          "generated": 12,
+          "accepted": 0,
+          "rejected": 12,
+          "provider": "rules",
+          "gateAccepted": true
+        }
+      },
+      {
+        "iteration": 2,
+        "createdAt": "2026-02-16T13:57:10.711Z",
+        "inputHash": "5173f5c2d6e1aa01a2236e427de4f92332357f158ba88b4c7a54390cec06664f",
+        "acceptedPatches": [],
+        "rejectedPatches": [
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "stage": "improve",
+              "iteration": 2,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          }
+        ],
+        "scoreBefore": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "scoreAfter": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "patchPlan": {
+          "offendersFound": 13,
+          "selectedOffenders": 13,
+          "generated": 12,
+          "accepted": 0,
+          "rejected": 12,
+          "provider": "rules",
+          "gateAccepted": true
+        }
+      },
+      {
+        "iteration": 3,
+        "createdAt": "2026-02-16T13:57:14.604Z",
+        "inputHash": "5173f5c2d6e1aa01a2236e427de4f92332357f158ba88b4c7a54390cec06664f",
+        "acceptedPatches": [],
+        "rejectedPatches": [
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          },
+          {
+            "patch": {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "stage": "improve",
+              "iteration": 3,
+              "ops": {
+                "classAdd": [],
+                "classRemove": [],
+                "classReplace": {},
+                "attrAdd": {},
+                "attrRemove": []
+              }
+            },
+            "reason": "Patch has no bounded ops."
+          }
+        ],
+        "scoreBefore": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "scoreAfter": {
+          "breakpoints": {
+            "mobile": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "tablet": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            },
+            "desktop": {
+              "visual": {
+                "pixelDiffRatio": {
+                  "value": null,
+                  "source": "placeholder",
+                  "diffPixels": 0,
+                  "totalPixels": 0,
+                  "at": null
+                }
+              },
+              "layout": {
+                "fixedHeightWrapperCount": 0,
+                "overflowXCount": 0,
+                "conflictingWidthCount": 13
+              },
+              "type": {
+                "wrapAnomalyCount": 0
+              },
+              "a11y": {
+                "imgMissingAltCount": 0,
+                "interactiveNameMissingCount": 0,
+                "total": 0
+              }
+            }
+          },
+          "offenders": [
+            {
+              "nodeId": "I483:18577;136:7103;126:1676",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7103;126:1677",
+              "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7107",
+              "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7108",
+              "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;136:7195",
+              "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7203",
+              "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7206",
+              "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;137:7219",
+              "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4610",
+              "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4611",
+              "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4612",
+              "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "I483:18577;311:4613",
+              "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            },
+            {
+              "nodeId": "div@72",
+              "selector": "div",
+              "breakpoint": "all",
+              "category": "layout",
+              "impact": 60,
+              "suggestedStage": "codeit",
+              "suggestedContract": "layout/width/dedupeWidths",
+              "hint": "Conflicting width utilities"
+            }
+          ]
+        },
+        "patchPlan": {
+          "offendersFound": 13,
+          "selectedOffenders": 13,
+          "generated": 12,
+          "accepted": 0,
+          "rejected": 12,
+          "provider": "rules",
+          "gateAccepted": true
+        }
+      }
+    ]
+  },
+  "metrics": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": null,
+            "source": "placeholder",
+            "diffPixels": 0,
+            "totalPixels": 0,
+            "at": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": null,
+            "source": "placeholder",
+            "diffPixels": 0,
+            "totalPixels": 0,
+            "at": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": null,
+            "source": "placeholder",
+            "diffPixels": 0,
+            "totalPixels": 0,
+            "at": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I483:18577;136:7103;126:1676",
+        "selector": "[data-node-id=\"I483:18577;136:7103;126:1676\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;136:7103;126:1677",
+        "selector": "[data-node-id=\"I483:18577;136:7103;126:1677\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;136:7107",
+        "selector": "[data-node-id=\"I483:18577;136:7107\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;136:7108",
+        "selector": "[data-node-id=\"I483:18577;136:7108\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;136:7195",
+        "selector": "[data-node-id=\"I483:18577;136:7195\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;137:7203",
+        "selector": "[data-node-id=\"I483:18577;137:7203\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;137:7206",
+        "selector": "[data-node-id=\"I483:18577;137:7206\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;137:7219",
+        "selector": "[data-node-id=\"I483:18577;137:7219\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;311:4610",
+        "selector": "[data-node-id=\"I483:18577;311:4610\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;311:4611",
+        "selector": "[data-node-id=\"I483:18577;311:4611\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;311:4612",
+        "selector": "[data-node-id=\"I483:18577;311:4612\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I483:18577;311:4613",
+        "selector": "[data-node-id=\"I483:18577;311:4613\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@72",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ],
+    "deltas": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "before": null,
+            "after": null,
+            "delta": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 0
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "before": null,
+            "after": null,
+            "delta": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 0
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "before": null,
+            "after": null,
+            "delta": null
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 0
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "total": 0
+        }
+      }
+    },
+    "iteration": 3,
+    "fallbackScore": 87
+  },
+  "nodeIndex": {
+    "I483:18577;136:7102": [
+      "[data-node-id=\"I483:18577;136:7102\"]"
+    ],
+    "I483:18577;136:7103": [
+      "[data-node-id=\"I483:18577;136:7103\"]"
+    ],
+    "I483:18577;136:7103;127:2091": [
+      "[data-node-id=\"I483:18577;136:7103;127:2091\"]"
+    ],
+    "I483:18577;136:7103;126:1676": [
+      "[data-node-id=\"I483:18577;136:7103;126:1676\"]"
+    ],
+    "I483:18577;136:7103;126:1677": [
+      "[data-node-id=\"I483:18577;136:7103;126:1677\"]"
+    ],
+    "I483:18577;136:7103;126:1677;7543:2626": [
+      "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2626\"]"
+    ],
+    "I483:18577;136:7103;126:1677;7543:2622": [
+      "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2622\"]"
+    ],
+    "I483:18577;136:7103;126:1677;7543:2624": [
+      "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2624\"]"
+    ],
+    "I483:18577;136:7103;126:1677;7543:2625": [
+      "[data-node-id=\"I483:18577;136:7103;126:1677;7543:2625\"]"
+    ],
+    "I483:18577;136:7104": [
+      "[data-node-id=\"I483:18577;136:7104\"]"
+    ],
+    "I483:18577;137:7205": [
+      "[data-node-id=\"I483:18577;137:7205\"]"
+    ],
+    "I483:18577;137:7206": [
+      "[data-node-id=\"I483:18577;137:7206\"]"
+    ],
+    "I483:18577;137:7206;5509:2897": [
+      "[data-node-id=\"I483:18577;137:7206;5509:2897\"]"
+    ],
+    "I483:18577;137:7206;5509:2897;7593:6297": [
+      "[data-node-id=\"I483:18577;137:7206;5509:2897;7593:6297\"]"
+    ],
+    "I483:18577;136:7106": [
+      "[data-node-id=\"I483:18577;136:7106\"]"
+    ],
+    "I483:18577;137:7226": [
+      "[data-node-id=\"I483:18577;137:7226\"]"
+    ],
+    "I483:18577;137:7203": [
+      "[data-node-id=\"I483:18577;137:7203\"]"
+    ],
+    "I483:18577;136:7108": [
+      "[data-node-id=\"I483:18577;136:7108\"]"
+    ],
+    "I483:18577;136:7107": [
+      "[data-node-id=\"I483:18577;136:7107\"]"
+    ],
+    "I483:18577;136:7195": [
+      "[data-node-id=\"I483:18577;136:7195\"]"
+    ],
+    "I483:18577;311:4608": [
+      "[data-node-id=\"I483:18577;311:4608\"]"
+    ],
+    "I483:18577;311:4609": [
+      "[data-node-id=\"I483:18577;311:4609\"]"
+    ],
+    "I483:18577;311:4610": [
+      "[data-node-id=\"I483:18577;311:4610\"]"
+    ],
+    "I483:18577;311:4613": [
+      "[data-node-id=\"I483:18577;311:4613\"]"
+    ],
+    "I483:18577;311:4611": [
+      "[data-node-id=\"I483:18577;311:4611\"]"
+    ],
+    "I483:18577;311:4612": [
+      "[data-node-id=\"I483:18577;311:4612\"]"
+    ],
+    "I483:18577;137:7217": [
+      "[data-node-id=\"I483:18577;137:7217\"]"
+    ],
+    "I483:18577;137:7219": [
+      "[data-node-id=\"I483:18577;137:7219\"]"
+    ],
+    "I483:18577;137:7219;5509:2897": [
+      "[data-node-id=\"I483:18577;137:7219;5509:2897\"]"
+    ],
+    "I483:18577;137:7219;5509:2897;7593:6292": [
+      "[data-node-id=\"I483:18577;137:7219;5509:2897;7593:6292\"]"
+    ]
+  }
+}

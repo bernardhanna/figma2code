@@ -29,6 +29,13 @@ const IMPROVE = {
   DONE: "Done.",
 };
 
+const QA_GATE = {
+  AUDIT: "Running QA audit…",
+  FIX: "Applying auto-fixes…",
+  RE_AUDIT: "Re-running audit…",
+  DONE: "Done.",
+};
+
 /** Build "Contract: <id>…" label for codeit. */
 function codeitContractStep(contractId) {
   const id = String(contractId || "").trim();
@@ -44,6 +51,7 @@ function improveSelectingStep(n) {
 module.exports = {
   CODEIT,
   IMPROVE,
+  QA_GATE,
   codeitContractStep,
   improveSelectingStep,
 };
