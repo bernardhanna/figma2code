@@ -20,14 +20,12 @@ import { PREVIEW_DIR, ROOT } from "./runtimePaths.js";
 import { getConfig } from "./configStore.js";
 import { ensureThemeOutputDirs } from "./themeOutputDirs.js";
 import { classStrip } from "./classSanitizer.js";
-import { repairTailwindClasses, validateTailwindClasses } from "./tailwindPreflight.js";
 import { capturePreviewScreenshot, capturePreviewScreenshots } from "./previewScreenshot.js";
 import { buildPreviewResponse } from "./previewResponse.js";
 import {
   buildPreviewFragment,
-  buildMergedResponsivePreview,
-  loadVariantsForGroup,
 } from "./fragmentPipeline.js";
+import { runBuildAndPreview } from "./buildOrchestrator.js";
 import { listStages, deleteStage } from "./stageStore.js";
 
 import { normalizeAst } from "../auto/normalizeAst.js";
@@ -38,8 +36,8 @@ import { interactiveStatesPass } from "../auto/interactiveStatesPass.js";
 import { acfPhp } from "../templates/acf.php.js";
 import { frontendPhp } from "../templates/frontend.php.js";
 import { preventNestedInteractive } from "../auto/preventNestedInteractive.js";
+import { learnedRulesPass } from "../auto/learnedRulesPass.js";
 import { previewHtml } from "../templates/preview.html.js";
-import { applyContracts } from "../contracts/index.js";
 
 function resolvePreviewViewport(ast) {
   const widthRaw =
@@ -135,6 +133,43 @@ function buildContractsSummary(contractsReport) {
   };
 }
 
+function readBuildReport(reportPath) {
+  if (!reportPath || !fs.existsSync(reportPath)) return null;
+  try {
+    return JSON.parse(fs.readFileSync(reportPath, "utf8"));
+  } catch {
+    return null;
+  }
+}
+
+function buildResponseReportFromBuildReport(buildReport, fallback = {}) {
+  if (!buildReport) return fallback;
+  const warnings = Array.isArray(buildReport.warnings) ? buildReport.warnings : [];
+  const errors = [];
+  if (buildReport.error) {
+    errors.push(`${buildReport.stage || "unknown"}: ${buildReport.error}`);
+  }
+  const fixes = Array.isArray(buildReport.autoFixesApplied) ? buildReport.autoFixesApplied : [];
+  return {
+    warnings,
+    errors,
+    fixes,
+    summary: {
+      warnings: warnings.length,
+      errors: errors.length,
+      fixes: fixes.length,
+      timings: buildReport.timings || {},
+      buildStatus: buildReport.buildStatus || "unknown",
+    },
+    details: {
+      stages: buildReport.stages || {},
+      qa: buildReport.qa || null,
+      contracts: buildReport.contracts || null,
+      events: buildReport.events || [],
+    },
+  };
+}
+
 const PIPELINE_FIXTURES_DIR = path.resolve(ROOT, "..", "fixtures.out");
 const PIPELINE_ROOT = path.resolve(ROOT, "..");
 const ALLOWED_STAGES = new Set(["generate", "codeit", "improve"]);
@@ -197,7 +232,7 @@ function validateFixedHtmlForApply(html) {
   };
 }
 
-function repairCachedPreviewHtml(rawHtml) {
+export function repairCachedPreviewHtml(rawHtml) {
   let html = String(rawHtml || "");
   // Repair stale previews where newline was emitted as a literal newline inside a JS string (invalid).
   // .join(" \n ") or .join("\n") with real newline → .join("\n")
@@ -310,6 +345,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         autoLayoutify,
         semanticAccessiblePass,
         preventNestedInteractive,
+        learnedRulesPass,
         interactiveStatesPass,
         previewHtml,
         previewOnly: true,
@@ -317,14 +353,17 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
 
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });
 
-      const preflight = repairTailwindClasses(r.fragment || "");
-      const contractsOut = applyContracts({ html: preflight.html, slug: r.ast.slug });
-      const previewFragment = contractsOut.html;
-      const validation = validateTailwindClasses(previewFragment);
-      const previewMarkup = repairCachedPreviewHtml(previewHtml(r.ast, { fragment: previewFragment }));
-
+      const build = await runBuildAndPreview({ slug: r.ast.slug });
+      if (!build.ok) {
+        return res.status(500).json({
+          ok: false,
+          error: build.error || "Build pipeline failed.",
+          stage: build.stage,
+          reportPath: build.reportPath ?? undefined,
+        });
+      }
+      const buildReport = readBuildReport(build.reportPath);
       const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
-      fs.writeFileSync(previewOut, previewMarkup, "utf8");
 
       const { viewports, minHeight } = resolvePreviewViewports(r.ast);
       let screenshotUrls = {};
@@ -340,14 +379,12 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       }
       const screenshotUrl = screenshotUrls?.desktop || null;
 
-      const report = buildPreviewReport({
-        preflight,
-        validation,
-        phase2Report: r.phase2Report,
-        phase3: r.phase3,
-        contractsReport: contractsOut.report,
+      const report = buildResponseReportFromBuildReport(buildReport, {
+        warnings: [],
+        errors: [],
+        fixes: [],
       });
-      const contractsSummary = buildContractsSummary(contractsOut.report);
+      const contractsSummary = buildContractsSummary(buildReport?.contracts || null);
 
       console.log("[preview-only] sending response, slug:", r.ast.slug);
       return res.json(
@@ -699,6 +736,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         autoLayoutify,
         semanticAccessiblePass,
         preventNestedInteractive,
+        learnedRulesPass,
         interactiveStatesPass,
         previewHtml,
         previewOnly: false,
@@ -716,17 +754,21 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
 
       const acfOut = path.join(OUT_ACF, `acf_${r.ast.slug}.php`);
       const frontOut = path.join(phpDir, `${r.ast.slug}.php`);
-      const preflight = repairTailwindClasses(r.fragment || "");
-      const contractsOut = applyContracts({ html: preflight.html, slug: r.ast.slug });
-      const previewFragment = contractsOut.html;
-      const validation = validateTailwindClasses(previewFragment);
-      const previewMarkup = repairCachedPreviewHtml(previewHtml(r.ast, { fragment: previewFragment }));
-
       const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
 
       fs.writeFileSync(acfOut, acf, "utf8");
       fs.writeFileSync(frontOut, front, "utf8");
-      fs.writeFileSync(previewOut, previewMarkup, "utf8");
+      const build = await runBuildAndPreview({ slug: r.ast.slug });
+      if (!build.ok) {
+        return res.status(500).json({
+          ok: false,
+          error: build.error || "Build pipeline failed.",
+          stage: build.stage,
+          reportPath: build.reportPath ?? undefined,
+          paths: { acf: acfOut, frontend: frontOut },
+        });
+      }
+      const buildReport = readBuildReport(build.reportPath);
 
       const { viewports, minHeight } = resolvePreviewViewports(r.ast);
       let screenshotUrls = {};
@@ -742,14 +784,12 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       }
       const screenshotUrl = screenshotUrls?.desktop || null;
 
-      const report = buildPreviewReport({
-        preflight,
-        validation,
-        phase2Report: r.phase2Report,
-        phase3: r.phase3,
-        contractsReport: contractsOut.report,
+      const report = buildResponseReportFromBuildReport(buildReport, {
+        warnings: [],
+        errors: [],
+        fixes: [],
       });
-      const contractsSummary = buildContractsSummary(contractsOut.report);
+      const contractsSummary = buildContractsSummary(buildReport?.contracts || null);
 
       return res.json(
         buildPreviewResponse({
@@ -764,6 +804,58 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       );
     } catch (e) {
       console.error(e);
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
+  // One-click Build & Open Preview: run full pipeline then redirect to preview
+  app.post("/api/build-preview", async (req, res) => {
+    const slug =
+      String(req?.body?.slug ?? req?.query?.slug ?? "").trim() ||
+      String(req?.body?.slug ?? "").trim();
+    if (!slug) {
+      return res.status(400).json({ ok: false, error: "Missing slug", stage: "inputs" });
+    }
+    try {
+      const result = await runBuildAndPreview({ slug });
+      if (result.ok) {
+        const prefersJson =
+          /application\/json/i.test(String(req.get("accept") || "")) ||
+          req.get("accept") === "*/*";
+        if (prefersJson) {
+          return res.json({
+            ok: true,
+            slug: result.slug,
+            reportPath: result.reportPath,
+            previewUrl: `/preview/${encodeURIComponent(result.slug)}`,
+          });
+        }
+        return res.redirect(302, `/preview/${encodeURIComponent(result.slug)}`);
+      }
+      return res.status(500).json({
+        ok: false,
+        error: result.error,
+        stage: result.stage,
+        reportPath: result.reportPath ?? undefined,
+      });
+    } catch (e) {
+      return res
+        .status(500)
+        .json({ ok: false, error: String(e?.message || e), stage: "build-preview" });
+    }
+  });
+
+  app.get("/api/build-report/:slug", (req, res) => {
+    const slug = String(req.params.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    const reportPath = path.join(PREVIEW_DIR, "build-reports", `${slug}.json`);
+    if (!fs.existsSync(reportPath)) {
+      return res.status(404).json({ ok: false, error: "Build report not found" });
+    }
+    try {
+      const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+      return res.json({ ok: true, report });
+    } catch (e) {
       return res.status(500).json({ ok: false, error: String(e?.message || e) });
     }
   });
@@ -819,25 +911,185 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         return res.send(repaired);
       }
 
-      // If preview missing, try to build from stored variants
-      const { available } = loadVariantsForGroup(slug);
-      if (available && available.length) {
-        const built = buildMergedResponsivePreview({
-          groupKey: slug,
-          autoLayoutify,
-          semanticAccessiblePass, // IMPORTANT
-          previewHtml,
-        });
+      // If preview is missing, always go through the full Build & Open flow.
+      // (Generate → Code-it → Improve → Fix pain points → Emit/Open preview)
 
-        if (built.ok) {
-          const repaired = repairCachedPreviewHtml(built.preview);
-          fs.writeFileSync(file, repaired, "utf8");
-          res.setHeader("Content-Type", "text/html; charset=utf-8");
-          return res.send(repaired);
-        }
+      // No preview and no variants: show "Build required" with one-click build button
+      const escapeHtml = (s) =>
+        String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      const escapedSlug = escapeHtml(slug);
+      const buildRequiredHtml = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Build required</title></head>
+<body style="font-family:system-ui;padding:2rem;max-width:32rem;">
+  <h1 style="font-size:1.25rem;">Preview not built</h1>
+  <p>No preview file or variants found for <strong>${escapedSlug}</strong>. Run a full build to generate the preview.</p>
+  <form id="build-form" method="post" action="/api/build-preview" style="margin-top:1rem;">
+    <input type="hidden" name="slug" value="${escapedSlug}">
+    <button type="submit" style="padding:0.5rem 1rem;cursor:pointer;">Build &amp; Open Preview</button>
+  </form>
+  <div id="build-progress" style="display:none;margin-top:1rem;">
+    <div style="font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;">Build progress</div>
+    <ol id="build-steps" style="margin:0;padding-left:1.1rem;line-height:1.6;">
+      <li data-stage="generate">Generate</li>
+      <li data-stage="codeit">Code-it</li>
+      <li data-stage="improve">Improve</li>
+      <li data-stage="fix">Fix pain points</li>
+      <li data-stage="emit">Emit preview HTML</li>
+      <li data-stage="open_preview">Open preview</li>
+    </ol>
+    <div id="build-status" style="margin-top:0.5rem;color:#555;">Waiting…</div>
+    <div style="margin-top:0.75rem;">
+      <div style="font-size:0.85rem;font-weight:600;">Contracts running</div>
+      <ul id="build-contracts" style="margin:0.25rem 0 0 0;padding-left:1.1rem;font-size:0.85rem;line-height:1.4;"></ul>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <div style="font-size:0.85rem;font-weight:600;">Auto-fixes applied</div>
+      <ul id="build-fixes" style="margin:0.25rem 0 0 0;padding-left:1.1rem;font-size:0.85rem;line-height:1.4;"></ul>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <div style="font-size:0.85rem;font-weight:600;">Live log</div>
+      <div id="build-events" style="margin-top:0.25rem;max-height:160px;overflow:auto;border:1px solid #ddd;border-radius:6px;padding:0.5rem;font-size:0.8rem;line-height:1.4;background:#fafafa;"></div>
+    </div>
+  </div>
+  <p style="margin-top:1rem;color:#666;font-size:0.875rem;">This runs the full pipeline (Generate → Code-it → Improve → QA) then opens the preview.</p>
+  <script>
+    var POLL_MS = 600;
+    function stageLabel(state) {
+      if (state === "running") return " (running)";
+      if (state === "completed") return " (done)";
+      if (state === "failed") return " (failed)";
+      if (state === "skipped") return " (skipped)";
+      return "";
+    }
+    function applyProgress(report) {
+      if (!report || typeof report !== "object") return;
+      var progress = document.getElementById("build-progress");
+      progress.style.display = "block";
+      var nodes = document.querySelectorAll("#build-steps li[data-stage]");
+      nodes.forEach(function(node) {
+        var key = node.getAttribute("data-stage");
+        var info = report.stages && report.stages[key] ? report.stages[key] : null;
+        var status = info && info.status ? info.status : "pending";
+        node.style.fontWeight = status === "running" ? "700" : "400";
+        node.style.color = status === "failed" ? "#b00020" : status === "completed" ? "#0a7a2f" : "#111";
+        var base = node.textContent.replace(/ \\(running\\)| \\(done\\)| \\(failed\\)| \\(skipped\\)/g, "");
+        node.textContent = base + stageLabel(status);
+      });
+      var statusEl = document.getElementById("build-status");
+      if (report.buildStatus === "failed") {
+        statusEl.textContent = "Failed at " + (report.stage || "unknown") + ": " + (report.error || "Unknown error");
+        statusEl.style.color = "#b00020";
+      } else if (report.buildStatus === "completed") {
+        statusEl.textContent = "Build complete.";
+        statusEl.style.color = "#0a7a2f";
+      } else {
+        statusEl.textContent = "Running: " + (report.stage || "starting");
+        statusEl.style.color = "#555";
       }
 
-      return res.status(404).send("Not found");
+      var contractsList = document.getElementById("build-contracts");
+      contractsList.innerHTML = "";
+      var contractEntries = report.contracts && Array.isArray(report.contracts.entries)
+        ? report.contracts.entries
+        : [];
+      if (!contractEntries.length) {
+        var emptyContract = document.createElement("li");
+        emptyContract.textContent = "Waiting for contract results…";
+        contractsList.appendChild(emptyContract);
+      } else {
+        contractEntries.forEach(function(entry) {
+          var li = document.createElement("li");
+          li.textContent = (entry.name || "contract") + ": " + (entry.changedNodes || 0) + " changes, " + (entry.notesCount || 0) + " notes";
+          contractsList.appendChild(li);
+        });
+      }
+
+      var fixesList = document.getElementById("build-fixes");
+      fixesList.innerHTML = "";
+      var fixes = Array.isArray(report.autoFixesApplied) ? report.autoFixesApplied : [];
+      if (!fixes.length) {
+        var emptyFix = document.createElement("li");
+        emptyFix.textContent = "No fixes yet.";
+        fixesList.appendChild(emptyFix);
+      } else {
+        fixes.slice(0, 20).forEach(function(msg) {
+          var li = document.createElement("li");
+          li.textContent = String(msg || "");
+          fixesList.appendChild(li);
+        });
+      }
+
+      var eventsEl = document.getElementById("build-events");
+      var events = Array.isArray(report.events) ? report.events : [];
+      if (!events.length) {
+        eventsEl.textContent = "Waiting for build logs…";
+      } else {
+        eventsEl.innerHTML = events.slice(-40).map(function(ev) {
+          var m = ev.message ? " — " + ev.message : "";
+          return "<div>[" + (ev.stage || "?") + "] " + (ev.status || "?") + m + "</div>";
+        }).join("");
+        eventsEl.scrollTop = eventsEl.scrollHeight;
+      }
+    }
+    function startPolling(slug) {
+      var active = true;
+      function poll() {
+        if (!active) return;
+        fetch("/api/build-report/" + encodeURIComponent(slug))
+          .then(function(r) { return r.ok ? r.json() : null; })
+          .then(function(payload) {
+            if (!payload || !payload.ok || !payload.report) return;
+            applyProgress(payload.report);
+          })
+          .catch(function(){})
+          .finally(function() { if (active) setTimeout(poll, POLL_MS); });
+      }
+      poll();
+      return function stop(){ active = false; };
+    }
+    var building = false;
+    function startBuild() {
+      if (building) return;
+      building = true;
+      var form = document.getElementById("build-form");
+      var slug = document.querySelector('input[name="slug"]').value;
+      var btn = form.querySelector('button');
+      btn.disabled = true;
+      btn.textContent = "Building…";
+      var stopPolling = startPolling(slug);
+      fetch("/api/build-preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: slug }) })
+        .then(function(r) {
+          if (r.ok) return r.json();
+          return r.json().then(function(j) { throw new Error(j.error || "Build failed"); });
+        })
+        .then(function(d) {
+          stopPolling();
+          window.location.href = d.previewUrl || "/preview/" + encodeURIComponent(slug);
+        })
+        .catch(function(err) {
+          stopPolling();
+          building = false;
+          btn.disabled = false;
+          btn.textContent = "Build & Open Preview";
+          alert(err.message || "Build failed");
+        });
+    }
+    document.getElementById("build-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      startBuild();
+    });
+    // Auto-run full pipeline immediately when preview is missing.
+    startBuild();
+  </script>
+</body>
+</html>`;
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      return res.status(200).send(buildRequiredHtml);
     } catch (e) {
       return res.status(500).send(String(e?.message || e));
     }

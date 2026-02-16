@@ -80,6 +80,7 @@ export function registerBatchUploadRoutes(app, deps) {
           preventNestedInteractive,
           buildIntentGraph,
           normalizeAst,
+          learnedRulesPass: deps.learnedRulesPass || null,
           viewport: variant,
         });
 

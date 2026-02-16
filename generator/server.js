@@ -14,6 +14,7 @@ import { interactiveStatesPass } from "./auto/interactiveStatesPass.js";
 // If you have preventNestedInteractive in your codebase, import it here.
 // If not, pass null and the helper will simply skip it.
 import { preventNestedInteractive } from "./auto/preventNestedInteractive.js"; // adjust if your path differs
+import { learnedRulesPass } from "./auto/learnedRulesPass.js";
 
 import { previewHtml } from "./templates/preview.html.js";
 
@@ -48,6 +49,7 @@ const deps = {
   semanticAccessiblePass,
   interactiveStatesPass,
   preventNestedInteractive: preventNestedInteractive || null,
+  learnedRulesPass: learnedRulesPass || null,
   previewHtml,
   renderOneFragment,
 };

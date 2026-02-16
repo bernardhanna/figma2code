@@ -278,6 +278,7 @@ export function renderOneFragment({
   preventNestedInteractive,
   buildIntentGraph,
   normalizeAst,
+  learnedRulesPass,
   interactiveStatesPass,
   viewport,
   previewOnly,
@@ -288,6 +289,10 @@ export function renderOneFragment({
     const r = normalizeAst(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
+  }
+
+  if (learnedRulesPass) {
+    a = learnedRulesPass(a) || a;
   }
 
   setVideoBgFromTree(a);
@@ -389,7 +394,8 @@ export function buildMergedResponsivePreview({
   semanticAccessiblePass,
   previewHtml,
   previewOnly,
-}) {
+  skipContractsAndPreview,
+} = {}) {
   const { variantsMap, available } = loadVariantsForGroup(groupKey);
 
   if (!available.length) {
@@ -496,6 +502,19 @@ export function buildMergedResponsivePreview({
 
   writeStage(groupKey, mergedAstWithMatch);
 
+  // When skipContractsAndPreview: return fragment only; orchestrator runs contracts + QA + previewHtml.
+  if (skipContractsAndPreview) {
+    return {
+      ok: true,
+      ast: mergedAstWithMatch,
+      fragment: mergedFragment,
+      preview: null,
+      availableVariants: available,
+      baseVariant,
+      phase2Reports,
+    };
+  }
+
   // IMPORTANT: previewHtml must now render inside an iframe for Tailwind breakpoints
   const contractsOut = applyContracts({ html: mergedFragment, slug: groupKey });
   const preview = previewHtml(mergedAstWithMatch, { fragment: contractsOut.html });
@@ -522,9 +541,11 @@ export async function buildPreviewFragment({
   autoLayoutify,
   semanticAccessiblePass,
   preventNestedInteractive,
+  learnedRulesPass,
   interactiveStatesPass,
   previewHtml,
   previewOnly,
+  returnFragmentOnly,
 }) {
   try {
     if (!astInput || !astInput.tree) {
@@ -555,6 +576,7 @@ export async function buildPreviewFragment({
         preventNestedInteractive,
         buildIntentGraph,
         normalizeAst,
+        learnedRulesPass,
         interactiveStatesPass,
         viewport,
         previewOnly,
@@ -593,9 +615,31 @@ export async function buildPreviewFragment({
         semanticAccessiblePass,
         previewHtml,
         previewOnly,
+        skipContractsAndPreview: returnFragmentOnly,
       });
 
       if (!merged.ok) return merged;
+
+      if (returnFragmentOnly) {
+        return {
+          ok: true,
+          ast: merged.ast,
+          fragment: merged.fragment,
+          preview: null,
+          phase2Report: single.phase2Report || null,
+          phase2Reports: merged.phase2Reports || null,
+          phase2NormalizedPath: null,
+          phase3IntentPath: null,
+          rasterCtaOffenders: null,
+          phase3: single.phase3 || null,
+          responsive: {
+            groupKey,
+            variantSaved: variant,
+            availableVariants: merged.availableVariants,
+            baseVariant: merged.baseVariant,
+          },
+        };
+      }
 
       const previewOut = path.join(PREVIEW_DIR, `${groupKey}.html`);
       fs.writeFileSync(previewOut, merged.preview, "utf8");
@@ -630,12 +674,27 @@ export async function buildPreviewFragment({
       preventNestedInteractive,
       buildIntentGraph,
       normalizeAst,
+      learnedRulesPass,
       interactiveStatesPass,
       viewport,
       previewOnly,
     });
 
     writeStage(single.ast.slug, single.ast);
+
+    if (returnFragmentOnly) {
+      return {
+        ok: true,
+        ast: single.ast,
+        fragment: single.fragment,
+        preview: null,
+        phase2Report: single.phase2Report || null,
+        phase2NormalizedPath: null,
+        phase3IntentPath: null,
+        rasterCtaOffenders: null,
+        phase3: single.phase3 || null,
+      };
+    }
 
     const preview = previewHtml(single.ast, { fragment: single.fragment });
 
