@@ -11,7 +11,7 @@ const { getNodeMeta } = require("../../utilities/select");
 const id = "media/img/objectContainOnSmall";
 
 /**
- * Normalize token by removing responsive prefix (e.g., "max-sm:object-cover" → "object-cover")
+ * Normalize token by removing responsive prefix (e.g., "max-md:object-cover" → "object-cover")
  */
 const normalizeToken = (token) => String(token || "").split(":").pop();
 
@@ -24,10 +24,10 @@ const isObjectToken = (token) => {
 };
 
 /**
- * Check if tokens already have max-sm:object-* override
+ * Check if tokens already have max-md/max-sm object-* override
  */
-const hasMaxSmObjectOverride = (tokens) => {
-  return tokens.some((t) => /^max-sm:object-(cover|contain|fill|none|scale-down)$/.test(String(t || "")));
+const hasObjectOverride = (tokens) => {
+  return tokens.some((t) => /^max-(?:sm|md):object-(cover|contain|fill|none|scale-down)$/.test(String(t || "")));
 };
 
 /**
@@ -63,38 +63,38 @@ const hasHeightToken = (tokens) => tokens.some((t) => isHeightCore(normalizeToke
 const hasMinHeightToken = (tokens) => tokens.some((t) => isMinHeightCore(normalizeToken(t)));
 const hasMaxHeightToken = (tokens) => tokens.some((t) => isMaxHeightCore(normalizeToken(t)));
 
-const hasMaxSmHeightOverride = (tokens) => tokens.some((t) => String(t) === "max-sm:h-auto");
+const hasMaxMdHeightOverride = (tokens) => tokens.some((t) => String(t) === "max-md:h-auto" || String(t) === "max-sm:h-auto");
 
 const addContainAndHeightOverrides = (tokens) => {
   let next = insertBeforeFirst(
     tokens,
-    "max-sm:object-contain",
+    "max-md:object-contain",
     (token) => normalizeToken(token) === "object-cover" || isObjectToken(token)
   );
 
   if (hasHeightToken(tokens)) {
-    next = insertBeforeFirst(next, "max-sm:h-auto", (token) => isHeightCore(normalizeToken(token)));
+    next = insertBeforeFirst(next, "max-md:h-auto", (token) => isHeightCore(normalizeToken(token)));
   }
   if (hasMinHeightToken(tokens)) {
-    next = insertBeforeFirst(next, "max-sm:min-h-0", (token) => /^min-h-/.test(normalizeToken(token)));
+    next = insertBeforeFirst(next, "max-md:min-h-0", (token) => /^min-h-/.test(normalizeToken(token)));
   }
   if (hasMaxHeightToken(tokens)) {
-    next = insertBeforeFirst(next, "max-sm:max-h-none", (token) => /^max-h-/.test(normalizeToken(token)));
+    next = insertBeforeFirst(next, "max-md:max-h-none", (token) => /^max-h-/.test(normalizeToken(token)));
   }
   return next;
 };
 
-/** Add only max-sm height overrides (no object-fit). Used for wrapper so it can shrink when img uses contain. */
+/** Add only max-md height overrides (no object-fit). Used for wrapper so it can shrink when img uses contain. */
 const addHeightOverridesOnly = (tokens) => {
   let next = tokens.slice();
   if (hasHeightToken(next)) {
-    next = insertBeforeFirst(next, "max-sm:h-auto", (token) => isHeightCore(normalizeToken(token)));
+    next = insertBeforeFirst(next, "max-md:h-auto", (token) => isHeightCore(normalizeToken(token)));
   }
   if (hasMinHeightToken(next)) {
-    next = insertBeforeFirst(next, "max-sm:min-h-0", (token) => /^min-h-/.test(normalizeToken(token)));
+    next = insertBeforeFirst(next, "max-md:min-h-0", (token) => /^min-h-/.test(normalizeToken(token)));
   }
   if (hasMaxHeightToken(next)) {
-    next = insertBeforeFirst(next, "max-sm:max-h-none", (token) => /^max-h-/.test(normalizeToken(token)));
+    next = insertBeforeFirst(next, "max-md:max-h-none", (token) => /^max-h-/.test(normalizeToken(token)));
   }
   return next;
 };
@@ -133,10 +133,10 @@ const apply = ({ html }) => {
     // Skip if no object-cover at base level
     if (!hasObjectCover(tokens)) return;
 
-    // Skip if already has max-sm:object-* override (but we may still need to relax the wrapper).
-    const alreadyHadContain = hasMaxSmObjectOverride(tokens);
+    // Skip if already has small-screen object-* override (but we may still need to relax the wrapper).
+    const alreadyHadContain = hasObjectOverride(tokens);
     if (!alreadyHadContain) {
-      // Add max-sm object-fit and height overrides for small screens.
+      // Add max-md object-fit and height overrides for small screens.
       const updated = addContainAndHeightOverrides(tokens);
 
       setClassTokens(node.attrs, node.attrOrder, updated);
@@ -154,14 +154,14 @@ const apply = ({ html }) => {
         nodeId: meta.nodeId,
         selector: meta.selector,
         op: "classAdd",
-        value: "max-sm:object-contain",
-        reason: "Add max-sm overrides for object fit and height on small screens",
+        value: "max-md:object-contain",
+        reason: "Add max-md overrides for object fit and height on small screens",
       });
 
       adjusted += 1;
     }
 
-    // When img has (or just got) max-sm contain, relax wrapper height at max-sm so the container can shrink.
+    // When img has (or just got) max-md contain, relax wrapper height at max-md so the container can shrink.
     const parentIndex = node.parentIndex;
     if (parentIndex == null) return;
     const parent = nodes[parentIndex];
@@ -170,11 +170,11 @@ const apply = ({ html }) => {
     if (siblings.length !== 1 || siblings[0] !== nodeIndex) return;
     const parentTokens = getClassTokens(parent.attrs);
     if (!hasHeightToken(parentTokens) && !hasMinHeightToken(parentTokens) && !hasMaxHeightToken(parentTokens)) return;
-    if (hasMaxSmHeightOverride(parentTokens)) return;
+    if (hasMaxMdHeightOverride(parentTokens)) return;
     parentIndicesToPatch.add(parentIndex);
   });
 
-  // Patch wrapper divs: add max-sm height overrides so wrapper height becomes auto at small breakpoint.
+  // Patch wrapper divs: add max-md height overrides so wrapper height becomes auto at small breakpoint.
   parentIndicesToPatch.forEach((parentIndex) => {
     const parent = nodes[parentIndex];
     const parentTokens = getClassTokens(parent.attrs);
@@ -193,8 +193,8 @@ const apply = ({ html }) => {
       nodeId: meta.nodeId,
       selector: meta.selector,
       op: "classAdd",
-      value: "max-sm:h-auto",
-      reason: "Relax wrapper height at max-sm when img uses object-contain",
+      value: "max-md:h-auto",
+      reason: "Relax wrapper height at max-md when img uses object-contain",
     });
     adjusted += 1;
   });

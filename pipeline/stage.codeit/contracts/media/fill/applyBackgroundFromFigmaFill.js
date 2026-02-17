@@ -214,14 +214,28 @@ const alreadyInjectedVideoLayer = (html, openEnd, closeStart) => {
   return false;
 };
 
-const ensureContainerClasses = (attrs, order) => {
+const sourceSaysClip = (figmaNode) => {
+  if (!figmaNode || typeof figmaNode !== "object") return false;
+  if (figmaNode.clipsContent === true) return true;
+  if (figmaNode.clipContent === true) return true;
+  if (figmaNode.clips === true) return true;
+  const c = figmaNode.constraints || {};
+  if (c && (c.clipContent === true || c.clipsContent === true)) return true;
+  return false;
+};
+
+const ensureContainerClasses = (attrs, order, { clip = false } = {}) => {
   const tokens = getClassTokens(attrs);
   const hasRelative = tokens.some((t) => normalizeToken(t) === "relative");
   const hasOverflowHidden = tokens.some((t) => normalizeToken(t) === "overflow-hidden");
-  if (hasRelative && hasOverflowHidden) return tokens;
   const next = [...tokens];
   if (!hasRelative) next.push("relative");
-  if (!hasOverflowHidden) next.push("overflow-hidden");
+  if (clip && !hasOverflowHidden) next.push("overflow-hidden");
+  if (!clip && hasOverflowHidden) {
+    const cleaned = next.filter((t) => normalizeToken(t) !== "overflow-hidden");
+    setClassTokens(attrs, order, cleaned);
+    return cleaned;
+  }
   setClassTokens(attrs, order, next);
   return next;
 };
@@ -301,7 +315,7 @@ const apply = ({ html, artifact }) => {
         if (node.isSelfClosing || node.closeStart == null || node.closeEnd == null) return;
         if (alreadyInjectedVideoLayer(source, node.openEnd, node.closeStart)) return;
 
-        ensureContainerClasses(node.attrs, node.attrOrder);
+        ensureContainerClasses(node.attrs, node.attrOrder, { clip: sourceSaysClip(figmaNode) });
         patches.push(
           createPatch(
             node.openStart,

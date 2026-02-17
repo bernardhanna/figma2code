@@ -41,6 +41,17 @@ const isTargetNode = (nodes, nodeIndex) => {
   return false;
 };
 
+const hasAncestorTokenCore = (nodes, nodeIndex, coreToken) => {
+  let current = nodes[nodeIndex]?.parentIndex;
+  while (current != null) {
+    const node = nodes[current];
+    const cores = getClassTokens(node?.attrs || {}).map(normalizeToken);
+    if (cores.includes(coreToken)) return true;
+    current = node?.parentIndex;
+  }
+  return false;
+};
+
 const hasAbsoluteOrFixed = (tokens) => {
   const cores = tokens.map(normalizeToken);
   return cores.includes("absolute") || cores.includes("fixed");
@@ -91,11 +102,18 @@ const apply = ({ html }) => {
     const hasWFull = tokens.some((t) => normalizeToken(t) === "w-full");
     const hasMaxW = tokens.some((t) => normalizeToken(t) === widthValue);
     const hasMaxWFull = tokens.some((t) => normalizeToken(t) === "max-w-full");
+    const ancestorHasSameMaxW = hasAncestorTokenCore(nodes, nodeIndex, widthValue);
 
-    const next = tokens.filter((t) => t !== widthToken);
+    let next = tokens.filter((t) => t !== widthToken);
+    if (ancestorHasSameMaxW) {
+      next = next.filter((t) => {
+        const core = normalizeToken(t);
+        return core !== widthValue && core !== "max-w-full";
+      });
+    }
     if (!hasWFull) next.push("w-full");
-    if (!hasMaxW) next.push(widthValue);
-    if (!hasMaxWFull) next.push("max-w-full");
+    if (!ancestorHasSameMaxW && !hasMaxW) next.push(widthValue);
+    if (!ancestorHasSameMaxW && !hasMaxWFull) next.push("max-w-full");
 
     setClassTokens(node.attrs, node.attrOrder, next);
     patches.push(

@@ -106,6 +106,18 @@ function absBB(n) {
         return undefined;
     }
 }
+function relPosFromParent(node, parent) {
+    if (!parent)
+        return {};
+    const child = absBB(node);
+    const p = absBB(parent);
+    if (!child || !p)
+        return {};
+    return {
+        relX: round(child.x - p.x),
+        relY: round(child.y - p.y),
+    };
+}
 function isNodeVisible(n) {
     try {
         if (n.visible === false)
@@ -145,11 +157,14 @@ function shouldRasterizeNode(node) {
     const t = node.type;
     return (t === "INSTANCE" ||
         t === "VECTOR" ||
-        t === "BOOLEAN_OPERATION" ||
         t === "STAR" ||
         t === "LINE" ||
         t === "ELLIPSE" ||
         t === "POLYGON");
+}
+function shouldForceVectorExport(node) {
+    const t = String((node === null || node === void 0 ? void 0 : node.type) || "").toUpperCase();
+    return t === "BOOLEAN_OPERATION";
 }
 function getAutoLayout(n) {
     var _a, _b, _c, _d, _e, _f, _g;
@@ -159,6 +174,24 @@ function getAutoLayout(n) {
     const mode = anyN.layoutMode;
     if (!mode)
         return { layout: "NONE" };
+    const layoutWrapRaw = anyN.layoutWrap;
+    const layoutWrap = typeof layoutWrapRaw === "string" && layoutWrapRaw.trim()
+        ? layoutWrapRaw
+        : undefined;
+    const wrap = layoutWrap === "WRAP"
+        ? true
+        : layoutWrap === "NO_WRAP"
+            ? false
+            : undefined;
+    const counterAxisAlignContentRaw = anyN.counterAxisAlignContent;
+    const counterAxisAlignContent = typeof counterAxisAlignContentRaw === "string" &&
+        counterAxisAlignContentRaw.trim()
+        ? counterAxisAlignContentRaw
+        : undefined;
+    const counterAxisSpacingRaw = anyN.counterAxisSpacing;
+    const counterAxisSpacing = typeof counterAxisSpacingRaw === "number"
+        ? counterAxisSpacingRaw
+        : undefined;
     return {
         layout: mode,
         itemSpacing: (_a = anyN.itemSpacing) !== null && _a !== void 0 ? _a : 0,
@@ -170,6 +203,10 @@ function getAutoLayout(n) {
         counterAlign: (_g = anyN.counterAxisAlignItems) !== null && _g !== void 0 ? _g : "MIN",
         primarySizing: anyN.primaryAxisSizingMode === "AUTO" ? "HUG" : "FIXED",
         counterSizing: anyN.counterAxisSizingMode === "AUTO" ? "HUG" : "FIXED",
+        layoutWrap,
+        wrap,
+        counterAxisAlignContent,
+        counterAxisSpacing,
     };
 }
 function childSizingInParent(parent, child) {
@@ -209,6 +246,30 @@ function getRadii(n) {
     }
     catch (_a) { }
     return undefined;
+}
+function getCornerSmoothing(n) {
+    try {
+        const anyN = n;
+        const v = Number(anyN.cornerSmoothing);
+        if (!Number.isFinite(v))
+            return undefined;
+        return Math.max(0, Math.min(1, v));
+    }
+    catch (_a) {
+        return undefined;
+    }
+}
+function hasRoundedCorners(r) {
+    if (!r)
+        return false;
+    return [r.tl, r.tr, r.br, r.bl].some((v) => Number(v) > 0);
+}
+function requiresCornerSmoothingRaster(base) {
+    const s = Number(base === null || base === void 0 ? void 0 : base.cornerSmoothing);
+    if (!Number.isFinite(s) || s <= 0.001)
+        return false;
+    // Smoothing is only visually relevant when corners are rounded.
+    return hasRoundedCorners(base === null || base === void 0 ? void 0 : base.r);
 }
 function getShadows(n) {
     try {
@@ -593,6 +654,20 @@ function exportPNG(n) {
         }
     });
 }
+function exportSVGMarkup(n) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const bytes = yield n.exportAsync({ format: "SVG" });
+            const svg = decodeUtf8(bytes).trim();
+            if (!svg || !/^<svg[\s>]/i.test(svg))
+                return undefined;
+            return svg;
+        }
+        catch (_a) {
+            return undefined;
+        }
+    });
+}
 /** Reactions → actions (OPEN_URL) */
 function getActions(n) {
     try {
@@ -609,6 +684,131 @@ function getActions(n) {
     }
     catch (_a) {
         return;
+    }
+}
+function getConstraints(n) {
+    try {
+        const anyN = n;
+        const c = anyN.constraints;
+        if (!c || typeof c !== "object")
+            return undefined;
+        const horizontal = String(c.horizontal || "").trim();
+        const vertical = String(c.vertical || "").trim();
+        if (!horizontal || !vertical)
+            return undefined;
+        return { horizontal, vertical };
+    }
+    catch (_a) {
+        return undefined;
+    }
+}
+function getExportSettings(n) {
+    try {
+        const anyN = n;
+        const list = Array.isArray(anyN.exportSettings) ? anyN.exportSettings : [];
+        const out = [];
+        for (const raw of list) {
+            if (!raw || typeof raw !== "object")
+                continue;
+            const format = String(raw.format || "").trim();
+            if (!format)
+                continue;
+            const constraint = raw.constraint && typeof raw.constraint === "object"
+                ? raw.constraint
+                : null;
+            const constraintType = (constraint === null || constraint === void 0 ? void 0 : constraint.type)
+                ? String(constraint.type).trim()
+                : "";
+            const valueNum = Number(constraint === null || constraint === void 0 ? void 0 : constraint.value);
+            const suffix = raw.suffix ? String(raw.suffix).trim() : "";
+            const entry = { format };
+            if (constraintType)
+                entry.constraintType = constraintType;
+            if (Number.isFinite(valueNum))
+                entry.constraintValue = valueNum;
+            if (suffix)
+                entry.suffix = suffix;
+            out.push(entry);
+        }
+        return out.length ? out : undefined;
+    }
+    catch (_a) {
+        return undefined;
+    }
+}
+function inferMaskKind(nodeType) {
+    const t = String(nodeType || "").toUpperCase();
+    if (t === "RECTANGLE" || t === "FRAME")
+        return "rect";
+    if (t === "VECTOR" ||
+        t === "BOOLEAN_OPERATION" ||
+        t === "STAR" ||
+        t === "LINE" ||
+        t === "ELLIPSE" ||
+        t === "POLYGON") {
+        return "vector";
+    }
+    return "unknown";
+}
+function getMaskExtraction(n) {
+    try {
+        const anyN = n;
+        const isMask = anyN.isMask === true;
+        const maskTypeRaw = anyN.maskType;
+        const maskModeRaw = anyN.maskMode;
+        const maskType = typeof maskTypeRaw === "string" && maskTypeRaw.trim()
+            ? maskTypeRaw
+            : undefined;
+        const maskMode = typeof maskModeRaw === "string" && maskModeRaw.trim()
+            ? maskModeRaw
+            : undefined;
+        if (!isMask && !maskType && !maskMode)
+            return {};
+        const maskKind = inferMaskKind(String((n === null || n === void 0 ? void 0 : n.type) || ""));
+        const preferredRender = maskKind === "rect"
+            ? "overflow-hidden"
+            : maskKind === "vector"
+                ? "svg-mask"
+                : "rasterize";
+        const maskPayload = {
+            maskKind,
+            preferredRender,
+        };
+        if (maskType)
+            maskPayload.maskType = maskType;
+        if (maskMode)
+            maskPayload.maskMode = maskMode;
+        return {
+            isMask,
+            mask: maskPayload,
+        };
+    }
+    catch (_a) {
+        return {};
+    }
+}
+function applyMaskRelationships(children) {
+    if (!Array.isArray(children) || children.length < 2)
+        return;
+    for (let i = 0; i < children.length; i += 1) {
+        const source = children[i];
+        if (!source || source.isMask !== true)
+            continue;
+        const targetIds = children
+            .slice(i + 1)
+            .map((x) => x === null || x === void 0 ? void 0 : x.id)
+            .filter((id) => typeof id === "string" && !!id);
+        if (!source.mask)
+            source.mask = {};
+        source.mask.appliesTo = targetIds.length ? "siblings" : "none";
+        source.mask.targetIds = targetIds;
+        for (let j = i + 1; j < children.length; j += 1) {
+            const target = children[j];
+            if (!target || !target.id)
+                continue;
+            if (!target.maskedBy)
+                target.maskedBy = source.id;
+        }
     }
 }
 function textPayload(n) {
@@ -686,12 +886,14 @@ function isInteractiveLooking(node, actions) {
  * - No PNG export (keeps payload small)
  * - Traverses INSTANCE internals so we can diff backgrounds/text/etc when available
  */
-function walkForState(node) {
+function walkForState(node, parent) {
     return __awaiter(this, void 0, void 0, function* () {
         var _a;
         if (!isNodeVisible(node))
             return null;
         const { w, h } = sizeOf(node);
+        const rel = relPosFromParent(node, parent);
+        const maskMeta = getMaskExtraction(node);
         const base = {
             id: node.id,
             name: node.name,
@@ -699,9 +901,16 @@ function walkForState(node) {
             w: round(w),
             h: round(h),
             bb: absBB(node),
+            relX: rel.relX,
+            relY: rel.relY,
+            constraints: getConstraints(node),
+            isMask: maskMeta.isMask,
+            mask: maskMeta.mask,
+            exportSettings: getExportSettings(node),
             auto: getAutoLayout(node),
             size: undefined,
             r: getRadii(node),
+            cornerSmoothing: getCornerSmoothing(node),
             shadows: getShadows(node),
             stroke: getStroke(node),
             fills: getFills(node),
@@ -715,7 +924,16 @@ function walkForState(node) {
             base.text = textPayload(node);
         }
         const hasImgFill = ((_a = base.fills) === null || _a === void 0 ? void 0 : _a.some((f) => f.kind === "image")) === true;
-        const rasterForState = (shouldRasterizeNode(node) && node.type !== "INSTANCE") || hasImgFill;
+        if (shouldForceVectorExport(node)) {
+            const svgMarkup = yield exportSVGMarkup(node);
+            if (svgMarkup) {
+                base.svg = { markup: svgMarkup };
+            }
+        }
+        const rasterForState = (shouldRasterizeNode(node) && node.type !== "INSTANCE") ||
+            (shouldForceVectorExport(node) && !base.svg) ||
+            requiresCornerSmoothingRaster(base) ||
+            hasImgFill;
         if (rasterForState) {
             const img = yield exportPNG(node);
             if (img)
@@ -726,12 +944,14 @@ function walkForState(node) {
                 .children;
             const outKids = [];
             for (const c of kids) {
-                const child = yield walkForState(c);
+                const child = yield walkForState(c, node);
                 if (child)
                     outKids.push(child);
             }
-            if (outKids.length)
+            if (outKids.length) {
+                applyMaskRelationships(outKids);
                 base.children = outKids;
+            }
         }
         return base;
     });
@@ -1066,6 +1286,8 @@ function walk(node, parent) {
         if (!isNodeVisible(node))
             return null;
         const { w, h } = sizeOf(node);
+        const rel = relPosFromParent(node, parent);
+        const maskMeta = getMaskExtraction(node);
         const base = {
             id: node.id,
             name: node.name,
@@ -1073,9 +1295,16 @@ function walk(node, parent) {
             w: round(w),
             h: round(h),
             bb: absBB(node),
+            relX: rel.relX,
+            relY: rel.relY,
+            constraints: getConstraints(node),
+            isMask: maskMeta.isMask,
+            mask: maskMeta.mask,
+            exportSettings: getExportSettings(node),
             auto: getAutoLayout(node),
             size: parent ? childSizingInParent(parent, node) : undefined,
             r: getRadii(node),
+            cornerSmoothing: getCornerSmoothing(node),
             shadows: getShadows(node),
             stroke: getStroke(node),
             fills: getFills(node),
@@ -1099,6 +1328,12 @@ function walk(node, parent) {
             base.text = textPayload(node);
         }
         const hasImgFill = ((_a = base.fills) === null || _a === void 0 ? void 0 : _a.some((f) => f.kind === "image")) === true;
+        if (shouldForceVectorExport(node)) {
+            const svgMarkup = yield exportSVGMarkup(node);
+            if (svgMarkup) {
+                base.svg = { markup: svgMarkup };
+            }
+        }
         const complex = shouldRasterizeNode(node);
         if (node.type === "INSTANCE") {
             // Only treat INTERACTIVE-looking instances (buttons/links/cards) as raster
@@ -1152,7 +1387,10 @@ function walk(node, parent) {
             }
         }
         // Non-instance raster rules
-        if (hasImgFill || complex) {
+        if (hasImgFill ||
+            complex ||
+            (shouldForceVectorExport(node) && !base.svg) ||
+            requiresCornerSmoothingRaster(base)) {
             const img = yield exportPNG(node);
             if (img)
                 base.img = img;
@@ -1174,8 +1412,10 @@ function walk(node, parent) {
                 if (child)
                     outKids.push(child);
             }
-            if (outKids.length)
+            if (outKids.length) {
+                applyMaskRelationships(outKids);
                 base.children = outKids;
+            }
         }
         return base;
     });

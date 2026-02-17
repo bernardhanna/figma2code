@@ -36,6 +36,27 @@ process.on("unhandledRejection", (err) => {
 
 /* ================== PUBLIC API ================== */
 
+function isHeroSection(ast) {
+  const rootName = String(ast?.tree?.name || "").toLowerCase();
+  const frameName = String(ast?.meta?.figma?.frameName || "").toLowerCase();
+  const sectionType = String(ast?.meta?.intentGraph?.sectionType || "").toLowerCase();
+  const matchedType = String(ast?.meta?.componentMatch?.type || "").toLowerCase();
+  return (
+    rootName.includes("hero") ||
+    frameName.includes("hero") ||
+    sectionType === "hero" ||
+    matchedType === "hero"
+  );
+}
+
+function toMinHeroMobileHeightRem(rootHeightPx) {
+  const hPx = Number(rootHeightPx);
+  if (!Number.isFinite(hPx) || hPx <= 0) return "18.75";
+  const scaled = hPx / 2.6 / 16;
+  const clamped = Math.max(18.75, Math.min(32, scaled));
+  return Number(clamped.toFixed(4)).toString().replace(/\.?0+$/, "");
+}
+
 export function autoLayoutify(ast, opts = {}) {
   const semantics = opts.semantics || {}; // { [id]: { tag, href?, role?, label? } }
   const wrap = opts.wrap !== false; // default true
@@ -70,16 +91,28 @@ export function autoLayoutify(ast, opts = {}) {
   if (!wrap) return html;
 
   // Required outer section (full bleed bg when present, or video fill markers for codeit)
+  const rootClips = !!ast?.tree?.clipsContent;
+  const overflowClass = rootClips ? " max-md:overflow-visible overflow-hidden" : "";
   let sectionOpen;
-  if (bgInfo?.kind === "video") {
+  const heroSection = isHeroSection(ast);
+  if (bgInfo?.kind === "video" && heroSection) {
     const videoUrl = escAttr(bgInfo.videoUrl || "");
     const posterUrl = escAttr(bgInfo.posterUrl || "");
-    sectionOpen = `<section class="relative flex max-md:overflow-visible overflow-hidden" data-bg-type="video" data-video-url="${videoUrl}" data-poster-url="${posterUrl}">`;
+    sectionOpen = `<section class="relative flex overflow-hidden bg-center bg-no-repeat bg-cover" data-bg-type="video" data-video-url="${videoUrl}" data-poster-url="${posterUrl}" data-bg-video-desktop="${videoUrl}" data-bg-video-mobile="${videoUrl}">`;
+  } else if (bgInfo?.kind === "video") {
+    const videoUrl = escAttr(bgInfo.videoUrl || "");
+    const posterUrl = escAttr(bgInfo.posterUrl || "");
+    sectionOpen = `<section class="relative flex${overflowClass}" data-bg-type="video" data-video-url="${videoUrl}" data-poster-url="${posterUrl}">`;
   } else {
+    const bgSize = String(bgInfo?.size || "cover");
+    const bgPos = String(bgInfo?.position || "center");
+    const bgRepeat = String(bgInfo?.repeat || "no-repeat");
+    const bgBlend = String(bgInfo?.blendMode || "").trim();
+    const blendDecl = bgBlend ? ` background-blend-mode: ${bgBlend};` : "";
     const sectionStyle = bgInfo?.css
-      ? ` style="background-image: ${bgInfo.css}; background-size: cover; background-position: center; background-repeat: no-repeat;"`
+      ? ` style="background-image: ${bgInfo.css}; background-size: ${bgSize}; background-position: ${bgPos}; background-repeat: ${bgRepeat};${blendDecl}"`
       : "";
-    sectionOpen = `<section class="relative flex max-md:overflow-visible overflow-hidden"${sectionStyle}>`;
+    sectionOpen = `<section class="relative flex${overflowClass}"${sectionStyle}>`;
   }
 
   // Content container:
@@ -87,7 +120,35 @@ export function autoLayoutify(ast, opts = {}) {
   const rootW = Math.max(1, Math.round(ast?.tree?.w || ast?.frame?.w || 1200));
   const maxWClass = `max-w-[${rem(rootW)}]`;
 
-  const innerOpen = `<div class="w-full ${maxWClass}">`;
-
-  return sectionOpen + "\n" + innerOpen + "\n" + html + "\n</div>\n</section>";
+  const innerOpen = `<div class="relative z-20 w-full ${maxWClass} mx-auto">`;
+  if (bgInfo?.kind === "video" && heroSection) {
+    const videoUrl = escAttr(bgInfo.videoUrl || "");
+    const posterUrl = escAttr(bgInfo.posterUrl || "");
+    const posterAttr = posterUrl ? ` poster="${posterUrl}"` : "";
+    const mobileMinH = toMinHeroMobileHeightRem(ast?.tree?.h);
+    const desktopLayer =
+      `<div class="hidden md:block absolute inset-0" aria-hidden="true">` +
+      `<video autoplay muted loop playsinline class="object-cover absolute inset-0 w-full h-full"${posterAttr}>` +
+      `<source src="${videoUrl}" type="video/mp4">` +
+      `</video></div>`;
+    const mobileLayer =
+      `<div class="relative z-20 w-full md:hidden">` +
+      `<video autoplay muted loop playsinline class="object-cover w-full h-full min-h-[${mobileMinH}rem]"${posterAttr}>` +
+      `<source src="${videoUrl}" type="video/mp4">` +
+      `</video></div>`;
+    return (
+      sectionOpen +
+      "\n" +
+      desktopLayer +
+      "\n" +
+      mobileLayer +
+      "\n" +
+      innerOpen +
+      "\n" +
+      html +
+      "\n</div>\n</section>"
+    );
+  }
+  const innerOpenDefault = `<div class="w-full ${maxWClass}">`;
+  return sectionOpen + "\n" + innerOpenDefault + "\n" + html + "\n</div>\n</section>";
 }

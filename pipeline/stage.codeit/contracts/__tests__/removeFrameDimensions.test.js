@@ -61,3 +61,13 @@ test("idempotence: running twice yields identical output", () => {
   assert.equal(second.html, first.html, "second run output equals first run output");
   assert.equal(second.stats.adjusted, 0, "no changes on second run");
 });
+
+test("hero/banner roots keep intentional fixed height", () => {
+  const html = `<section role="banner" data-bg-type="video" data-key="hero-root" data-w-intent="fixed" class="w-[80rem] h-[41.5625rem]">
+  <div class="flex">Content</div>
+</section>`;
+  const out = apply({ html });
+  const rootClasses = getClassList(out.html, "section");
+  assert.ok(rootClasses.includes("h-[41.5625rem]"), "hero height preserved");
+  assert.ok(rootClasses.includes("w-[80rem]"), "explicit media wrapper width remains untouched");
+});

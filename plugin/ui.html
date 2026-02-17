@@ -29,6 +29,13 @@
   </div>
 
   <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+    <label style="display:flex; align-items:center; gap:6px;">
+      Preview mode
+      <select id="previewMode">
+        <option value="off">Preview (fast)</option>
+        <option value="ai">Preview + Refine (slower, best match)</option>
+      </select>
+    </label>
     <button id="generatePreview">Generate Preview</button>
   </div>
 
@@ -78,16 +85,32 @@
     const previewTabs = document.getElementById("previewTabs");
     const openPreviewBtn = document.getElementById("openPreview");
     const clearPreviewBtn = document.getElementById("clearPreview");
+    const previewModeEl = document.getElementById("previewMode");
     const videoUrlInput = document.getElementById("videoUrl");
     const videoPosterInput = document.getElementById("videoPoster");
     const getSlug = () => document.getElementById("slug").value.trim();
-    const BASE = "http://localhost:5173";
+    const BASE_CANDIDATES = ["http://127.0.0.1:5173", "http://localhost:5173"];
+    let BASE = BASE_CANDIDATES[0];
     let lastPreviewUrl = "";
     let lastScreenshotUrl = "";
     let lastScreenshotUrls = {};
     let lastReport = null;
     let activeBreakpoint = "desktop";
     let progressTimer = null;
+    const modeKeyForSlug = (slug) => `preview_mode_${String(slug || "").trim() || "_default"}`;
+    function loadPreviewMode(slug) {
+      try {
+        const value = localStorage.getItem(modeKeyForSlug(slug));
+        return value === "ai" ? "ai" : "off";
+      } catch (_) {
+        return "off";
+      }
+    }
+    function savePreviewMode(slug, mode) {
+      try {
+        localStorage.setItem(modeKeyForSlug(slug), mode === "ai" ? "ai" : "off");
+      } catch (_) {}
+    }
 
     const PROGRESS_STEPS = [
       { id: "prepare", label: "Preparing AST…" },
@@ -192,42 +215,57 @@
       reportEl.textContent = lines.join("\n");
     }
 
-    const REQUEST_TIMEOUT_MS = 90000;
+    const REQUEST_TIMEOUT_MS = 300000;
+    const REQUEST_TIMEOUT_REFINE_MS = 900000;
+
+    function isNetworkLikeError(err) {
+      const msg = String(err?.message || err || "").toLowerCase();
+      return /failed to fetch|network|timeout|abort|econnrefused|enotfound|couldn't connect/.test(msg);
+    }
 
     async function postTo(endpoint, payload, options = {}) {
       const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+      const orderedBases = [BASE].concat(BASE_CANDIDATES.filter((b) => b !== BASE));
+      let lastErr = null;
+      for (const candidateBase of orderedBases) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const res = await fetch(candidateBase + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
 
-      try {
-        const res = await fetch(BASE + endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-          signal: controller.signal,
-        });
-        clearTimeout(timeoutId);
-
-        const ct = res.headers.get("content-type") || "";
-        const text = await res.text();
-        if (!ct.includes("application/json")) {
-          throw new Error(
-            `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
-          );
+          const ct = res.headers.get("content-type") || "";
+          const text = await res.text();
+          if (!ct.includes("application/json")) {
+            throw new Error(
+              `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
+            );
+          }
+          BASE = candidateBase;
+          return JSON.parse(text);
+        } catch (err) {
+          clearTimeout(timeoutId);
+          if (err?.name === "AbortError") {
+            throw new Error(
+              "Request timed out after " + (timeoutMs / 1000) + "s. Check: (1) Generator is running: cd generator && npm start. (2) Open " + candidateBase + " in your browser."
+            );
+          }
+          lastErr = err;
+          if (!isNetworkLikeError(err)) throw err;
         }
-        return JSON.parse(text);
-      } catch (err) {
-        clearTimeout(timeoutId);
-        if (err.name === "AbortError") {
-          throw new Error(
-            "Request timed out after " + (timeoutMs / 1000) + "s. Check: (1) Generator is running: cd generator && npm start. (2) Open " + BASE + " in your browser – if it loads, Figma may be blocking localhost."
-          );
-        }
-        throw err;
       }
+      throw lastErr || new Error("Request failed");
     }
 
     document.getElementById("generatePreview").onclick = () => {
+      const slug = getSlug();
+      const selectedMode = previewModeEl ? String(previewModeEl.value || "off") : "off";
+      savePreviewMode(slug, selectedMode);
       resetProgress();
       setProgressState("prepare", "active");
       status.textContent = "Preparing AST (Generate Preview)…";
@@ -280,7 +318,13 @@
         };
         try {
           const endpoint = window.__pendingEndpoint || "/api/preview-only";
-          status.textContent = `Sending payload to ${endpoint}…`;
+          const currentMode = previewModeEl ? String(previewModeEl.value || "off") : "off";
+          const requestTimeoutMs =
+            endpoint === "/api/preview-only" && currentMode === "ai"
+              ? REQUEST_TIMEOUT_REFINE_MS
+              : REQUEST_TIMEOUT_MS;
+          const modeLabel = currentMode === "ai" ? "refine" : "fast";
+          status.textContent = `Sending payload to ${endpoint}… mode=${modeLabel}, timeout=${Math.round(requestTimeoutMs / 1000)}s`;
           if (endpoint === "/api/preview-only") {
             setProgressState("prepare", "done");
             startServerProgress();
@@ -294,7 +338,10 @@
 
           let out;
           try {
-            out = await postTo(endpoint, ast, { timeoutMs: REQUEST_TIMEOUT_MS });
+            const payload = endpoint === "/api/preview-only"
+              ? { ...ast, refineMode: currentMode }
+              : ast;
+            out = await postTo(endpoint, payload, { timeoutMs: requestTimeoutMs });
           } catch (fetchErr) {
             clearWaiting();
             finishProgress(false);
@@ -366,6 +413,18 @@
     renderProgressList();
     renderReport(null);
     setupPreviewTabs();
+    (function initPreviewMode() {
+      if (!previewModeEl) return;
+      const syncFromSlug = () => {
+        previewModeEl.value = loadPreviewMode(getSlug());
+      };
+      syncFromSlug();
+      const slugInput = document.getElementById("slug");
+      if (slugInput) slugInput.addEventListener("input", syncFromSlug);
+      previewModeEl.addEventListener("change", () => {
+        savePreviewMode(getSlug(), String(previewModeEl.value || "off"));
+      });
+    })();
 
     function setupPreviewTabs() {
       if (!previewTabs) return;

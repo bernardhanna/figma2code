@@ -49,6 +49,7 @@ test("artifact.metrics includes fallbackScore when visual score missing", async 
       written = artifact;
     },
     writeHistorySnapshotFn: () => {},
+    configOverride: { requireVisualDiff: false },
     log: () => {},
   });
 
@@ -127,7 +128,10 @@ test("score gate uses fallback when visual missing and rejects regression", asyn
     },
     writeHistorySnapshotFn: () => {},
     generatePatchPlanFn,
-    configOverride: { gate: { enabled: true, maxVisualDelta: 0, requireImprovement: true } },
+    configOverride: {
+      requireVisualDiff: false,
+      gate: { enabled: true, maxVisualDelta: 0, requireImprovement: true },
+    },
     log: () => {},
   });
 

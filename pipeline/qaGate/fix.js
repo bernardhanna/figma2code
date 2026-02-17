@@ -97,6 +97,38 @@ const parseHeightPx = (token) => {
   return null;
 };
 
+const trimNum = (n) =>
+  String(Number(Number(n || 0).toFixed(6)))
+    .replace(/\.0+$/, "")
+    .replace(/(\.\d*?)0+$/, "$1");
+const remFromPx = (px) => `${trimNum(Number(px) / 16)}rem`;
+const pxFromRem = (rem) => `${trimNum(Number(rem) * 16)}px`;
+const isHeroLikeNode = (node) => {
+  if (!node?.attrs) return false;
+  const role = String(getAttrValue(node.attrs, "role") || "").toLowerCase();
+  if (role === "banner") return true;
+  const key = String(getAttrValue(node.attrs, "data-key") || "").toLowerCase();
+  const id = String(getAttrValue(node.attrs, "data-node") || "").toLowerCase();
+  return /hero|banner/.test(key) || /hero|banner/.test(id);
+};
+const parseSpacingValue = (tokenCore, prefix) => {
+  const bracket = tokenCore.match(new RegExp(`^${prefix}-\\[([^\\]]+)\\]$`));
+  if (bracket) {
+    const raw = String(bracket[1] || "").trim();
+    const remMatch = raw.match(/^([0-9.]+)rem$/i);
+    if (remMatch) return { rem: Number(remMatch[1]), raw };
+    const pxMatch = raw.match(/^([0-9.]+)px$/i);
+    if (pxMatch) return { rem: Number(pxMatch[1]) / 16, raw };
+    return { rem: Number(raw), raw };
+  }
+  const scale = tokenCore.match(new RegExp(`^${prefix}-(\\d+)$`));
+  if (scale) {
+    // Tailwind spacing scale: n -> n*0.25rem.
+    return { rem: Number(scale[1]) / 4, raw: `${Number(scale[1]) / 4}rem` };
+  }
+  return null;
+};
+
 const hasMeaningfulTextContent = (html, node) => {
   if (!node || node.openEnd == null || node.closeStart == null) return false;
   const inner = String(html.slice(node.openEnd, node.closeStart) || "");
@@ -301,22 +333,28 @@ function fix(html, issues, opts = {}) {
         const basePbToken = tokens.find((t) => /^pb-\[[^\]]+\]$/.test(normalizeToken(t)) || /^pb-\d+$/.test(normalizeToken(t)));
         let originalPt = "5rem";
         let originalPb = "5rem";
+        const nodeIsHero = isHeroLikeNode(node);
+        let warnedLargePadding = false;
         if (basePtToken) {
           const core = normalizeToken(basePtToken);
-          const m = core.match(/pt-\[([^\]]+)\]/);
-          if (m) originalPt = m[1];
-          else {
-            const m2 = core.match(/pt-(\d+)/);
-            if (m2) originalPt = m2[1] + "rem";
+          const parsed = parseSpacingValue(core, "pt");
+          if (parsed && Number.isFinite(parsed.rem)) {
+            if (!nodeIsHero && parsed.rem > 16) {
+              originalPt = pxFromRem(parsed.rem);
+              warnedLargePadding = true;
+            }
+            else originalPt = remFromPx(parsed.rem * 16);
           }
         }
         if (basePbToken) {
           const core = normalizeToken(basePbToken);
-          const m = core.match(/pb-\[([^\]]+)\]/);
-          if (m) originalPb = m[1];
-          else {
-            const m2 = core.match(/pb-(\d+)/);
-            if (m2) originalPb = m2[1] + "rem";
+          const parsed = parseSpacingValue(core, "pb");
+          if (parsed && Number.isFinite(parsed.rem)) {
+            if (!nodeIsHero && parsed.rem > 16) {
+              originalPb = pxFromRem(parsed.rem);
+              warnedLargePadding = true;
+            }
+            else originalPb = remFromPx(parsed.rem * 16);
           }
         }
         const isPtBase = (t) => /^pt-\[[^\]]+\]$/.test(normalizeToken(t)) || /^pt-\d+$/.test(normalizeToken(t));
@@ -337,6 +375,14 @@ function fix(html, issues, opts = {}) {
           beforeSnippet: source.slice(node.openStart, node.openEnd),
           afterSnippet: "",
         });
+        if (warnedLargePadding) {
+          appliedFixes.push({
+            issueId: issue.id,
+            action: "root-padding-large-nonhero-warning",
+            beforeSnippet: source.slice(node.openStart, node.openEnd),
+            afterSnippet: "md padding kept as px bracket due >16rem non-hero value",
+          });
+        }
         localFixIndices.push(appliedFixes.length - 1);
         layoutHandled.add(`${nodeIndex}:${issue.rule}`);
       } else if (issue.rule === RULES.OVERFLOW_HIDDEN_ON_NON_MEDIA_WRAPPER) {

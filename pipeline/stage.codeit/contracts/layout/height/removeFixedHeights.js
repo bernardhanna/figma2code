@@ -14,6 +14,12 @@ const id = "layout/height/removeFixedHeights";
 
 const HEIGHT_TOKEN = /^(min-h|h)-\[[0-9.]+rem\]$/;
 const DATA_KEY_MEDIA = /hero|image|media|bg|banner/i;
+const tokenCore = (token) => String(token || "").split(":").pop();
+const tokenPrefix = (token) => {
+  const parts = String(token || "").split(":");
+  if (parts.length <= 1) return "";
+  return parts.slice(0, -1).join(":");
+};
 
 const buildChildrenMap = (nodes) => {
   const map = new Map();
@@ -88,9 +94,18 @@ const shouldKeepHeight = (node, nodes, childrenMap, nodeIndex) => {
   return false;
 };
 
+const isDesktopOrLargerPrefix = (prefix) => {
+  const segments = String(prefix || "").split(":").filter(Boolean);
+  return segments.some((seg) => seg === "md" || seg === "lg" || seg === "xl" || seg === "2xl");
+};
+
 const isHeightToken = (token) => {
-  const core = String(token || "").split(":").pop();
-  return HEIGHT_TOKEN.test(core);
+  const core = tokenCore(token);
+  if (!HEIGHT_TOKEN.test(core)) return false;
+  const prefix = tokenPrefix(token);
+  // Keep md+/lg+ height constraints; remove base/mobile-only constraints.
+  if (isDesktopOrLargerPrefix(prefix)) return false;
+  return true;
 };
 
 const apply = ({ html }) => {

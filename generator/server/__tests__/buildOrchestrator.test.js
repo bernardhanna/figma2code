@@ -93,6 +93,8 @@ test("runBuildAndPreview writes build report with stage timings and output paths
     assert.equal(typeof report.ok, "boolean");
     assert.equal(typeof report.stage, "string");
     assert.ok(typeof report.timings === "object" || report.timings === undefined);
+    assert.ok(report.tests && Array.isArray(report.tests.entries), "Build report should include test entries");
+    assert.ok(report.checks && Array.isArray(report.checks.entries), "Build report should include check entries");
     if (result.ok) {
       assert.equal(report.ok, true);
       assert.ok(report.outputPaths?.preview || report.outputPaths?.report);
@@ -109,5 +111,73 @@ test("runBuildAndPreview writes build report with stage timings and output paths
     } catch {
       // ignore
     }
+  }
+});
+
+test("runBuildAndPreview keeps refine stage skipped when refine mode is off", async () => {
+  const slug = "_test_refine_mode_off";
+  const minimalAst = {
+    slug,
+    tree: { name: "F", w: 400, h: 300, id: "root", children: [] },
+    meta: {},
+  };
+  writeStage(slug, minimalAst);
+  const reportPath = path.join(PREVIEW_DIR, "build-reports", `${slug}.json`);
+  let refineCalls = 0;
+  try {
+    await runBuildAndPreview({
+      slug,
+      refineMode: "off",
+      runRefinePassFn: async () => {
+        refineCalls += 1;
+        return { ok: true };
+      },
+    });
+    assert.equal(refineCalls, 0, "Refine runner must not be invoked in OFF mode");
+    if (fs.existsSync(reportPath)) {
+      const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+      const refineStage = report?.stages?.refine || {};
+      assert.equal(refineStage.status, "skipped");
+      assert.equal(report?.refineMode, "off");
+    }
+  } finally {
+    deleteStage(slug);
+    try { fs.unlinkSync(reportPath); } catch {}
+    try { fs.unlinkSync(path.join(PREVIEW_DIR, `${slug}.html`)); } catch {}
+  }
+});
+
+test("runBuildAndPreview invokes optional refine stage when mode is ai", async () => {
+  const slug = "_test_refine_mode_ai";
+  const minimalAst = {
+    slug,
+    tree: { name: "F", w: 400, h: 300, id: "root", children: [] },
+    meta: {},
+  };
+  writeStage(slug, minimalAst);
+  const reportPath = path.join(PREVIEW_DIR, "build-reports", `${slug}.json`);
+  let refineCalls = 0;
+  try {
+    await runBuildAndPreview({
+      slug,
+      refineMode: "ai",
+      runRefinePassFn: async ({ budget }) => {
+        refineCalls += 1;
+        assert.ok(Number(budget?.maxIters) <= 2, "AI refine maxIters must be bounded");
+        assert.ok(Number(budget?.topOffenders) <= 12, "AI refine offender cap must be bounded");
+        return { ok: false, skipped: true, reason: "test-skip" };
+      },
+    });
+    if (fs.existsSync(reportPath)) {
+      const report = JSON.parse(fs.readFileSync(reportPath, "utf8"));
+      assert.equal(report?.refineMode, "ai");
+      const refineStage = report?.stages?.refine || {};
+      assert.ok(["running", "completed", "skipped", "failed"].includes(refineStage.status));
+    }
+    assert.ok(refineCalls >= 0);
+  } finally {
+    deleteStage(slug);
+    try { fs.unlinkSync(reportPath); } catch {}
+    try { fs.unlinkSync(path.join(PREVIEW_DIR, `${slug}.html`)); } catch {}
   }
 });

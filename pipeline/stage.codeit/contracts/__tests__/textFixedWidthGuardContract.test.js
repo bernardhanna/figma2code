@@ -56,3 +56,17 @@ test("span direct child of text block is adjusted", () => {
   assert.ok(!tokens.includes("w-[30rem]"));
   assert.ok(tokens.includes("max-w-[30rem]"));
 });
+
+test("text node drops redundant max-w when ancestor already has same max-w", () => {
+  const html = `
+    <div class="w-full max-w-[33.5rem]">
+      <h2 data-key="h2" class="w-[33.5rem]">Heading</h2>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const cls = getClass(out.html, "h2");
+  const tokens = cls.split(/\s+/);
+  assert.ok(tokens.includes("w-full"));
+  assert.ok(!tokens.includes("max-w-[33.5rem]"));
+  assert.ok(!tokens.includes("max-w-full"));
+});

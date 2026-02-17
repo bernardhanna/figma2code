@@ -238,9 +238,37 @@ const apply = ({ html }) => {
 
   nodes.forEach((node, nodeIndex) => {
     if (!node?.attrs) return;
+    const nodeTokens = getClassTokens(node.attrs);
+    const nodeCores = nodeTokens.map(normalizeToken);
+
+    if (isDecorativeBarGroup(node, nodes, childrenMap, nodeIndex)) {
+      const hasExplicitWidth = nodeCores.some((c) => /^w-/.test(c));
+      if (!hasExplicitWidth) {
+        const withWidth = [...nodeTokens, getBarWidthToken(node, nodeTokens)];
+        setClassTokens(node.attrs, node.attrOrder, [...new Set(withWidth)]);
+        patches.push(
+          createPatch(
+            node.openStart,
+            node.openEnd,
+            buildOpenTag(node.tag, node.attrs, node.attrOrder, node.isSelfClosing)
+          )
+        );
+        const meta = getNodeMeta(node);
+        changes.push({
+          contractId: id,
+          nodeId: meta.nodeId,
+          selector: meta.selector,
+          op: "classAdd",
+          value: getBarWidthToken(node, nodeTokens),
+          reason: "Decorative multi-segment bars need explicit container width",
+        });
+        normalized += 1;
+      }
+      return;
+    }
     if (!isBarCandidate(node, nodes, childrenMap, nodeIndex)) return;
 
-    const tokens = getClassTokens(node.attrs);
+    const tokens = nodeTokens;
     const color = extractBarColor(tokens);
     if (!color) return;
 

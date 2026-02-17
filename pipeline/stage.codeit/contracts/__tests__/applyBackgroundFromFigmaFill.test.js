@@ -39,7 +39,19 @@ test("VIDEO fill + height intent inserts video layer and wraps content", () => {
   assert.ok(out.html.includes('poster="/assets/hero.jpg"'), "poster set");
   assert.ok(out.html.includes('class="relative z-10"'), "content wrapper inserted");
   assert.ok(out.html.includes("Hero"), "content preserved");
-  assert.ok(out.html.includes("relative") && out.html.includes("overflow-hidden"), "container classes applied");
+  assert.ok(out.html.includes("relative"), "container gets relative");
+  assert.ok(!out.html.includes("overflow-hidden"), "no overflow-hidden unless source clips");
+});
+
+test("VIDEO fill adds overflow-hidden only when source clips content", () => {
+  const artifact = buildArtifactWithNode({
+    id: "node-video-clip",
+    clipsContent: true,
+    fills: [{ kind: "video", src: "/assets/hero.mp4", poster: "/assets/hero.jpg" }],
+  });
+  const html = `<div data-node-id="node-video-clip" class="bg-cover h-[20rem]"><h2>Hero</h2></div>`;
+  const out = apply({ html, artifact });
+  assert.ok(out.html.includes("overflow-hidden"), "overflow-hidden should match clip intent");
 });
 
 test("existing background-image style is a no-op", () => {

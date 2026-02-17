@@ -122,7 +122,13 @@ function buildContractsSummary(contractsReport) {
         changedNodes: Number(entry.changedNodes || 0),
         notesCount: Array.isArray(entry.notes) ? entry.notes.length : 0,
       }))
-    : [];
+    : Array.isArray(contractsReport.entries)
+      ? contractsReport.entries.map((entry) => ({
+          name: entry.name,
+          changedNodes: Number(entry.changedNodes || 0),
+          notesCount: Number(entry.notesCount || 0),
+        }))
+      : [];
   const totals = contractsReport.totals || { changedNodes: 0, notes: 0 };
   return {
     totals: {
@@ -165,6 +171,8 @@ function buildResponseReportFromBuildReport(buildReport, fallback = {}) {
       stages: buildReport.stages || {},
       qa: buildReport.qa || null,
       contracts: buildReport.contracts || null,
+      tests: buildReport.tests || null,
+      checks: buildReport.checks || null,
       events: buildReport.events || [],
     },
   };
@@ -244,6 +252,13 @@ export function repairCachedPreviewHtml(rawHtml) {
   return html;
 }
 
+function extractContentLayerMarkup(previewHtml) {
+  const raw = String(previewHtml || "");
+  const m = raw.match(/<div class="content-layer">([\s\S]*?)<\/div>/i);
+  if (!m) return "";
+  return String(m[1] || "").trim();
+}
+
 function resolvePipelineStageToRun(slug, stage) {
   if (stage === "generate") return "generate";
   if (stage === "codeit") {
@@ -255,6 +270,25 @@ function resolvePipelineStageToRun(slug, stage) {
     return fs.existsSync(inputPath) ? "improve" : "all";
   }
   return stage;
+}
+
+function normalizeRefineModeInput(raw) {
+  const mode = String(raw || "").trim().toLowerCase();
+  if (mode === "on" || mode === "ai" || mode === "preview+refine" || mode === "preview_refine") {
+    return "ai";
+  }
+  return "off";
+}
+
+function requestBaseUrl(req, port) {
+  const proto = String(req?.headers?.["x-forwarded-proto"] || req?.protocol || "http")
+    .split(",")[0]
+    .trim();
+  const host = String(req?.headers?.["x-forwarded-host"] || req?.get?.("host") || "")
+    .split(",")[0]
+    .trim();
+  if (host) return `${proto}://${host}`;
+  return `http://127.0.0.1:${port || process.env.PORT || 5173}`;
 }
 
 function maybeBuildArtifact(slug, stage) {
@@ -353,7 +387,12 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
 
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });
 
-      const build = await runBuildAndPreview({ slug: r.ast.slug });
+      const refineMode = normalizeRefineModeInput(req?.body?.refineMode);
+      const build = await runBuildAndPreview({
+        slug: r.ast.slug,
+        refineMode,
+        baseUrl: requestBaseUrl(req, port),
+      });
       if (!build.ok) {
         return res.status(500).json({
           ok: false,
@@ -758,7 +797,12 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
 
       fs.writeFileSync(acfOut, acf, "utf8");
       fs.writeFileSync(frontOut, front, "utf8");
-      const build = await runBuildAndPreview({ slug: r.ast.slug });
+      const refineMode = normalizeRefineModeInput(req?.body?.refineMode);
+      const build = await runBuildAndPreview({
+        slug: r.ast.slug,
+        refineMode,
+        baseUrl: requestBaseUrl(req, port),
+      });
       if (!build.ok) {
         return res.status(500).json({
           ok: false,
@@ -816,8 +860,13 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
     if (!slug) {
       return res.status(400).json({ ok: false, error: "Missing slug", stage: "inputs" });
     }
+    const refineMode = normalizeRefineModeInput(req?.body?.refineMode ?? req?.query?.refineMode);
     try {
-      const result = await runBuildAndPreview({ slug });
+      const result = await runBuildAndPreview({
+        slug,
+        refineMode,
+        baseUrl: requestBaseUrl(req, port),
+      });
       if (result.ok) {
         const prefersJson =
           /application\/json/i.test(String(req.get("accept") || "")) ||
@@ -828,6 +877,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
             slug: result.slug,
             reportPath: result.reportPath,
             previewUrl: `/preview/${encodeURIComponent(result.slug)}`,
+            refineMode,
           });
         }
         return res.redirect(302, `/preview/${encodeURIComponent(result.slug)}`);
@@ -900,12 +950,21 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       if (fs.existsSync(file)) {
         const raw = fs.readFileSync(file, "utf8");
         const repaired = repairCachedPreviewHtml(raw);
+        const embed = String(req?.query?.embed || "").trim() === "1";
         if (repaired !== raw) {
           try {
             fs.writeFileSync(file, repaired, "utf8");
           } catch {
             // Non-fatal: still serve repaired content from memory.
           }
+        }
+        if (embed) {
+          const contentLayer = extractContentLayerMarkup(repaired);
+          if (!contentLayer) {
+            return res.status(500).send("Failed to extract embed preview content.");
+          }
+          res.setHeader("Content-Type", "text/html; charset=utf-8");
+          return res.send(contentLayer);
         }
         res.setHeader("Content-Type", "text/html; charset=utf-8");
         return res.send(repaired);
@@ -930,21 +989,38 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
   <p>No preview file or variants found for <strong>${escapedSlug}</strong>. Run a full build to generate the preview.</p>
   <form id="build-form" method="post" action="/api/build-preview" style="margin-top:1rem;">
     <input type="hidden" name="slug" value="${escapedSlug}">
+    <label style="display:block;margin-bottom:0.5rem;font-size:0.9rem;">
+      Preview mode
+      <select id="refine_mode" name="refineMode" style="margin-left:0.5rem;">
+        <option value="off">Preview (fast)</option>
+        <option value="ai">Preview + Refine (slower, best match)</option>
+      </select>
+    </label>
     <button type="submit" style="padding:0.5rem 1rem;cursor:pointer;">Build &amp; Open Preview</button>
   </form>
   <div id="build-progress" style="display:none;margin-top:1rem;">
+    <div id="build-mode" style="font-size:0.85rem;color:#334155;margin-bottom:0.35rem;">Mode: preview (fast)</div>
     <div style="font-size:0.9rem;font-weight:600;margin-bottom:0.5rem;">Build progress</div>
     <ol id="build-steps" style="margin:0;padding-left:1.1rem;line-height:1.6;">
       <li data-stage="generate">Generate</li>
       <li data-stage="codeit">Code-it</li>
       <li data-stage="improve">Improve</li>
+      <li data-stage="refine">Refine (optional)</li>
       <li data-stage="fix">Fix pain points</li>
       <li data-stage="emit">Emit preview HTML</li>
       <li data-stage="open_preview">Open preview</li>
     </ol>
     <div id="build-status" style="margin-top:0.5rem;color:#555;">Waiting…</div>
     <div style="margin-top:0.75rem;">
-      <div style="font-size:0.85rem;font-weight:600;">Contracts running</div>
+      <div style="font-size:0.85rem;font-weight:600;">Tests</div>
+      <ul id="build-tests" style="margin:0.25rem 0 0 0;padding-left:1.1rem;font-size:0.85rem;line-height:1.4;"></ul>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <div style="font-size:0.85rem;font-weight:600;">Checks</div>
+      <ul id="build-checks" style="margin:0.25rem 0 0 0;padding-left:1.1rem;font-size:0.85rem;line-height:1.4;"></ul>
+    </div>
+    <div style="margin-top:0.75rem;">
+      <div style="font-size:0.85rem;font-weight:600;">Contracts</div>
       <ul id="build-contracts" style="margin:0.25rem 0 0 0;padding-left:1.1rem;font-size:0.85rem;line-height:1.4;"></ul>
     </div>
     <div style="margin-top:0.75rem;">
@@ -959,6 +1035,13 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
   <p style="margin-top:1rem;color:#666;font-size:0.875rem;">This runs the full pipeline (Generate → Code-it → Improve → QA) then opens the preview.</p>
   <script>
     var POLL_MS = 600;
+    var REFINE_MODE_KEY = "preview_refine_mode_" + ${JSON.stringify(slug)};
+    function statusTag(status) {
+      var s = String(status || "pending");
+      if (s === "completed") return "done";
+      if (s === "passed") return "pass";
+      return s;
+    }
     function stageLabel(state) {
       if (state === "running") return " (running)";
       if (state === "completed") return " (done)";
@@ -970,6 +1053,13 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       if (!report || typeof report !== "object") return;
       var progress = document.getElementById("build-progress");
       progress.style.display = "block";
+      var modeEl = document.getElementById("build-mode");
+      if (modeEl) {
+        var mode = String(report.refineMode || "off").toLowerCase();
+        modeEl.textContent = mode === "ai"
+          ? "Mode: preview + refine (slower, best match)"
+          : "Mode: preview (fast)";
+      }
       var nodes = document.querySelectorAll("#build-steps li[data-stage]");
       nodes.forEach(function(node) {
         var key = node.getAttribute("data-stage");
@@ -992,6 +1082,42 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         statusEl.style.color = "#555";
       }
 
+      var testsList = document.getElementById("build-tests");
+      testsList.innerHTML = "";
+      var tests = report.tests && Array.isArray(report.tests.entries) ? report.tests.entries : [];
+      if (!tests.length) {
+        var emptyTest = document.createElement("li");
+        emptyTest.textContent = "[pending] waiting for test status...";
+        testsList.appendChild(emptyTest);
+      } else {
+        tests.forEach(function(entry) {
+          var li = document.createElement("li");
+          var status = statusTag(entry.status || "pending");
+          var summary = entry.summary ? " - " + entry.summary : "";
+          li.textContent = "[" + status + "] " + (entry.name || "test") + summary;
+          li.style.color = status === "failed" ? "#b00020" : status === "pass" || status === "done" ? "#0a7a2f" : "#111";
+          testsList.appendChild(li);
+        });
+      }
+
+      var checksList = document.getElementById("build-checks");
+      checksList.innerHTML = "";
+      var checks = report.checks && Array.isArray(report.checks.entries) ? report.checks.entries : [];
+      if (!checks.length) {
+        var emptyCheck = document.createElement("li");
+        emptyCheck.textContent = "[pending] waiting for checks...";
+        checksList.appendChild(emptyCheck);
+      } else {
+        checks.forEach(function(entry) {
+          var li = document.createElement("li");
+          var status = statusTag(entry.status || "pending");
+          var summary = entry.summary ? " - " + entry.summary : "";
+          li.textContent = "[" + status + "] " + (entry.name || "check") + summary;
+          li.style.color = status === "fail" || status === "failed" ? "#b00020" : status === "pass" || status === "done" ? "#0a7a2f" : "#111";
+          checksList.appendChild(li);
+        });
+      }
+
       var contractsList = document.getElementById("build-contracts");
       contractsList.innerHTML = "";
       var contractEntries = report.contracts && Array.isArray(report.contracts.entries)
@@ -999,12 +1125,14 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         : [];
       if (!contractEntries.length) {
         var emptyContract = document.createElement("li");
-        emptyContract.textContent = "Waiting for contract results…";
+        emptyContract.textContent = "[pending] waiting for contract results...";
         contractsList.appendChild(emptyContract);
       } else {
         contractEntries.forEach(function(entry) {
           var li = document.createElement("li");
-          li.textContent = (entry.name || "contract") + ": " + (entry.changedNodes || 0) + " changes, " + (entry.notesCount || 0) + " notes";
+          var status = statusTag(entry.status || "pending");
+          li.textContent = "[" + status + "] " + (entry.name || "contract") + " - " + (entry.changedNodes || 0) + " changes, " + (entry.notesCount || 0) + " warnings";
+          li.style.color = status === "failed" ? "#b00020" : status === "skipped" ? "#8a6d00" : status === "pass" || status === "done" ? "#0a7a2f" : "#111";
           contractsList.appendChild(li);
         });
       }
@@ -1053,16 +1181,37 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       return function stop(){ active = false; };
     }
     var building = false;
+    function loadRefineMode() {
+      try {
+        return localStorage.getItem(REFINE_MODE_KEY) || "off";
+      } catch (_) {
+        return "off";
+      }
+    }
+    function saveRefineMode(v) {
+      try {
+        localStorage.setItem(REFINE_MODE_KEY, String(v || "off"));
+      } catch (_) {}
+    }
     function startBuild() {
       if (building) return;
       building = true;
       var form = document.getElementById("build-form");
       var slug = document.querySelector('input[name="slug"]').value;
+      var refineModeEl = document.getElementById("refine_mode");
+      var refineMode = refineModeEl ? String(refineModeEl.value || "off") : "off";
+      saveRefineMode(refineMode);
+      var modeEl = document.getElementById("build-mode");
+      if (modeEl) {
+        modeEl.textContent = refineMode === "ai"
+          ? "Mode: preview + refine (slower, best match)"
+          : "Mode: preview (fast)";
+      }
       var btn = form.querySelector('button');
       btn.disabled = true;
       btn.textContent = "Building…";
       var stopPolling = startPolling(slug);
-      fetch("/api/build-preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: slug }) })
+      fetch("/api/build-preview", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ slug: slug, refineMode: refineMode }) })
         .then(function(r) {
           if (r.ok) return r.json();
           return r.json().then(function(j) { throw new Error(j.error || "Build failed"); });
@@ -1083,6 +1232,19 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       e.preventDefault();
       startBuild();
     });
+    (function initRefineMode() {
+      var refineModeEl = document.getElementById("refine_mode");
+      if (!refineModeEl) return;
+      var saved = loadRefineMode();
+      if (saved === "ai" || saved === "off") {
+        refineModeEl.value = saved;
+      } else {
+        refineModeEl.value = "off";
+      }
+      refineModeEl.addEventListener("change", function() {
+        saveRefineMode(refineModeEl.value || "off");
+      });
+    })();
     // Auto-run full pipeline immediately when preview is missing.
     startBuild();
   </script>

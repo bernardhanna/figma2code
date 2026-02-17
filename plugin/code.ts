@@ -62,6 +62,10 @@ type AutoLayout = {
   counterAlign?: "MIN" | "CENTER" | "MAX" | "BASELINE";
   primarySizing?: "HUG" | "FIXED";
   counterSizing?: "HUG" | "FIXED";
+  layoutWrap?: "NO_WRAP" | "WRAP" | string;
+  wrap?: boolean;
+  counterAxisAlignContent?: string;
+  counterAxisSpacing?: number;
 };
 
 type Sizing = {
@@ -110,6 +114,21 @@ type TextPayload = {
 type ExportedImage = { src: string; w: number; h: number };
 
 type Actions = { openUrl?: string; isClickable?: boolean };
+type ConstraintsInfo = { horizontal: string; vertical: string };
+type ExportSettingInfo = {
+  format: string;
+  constraintType?: string;
+  constraintValue?: number;
+  suffix?: string;
+};
+type MaskExtraction = {
+  maskType?: string;
+  maskMode?: string;
+  maskKind?: "rect" | "vector" | "unknown";
+  appliesTo?: "siblings" | "children" | "none";
+  targetIds?: string[];
+  preferredRender?: "overflow-hidden" | "svg-mask" | "rasterize";
+};
 
 type BB = { x: number; y: number; w: number; h: number };
 
@@ -122,6 +141,13 @@ type NodeBase = {
 
   // Phase-1 / debug
   bb?: BB;
+  relX?: number;
+  relY?: number;
+  constraints?: ConstraintsInfo;
+  exportSettings?: ExportSettingInfo[];
+  isMask?: boolean;
+  maskedBy?: string;
+  mask?: MaskExtraction;
 
   auto?: AutoLayout;
   size?: Sizing;
@@ -129,6 +155,7 @@ type NodeBase = {
 
   stroke?: Stroke;
   r?: Radius;
+  cornerSmoothing?: number;
 
   shadows?: Shadow[];
   opacity?: number;
@@ -161,6 +188,9 @@ type NodeBase = {
     focus?: NodeBase;
     disabled?: NodeBase;
   };
+
+  // Optional inline SVG payload used for vector-first export of boolean/vector-like nodes.
+  svg?: { markup?: string; html?: string };
 
   children?: NodeBase[];
 };
@@ -285,6 +315,20 @@ function absBB(n: SceneNode): BB | undefined {
   }
 }
 
+function relPosFromParent(
+  node: SceneNode,
+  parent?: SceneNode
+): { relX?: number; relY?: number } {
+  if (!parent) return {};
+  const child = absBB(node);
+  const p = absBB(parent);
+  if (!child || !p) return {};
+  return {
+    relX: round(child.x - p.x),
+    relY: round(child.y - p.y),
+  };
+}
+
 function isNodeVisible(n: SceneNode): boolean {
   try {
     if ((n as any).visible === false) return false;
@@ -325,12 +369,16 @@ function shouldRasterizeNode(node: SceneNode): boolean {
   return (
     t === "INSTANCE" ||
     t === "VECTOR" ||
-    t === "BOOLEAN_OPERATION" ||
     t === "STAR" ||
     t === "LINE" ||
     t === "ELLIPSE" ||
     t === "POLYGON"
   );
+}
+
+function shouldForceVectorExport(node: SceneNode): boolean {
+  const t = String(node?.type || "").toUpperCase();
+  return t === "BOOLEAN_OPERATION";
 }
 
 function getAutoLayout(n: SceneNode): AutoLayout | undefined {
@@ -339,6 +387,30 @@ function getAutoLayout(n: SceneNode): AutoLayout | undefined {
   const anyN = n as any;
   const mode = anyN.layoutMode as "HORIZONTAL" | "VERTICAL" | "NONE";
   if (!mode) return { layout: "NONE" };
+  const layoutWrapRaw = anyN.layoutWrap as "NO_WRAP" | "WRAP" | undefined;
+  const layoutWrap =
+    typeof layoutWrapRaw === "string" && layoutWrapRaw.trim()
+      ? layoutWrapRaw
+      : undefined;
+  const wrap =
+    layoutWrap === "WRAP"
+      ? true
+      : layoutWrap === "NO_WRAP"
+        ? false
+        : undefined;
+  const counterAxisAlignContentRaw = anyN.counterAxisAlignContent as
+    | string
+    | undefined;
+  const counterAxisAlignContent =
+    typeof counterAxisAlignContentRaw === "string" &&
+    counterAxisAlignContentRaw.trim()
+      ? counterAxisAlignContentRaw
+      : undefined;
+  const counterAxisSpacingRaw = anyN.counterAxisSpacing;
+  const counterAxisSpacing =
+    typeof counterAxisSpacingRaw === "number"
+      ? counterAxisSpacingRaw
+      : undefined;
 
   return {
     layout: mode,
@@ -351,6 +423,10 @@ function getAutoLayout(n: SceneNode): AutoLayout | undefined {
     counterAlign: anyN.counterAxisAlignItems ?? "MIN",
     primarySizing: anyN.primaryAxisSizingMode === "AUTO" ? "HUG" : "FIXED",
     counterSizing: anyN.counterAxisSizingMode === "AUTO" ? "HUG" : "FIXED",
+    layoutWrap,
+    wrap,
+    counterAxisAlignContent,
+    counterAxisSpacing,
   };
 }
 
@@ -405,6 +481,29 @@ function getRadii(n: SceneNode): Radius | undefined {
     }
   } catch {}
   return undefined;
+}
+
+function getCornerSmoothing(n: SceneNode): number | undefined {
+  try {
+    const anyN = n as any;
+    const v = Number(anyN.cornerSmoothing);
+    if (!Number.isFinite(v)) return undefined;
+    return Math.max(0, Math.min(1, v));
+  } catch {
+    return undefined;
+  }
+}
+
+function hasRoundedCorners(r?: Radius): boolean {
+  if (!r) return false;
+  return [r.tl, r.tr, r.br, r.bl].some((v) => Number(v) > 0);
+}
+
+function requiresCornerSmoothingRaster(base: NodeBase): boolean {
+  const s = Number(base?.cornerSmoothing);
+  if (!Number.isFinite(s) || s <= 0.001) return false;
+  // Smoothing is only visually relevant when corners are rounded.
+  return hasRoundedCorners(base?.r);
 }
 
 function getShadows(n: SceneNode): Shadow[] | undefined {
@@ -831,6 +930,17 @@ async function exportPNG(n: SceneNode): Promise<ExportedImage | undefined> {
   }
 }
 
+async function exportSVGMarkup(n: SceneNode): Promise<string | undefined> {
+  try {
+    const bytes: Uint8Array = await (n as any).exportAsync({ format: "SVG" });
+    const svg = decodeUtf8(bytes).trim();
+    if (!svg || !/^<svg[\s>]/i.test(svg)) return undefined;
+    return svg;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Reactions → actions (OPEN_URL) */
 function getActions(n: SceneNode): Actions | undefined {
   try {
@@ -846,6 +956,131 @@ function getActions(n: SceneNode): Actions | undefined {
     return { isClickable: true };
   } catch {
     return;
+  }
+}
+
+function getConstraints(n: SceneNode): ConstraintsInfo | undefined {
+  try {
+    const anyN = n as any;
+    const c = anyN.constraints as
+      | { horizontal?: string; vertical?: string }
+      | undefined;
+    if (!c || typeof c !== "object") return undefined;
+    const horizontal = String(c.horizontal || "").trim();
+    const vertical = String(c.vertical || "").trim();
+    if (!horizontal || !vertical) return undefined;
+    return { horizontal, vertical };
+  } catch {
+    return undefined;
+  }
+}
+
+function getExportSettings(n: SceneNode): ExportSettingInfo[] | undefined {
+  try {
+    const anyN = n as any;
+    const list = Array.isArray(anyN.exportSettings) ? anyN.exportSettings : [];
+    const out: ExportSettingInfo[] = [];
+    for (const raw of list) {
+      if (!raw || typeof raw !== "object") continue;
+      const format = String(raw.format || "").trim();
+      if (!format) continue;
+      const constraint = raw.constraint && typeof raw.constraint === "object"
+        ? raw.constraint
+        : null;
+      const constraintType = constraint?.type
+        ? String(constraint.type).trim()
+        : "";
+      const valueNum = Number(constraint?.value);
+      const suffix = raw.suffix ? String(raw.suffix).trim() : "";
+      const entry: ExportSettingInfo = { format };
+      if (constraintType) entry.constraintType = constraintType;
+      if (Number.isFinite(valueNum)) entry.constraintValue = valueNum;
+      if (suffix) entry.suffix = suffix;
+      out.push(entry);
+    }
+    return out.length ? out : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function inferMaskKind(nodeType: string): "rect" | "vector" | "unknown" {
+  const t = String(nodeType || "").toUpperCase();
+  if (t === "RECTANGLE" || t === "FRAME") return "rect";
+  if (
+    t === "VECTOR" ||
+    t === "BOOLEAN_OPERATION" ||
+    t === "STAR" ||
+    t === "LINE" ||
+    t === "ELLIPSE" ||
+    t === "POLYGON"
+  ) {
+    return "vector";
+  }
+  return "unknown";
+}
+
+function getMaskExtraction(n: SceneNode): {
+  isMask?: boolean;
+  mask?: MaskExtraction;
+} {
+  try {
+    const anyN = n as any;
+    const isMask = anyN.isMask === true;
+    const maskTypeRaw = anyN.maskType as string | undefined;
+    const maskModeRaw = anyN.maskMode as string | undefined;
+    const maskType =
+      typeof maskTypeRaw === "string" && maskTypeRaw.trim()
+        ? maskTypeRaw
+        : undefined;
+    const maskMode =
+      typeof maskModeRaw === "string" && maskModeRaw.trim()
+        ? maskModeRaw
+        : undefined;
+
+    if (!isMask && !maskType && !maskMode) return {};
+    const maskKind = inferMaskKind(String((n as any)?.type || ""));
+    const preferredRender =
+      maskKind === "rect"
+        ? "overflow-hidden"
+        : maskKind === "vector"
+          ? "svg-mask"
+          : "rasterize";
+    const maskPayload: MaskExtraction = {
+      maskKind,
+      preferredRender,
+    };
+    if (maskType) maskPayload.maskType = maskType;
+    if (maskMode) maskPayload.maskMode = maskMode;
+    return {
+      isMask,
+      mask: maskPayload,
+    };
+  } catch {
+    return {};
+  }
+}
+
+function applyMaskRelationships(children: NodeBase[]): void {
+  if (!Array.isArray(children) || children.length < 2) return;
+  for (let i = 0; i < children.length; i += 1) {
+    const source = children[i];
+    if (!source || source.isMask !== true) continue;
+
+    const targetIds = children
+      .slice(i + 1)
+      .map((x) => x?.id)
+      .filter((id): id is string => typeof id === "string" && !!id);
+
+    if (!source.mask) source.mask = {};
+    source.mask.appliesTo = targetIds.length ? "siblings" : "none";
+    source.mask.targetIds = targetIds;
+
+    for (let j = i + 1; j < children.length; j += 1) {
+      const target = children[j];
+      if (!target || !target.id) continue;
+      if (!target.maskedBy) target.maskedBy = source.id;
+    }
   }
 }
 
@@ -942,11 +1177,16 @@ function isInteractiveLooking(node: SceneNode, actions?: Actions): boolean {
  * - No PNG export (keeps payload small)
  * - Traverses INSTANCE internals so we can diff backgrounds/text/etc when available
  */
-async function walkForState(node: SceneNode): Promise<NodeBase | null> {
+async function walkForState(
+  node: SceneNode,
+  parent?: SceneNode
+): Promise<NodeBase | null> {
   if (!isNodeVisible(node)) return null;
 
   const { w, h } = sizeOf(node);
 
+  const rel = relPosFromParent(node, parent);
+  const maskMeta = getMaskExtraction(node);
   const base: NodeBase = {
     id: node.id,
     name: node.name,
@@ -954,10 +1194,17 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
     w: round(w),
     h: round(h),
     bb: absBB(node),
+    relX: rel.relX,
+    relY: rel.relY,
+    constraints: getConstraints(node),
+    isMask: maskMeta.isMask,
+    mask: maskMeta.mask,
+    exportSettings: getExportSettings(node),
 
     auto: getAutoLayout(node),
     size: undefined,
     r: getRadii(node),
+    cornerSmoothing: getCornerSmoothing(node),
     shadows: getShadows(node),
     stroke: getStroke(node),
     fills: getFills(node),
@@ -973,8 +1220,17 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
   }
 
   const hasImgFill = base.fills?.some((f) => f.kind === "image") === true;
+  if (shouldForceVectorExport(node)) {
+    const svgMarkup = await exportSVGMarkup(node);
+    if (svgMarkup) {
+      base.svg = { markup: svgMarkup };
+    }
+  }
   const rasterForState =
-    (shouldRasterizeNode(node) && node.type !== "INSTANCE") || hasImgFill;
+    (shouldRasterizeNode(node) && node.type !== "INSTANCE") ||
+    (shouldForceVectorExport(node) && !base.svg) ||
+    requiresCornerSmoothingRaster(base) ||
+    hasImgFill;
   if (rasterForState) {
     const img = await exportPNG(node);
     if (img) base.img = img;
@@ -985,10 +1241,13 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
       .children as readonly SceneNode[];
     const outKids: NodeBase[] = [];
     for (const c of kids) {
-      const child = await walkForState(c);
+      const child = await walkForState(c, node);
       if (child) outKids.push(child);
     }
-    if (outKids.length) base.children = outKids;
+    if (outKids.length) {
+      applyMaskRelationships(outKids);
+      base.children = outKids;
+    }
   }
 
   return base;
@@ -1413,6 +1672,8 @@ async function walk(
 
   const { w, h } = sizeOf(node);
 
+  const rel = relPosFromParent(node, parent);
+  const maskMeta = getMaskExtraction(node);
   const base: NodeBase = {
     id: node.id,
     name: node.name,
@@ -1420,10 +1681,17 @@ async function walk(
     w: round(w),
     h: round(h),
     bb: absBB(node),
+    relX: rel.relX,
+    relY: rel.relY,
+    constraints: getConstraints(node),
+    isMask: maskMeta.isMask,
+    mask: maskMeta.mask,
+    exportSettings: getExportSettings(node),
 
     auto: getAutoLayout(node),
     size: parent ? childSizingInParent(parent, node) : undefined,
     r: getRadii(node),
+    cornerSmoothing: getCornerSmoothing(node),
     shadows: getShadows(node),
     stroke: getStroke(node),
     fills: getFills(node),
@@ -1449,6 +1717,12 @@ async function walk(
   }
 
   const hasImgFill = base.fills?.some((f) => f.kind === "image") === true;
+  if (shouldForceVectorExport(node)) {
+    const svgMarkup = await exportSVGMarkup(node);
+    if (svgMarkup) {
+      base.svg = { markup: svgMarkup };
+    }
+  }
   const complex = shouldRasterizeNode(node);
 
   if (node.type === "INSTANCE") {
@@ -1499,7 +1773,12 @@ async function walk(
   }
 
   // Non-instance raster rules
-  if (hasImgFill || complex) {
+  if (
+    hasImgFill ||
+    complex ||
+    (shouldForceVectorExport(node) && !base.svg) ||
+    requiresCornerSmoothingRaster(base)
+  ) {
     const img = await exportPNG(node);
     if (img) base.img = img;
 
@@ -1522,7 +1801,10 @@ async function walk(
       const child = await walk(c, node);
       if (child) outKids.push(child);
     }
-    if (outKids.length) base.children = outKids;
+    if (outKids.length) {
+      applyMaskRelationships(outKids);
+      base.children = outKids;
+    }
   }
 
   return base;

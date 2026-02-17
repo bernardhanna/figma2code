@@ -163,34 +163,46 @@ const getSelectorHint = (node) => {
   return node?.tag || "node";
 };
 
-const readScoreFile = (slug, breakpoint) => {
+const resolveVisualDiffDirs = (slug) => {
   const repoRoot = path.resolve(__dirname, "..", "..", "..");
-  const dir = path.join(repoRoot, "fixtures.out", slug);
-  if (!fs.existsSync(dir)) return null;
+  const outRoot = path.join(repoRoot, "fixtures.out", slug);
+  const generatorRoot = path.join(repoRoot, "generator", "fixtures.out", slug);
+  const dirs = [outRoot, generatorRoot];
+  return [...new Set(dirs)];
+};
 
+const scoreCandidatesForBreakpoint = (dir, breakpoint) => {
   const candidates = [];
-  if (breakpoint) {
-    candidates.push(path.join(dir, `score.${breakpoint}.json`));
-  }
-  if (breakpoint === "desktop") {
-    candidates.push(path.join(dir, "score.json"));
-  }
+  if (breakpoint) candidates.push(path.join(dir, `score.${breakpoint}.json`));
+  if (breakpoint === "desktop") candidates.push(path.join(dir, "score.json"));
   candidates.push(path.join(dir, "score.all.json"));
+  return candidates;
+};
 
-  for (const file of candidates) {
+const readFirstJson = (files) => {
+  for (const file of files) {
     if (!fs.existsSync(file)) continue;
     try {
-      return JSON.parse(fs.readFileSync(file, "utf8"));
-    } catch {
-      return null;
+      return { file, parsed: JSON.parse(fs.readFileSync(file, "utf8")), parseError: null };
+    } catch (error) {
+      return { file, parsed: null, parseError: String(error?.message || error) };
     }
   }
-
-  return null;
+  return { file: null, parsed: null, parseError: null };
 };
 
 const buildPixelDiffMetric = (slug, breakpoint) => {
-  const score = readScoreFile(slug, breakpoint);
+  const dirs = resolveVisualDiffDirs(slug);
+  const searchedScorePaths = dirs.flatMap((dir) => scoreCandidatesForBreakpoint(dir, breakpoint));
+  const searched = {
+    scoreFiles: searchedScorePaths,
+    figmaFiles: dirs.map((dir) => path.join(dir, `figma.${breakpoint}.png`)),
+    renderFiles: dirs.map((dir) => path.join(dir, `render.${breakpoint}.png`)),
+    diffFiles: dirs.map((dir) => path.join(dir, `diff.${breakpoint}.png`)),
+  };
+
+  const readResult = readFirstJson(searchedScorePaths);
+  const score = readResult.parsed;
   if (score && typeof score.diffRatio === "number") {
     return {
       value: score.diffRatio,
@@ -198,6 +210,10 @@ const buildPixelDiffMetric = (slug, breakpoint) => {
       diffPixels: Number(score.diffPixels || 0),
       totalPixels: Number(score.totalPixels || 0),
       at: score.at || null,
+      diagnostics: {
+        scoreFile: readResult.file,
+        searched,
+      },
     };
   }
   if (score && score.results && breakpoint && score.results[breakpoint]?.score) {
@@ -208,10 +224,44 @@ const buildPixelDiffMetric = (slug, breakpoint) => {
       diffPixels: Number(bpScore.diffPixels || 0),
       totalPixels: Number(bpScore.totalPixels || 0),
       at: bpScore.at || null,
+      diagnostics: {
+        scoreFile: readResult.file,
+        searched,
+      },
     };
   }
 
-  return { value: null, source: "placeholder", diffPixels: 0, totalPixels: 0, at: null };
+  const hasAnyFigma = searched.figmaFiles.some((f) => fs.existsSync(f));
+  const hasAnyRender = searched.renderFiles.some((f) => fs.existsSync(f));
+  const hasAnyDiff = searched.diffFiles.some((f) => fs.existsSync(f));
+  const hasAnyScore = searched.scoreFiles.some((f) => fs.existsSync(f));
+  let reason = "missing-score-files";
+  if (readResult.parseError) reason = "score-parse-error";
+  else if (!hasAnyFigma) reason = "missing-figma-reference";
+  else if (!hasAnyRender) reason = "missing-render-screenshot";
+  else if (!hasAnyDiff) reason = "missing-diff-image";
+  else if (!hasAnyScore) reason = "missing-score-files";
+  else reason = "invalid-score-shape";
+
+  return {
+    value: null,
+    source: "placeholder",
+    diffPixels: 0,
+    totalPixels: 0,
+    at: null,
+    diagnostics: {
+      reason,
+      parseError: readResult.parseError || null,
+      scoreFile: readResult.file,
+      searched,
+      exists: {
+        figma: hasAnyFigma,
+        render: hasAnyRender,
+        diff: hasAnyDiff,
+        score: hasAnyScore,
+      },
+    },
+  };
 };
 
 const buildOffender = ({
@@ -386,15 +436,28 @@ const evaluate = ({ slug, html }) => {
   };
 
   const breakpoints = {};
+  const visualDiffDiagnostics = [];
   BREAKPOINTS.forEach((bp) => {
+    const pixelDiffRatio = buildPixelDiffMetric(slug, bp);
     breakpoints[bp] = {
       visual: {
-        pixelDiffRatio: buildPixelDiffMetric(slug, bp),
+        pixelDiffRatio,
       },
       layout: { ...baseLayout },
       type: { ...baseType },
       a11y: { ...baseA11y },
     };
+    if (pixelDiffRatio?.source !== "visual-diff") {
+      const diag = pixelDiffRatio?.diagnostics || {};
+      visualDiffDiagnostics.push({
+        breakpoint: bp,
+        reason: String(diag.reason || "missing-visual-diff"),
+        parseError: diag.parseError || null,
+        scoreFile: diag.scoreFile || null,
+        searched: diag.searched || null,
+        exists: diag.exists || null,
+      });
+    }
   });
 
   return {
@@ -405,6 +468,10 @@ const evaluate = ({ slug, html }) => {
     diagnostics: {
       offendersCount: offenders.length,
       source: fragmentHtml ? "fragment" : "preview",
+      visualDiff: {
+        ok: visualDiffDiagnostics.length === 0,
+        missing: visualDiffDiagnostics,
+      },
     },
   };
 };

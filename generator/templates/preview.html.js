@@ -876,6 +876,7 @@ ${css}
 </head>
 
 <body class="antialiased bg-white" data-preview-slug="${escapeAttr(slug)}">
+  <div id="refine_toast" style="position:fixed;right:16px;bottom:16px;z-index:10040;max-width:420px;display:none;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,.92);color:#fff;font-size:12px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.25);"></div>
   <div class="overlay-toolbar" id="toolbar_root">
     <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
       <div class="vpbar">
@@ -894,21 +895,7 @@ ${css}
       </div>
 
       <div class="flex items-center gap-2 ml-auto flex-wrap" id="toolbar_actions">
-        <div class="stagebar" id="stage_toggle">
-          <span class="vpmeta">Stage:</span>
-          <button class="stagebtn" type="button" data-stage="generate" data-stage-btn="1">
-            Generate
-          </button>
-          <button class="stagebtn" type="button" data-stage="codeit" data-stage-btn="1">
-            Code it
-          </button>
-          <button class="stagebtn" type="button" data-stage="improve" data-stage-btn="1">
-            Improve
-          </button>
-        </div>
-        <button id="improve_run" class="vpbtn" type="button">Improve further</button>
-        <button id="qa_gate_btn" class="vpbtn" type="button" title="Run QA fix loop and apply fixes">Fix pain points</button>
-        <button id="qa_fix_root_width_btn" class="vpbtn" type="button" title="Remove conflicting root fixed width when max-w is present">Fix root width</button>
+        <button id="sidebar_toggle" class="stagebtn" type="button" aria-expanded="false">Tools</button>
       ${
         overlaySrcInitial
           ? `
@@ -992,78 +979,90 @@ ${css}
     </div>
   </div>
 
-  <div class="overlay-toolbar" id="export_root">
-    <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
-      <div class="flex items-center gap-2" id="export_controls">
-        <span class="vpmeta">Export:</span>
-        <select id="export_type" class="vpbtn" style="min-width:160px;">
-          <option value="">Select folder</option>
-        </select>
-        <span id="export_components_root" class="vpmeta" title=""></span>
-        <button id="export_btn" class="vpbtn" type="button">Export</button>
-      </div>
+  <aside
+    id="sidebar_root"
+    aria-hidden="true"
+    style="position:fixed;top:68px;right:0;bottom:0;width:min(560px,92vw);background:#fff;border-left:1px solid rgba(148,163,184,.35);box-shadow:-8px 0 24px rgba(15,23,42,.12);transform:translateX(100%);transition:transform .2s ease;z-index:10020;display:flex;flex-direction:column;"
+  >
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border-bottom:1px solid rgba(148,163,184,.25);background:#f8fafc;">
+      <strong style="font-size:13px;color:#0f172a;">Preview Tools</strong>
+      <button id="sidebar_close" class="vpbtn" type="button">Close</button>
     </div>
-  </div>
-
-  <div class="overlay-toolbar" id="editor_root">
-    <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-col gap-3">
-      <div class="editor-row">
-        <button id="editor_select" class="vpbtn" type="button">Select element</button>
-        <span class="vpmeta editor-selected" id="editor_selected">No selection</span>
-        <input id="editor_node_input" class="editor-input" type="text" placeholder="data-node-id or data-key" />
-        <button id="editor_pick" class="vpbtn" type="button">Select by ID</button>
-        <button id="editor_clear" class="vpbtn" type="button">Clear</button>
-      </div>
-
-      <div class="editor-row">
-        <div class="editor-field">
-          <label class="vpmeta" for="editor_classes">Classes</label>
-          <textarea id="editor_classes" class="editor-textarea" placeholder="Tailwind classes"></textarea>
-        </div>
-        <div class="editor-field">
-          <label class="vpmeta" for="editor_aria_label">aria-label</label>
-          <input id="editor_aria_label" class="editor-input" type="text" placeholder="Accessible label" />
-        </div>
-        <div class="editor-field">
-          <label class="vpmeta" for="editor_aria_labelledby">aria-labelledby</label>
-          <input id="editor_aria_labelledby" class="editor-input" type="text" placeholder="Element IDs" />
-        </div>
-        <div class="editor-field">
-          <label class="vpmeta" for="editor_aria_describedby">aria-describedby</label>
-          <input id="editor_aria_describedby" class="editor-input" type="text" placeholder="Element IDs" />
-        </div>
-        <div class="editor-field">
-          <label class="vpmeta">
-            <input id="editor_aria_hidden" type="checkbox" />
-            aria-hidden
-          </label>
+    <div style="overflow:auto;padding-bottom:18px;">
+      <div class="overlay-toolbar" id="export_root" style="border-bottom:1px solid rgba(148,163,184,.25);background:transparent;">
+        <div style="padding:12px;display:flex;flex-direction:column;gap:8px;">
+          <div class="flex items-center gap-2 flex-wrap" id="export_controls">
+            <span class="vpmeta">Export:</span>
+            <select id="export_type" class="vpbtn" style="min-width:160px;">
+              <option value="">Select folder</option>
+            </select>
+            <button id="export_btn" class="vpbtn" type="button">Export</button>
+          </div>
+          <span id="export_components_root" class="vpmeta" title=""></span>
         </div>
       </div>
 
-      <div class="editor-row">
-        <button id="editor_apply" class="vpbtn" type="button">Apply & Save</button>
-        <span class="vpmeta" id="editor_status"></span>
-      </div>
-
-      <div class="editor-row">
-        <div class="editor-field" style="flex:1; min-width:260px;">
-          <label class="vpmeta">Change log</label>
-          <div id="editor_ledger" class="editor-ledger"></div>
-        </div>
-      </div>
-
-      <div class="editor-row editor-code">
-        <div class="editor-field" style="flex:1; min-width:260px;">
-          <label class="vpmeta">Stage HTML (read-only)</label>
-          <textarea id="editor_html" class="editor-textarea" placeholder="Stage HTML"></textarea>
+      <div class="overlay-toolbar" id="editor_root" style="background:transparent;">
+        <div style="padding:12px;display:flex;flex-direction:column;gap:10px;">
           <div class="editor-row">
-            <button id="editor_html_refresh" class="vpbtn" type="button">Refresh code</button>
-            <button id="editor_html_copy" class="vpbtn" type="button">Copy</button>
+            <button id="editor_select" class="vpbtn" type="button">Select element</button>
+            <span class="vpmeta editor-selected" id="editor_selected">No selection</span>
+            <input id="editor_node_input" class="editor-input" type="text" placeholder="data-node-id or data-key" />
+            <button id="editor_pick" class="vpbtn" type="button">Select by ID</button>
+            <button id="editor_clear" class="vpbtn" type="button">Clear</button>
+          </div>
+
+          <div class="editor-row">
+            <div class="editor-field">
+              <label class="vpmeta" for="editor_classes">Classes</label>
+              <textarea id="editor_classes" class="editor-textarea" placeholder="Tailwind classes"></textarea>
+            </div>
+            <div class="editor-field">
+              <label class="vpmeta" for="editor_aria_label">aria-label</label>
+              <input id="editor_aria_label" class="editor-input" type="text" placeholder="Accessible label" />
+            </div>
+            <div class="editor-field">
+              <label class="vpmeta" for="editor_aria_labelledby">aria-labelledby</label>
+              <input id="editor_aria_labelledby" class="editor-input" type="text" placeholder="Element IDs" />
+            </div>
+            <div class="editor-field">
+              <label class="vpmeta" for="editor_aria_describedby">aria-describedby</label>
+              <input id="editor_aria_describedby" class="editor-input" type="text" placeholder="Element IDs" />
+            </div>
+            <div class="editor-field">
+              <label class="vpmeta">
+                <input id="editor_aria_hidden" type="checkbox" />
+                aria-hidden
+              </label>
+            </div>
+          </div>
+
+          <div class="editor-row">
+            <button id="editor_apply" class="vpbtn" type="button">Apply & Save</button>
+            <span class="vpmeta" id="editor_status"></span>
+          </div>
+
+          <div class="editor-row">
+            <div class="editor-field" style="flex:1; min-width:260px;">
+              <label class="vpmeta">Change log</label>
+              <div id="editor_ledger" class="editor-ledger"></div>
+            </div>
+          </div>
+
+          <div class="editor-row editor-code">
+            <div class="editor-field" style="flex:1; min-width:260px;">
+              <label class="vpmeta">Stage HTML (read-only)</label>
+              <textarea id="editor_html" class="editor-textarea" placeholder="Stage HTML"></textarea>
+              <div class="editor-row">
+                <button id="editor_html_refresh" class="vpbtn" type="button">Refresh code</button>
+                <button id="editor_html_copy" class="vpbtn" type="button">Copy</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </aside>
 
   <!-- =========================================================
        Responsive config + minimal bucket hook (NO HTML swapping)
@@ -1100,6 +1099,7 @@ ${css}
         <div class="progress-status" id="pipeline_status">Waiting…</div>
         <div id="pipeline_steps" class="progress-steps"></div>
         <div id="pipeline_log" class="progress-log">Progress log will appear here.</div>
+        <div id="pipeline_refine_report" class="progress-log" style="max-height: 180px; overflow: auto;">Refine report will appear here.</div>
         <div class="progress-preview">
           Preview ready: <a id="pipeline_preview_link" href="#" rel="noreferrer">—</a>
         </div>
@@ -1239,6 +1239,7 @@ ${css}
       const statusFooter = document.getElementById("pipeline_status_footer");
       const stepsEl = document.getElementById("pipeline_steps");
       const logEl = document.getElementById("pipeline_log");
+      const refineReportEl = document.getElementById("pipeline_refine_report");
       const previewLink = document.getElementById("pipeline_preview_link");
       const openPreviewBtn = document.getElementById("pipeline_open_preview");
 
@@ -1273,6 +1274,170 @@ ${css}
           openPreviewBtn.disabled = !url;
           openPreviewBtn.dataset.url = url || "";
         }
+      };
+      const fallbackPreviewUrl = () => {
+        const targetSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        return targetSlug ? ("/preview/" + encodeURIComponent(targetSlug)) : "";
+      };
+      const formatNum = (v) => {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return "—";
+        return n.toFixed(4);
+      };
+      let latestRefineResult = null;
+      let refineOffenderLayer = null;
+      const esc = (s) =>
+        String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      const normalizeBucket = (b) => {
+        const v = String(b || "").toLowerCase();
+        return (v === "desktop" || v === "tablet" || v === "mobile") ? v : "";
+      };
+      const pickWorstBucketFromScores = (scoreMap) => {
+        const entries = ["desktop", "tablet", "mobile"]
+          .map((b) => ({ bucket: b, diff: Number(scoreMap?.[b]?.diffRatio) }))
+          .filter((x) => Number.isFinite(x.diff));
+        if (!entries.length) return "";
+        entries.sort((a, b) => b.diff - a.diff);
+        return entries[0].bucket;
+      };
+      const ensureRefineOffenderLayer = () => {
+        if (refineOffenderLayer && refineOffenderLayer.isConnected) return refineOffenderLayer;
+        const layer = document.createElement("div");
+        layer.id = "refine_offenders_overlay";
+        layer.style.position = "fixed";
+        layer.style.left = "0";
+        layer.style.top = "0";
+        layer.style.width = "100vw";
+        layer.style.height = "100vh";
+        layer.style.pointerEvents = "none";
+        layer.style.zIndex = "70";
+        document.body.appendChild(layer);
+        refineOffenderLayer = layer;
+        return layer;
+      };
+      const clearRefineOffenderBoxes = () => {
+        const layer = ensureRefineOffenderLayer();
+        layer.innerHTML = "";
+      };
+      const drawRefineOffenderBoxes = (result, bucketInput) => {
+        const layer = ensureRefineOffenderLayer();
+        layer.innerHTML = "";
+        const iterations = Array.isArray(result?.iterations) ? result.iterations : [];
+        const latest = iterations.length ? iterations[iterations.length - 1] : null;
+        if (!latest) return;
+        const bucket = normalizeBucket(bucketInput) || pickWorstBucketFromScores(latest?.after || latest?.before || {});
+        if (!bucket) return;
+        const offenders = Array.isArray(latest?.offenders?.[bucket]) ? latest.offenders[bucket] : [];
+        offenders.slice(0, 12).forEach((off, idx) => {
+          const bb = off?.bbox || {};
+          const x = Number(bb.x);
+          const y = Number(bb.y);
+          const w = Number(bb.w);
+          const h = Number(bb.h);
+          if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(w) || !Number.isFinite(h)) return;
+          if (w <= 0 || h <= 0) return;
+          const box = document.createElement("div");
+          box.style.position = "fixed";
+          box.style.left = Math.max(0, Math.round(x)) + "px";
+          box.style.top = Math.max(0, Math.round(y)) + "px";
+          box.style.width = Math.max(2, Math.round(w)) + "px";
+          box.style.height = Math.max(2, Math.round(h)) + "px";
+          box.style.border = idx < 3 ? "2px solid rgba(220,38,38,.95)" : "1px solid rgba(234,88,12,.9)";
+          box.style.background = "rgba(239,68,68,.08)";
+          box.style.boxSizing = "border-box";
+          box.style.borderRadius = "2px";
+          const label = document.createElement("div");
+          label.textContent = "#" + (idx + 1) + " " + Math.round(Number(off?.pixels || 0)) + "px";
+          label.style.position = "absolute";
+          label.style.left = "0";
+          label.style.top = "-18px";
+          label.style.fontSize = "10px";
+          label.style.lineHeight = "1";
+          label.style.padding = "2px 4px";
+          label.style.color = "#fff";
+          label.style.background = "rgba(15,23,42,.85)";
+          label.style.whiteSpace = "nowrap";
+          box.appendChild(label);
+          layer.appendChild(box);
+        });
+      };
+      const renderRefineReport = (result) => {
+        if (!refineReportEl) return;
+        const iterations = Array.isArray(result?.iterations) ? result.iterations : [];
+        if (!iterations.length) {
+          latestRefineResult = null;
+          clearRefineOffenderBoxes();
+          refineReportEl.textContent = "Refine report will appear here.";
+          return;
+        }
+        latestRefineResult = result;
+        const rows = [];
+        iterations.slice(-6).forEach((it) => {
+          const idx = Number(it?.iteration || it?.iter || 0);
+          const buckets = ["desktop", "tablet", "mobile"].filter(
+            (b) => (it?.before && it.before[b]) || (it?.after && it.after[b])
+          );
+          const bucketBits = buckets.map((b) => {
+            const beforeObj = it?.before?.[b] || {};
+            const afterObj = it?.after?.[b] || {};
+            const beforeDiff = formatNum(beforeObj?.diffRatio);
+            const afterDiff = formatNum(afterObj?.diffRatio);
+            const beforeLayout = formatNum(beforeObj?.layoutDiffRatio ?? beforeObj?.diffRatio);
+            const afterLayout = formatNum(afterObj?.layoutDiffRatio ?? afterObj?.diffRatio);
+            const dx = Number(afterObj?.bestDx ?? beforeObj?.bestDx ?? 0);
+            const dy = Number(afterObj?.bestDy ?? beforeObj?.bestDy ?? 0);
+            const mode = String(
+              afterObj?.failureMode ||
+              beforeObj?.failureMode ||
+              it?.failureMode ||
+              "none"
+            );
+            return (
+              "<span><strong>" + esc(b) + "</strong>: " +
+              "diff " + esc(beforeDiff) + " -> " + esc(afterDiff) +
+              " | layout " + esc(beforeLayout) + " -> " + esc(afterLayout) +
+              " | dx/dy " + esc(dx) + "/" + esc(dy) +
+              " | mode " + esc(mode) +
+              "</span>"
+            );
+          });
+          const accepted = it?.accepted === true || it?.pass === true;
+          const rolled = it?.rolledBack === true;
+          rows.push(
+            "<div style='padding:6px 0;border-top:1px solid rgba(148,163,184,.2)'>" +
+            "<div><strong>iter " + esc(idx) + "</strong> " + (accepted ? "accepted" : "rejected") + (rolled ? " (rolled back)" : "") + "</div>" +
+            "<div><strong>metric:</strong> " + esc(it?.activeMetric || it?.metricUsed || "diffRatio") + "</div>" +
+            "<div style='display:flex;gap:10px;flex-wrap:wrap'>" + (bucketBits.join("") || "—") + "</div>" +
+            "</div>"
+          );
+        });
+        const latest = iterations[iterations.length - 1] || {};
+        const chosenBucket = normalizeBucket(activeBucket()) || pickWorstBucketFromScores(latest?.after || latest?.before || {});
+        const art = latest?.artifacts || {};
+        const afterArt = art?.after?.[chosenBucket] || {};
+        const beforeArt = art?.before?.[chosenBucket] || {};
+        const ts = Date.now();
+        const img = (src, label) =>
+          src
+            ? "<a href='" + esc(src) + "' target='_blank' rel='noreferrer' style='display:inline-flex;flex-direction:column;gap:4px'>" +
+              "<span>" + esc(label) + "</span><img src='" + esc(src + "?ts=" + ts) + "' style='width:120px;height:68px;object-fit:cover;border:1px solid rgba(148,163,184,.35);border-radius:4px' /></a>"
+            : "";
+        refineReportEl.innerHTML =
+          "<div><strong>Stopped:</strong> " + esc(result?.stoppedReason || "running") + " | <strong>pass threshold:</strong> " + esc(formatNum(result?.passDiffRatio || 0)) + "</div>" +
+          rows.join("") +
+          "<div style='padding-top:8px;border-top:1px solid rgba(148,163,184,.3)'>" +
+          "<div><strong>Latest artifacts (" + esc(chosenBucket || "n/a") + ")</strong></div>" +
+          "<div style='display:flex;gap:10px;flex-wrap:wrap;margin-top:6px'>" +
+          img(beforeArt?.render, "before render") +
+          img(beforeArt?.diff, "before diff") +
+          img(afterArt?.render, "after render") +
+          img(afterArt?.diff, "after diff") +
+          "</div></div>";
+        drawRefineOffenderBoxes(result, chosenBucket);
       };
       const buildPreviewUrl = (stage) => {
         const params = new URLSearchParams(location.search);
@@ -1479,14 +1644,572 @@ ${css}
         });
       }
 
-      const improveBtn = document.getElementById("improve_run");
-      const qaFixRootWidthBtn = document.getElementById("qa_fix_root_width_btn");
-      const qaCleanFragmentBtn = document.getElementById("qa_clean_fragment_btn");
-      if (improveBtn) {
-        improveBtn.addEventListener("click", () => {
-          runPipelineStage("improve");
+      const refineBtn = document.getElementById("refine_ai");
+      const refineAdvancedToggleBtn = document.getElementById("refine_advanced_toggle");
+      const refineAdvancedPanel = document.getElementById("refine_advanced_panel");
+      const refineDesktopBtn = document.getElementById("refine_desktop");
+      const refineTabletBtn = document.getElementById("refine_tablet");
+      const refineMobileBtn = document.getElementById("refine_mobile");
+      const refineAllBtn = document.getElementById("refine_all");
+      const refineStructureBtn = document.getElementById("refine_structure");
+      const refineUntilPassBtn = document.getElementById("refine_until_pass");
+      const refineUndoBtn = document.getElementById("refine_undo");
+      const refineStopBtn = document.getElementById("refine_stop");
+      const refineItersInput = document.getElementById("refine_iters");
+      const refineTopInput = document.getElementById("refine_top");
+      const refinePassInput = document.getElementById("refine_pass");
+      function activeBucket() {
+        const cmp = document.getElementById("cmp_root");
+        return String(cmp?.dataset?.bucket || "desktop").toLowerCase();
+      }
+      function parsePassDiffRatioInput(v, fallback = 0.02) {
+        const n = Number(v);
+        if (!Number.isFinite(n)) return fallback;
+        return Math.min(0.03, Math.max(0.01, n));
+      }
+
+      function setRefineControlsDisabled(disabled) {
+        const nodes = [
+          refineBtn,
+          refineDesktopBtn,
+          refineTabletBtn,
+          refineMobileBtn,
+          refineAllBtn,
+          refineStructureBtn,
+          refineUntilPassBtn,
+          refineUndoBtn,
+        ];
+        nodes.forEach((n) => { if (n) n.disabled = !!disabled; });
+        if (refineStopBtn) refineStopBtn.disabled = !disabled;
+      }
+      function setAdvancedOpen(open) {
+        const isOpen = !!open;
+        if (refineAdvancedPanel) refineAdvancedPanel.style.display = isOpen ? "" : "none";
+        if (refineAdvancedToggleBtn) {
+          refineAdvancedToggleBtn.setAttribute("aria-expanded", isOpen ? "true" : "false");
+          refineAdvancedToggleBtn.textContent = isOpen ? "Advanced ▾" : "Advanced ▸";
+        }
+      }
+      setAdvancedOpen(false);
+
+      window.reloadCurrentPreview = async function(opts = {}) {
+        const preserveOverlayState = opts.preserveOverlayState !== false;
+        const slugCurrent = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!slugCurrent) throw new Error("reloadCurrentPreview: missing slug");
+        const cmpRoot = document.getElementById("cmp_root");
+        const currentBucket = String(opts.bucket || cmpRoot?.dataset?.bucket || "desktop").toLowerCase();
+        const contentLayer = document.querySelector("#cmp_root .content-layer");
+        if (!contentLayer) throw new Error("reloadCurrentPreview: content-layer missing");
+
+        const state = {};
+        const ovEnabled = document.getElementById("ov_enabled");
+        const ovOpacity = document.getElementById("ov_opacity");
+        const ovDiff = document.getElementById("ov_diff");
+        if (preserveOverlayState) {
+          state.enabled = ovEnabled ? !!ovEnabled.checked : null;
+          state.opacity = ovOpacity ? String(ovOpacity.value || "50") : null;
+          state.diff = ovDiff ? !!ovDiff.checked : null;
+        }
+
+        const url =
+          "/preview/" +
+          encodeURIComponent(slugCurrent) +
+          "?embed=1&toolbar=0" +
+          "&ts=" +
+          Date.now();
+        const response = await fetch(url, { cache: "no-store" });
+        if (!response.ok) throw new Error("reloadCurrentPreview: fetch failed");
+        const html = await response.text();
+        if (!html || !html.trim()) throw new Error("reloadCurrentPreview: empty embed html");
+
+        const parser = new DOMParser();
+        const parsed = parser.parseFromString("<div>" + html + "</div>", "text/html");
+        const incomingLayer = parsed.querySelector(".content-layer");
+        if (incomingLayer) {
+          contentLayer.innerHTML = incomingLayer.innerHTML;
+        } else {
+          // Fallback only if embed payload shape changed.
+          contentLayer.innerHTML = html;
+        }
+        if (cmpRoot) cmpRoot.dataset.bucket = currentBucket;
+
+        if (typeof window.applyPatchesForCurrentSlug === "function") {
+          await window.applyPatchesForCurrentSlug();
+        } else if (typeof window.__applyPatchesForCurrentSlug__ === "function") {
+          await window.__applyPatchesForCurrentSlug__();
+        }
+
+        if (preserveOverlayState) {
+          if (ovEnabled && state.enabled != null) ovEnabled.checked = !!state.enabled;
+          if (ovOpacity && state.opacity != null) ovOpacity.value = state.opacity;
+          if (ovDiff && state.diff != null) ovDiff.checked = !!state.diff;
+          if (ovEnabled) ovEnabled.dispatchEvent(new Event("change", { bubbles: true }));
+          if (ovOpacity) ovOpacity.dispatchEvent(new Event("input", { bubbles: true }));
+          if (ovDiff) ovDiff.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      };
+      window.__reloadCurrentPreview__ = window.reloadCurrentPreview;
+
+      const prevBucketReloadHook =
+        typeof window.__onPreviewBucketChange === "function" ? window.__onPreviewBucketChange : null;
+      window.__onPreviewBucketChange = function(payload) {
+        try {
+          if (prevBucketReloadHook) prevBucketReloadHook(payload);
+        } finally {
+          const b = String(payload?.bucket || activeBucket()).toLowerCase();
+          window.reloadCurrentPreview({ bucket: b, preserveOverlayState: true })
+            .then(() => {
+              if (latestRefineResult) drawRefineOffenderBoxes(latestRefineResult, b);
+            })
+            .catch(() => {});
+        }
+      };
+
+      let currentRefineJobId = "";
+      let refinePollTimer = null;
+      let refineEventSource = null;
+      let lastSeenIter = 0;
+      let toastTimer = null;
+      let refineWatchdogTimer = null;
+      const REFINE_WATCHDOG_STEP_MS = 180000;
+      const REFINE_WATCHDOG_MAX_MS = 1800000;
+      let refineStartedAtMs = 0;
+
+      function showRefineToast(message, kind) {
+        const toast = document.getElementById("refine_toast");
+        if (!toast) return;
+        const msg = String(message || "").trim();
+        if (!msg) return;
+        toast.textContent = msg;
+        toast.style.display = "block";
+        toast.style.background =
+          kind === "error"
+            ? "rgba(176,0,32,.94)"
+            : kind === "success"
+              ? "rgba(10,122,47,.94)"
+              : "rgba(15,23,42,.92)";
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.style.display = "none";
+        }, 1900);
+      }
+
+      function stopPolling() {
+        if (refineEventSource) {
+          try { refineEventSource.close(); } catch {}
+          refineEventSource = null;
+        }
+        if (refinePollTimer) {
+          clearInterval(refinePollTimer);
+          refinePollTimer = null;
+        }
+        if (refineWatchdogTimer) {
+          clearTimeout(refineWatchdogTimer);
+          refineWatchdogTimer = null;
+        }
+        refineStartedAtMs = 0;
+      }
+
+      function clearRefineWatchdog() {
+        if (refineWatchdogTimer) {
+          clearTimeout(refineWatchdogTimer);
+          refineWatchdogTimer = null;
+        }
+      }
+
+      function unlockRefineControlsWithTimeout() {
+        stopPolling();
+        setRefineControlsDisabled(false);
+        currentRefineJobId = "";
+        setStatus("Refine timed out. Controls unlocked.");
+        showRefineToast("Refine timed out", "error");
+      }
+
+      function armRefineWatchdog(jobId, onDone) {
+        const safeJobId = String(jobId || "").trim();
+        if (!safeJobId) return;
+        clearRefineWatchdog();
+        refineWatchdogTimer = setTimeout(async () => {
+          if (!safeJobId || safeJobId !== String(currentRefineJobId || "").trim()) return;
+          const elapsed = Date.now() - Number(refineStartedAtMs || Date.now());
+          if (elapsed >= REFINE_WATCHDOG_MAX_MS) {
+            unlockRefineControlsWithTimeout();
+            return;
+          }
+          try {
+            const r = await fetch("/api/refine-status/" + encodeURIComponent(safeJobId), { cache: "no-store" });
+            const payload = await r.json().catch(() => null);
+            const job = payload && payload.job ? payload.job : null;
+            const status = String(job?.status || "");
+            if (status === "running") {
+              setStatus("Refining… still running (" + Math.round(elapsed / 1000) + "s)");
+              armRefineWatchdog(safeJobId, onDone);
+              return;
+            }
+            if (status === "done" || status === "failed" || status === "cancelled") {
+              stopPolling();
+              setRefineControlsDisabled(false);
+              currentRefineJobId = "";
+              if (typeof onDone === "function") onDone(job);
+              return;
+            }
+          } catch (_) {}
+          // Unknown transient state; keep waiting instead of false timeout.
+          armRefineWatchdog(safeJobId, onDone);
+        }, REFINE_WATCHDOG_STEP_MS);
+      }
+
+      async function applyIterProgress(iter, bucket, beforeDiff, afterDiff, message) {
+        const safeIter = Number(iter || 0);
+        if (safeIter <= lastSeenIter) return;
+        lastSeenIter = safeIter;
+        const b = normalizeBucket(bucket) || activeBucket() || "desktop";
+        const hasDiff = Number.isFinite(Number(beforeDiff)) && Number.isFinite(Number(afterDiff));
+        const statusMsg =
+          "Refining… iter " +
+          safeIter +
+          " (" +
+          String(message || "running") +
+          ")" +
+          (hasDiff ? " diff " + Number(beforeDiff).toFixed(4) + " -> " + Number(afterDiff).toFixed(4) : "");
+        setStatus(statusMsg);
+        showRefineToast(
+          "Refining… iter " + safeIter + (hasDiff ? " (" + b + ") " + Number(beforeDiff).toFixed(4) + " -> " + Number(afterDiff).toFixed(4) : ""),
+          "info"
+        );
+        try {
+          await window.reloadCurrentPreview({ bucket: b, preserveOverlayState: true });
+        } catch (e) {
+          setStatus("Preview reload failed: " + String(e?.message || e));
+          showRefineToast("Preview reload failed", "error");
+        }
+      }
+
+      function monitorRefineJobSse(jobId, onDone) {
+        stopPolling();
+        refineStartedAtMs = Date.now();
+        armRefineWatchdog(jobId, onDone);
+
+        if (typeof EventSource === "undefined") {
+          monitorRefineJob(jobId, onDone);
+          return;
+        }
+
+        refineEventSource = new EventSource("/api/refine/stream/" + encodeURIComponent(jobId));
+        refineEventSource.addEventListener("iter", (event) => {
+          let data = null;
+          try { data = JSON.parse(String(event?.data || "{}")); } catch {}
+          if (!data) return;
+          armRefineWatchdog(jobId, onDone);
+          applyIterProgress(
+            Number(data.iter || 0),
+            String(data.bucket || ""),
+            Number(data.diffRatioBefore),
+            Number(data.diffRatioAfter),
+            String(data.message || "running")
+          );
+        });
+
+        refineEventSource.addEventListener("done", async (event) => {
+          stopPolling();
+          setRefineControlsDisabled(false);
+          currentRefineJobId = "";
+          let data = null;
+          try { data = JSON.parse(String(event?.data || "{}")); } catch {}
+          const result = data?.final || {};
+          setPreviewUrl(result.previewUrl || fallbackPreviewUrl());
+          renderRefineReport(result);
+          if (data?.ok) {
+            setStatus("Refine done.");
+            showRefineToast("Refine complete", "success");
+            try {
+              await window.reloadCurrentPreview({ preserveOverlayState: true });
+            } catch (e) {
+              setStatus("Preview reload failed: " + String(e?.message || e));
+              showRefineToast("Preview reload failed", "error");
+            }
+          } else if (data?.status === "cancelled") {
+            setStatus("Refine cancelled.");
+            showRefineToast("Refine stopped", "info");
+          } else {
+            setStatus(String(data?.error || "Refine failed."));
+            showRefineToast("Refine failed", "error");
+          }
+          setLog(JSON.stringify(result || data || {}, null, 2));
+          if (typeof onDone === "function") onDone({ status: data?.status || "done", result });
+        });
+
+        refineEventSource.onerror = () => {
+          // If SSE drops early, fallback to status polling.
+          if (Date.now() - startedAt > 2000) {
+            stopPolling();
+            monitorRefineJob(jobId, onDone);
+          }
+        };
+      }
+
+      async function startRefineJob(startUrl, payload, label) {
+        const targetSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!targetSlug) {
+          alert("No slug available for refine.");
+          return null;
+        }
+        if (modalBackdrop) {
+          setModalOpen(true);
+          if (modalTitle) modalTitle.textContent = label + " progress";
+          if (stageLabel) stageLabel.textContent = label;
+          setStatus("Refining…");
+          setLog("Starting " + label + " job…");
+        }
+        setPreviewUrl(fallbackPreviewUrl());
+        renderRefineReport(null);
+        setRefineControlsDisabled(true);
+        stopPolling();
+        try {
+          const response = await fetch(startUrl, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          });
+          const data = await response.json().catch(() => null);
+          if (!response.ok || !data?.ok || !data?.jobId) {
+            setRefineControlsDisabled(false);
+            currentRefineJobId = "";
+            setStatus((data && data.error) ? data.error : "Failed to start refine job.");
+            setLog(JSON.stringify(data || {}, null, 2));
+            showRefineToast("Failed to start refine", "error");
+            return null;
+          }
+          currentRefineJobId = String(data.jobId);
+          lastSeenIter = 0;
+          return currentRefineJobId;
+        } catch (e) {
+          setRefineControlsDisabled(false);
+          currentRefineJobId = "";
+          setStatus("Failed to start refine job.");
+          setLog(String(e?.message || e));
+          showRefineToast("Failed to start refine", "error");
+          return null;
+        }
+      }
+
+      async function monitorRefineJob(jobId, onDone) {
+        stopPolling();
+        const startedAt = Date.now();
+        refineStartedAtMs = startedAt;
+        armRefineWatchdog(jobId, onDone);
+        refinePollTimer = setInterval(async () => {
+          try {
+            const r = await fetch("/api/refine-status/" + encodeURIComponent(jobId), { cache: "no-store" });
+            const payload = await r.json().catch(() => null);
+            armRefineWatchdog(jobId, onDone);
+            if (!r.ok || !payload?.ok || !payload?.job) {
+              // Missing/invalid status must not lock the UI.
+              if (Date.now() - startedAt > 3000) {
+                stopPolling();
+                setRefineControlsDisabled(false);
+                currentRefineJobId = "";
+                setStatus("Refine status unavailable. Controls unlocked.");
+                showRefineToast("Status unavailable", "error");
+              }
+              return;
+            }
+            const job = payload.job;
+            const iter = Number(job.iter || 0);
+            const result = job.result || {};
+            if (result && typeof result === "object") {
+              setPreviewUrl(result.previewUrl || fallbackPreviewUrl());
+              renderRefineReport(result);
+            } else {
+              setPreviewUrl(fallbackPreviewUrl());
+            }
+            if (iter > lastSeenIter) {
+              lastSeenIter = iter;
+              const latest = Array.isArray(result?.iterations) ? result.iterations[result.iterations.length - 1] : null;
+              const currentBucket =
+                normalizeBucket(activeBucket()) ||
+                pickWorstBucketFromScores(latest?.after || latest?.before || {}) ||
+                "desktop";
+              const beforeObj = latest?.before?.[currentBucket] || latest?.scoreBefore || {};
+              const afterObj = latest?.after?.[currentBucket] || latest?.scoreAfter || {};
+              const beforeDiff = Number(beforeObj?.diffRatio);
+              const afterDiff = Number(afterObj?.diffRatio);
+              const hasDiff = Number.isFinite(beforeDiff) && Number.isFinite(afterDiff);
+              const statusMsg =
+                "Refining… iter " +
+                iter +
+                " (" +
+                (job.message || "running") +
+                ")" +
+                (hasDiff ? " diff " + beforeDiff.toFixed(4) + " -> " + afterDiff.toFixed(4) : "");
+              setStatus(statusMsg);
+              showRefineToast(
+                "Refining… iter " + iter + (hasDiff ? " (" + currentBucket + ") " + beforeDiff.toFixed(4) + " -> " + afterDiff.toFixed(4) : ""),
+                "info"
+              );
+              try {
+                await window.reloadCurrentPreview({ preserveOverlayState: true });
+              } catch (e) {
+                setStatus("Preview reload failed: " + String(e?.message || e));
+                showRefineToast("Preview reload failed", "error");
+              }
+            }
+            if (job.status === "done" || job.status === "failed" || job.status === "cancelled") {
+              stopPolling();
+              setRefineControlsDisabled(false);
+              currentRefineJobId = "";
+              const result = job.result || {};
+              if (job.status === "done") {
+                setStatus("Refine done.");
+                setPreviewUrl(result.previewUrl || fallbackPreviewUrl());
+                renderRefineReport(result);
+                showRefineToast("Refine complete", "success");
+                try {
+                  await window.reloadCurrentPreview({ preserveOverlayState: true });
+                } catch (e) {
+                  setStatus("Preview reload failed: " + String(e?.message || e));
+                  showRefineToast("Preview reload failed", "error");
+                }
+              } else if (job.status === "cancelled") {
+                setStatus("Refine cancelled.");
+                showRefineToast("Refine stopped", "info");
+              } else {
+                setStatus(job.error || "Refine failed.");
+                showRefineToast("Refine failed", "error");
+              }
+              setLog(JSON.stringify(result || { error: job.error || null, status: job.status }, null, 2));
+              if (typeof onDone === "function") onDone(job);
+            }
+          } catch (e) {
+            if (Date.now() - startedAt > 3000) {
+              stopPolling();
+              setRefineControlsDisabled(false);
+              currentRefineJobId = "";
+              setStatus("Refine polling failed. Controls unlocked.");
+              setLog(String(e?.message || e));
+              showRefineToast("Polling failed", "error");
+            }
+          }
+        }, 700);
+      }
+
+      async function runRefine(bucket) {
+        const targetSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!targetSlug) return;
+        const maxIters = Math.max(1, Math.min(8, Number(refineItersInput?.value || 3)));
+        const topOffenders = Math.max(1, Math.min(40, Number(refineTopInput?.value || 12)));
+        const passDiffRatio = parsePassDiffRatioInput(refinePassInput?.value, 0.02);
+        const jobId = await startRefineJob(
+          "/api/refine/" + encodeURIComponent(targetSlug),
+          { bucket, maxIters, topOffenders, passDiffRatio, dryRun: false },
+          "AI refine"
+        );
+        if (jobId) monitorRefineJobSse(jobId);
+      }
+
+      async function runStructureRefine(bucket) {
+        const targetSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!targetSlug) return;
+        const maxIters = Math.max(1, Math.min(4, Number(refineItersInput?.value || 2)));
+        const topOffenders = Math.max(1, Math.min(40, Number(refineTopInput?.value || 10)));
+        const passDiffRatio = parsePassDiffRatioInput(refinePassInput?.value, 0.02);
+        const jobId = await startRefineJob(
+          "/api/refine-structure/" + encodeURIComponent(targetSlug),
+          {
+            bucket,
+            maxIters,
+            maxOpsPerIter: 8,
+            topOffenders,
+            passDiffRatio,
+            dryRun: false,
+          },
+          "Structure refine"
+        );
+        if (jobId) monitorRefineJobSse(jobId);
+      }
+
+      async function runRefineUntilPass() {
+        const b = activeBucket();
+        const targetSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!targetSlug) return;
+        const maxIters = Math.max(1, Math.min(8, Number(refineItersInput?.value || 3)));
+        const topOffenders = Math.max(1, Math.min(40, Number(refineTopInput?.value || 12)));
+        const passDiffRatio = parsePassDiffRatioInput(refinePassInput?.value, 0.02);
+        const jobId = await startRefineJob(
+          "/api/refine/" + encodeURIComponent(targetSlug),
+          { bucket: "all", maxIters, topOffenders, passDiffRatio, dryRun: false },
+          "AI refine"
+        );
+        if (!jobId) return;
+        monitorRefineJobSse(jobId, async (jobState) => {
+          const result = jobState?.result || {};
+          const iters = Array.isArray(result?.iterations) ? result.iterations : [];
+          const latest = iters.length ? iters[iters.length - 1] : null;
+          const scoresAfter = latest?.after || {};
+          const worstBucket = pickWorstBucketFromScores(scoresAfter) || b;
+          const worstDiff = Number(scoresAfter?.[worstBucket]?.diffRatio || 1);
+          const passAll = ["desktop", "tablet", "mobile"]
+            .filter((x) => scoresAfter && scoresAfter[x])
+            .every((x) => Number(scoresAfter?.[x]?.diffRatio || 1) <= passDiffRatio);
+          const plateau = String(result?.stoppedReason || "") === "plateau";
+          const hugeDiff = Number.isFinite(worstDiff) && worstDiff > 0.15 && iters.length >= 1;
+          const stoppedReason = String(result?.stoppedReason || "");
+          if (!passAll && (plateau || hugeDiff || stoppedReason === "no-improvement" || stoppedReason === "regressed")) {
+            showRefineToast("Escalating to structure refine (" + worstBucket + ")", "info");
+            await runStructureRefine(worstBucket);
+          }
         });
       }
+
+      async function undoStructureRefine() {
+        const targetSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!targetSlug) return;
+        const b = activeBucket();
+        const response = await fetch("/api/refine-structure/" + encodeURIComponent(targetSlug) + "/undo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ bucket: b }),
+        });
+        const payload = await response.json().catch(() => null);
+        if (!response.ok || !payload?.ok) {
+          alert((payload && payload.error) ? payload.error : "Undo failed");
+          return;
+        }
+        try {
+          await window.reloadCurrentPreview({ preserveOverlayState: true });
+        } catch (_) {
+          location.reload();
+        }
+      }
+
+      async function stopCurrentRefineJob() {
+        if (!currentRefineJobId) return;
+        await fetch("/api/refine-stop/" + encodeURIComponent(currentRefineJobId), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+        }).catch(() => null);
+        stopPolling();
+        setRefineControlsDisabled(false);
+        currentRefineJobId = "";
+        setStatus("Stop requested. Controls unlocked.");
+        showRefineToast("Stop requested", "info");
+      }
+
+      if (refineBtn) refineBtn.addEventListener("click", () => runRefineUntilPass());
+      if (refineAdvancedToggleBtn) {
+        refineAdvancedToggleBtn.addEventListener("click", () => {
+          const expanded = String(refineAdvancedToggleBtn.getAttribute("aria-expanded") || "false") === "true";
+          setAdvancedOpen(!expanded);
+        });
+      }
+      if (refineDesktopBtn) refineDesktopBtn.addEventListener("click", () => runRefine("desktop"));
+      if (refineTabletBtn) refineTabletBtn.addEventListener("click", () => runRefine("tablet"));
+      if (refineMobileBtn) refineMobileBtn.addEventListener("click", () => runRefine("mobile"));
+      if (refineAllBtn) refineAllBtn.addEventListener("click", () => runRefine("all"));
+      if (refineStructureBtn) refineStructureBtn.addEventListener("click", () => runStructureRefine(activeBucket()));
+      if (refineUntilPassBtn) refineUntilPassBtn.addEventListener("click", () => runRefineUntilPass());
+      if (refineUndoBtn) refineUndoBtn.addEventListener("click", () => undoStructureRefine());
+      if (refineStopBtn) refineStopBtn.addEventListener("click", () => stopCurrentRefineJob());
 
       const qaGateBtn = document.getElementById("qa_gate_btn");
       const qaGateBackdrop = document.getElementById("qa_gate_modal_backdrop");
@@ -2955,11 +3678,40 @@ ${css}
 
   <script>
     (function(){
+      const toggleBtn = document.getElementById('sidebar_toggle');
+      const closeBtn = document.getElementById('sidebar_close');
+      const sidebar = document.getElementById('sidebar_root');
+      if (!sidebar) return;
+
+      function setOpen(open) {
+        const isOpen = !!open;
+        sidebar.style.transform = isOpen ? 'translateX(0)' : 'translateX(100%)';
+        sidebar.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      }
+
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+          const hidden = sidebar.getAttribute('aria-hidden') !== 'false';
+          setOpen(hidden);
+        });
+      }
+      if (closeBtn) closeBtn.addEventListener('click', () => setOpen(false));
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') setOpen(false);
+      });
+    })();
+  </script>
+
+  <script>
+    (function(){
       const qs = new URLSearchParams(location.search);
       const embed = qs.get('embed') === '1';
       if (embed || qs.get('toolbar') === '0') {
         const tb = document.getElementById('toolbar_root');
         if (tb) tb.style.display = 'none';
+        const sb = document.getElementById('sidebar_root');
+        if (sb) sb.style.display = 'none';
         const eb = document.getElementById('export_root');
         if (eb) eb.style.display = 'none';
         const ed = document.getElementById('editor_root');

@@ -50,6 +50,8 @@ export function setVideoBgFromTree(ast) {
       objectFit: "cover",
       objectPosition: "center",
     };
+    ast.__bgVideoUrl = ast.__bg.src || "";
+    ast.__bgPosterUrl = ast.__bg.poster || "";
   }
   return ast;
 }
@@ -253,6 +255,8 @@ export function applyNamedBackgroundFallback(ast) {
       objectFit: "cover",
       objectPosition: "center",
     };
+    ast.__bgVideoUrl = ast.__bg.src || "";
+    ast.__bgPosterUrl = ast.__bg.poster || "";
     return ast;
   }
 

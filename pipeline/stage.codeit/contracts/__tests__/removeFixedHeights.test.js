@@ -46,3 +46,17 @@ test("keeps fixed height on media wrapper", () => {
   const tokens = getTokens(out.html, "media");
   assert.ok(tokens.includes("h-[4rem]"));
 });
+
+test("removes base fixed heights but keeps md+ height constraints", () => {
+  const html = `
+    <div data-key="wrap" class="h-[6rem] min-h-[4rem] md:h-[12rem] lg:min-h-[10rem] w-full">
+      <span>Text</span>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const tokens = getTokens(out.html, "wrap");
+  assert.ok(!tokens.includes("h-[6rem]"));
+  assert.ok(!tokens.includes("min-h-[4rem]"));
+  assert.ok(tokens.includes("md:h-[12rem]"));
+  assert.ok(tokens.includes("lg:min-h-[10rem]"));
+});

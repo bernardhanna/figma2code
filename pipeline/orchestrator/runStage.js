@@ -18,7 +18,7 @@ const loadStageModule = (stage) => {
   return require(path.join(__dirname, modulePath));
 };
 
-const runStage = async ({ slug, stage, log }) => {
+const runStage = async ({ slug, stage, log, ...rest }) => {
   if (!slug) {
     throw new Error("slug is required.");
   }
@@ -30,7 +30,7 @@ const runStage = async ({ slug, stage, log }) => {
   }
 
   const logFn = typeof log === "function" ? log : (line) => console.log(line);
-  return await stageModule.run({ slug, log: logFn });
+  return await stageModule.run({ slug, log: logFn, ...rest });
 };
 
 module.exports = {

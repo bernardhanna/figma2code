@@ -26,6 +26,7 @@ import {
   applyNamedBackgroundFallback,
   setVideoBgFromTree,
 } from "./backgroundFallback.js";
+import { layoutIntentV2Pass } from "../auto/layoutIntentV2Pass.js";
 
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
@@ -294,6 +295,7 @@ export function renderOneFragment({
   if (learnedRulesPass) {
     a = learnedRulesPass(a) || a;
   }
+  a = layoutIntentV2Pass(a) || a;
 
   setVideoBgFromTree(a);
 

@@ -6,6 +6,7 @@ module.exports = {
   /** Canonical agent prompt / stage spec: pipeline/stage.improve/PROMPT.md */
   promptFile: "PROMPT.md",
   provider: "rules",
+  requireVisualDiff: true,
   maxOffenders: 25,
   gate: {
     enabled: true,

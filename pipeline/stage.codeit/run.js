@@ -223,14 +223,39 @@ const run = async ({
   validateTailwindClassesFn,
   configOverride,
   log = console.log,
+  onProgress,
 } = {}) => {
   const logFn = typeof log === "function" ? log : () => {};
+  const progressFn = typeof onProgress === "function" ? onProgress : null;
+  const emitProgress = (payload) => {
+    if (!progressFn || !payload || typeof payload !== "object") return;
+    try {
+      progressFn(payload);
+    } catch {
+      // Non-fatal progress hooks must never break pipeline execution.
+    }
+  };
   const reporter = createReporter(logFn);
   const stageConfig = configOverride ? { ...config, ...configOverride } : config;
 
   const repoRoot = path.resolve(__dirname, "..", "..");
   const testsDir = path.join(__dirname, "contracts", "__tests__");
+  let contractTests = {
+    status: "skipped",
+    total: 0,
+    passed: 0,
+    failed: 0,
+    skipped: 0,
+    failures: [],
+    summary: "Contract tests directory not found.",
+  };
   if (fs.existsSync(testsDir)) {
+    emitProgress({
+      type: "test",
+      scope: "codeit.contractTests",
+      status: "running",
+      message: "Running contract tests",
+    });
     reporter.step(CODEIT.CONTRACT_TESTS);
     const testResult = spawnSync(process.execPath, ["--test", testsDir], {
       cwd: repoRoot,
@@ -238,16 +263,57 @@ const run = async ({
       maxBuffer: 4 * 1024 * 1024,
     });
     const out = [testResult.stdout, testResult.stderr].filter(Boolean).join("\n");
+    const passedCount = (out.match(/^ok \d+ - /gm) || []).length;
+    const failedRows = (out.match(/^not ok \d+ - (.+)$/gm) || []).map((line) =>
+      line.replace(/^not ok \d+ - /, "").trim()
+    );
+    const skippedCount = (out.match(/^# SKIP/gm) || []).length;
     if (testResult.status !== 0) {
-      const failed = (out.match(/^not ok \d+ - (.+)$/gm) || []).map((line) => line.replace(/^not ok \d+ - /, "").trim());
-      const summary = failed.length
-        ? `Failed (${failed.length}): ${failed.slice(0, 10).join("; ")}${failed.length > 10 ? "…" : ""}`
+      const summary = failedRows.length
+        ? `Failed (${failedRows.length}): ${failedRows.slice(0, 10).join("; ")}${failedRows.length > 10 ? "…" : ""}`
         : `Exit ${testResult.status}`;
+      contractTests = {
+        status: "failed",
+        total: passedCount + failedRows.length,
+        passed: passedCount,
+        failed: failedRows.length || 1,
+        skipped: skippedCount,
+        failures: failedRows.slice(0, 25),
+        summary,
+      };
       if (logFn && out) logFn(out);
+      emitProgress({
+        type: "test",
+        scope: "codeit.contractTests",
+        status: "failed",
+        message: summary,
+      });
       reporter.fail(CODEIT.CONTRACT_TESTS, new Error(summary));
       throw new Error(`Contract tests failed. ${summary}. Code it aborted.`);
     }
+    contractTests = {
+      status: "passed",
+      total: passedCount + failedRows.length,
+      passed: passedCount,
+      failed: failedRows.length,
+      skipped: skippedCount,
+      failures: [],
+      summary: `Passed ${passedCount}/${passedCount + failedRows.length || passedCount}`,
+    };
+    emitProgress({
+      type: "test",
+      scope: "codeit.contractTests",
+      status: "passed",
+      message: contractTests.summary,
+    });
     reporter.succeed(CODEIT.CONTRACT_TESTS);
+  } else {
+    emitProgress({
+      type: "test",
+      scope: "codeit.contractTests",
+      status: "skipped",
+      message: "Contract tests directory not found",
+    });
   }
 
   reporter.succeed(CODEIT.LOAD_ARTIFACT);
@@ -271,72 +337,98 @@ const run = async ({
   for (const entry of contractEntries) {
     const { id, modulePath, options } = loadContract(entry);
     if (!modulePath) continue;
+    const contractId = id || modulePath;
+    emitProgress({
+      type: "contract",
+      scope: "codeit",
+      id: contractId,
+      status: "running",
+      message: `Running ${contractId}`,
+    });
 
-    const contractLabel = codeitContractStep(id || modulePath);
+    const contractLabel = codeitContractStep(contractId);
     if (contractLabel) reporter.succeed(contractLabel);
+    try {
+      const fullPath = path.resolve(__dirname, modulePath);
+      const mod = require(fullPath);
+      const apply = typeof mod.apply === "function" ? mod.apply : mod.default?.apply;
+      if (typeof apply !== "function") {
+        throw new Error(`Contract ${contractId} missing apply()`);
+      }
 
-    const fullPath = path.resolve(__dirname, modulePath);
-    const mod = require(fullPath);
-    const apply = typeof mod.apply === "function" ? mod.apply : mod.default?.apply;
-    if (typeof apply !== "function") {
-      throw new Error(`Contract ${id || modulePath} missing apply()`);
-    }
+      const result = apply({ html, artifact: inputArtifact, options });
+      const candidateHtml = result && typeof result.html === "string" ? result.html : html;
+      const changes = Array.isArray(result?.changes) ? result.changes : [];
+      const contractWarnings = normalizeWarnings(result?.warnings, contractId);
+      const stats = isPlainObject(result?.stats) ? result.stats : {};
 
-    const result = apply({ html, artifact: inputArtifact, options });
-    const candidateHtml = result && typeof result.html === "string" ? result.html : html;
-    const changes = Array.isArray(result?.changes) ? result.changes : [];
-    const contractWarnings = normalizeWarnings(result?.warnings, id || mod.id || modulePath);
-    const stats = isPlainObject(result?.stats) ? result.stats : {};
+      let accepted = true;
+      let regressed = false;
 
-    let accepted = true;
-    let regressed = false;
-
-    if (gate.enabled && candidateHtml !== html) {
-      const evaluation = evaluateFn({
-        slug,
-        html: envelope.apply(candidateHtml),
-        artifact: inputArtifact,
-      });
-      const regression = detectRegression(currentMetrics, evaluation?.metrics, gate.maxVisualDelta);
-      regressed = regression.regressed;
-
-      if (regressed && regression.worst) {
-        const msg = `Regression gate: ${id || modulePath} increased visual diff on ${
-          regression.worst.breakpoint
-        } by ${formatDelta(regression.worst.delta)} (from ${formatRatio(
-          regression.worst.before
-        )} to ${formatRatio(regression.worst.after)}).`;
-        contractWarnings.push({
-          contractId: id || mod.id || modulePath,
-          message: msg,
-          breakpoint: regression.worst.breakpoint,
-          delta: regression.worst.delta,
+      if (gate.enabled && candidateHtml !== html) {
+        const evaluation = evaluateFn({
+          slug,
+          html: envelope.apply(candidateHtml),
+          artifact: inputArtifact,
         });
-        if (gate.revertOnRegression) {
-          accepted = false;
+        const regression = detectRegression(currentMetrics, evaluation?.metrics, gate.maxVisualDelta);
+        regressed = regression.regressed;
+
+        if (regressed && regression.worst) {
+          const msg = `Regression gate: ${contractId} increased visual diff on ${
+            regression.worst.breakpoint
+          } by ${formatDelta(regression.worst.delta)} (from ${formatRatio(
+            regression.worst.before
+          )} to ${formatRatio(regression.worst.after)}).`;
+          contractWarnings.push({
+            contractId,
+            message: msg,
+            breakpoint: regression.worst.breakpoint,
+            delta: regression.worst.delta,
+          });
+          if (gate.revertOnRegression) {
+            accepted = false;
+          }
+        }
+
+        if (accepted && isPlainObject(evaluation?.metrics)) {
+          currentMetrics = evaluation.metrics;
         }
       }
 
-      if (accepted && isPlainObject(evaluation?.metrics)) {
-        currentMetrics = evaluation.metrics;
+      if (accepted) {
+        html = candidateHtml;
+        ledger.addMany(changes);
       }
+
+      warnings.push(...contractWarnings);
+
+      contractResults.push({
+        id: contractId,
+        accepted,
+        regressed,
+        changes: accepted ? changes : [],
+        warnings: contractWarnings,
+        stats,
+      });
+      emitProgress({
+        type: "contract",
+        scope: "codeit",
+        id: contractId,
+        status: !accepted && regressed ? "skipped" : "done",
+        changedNodes: accepted ? changes.length : 0,
+        warnings: contractWarnings.length,
+      });
+    } catch (err) {
+      emitProgress({
+        type: "contract",
+        scope: "codeit",
+        id: contractId,
+        status: "failed",
+        message: String(err?.message || err),
+      });
+      throw err;
     }
-
-    if (accepted) {
-      html = candidateHtml;
-      ledger.addMany(changes);
-    }
-
-    warnings.push(...contractWarnings);
-
-    contractResults.push({
-      id: id || mod.id || modulePath,
-      accepted,
-      regressed,
-      changes: accepted ? changes : [],
-      warnings: contractWarnings,
-      stats,
-    });
   }
 
   reporter.succeed(CODEIT.VALIDATION);
@@ -368,6 +460,26 @@ const run = async ({
     slug,
     html: envelope.apply(html),
     artifact: inputArtifact,
+  });
+  const missingVisualDiff = Array.isArray(evaluation?.diagnostics?.visualDiff?.missing)
+    ? evaluation.diagnostics.visualDiff.missing
+    : [];
+  missingVisualDiff.forEach((entry) => {
+    const bp = String(entry?.breakpoint || "unknown");
+    const reason = String(entry?.reason || "missing-visual-diff");
+    const scorePaths = Array.isArray(entry?.searched?.scoreFiles) ? entry.searched.scoreFiles : [];
+    const figmaPaths = Array.isArray(entry?.searched?.figmaFiles) ? entry.searched.figmaFiles : [];
+    const renderPaths = Array.isArray(entry?.searched?.renderFiles) ? entry.searched.renderFiles : [];
+    const parseError = entry?.parseError ? ` parseError=${entry.parseError}` : "";
+    warnings.push({
+      contractId: "evaluate.visualDiff",
+      message:
+        `Evaluate visual diff missing for ${bp}: reason=${reason}.` +
+        ` scorePaths=${scorePaths.slice(0, 3).join(" | ") || "none"}` +
+        ` figmaPaths=${figmaPaths.slice(0, 2).join(" | ") || "none"}` +
+        ` renderPaths=${renderPaths.slice(0, 2).join(" | ") || "none"}` +
+        parseError,
+    });
   });
 
   reporter.succeed(CODEIT.WRITE_ARTIFACT);
@@ -423,6 +535,7 @@ const run = async ({
           warnings: warnings.length,
         },
       },
+      contractTests,
       evaluation: isPlainObject(evaluation?.diagnostics) ? evaluation.diagnostics : {},
     },
     metrics: {

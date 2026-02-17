@@ -2,6 +2,7 @@ const {
   applyPatches,
   buildOpenTag,
   createPatch,
+  getAttrValue,
   getClassTokens,
   parseHtmlNodes,
   setClassTokens,
@@ -81,6 +82,17 @@ const hasResponsiveAncestor = (nodes, childrenMap, nodeIndex) => {
   return false;
 };
 
+const hasDecorativeAncestor = (nodes, nodeIndex) => {
+  let current = nodes[nodeIndex]?.parentIndex;
+  while (current != null) {
+    const attrs = nodes[current]?.attrs || {};
+    const decorative = String(getAttrValue(attrs, "data-decorative") || "").trim().toLowerCase();
+    if (decorative === "1" || decorative === "true") return true;
+    current = nodes[current]?.parentIndex;
+  }
+  return false;
+};
+
 const hasMediaDescendant = (nodes, childrenMap, nodeIndex) => {
   const queue = [...(childrenMap.get(nodeIndex) || [])];
   while (queue.length) {
@@ -100,6 +112,17 @@ const isMediaWrapper = (node, nodes, childrenMap, nodeIndex) => {
   const hasOverflowHidden = cores.includes("overflow-hidden");
   const hasObject = cores.some((c) => /^object-/.test(c));
   return hasOverflowHidden || hasObject;
+};
+
+const isFluidizableMediaWrapper = (node, nodes, childrenMap, nodeIndex) => {
+  if (!isMediaWrapper(node, nodes, childrenMap, nodeIndex)) return false;
+  const children = childrenMap.get(nodeIndex) || [];
+  const mediaChildren = children.filter((idx) => isMediaTag(nodes[idx]?.tag));
+  if (mediaChildren.length !== 1 || children.length !== 1) return false;
+  const intent = String(getAttrValue(node?.attrs || {}, "data-w-intent") || "").toLowerCase().trim();
+  if (intent === "fixed" || intent === "hug") return true;
+  const tokens = getClassTokens(node?.attrs || {});
+  return tokens.some((t) => !String(t).includes(":") && /^w-\[\d/.test(normalizeToken(t)));
 };
 
 const getBaseFixedWidthTokens = (tokens) =>
@@ -132,10 +155,12 @@ const apply = ({ html }) => {
     const tokens = getClassTokens(node.attrs || {});
     if (!tokens.length) return;
     if (isRootContainer(node)) return;
+    if (hasDecorativeAncestor(nodes, nodeIndex)) return;
     if (!hasResponsiveAncestor(nodes, childrenMap, nodeIndex)) return;
     if (isScrollableTrack(tokens)) return;
     if (hasAbsoluteLike(tokens)) return;
-    if (isMediaWrapper(node, nodes, childrenMap, nodeIndex)) return;
+    const mediaWrapper = isMediaWrapper(node, nodes, childrenMap, nodeIndex);
+    if (mediaWrapper && !isFluidizableMediaWrapper(node, nodes, childrenMap, nodeIndex)) return;
 
     const fixedTokens = getBaseFixedWidthTokens(tokens);
     if (!fixedTokens.length) return;

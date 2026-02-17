@@ -63,3 +63,15 @@ test("idempotent: running twice yields same output", () => {
   const second = apply({ html: first.html, artifact: {}, options: {} });
   assert.equal(first.html, second.html);
 });
+
+test("does not collapse centered container wrappers into children", () => {
+  const html = `
+    <div data-key="root" class="w-full max-w-[80rem] mx-auto">
+      <div data-key="card" class="flex flex-col gap-6 w-[26rem] self-start">Card</div>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  assert.ok(out.html.includes('data-key="root"'), "container wrapper preserved");
+  assert.ok(out.html.includes('data-key="card"'), "child remains intact");
+  assert.ok(out.stats.merged === 0, "no wrapper collapse should happen");
+});

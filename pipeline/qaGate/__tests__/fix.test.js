@@ -123,6 +123,24 @@ test("fix: ROOT_PADDING_NO_RESPONSIVE_OVERRIDE -> adds pt-[2.5rem] pb-[2.5rem] m
   assert.ok(appliedFixes.some((f) => f.action === "root-padding-responsive-override"));
 });
 
+test("fix: ROOT_PADDING_NO_RESPONSIVE_OVERRIDE converts tailwind scale pt-20/pb-20 to md:*-[5rem]", () => {
+  const html = `<div data-key="root" class="pt-20 pb-20 w-full">Content</div>`;
+  const report = audit(html);
+  const { fixedHtml } = fix(html, report.issues);
+  assert.ok(fixedHtml.includes("md:pt-[5rem]"));
+  assert.ok(fixedHtml.includes("md:pb-[5rem]"));
+  assert.ok(!fixedHtml.includes("md:pt-[20rem]"));
+});
+
+test("fix: ROOT_PADDING_NO_RESPONSIVE_OVERRIDE keeps non-hero >16rem as px bracket with warning", () => {
+  const html = `<div data-key="root" class="pt-[20rem] pb-[20rem] w-full">Content</div>`;
+  const report = audit(html);
+  const { fixedHtml, appliedFixes } = fix(html, report.issues);
+  assert.ok(fixedHtml.includes("md:pt-[320px]"));
+  assert.ok(fixedHtml.includes("md:pb-[320px]"));
+  assert.ok(appliedFixes.some((f) => f.action === "root-padding-large-nonhero-warning"));
+});
+
 test("fix: OVERFLOW_HIDDEN_ON_NON_MEDIA_WRAPPER -> removes overflow-hidden", () => {
   const html = `<div class="overflow-hidden flex"><span>X</span></div>`;
   const report = audit(html);

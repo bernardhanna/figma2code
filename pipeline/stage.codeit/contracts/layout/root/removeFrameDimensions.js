@@ -84,6 +84,18 @@ const isFrameRootContainer = (node, nodes, childrenMap, nodeIndex) => {
   return true;
 };
 
+const shouldPreserveRootHeight = (node) => {
+  if (!node?.attrs) return false;
+  const dataBgType = String(getAttrValue(node.attrs, "data-bg-type") || "").toLowerCase();
+  if (dataBgType === "video" || dataBgType === "image") return true;
+  const role = String(getAttrValue(node.attrs, "role") || "").toLowerCase();
+  if (role === "banner") return true;
+  const dataKey = String(getAttrValue(node.attrs, "data-key") || "").toLowerCase();
+  const dataNode = String(getAttrValue(node.attrs, "data-node") || "").toLowerCase();
+  if (/hero|banner/.test(dataKey) || /hero|banner/.test(dataNode)) return true;
+  return false;
+};
+
 const isWidthToken = (token) => WIDTH_TOKEN.test(normalizeToken(token));
 const isHeightToken = (token) => HEIGHT_TOKEN.test(normalizeToken(token));
 
@@ -133,7 +145,12 @@ const apply = ({ html }) => {
       out.push("w-full");
     }
 
-    if (!isMediaTag(node.tag) && !isDecorative(node) && !isExplicitMediaWrapper(node)) {
+    if (
+      !isMediaTag(node.tag) &&
+      !isDecorative(node) &&
+      !isExplicitMediaWrapper(node) &&
+      !shouldPreserveRootHeight(node)
+    ) {
       out = out.filter((t) => !isHeightToken(t));
     }
 

@@ -163,3 +163,16 @@ test("skips decorative multi-rect bar segments", () => {
   assert.ok(out.html.includes("h-[0.3125rem]"), "segment height preserved");
   assert.ok(!out.html.includes("w-[100px] h-[10px]"), "segments not normalized to 100px bars");
 });
+
+test("decorative multi-rect bar container gets explicit width from data-w-rem", () => {
+  const html = `
+    <div data-key="decorativebarhorizontal" data-decorative="1" data-w-rem="4.4375rem" class="flex h-[0.3125rem] self-start">
+      <div class="grow basis-0 h-[0.3125rem] bg-[#ef7b10]"></div>
+      <div class="grow basis-0 h-[0.3125rem] bg-[#0098d8]"></div>
+      <div class="grow basis-0 h-[0.3125rem] bg-[#b6c0cb]"></div>
+      <div class="grow basis-0 h-[0.3125rem] bg-[#74af27]"></div>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  assert.ok(out.html.includes('class="flex h-[0.3125rem] self-start w-[4.4375rem]"'));
+});

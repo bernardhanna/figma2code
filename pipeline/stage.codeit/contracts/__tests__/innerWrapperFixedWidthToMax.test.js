@@ -35,7 +35,7 @@ test("element with w-full w-[20rem] becomes w-full max-w-[20rem]", () => {
   assert.ok(!cls.includes("w-[20rem]"));
 });
 
-test("media wrapper is untouched", () => {
+test("single-image media wrapper can be fluidized to w-full max-w-[X]", () => {
   const html = `
     <div class="flex">
       <div data-key="media" class="w-[20rem] overflow-hidden">
@@ -45,8 +45,9 @@ test("media wrapper is untouched", () => {
   `;
   const out = apply({ html, artifact: {}, options: {} });
   const cls = getClass(out.html, "media").split(/\s+/);
-  assert.ok(cls.includes("w-[20rem]"));
-  assert.ok(!cls.includes("max-w-[20rem]"));
+  assert.ok(cls.includes("w-full"));
+  assert.ok(cls.includes("max-w-[20rem]"));
+  assert.ok(!cls.includes("w-[20rem]"));
 });
 
 test("root container is untouched", () => {
@@ -78,4 +79,17 @@ test("absolutely positioned elements are untouched", () => {
   const out = apply({ html, artifact: {}, options: {} });
   const cls = getClass(out.html, "abs").split(/\s+/);
   assert.ok(cls.includes("w-[20rem]"));
+});
+
+test("decorative descendants are not width-canonicalized", () => {
+  const html = `
+    <div data-decorative="1" class="flex w-[4.4375rem] h-[0.3125rem]">
+      <div data-key="seg" class="grow basis-0 min-w-0 h-[0.3125rem] w-[1.109375rem] bg-[#ef7b10]"></div>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const cls = getClass(out.html, "seg").split(/\s+/);
+  assert.ok(cls.includes("w-[1.109375rem]"));
+  assert.ok(!cls.includes("w-full"));
+  assert.ok(!cls.includes("max-w-[1.109375rem]"));
 });

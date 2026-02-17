@@ -83,7 +83,7 @@ if ($img_title === '') { $img_title = 'Image'; }
 $inner_base = 'flex flex-col items-center w-full mx-auto max-w-container max-lg:px-5';
 $inner_classes = trim($inner_base . ' ' . '${sanitizedOuter}' . ' ' . implode(' ', $padding_classes));
 ?>
-<section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden">
+<section id="<?php echo esc_attr($section_id); ?>" class="relative flex">
   <div class="<?php echo esc_attr($inner_classes); ?>">
     <?php /* BEGIN AI FRAGMENT with SLOTs replaced by PHP */ ?>
     ${fragment}

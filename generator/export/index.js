@@ -150,7 +150,7 @@ $allowed_heading_tags = ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'span', 'p'];
 $heading_tag = in_array($heading_tag, $allowed_heading_tags, true) ? $heading_tag : 'h2';
 ?>
 
-<section id="<?php echo esc_attr($section_id); ?>" class="relative flex overflow-hidden">
+<section id="<?php echo esc_attr($section_id); ?>" class="relative flex">
   <div class="flex flex-col items-center w-full mx-auto max-w-container pt-5 pb-5 max-lg:px-5 <?php echo esc_attr(implode(' ', $padding_classes)); ?>">
     <div class="w-full max-w-[900px]">
       <?php if (!empty($heading_text)) : ?>

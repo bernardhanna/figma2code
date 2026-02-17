@@ -28,3 +28,20 @@ test("preserves other inline styles while stripping width", () => {
   assert.ok(style.includes("color: red"));
   assert.ok(!style.includes("width"));
 });
+
+test("normalizes degenerate section gradient to bg color class", () => {
+  const html = `<section class="flex relative" style="background-image: linear-gradient(rgba(249,250,251,1), rgba(249,250,251,1)); background-size: cover; background-position: center; background-repeat: no-repeat; background-blend-mode: normal;"></section>`;
+  const out = apply({ html, artifact: {}, options: {} });
+  const cls = getAttr(out.html, "class") || "";
+  const style = getAttr(out.html, "style") || "";
+  assert.ok(cls.includes("bg-[#f9fafb]"), "degenerate gradient should become bg class");
+  assert.ok(!style.includes("background-image"), "gradient image style removed");
+  assert.ok(!style.includes("background-blend-mode"), "normal blend mode removed");
+});
+
+test("does not normalize non-degenerate gradient", () => {
+  const html = `<section style="background-image: linear-gradient(rgba(249,250,251,1), rgba(230,230,230,1));"></section>`;
+  const out = apply({ html, artifact: {}, options: {} });
+  const style = getAttr(out.html, "style") || "";
+  assert.ok(style.includes("linear-gradient("), "real gradient must remain");
+});

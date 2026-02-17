@@ -178,6 +178,13 @@ const hasOnlyAllowedMovableClasses = (tokens) => {
 
 const hasForbiddenClass = (tokens) => tokens.some((t) => isProtectedToken(t));
 
+const hasContainerSignature = (tokens) => {
+  const cores = tokens.map(normalizeToken);
+  const hasMxAuto = cores.includes("mx-auto");
+  const hasMaxW = cores.some((c) => c === "max-w-container" || /^max-w-/.test(c));
+  return hasMxAuto && hasMaxW;
+};
+
 const hasDisallowedAttr = (node) => {
   if (!node?.attrs) return true;
   const keys = Object.keys(node.attrs);
@@ -244,8 +251,19 @@ const normalizeClasses = (tokens) => {
 const mergeDataAttributes = (parent, child) => {
   const parentKeys = Object.keys(parent.attrs || {}).filter((k) => k.startsWith("data-"));
   if (!parentKeys.length) return;
+  const blockMerge = new Set([
+    "data-key",
+    "data-node",
+    "data-node-id",
+    "data-w-intent",
+    "data-h-intent",
+    "data-w-rem",
+    "data-h-rem",
+    "data-merged-from",
+  ]);
   const mergedEntries = [];
   for (const key of parentKeys) {
+    if (blockMerge.has(String(key || "").toLowerCase())) continue;
     const value = getAttrValue(parent.attrs, key);
     if (!(key in (child.attrs || {}))) {
       setAttrValue(child.attrs, child.attrOrder, key, value);
@@ -275,6 +293,7 @@ const shouldCollapseWrapper = (nodes, childrenMap, nodeIndex) => {
 
   const parentTokens = getClassTokens(node.attrs || {});
   const childTokens = getClassTokens(child.attrs || {});
+  if (hasContainerSignature(parentTokens)) return false;
   if (hasForbiddenClass(parentTokens)) return false;
   if (!hasOnlyAllowedMovableClasses(parentTokens)) return false;
 

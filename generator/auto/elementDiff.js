@@ -1,31 +1,43 @@
 import { PNG } from "pngjs";
 import fs from "fs";
 
-export function computeElementDiff(diffPngPath, layout, outPath) {
+export function computeElementDiff(diffPngPath, layout, outPath, options = {}) {
   const img = PNG.sync.read(fs.readFileSync(diffPngPath));
   const offenders = [];
+  const minBboxArea = Math.max(0, Number(options?.minBboxArea ?? 200));
 
   for (const el of layout) {
     const { x, y, w, h } = el.bbox;
-    let diffPixels = 0;
-    let total = Math.max(1, Math.floor(w * h));
+    const bboxArea = Math.max(0, Number(w || 0) * Number(h || 0));
+    if (bboxArea < minBboxArea) continue;
+    const startX = Math.max(0, Math.floor(x));
+    const startY = Math.max(0, Math.floor(y));
+    const endX = Math.min(img.width, Math.ceil(x + w));
+    const endY = Math.min(img.height, Math.ceil(y + h));
+    if (endX <= startX || endY <= startY) continue;
 
-    for (let iy = Math.floor(y); iy < y + h; iy++) {
-      for (let ix = Math.floor(x); ix < x + w; ix++) {
+    let diffPixels = 0;
+    let sampledPixels = 0;
+
+    for (let iy = startY; iy < endY; iy++) {
+      for (let ix = startX; ix < endX; ix++) {
+        sampledPixels += 1;
         const idx = (img.width * iy + ix) << 2;
         if (img.data[idx + 3] > 0) diffPixels++;
       }
     }
 
     if (diffPixels > 0) {
+      const total = Math.max(1, sampledPixels);
+      const ratio = Math.min(1, Math.max(0, diffPixels / total));
       offenders.push({
         nodeId: el.nodeId,
         pixels: diffPixels,
-        ratio: diffPixels / total,
+        ratio,
       });
     }
   }
 
-  offenders.sort((a, b) => b.ratio - a.ratio);
+  offenders.sort((a, b) => (b.pixels - a.pixels) || (b.ratio - a.ratio));
   fs.writeFileSync(outPath, JSON.stringify(offenders, null, 2));
 }
