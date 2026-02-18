@@ -1,0 +1,96 @@
+{
+  "slug": "psp2",
+  "at": "2026-02-17T20:00:07.922Z",
+  "results": {
+    "mobile": {
+      "slug": "psp2",
+      "mode": "mobile",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "crop": {
+        "width": 1254,
+        "height": 150
+      },
+      "diffPixels": 180249,
+      "totalPixels": 188100,
+      "diffRatio": 0.9582615629984051,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/psp2/figma.mobile.png",
+        "width": 1280,
+        "height": 436
+      },
+      "at": "2026-02-17T19:59:34.686Z"
+    },
+    "tablet": {
+      "slug": "psp2",
+      "mode": "tablet",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "crop": {
+        "width": 1254,
+        "height": 150
+      },
+      "diffPixels": 180249,
+      "totalPixels": 188100,
+      "diffRatio": 0.9582615629984051,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/psp2/figma.tablet.png",
+        "width": 1280,
+        "height": 436
+      },
+      "at": "2026-02-17T19:59:54.831Z"
+    },
+    "desktop": {
+      "slug": "psp2",
+      "mode": "desktop",
+      "viewport": {
+        "width": 1280,
+        "height": 900
+      },
+      "crop": {
+        "width": 1254,
+        "height": 150
+      },
+      "diffPixels": 180249,
+      "totalPixels": 188100,
+      "diffRatio": 0.9582615629984051,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/psp2/figma.desktop.png",
+        "width": 1280,
+        "height": 436
+      },
+      "at": "2026-02-17T20:00:07.908Z"
+    }
+  }
+}

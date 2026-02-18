@@ -28,6 +28,7 @@ module.exports = {
     { id: "layout/spacing/paddingClamp", path: "./contracts/layout/spacing/paddingClamp.js", options: {} },
     { id: "layout/width/enforceWidthIntent", path: "./contracts/layout/width/enforceWidthIntent.js", options: {} },
     { id: "layout/width/dedupeFillColumnWidths", path: "./contracts/layout/width/dedupeFillColumnWidths.js", options: {} },
+    { id: "layout/width/responsiveWidthContainerGuard", path: "./contracts/layout/width/responsiveWidthContainerGuard.js", options: {} },
     { id: "layout/width/innerWrapperFixedWidthToMax", path: "./contracts/layout/width/innerWrapperFixedWidthToMax.js", options: {} },
     { id: "layout/width/widthRedundancyCollapseContract", path: "./contracts/layout/width/widthRedundancyCollapseContract.js", options: {} },
     { id: "layout/text/textFixedWidthGuardContract", path: "./contracts/layout/text/textFixedWidthGuardContract.js", options: {} },

@@ -18,7 +18,7 @@ const {
   getClassTokens,
   parseHtmlNodes,
 } = require("../stage.codeit/contracts/utils/html");
-const { applyPatchPlan, validatePatch } = require("./utilities/patches");
+const { applyPatchPlan, validatePatch, normalizePatchOps } = require("./utilities/patches");
 const {
   isProtectedMediaNode,
   canProveClipping,
@@ -722,11 +722,39 @@ const generateDeterministicPlan = ({
         patch: buildPatch(nodeId, selector, iteration),
         ledgerEntries: [],
         seenOps: new Set(),
+        gateKind: null,
+        strategyName: null,
       });
     }
     const entry = entries.get(nodeId);
     if (selector && !entry.patch.selector) entry.patch.selector = selector;
     return entry;
+  };
+
+  const markGateKind = (entry, kind) => {
+    if (!entry) return;
+    const next = String(kind || "").trim().toLowerCase();
+    if (!next) return;
+    if (!entry.gateKind) {
+      entry.gateKind = next;
+      return;
+    }
+    if (entry.gateKind !== next) {
+      entry.gateKind = "visual";
+    }
+  };
+
+  const markStrategy = (entry, strategyName) => {
+    if (!entry) return;
+    const next = String(strategyName || "").trim();
+    if (!next) return;
+    if (!entry.strategyName) {
+      entry.strategyName = next;
+      return;
+    }
+    if (entry.strategyName !== next) {
+      entry.strategyName = "multi-strategy";
+    }
   };
 
   const resolveNodeEntryForOffender = (offender) => {
@@ -850,6 +878,8 @@ const generateDeterministicPlan = ({
       });
       if (ops && (ops.classRemove?.length || Object.keys(ops.classReplace || {}).length)) {
         const patchEntry = ensureEntry(nodeId, selector);
+        markGateKind(patchEntry, "cleanup");
+        markStrategy(patchEntry, "width-dedupe");
         (ops.classRemove || []).forEach((token) =>
           addClassRemove(
             patchEntry,
@@ -887,6 +917,8 @@ const generateDeterministicPlan = ({
         bumpStrategy("container-width-canonicalize", 1, candidateOps);
         if (candidateOps > 0) {
           const patchEntry = ensureEntry(nodeId, selector);
+          markGateKind(patchEntry, "cleanup");
+          markStrategy(patchEntry, "container-width-canonicalize");
           addClassRemove(
             patchEntry,
             widthToken.raw,
@@ -930,6 +962,8 @@ const generateDeterministicPlan = ({
       bumpStrategy("width-dedupe-smart", 1, candidateOps);
       if (candidateOps > 0) {
         const patchEntry = ensureEntry(nodeId, selector);
+        markGateKind(patchEntry, "cleanup");
+        markStrategy(patchEntry, "width-dedupe-smart");
         if (isFillIntent && hasWFull && maxW) {
           addClassRemove(
             patchEntry,
@@ -971,6 +1005,7 @@ const generateDeterministicPlan = ({
         bumpStrategy("spacing-step-tune", 1, candidateOps);
         if (candidateOps > 0) {
           const patchEntry = ensureEntry(nodeId, selector);
+          markStrategy(patchEntry, "spacing-step-tune");
           addClassAdd(
             patchEntry,
             maxMdToken,
@@ -993,6 +1028,7 @@ const generateDeterministicPlan = ({
         bumpStrategy("layout-spacing-tweak", 1, candidateOps);
         if (replacement) {
           const patchEntry = ensureEntry(nodeId, selector);
+          markStrategy(patchEntry, "layout-spacing-tweak");
           addClassReplace(
             patchEntry,
             spacingToken,
@@ -1026,6 +1062,7 @@ const generateDeterministicPlan = ({
       bumpStrategy("layout-width-fill", 1, candidateOps);
       if (candidateOps > 0 && canApplyFill) {
         const patchEntry = ensureEntry(nodeId, selector);
+        markStrategy(patchEntry, "layout-width-fill");
         fixedWidth.forEach((token) => {
           addClassRemove(patchEntry, token, "Patch: fixed width removed for fill strategy");
         });
@@ -1049,6 +1086,7 @@ const generateDeterministicPlan = ({
         suggestedContract.includes("layout/align"))
     ) {
       const patchEntry = ensureEntry(nodeId, selector);
+      markStrategy(patchEntry, "layout-align-swap");
       const normalized = tokens.map((t) => normalizeToken(t));
       const itemsToken = tokens.find((t) => /^items-(start|center|end|stretch)$/.test(normalizeToken(t)));
       const justifyToken = tokens.find((t) =>
@@ -1085,6 +1123,7 @@ const generateDeterministicPlan = ({
       /repeating|repeat|matrix|grid|cards?/.test(offenderSignal)
     ) {
       const patchEntry = ensureEntry(nodeId, selector);
+      markStrategy(patchEntry, "layout-flex-grid-swap");
       const gridToken = tokens.find((t) => normalizeToken(t) === "grid");
       const flexToken = tokens.find((t) => normalizeToken(t) === "flex");
       const flexWrapToken = tokens.find((t) => normalizeToken(t) === "flex-wrap");
@@ -1115,6 +1154,7 @@ const generateDeterministicPlan = ({
     if (offender.category === "layout" && /fixed height/i.test(offender.hint || "")) {
       bumpStrategy("layout-fixed-height", 1, 0);
       const patchEntry = ensureEntry(nodeId, selector);
+      markStrategy(patchEntry, "layout-fixed-height");
       if (MEDIA_TAGS.has(nodeEntry.node.tag)) return;
       if (nodeEntry.hasMedia) return;
       if (isProtectedMediaNode(nodeEntry.node, nodeEntry.context)) return;
@@ -1145,6 +1185,7 @@ const generateDeterministicPlan = ({
     if (!note && offender.category === "layout" && /overflow-x/i.test(offender.hint || "")) {
       bumpStrategy("layout-overflow-x", 1, 0);
       const patchEntry = ensureEntry(nodeId, selector);
+      markStrategy(patchEntry, "layout-overflow-x");
       const removals = tokens.filter((token) => OVERFLOW_X_TOKEN.test(normalizeToken(token)));
       removals.forEach((token) => {
         addClassRemove(
@@ -1166,6 +1207,7 @@ const generateDeterministicPlan = ({
     ) {
       bumpStrategy("a11y-interactive-name", 1, 0);
       const patchEntry = ensureEntry(nodeId, selector);
+      markStrategy(patchEntry, "a11y-interactive-name");
       const ariaLabel = getAttrValue(nodeEntry.node.attrs, "aria-label");
       const ariaLabelledBy = getAttrValue(nodeEntry.node.attrs, "aria-labelledby");
       const title = getAttrValue(nodeEntry.node.attrs, "title");
@@ -1186,6 +1228,7 @@ const generateDeterministicPlan = ({
     if (!note && offender.category === "a11y" && /image missing alt/i.test(offender.hint || "")) {
       bumpStrategy("a11y-image-decorative", 1, 0);
       const patchEntry = ensureEntry(nodeId, selector);
+      markStrategy(patchEntry, "a11y-image-decorative");
       const ariaHidden = getAttrValue(nodeEntry.node.attrs, "aria-hidden");
       const alt = getAttrValue(nodeEntry.node.attrs, "alt");
       if (ariaHidden !== "true" && (!alt || !String(alt).trim())) {
@@ -1209,6 +1252,7 @@ const generateDeterministicPlan = ({
         selector: patchEntry.patch.selector,
         offender,
         ops: patchEntry.patch.ops,
+        gateKind: patchEntry.gateKind || "visual",
         note,
       });
     }
@@ -1228,6 +1272,7 @@ const generateDeterministicPlan = ({
     if (!bgCores.some((core) => isDarkBackgroundCore(core))) return;
     bumpStrategy("a11y-contrast-guard", 1, 1);
     const patchEntry = ensureEntry(nodeId, selector);
+    markStrategy(patchEntry, "a11y-contrast-guard");
     addClassAdd(
       patchEntry,
       "text-white",
@@ -1265,6 +1310,7 @@ const generateDeterministicPlan = ({
           const widthToken = `w-[${rem}rem]`;
           if (!tokens.includes(widthToken)) {
             const patchEntry = ensureEntry(nodeId, selector);
+            markStrategy(patchEntry, "decorative-width-restore");
             addClassAdd(
               patchEntry,
               widthToken,
@@ -1277,6 +1323,7 @@ const generateDeterministicPlan = ({
 
       if (String(node?.tag || "").toLowerCase() === "img") {
         const patchEntry = ensureEntry(nodeId, selector);
+        markStrategy(patchEntry, "image-mobile-contain-md");
         let changed = 0;
         if (tokens.includes("max-sm:h-auto")) {
           addClassReplace(
@@ -1304,6 +1351,7 @@ const generateDeterministicPlan = ({
         const hasWFull = normalized.includes("w-full");
         if (fixedW) {
           const patchEntry = ensureEntry(nodeId, selector);
+          markStrategy(patchEntry, "image-wrapper-fluid");
           addClassRemove(
             patchEntry,
             fixedW,
@@ -1461,7 +1509,8 @@ const buildFallbackScore = (metrics) => {
   return Math.max(0, Math.min(100, score));
 };
 
-const assessScoreGate = (before, after, gate) => {
+const assessScoreGate = (before, after, gate, options = {}) => {
+  const allowNoImprovement = options?.allowNoImprovement === true;
   const breakpoints = ["mobile", "tablet", "desktop"];
   const deltas = [];
 
@@ -1481,7 +1530,7 @@ const assessScoreGate = (before, after, gate) => {
         reason: `Score gate (fallback): regression score ${fallbackBefore} → ${fallbackAfter}.`,
       };
     }
-    if (gate.requireImprovement && fallbackAfter <= fallbackBefore) {
+    if (!allowNoImprovement && gate.requireImprovement && fallbackAfter <= fallbackBefore) {
       return { accept: false, reason: "Score gate (fallback): no improvement detected." };
     }
     return { accept: true, reason: "Score gate passed (fallback score)." };
@@ -1496,7 +1545,7 @@ const assessScoreGate = (before, after, gate) => {
   }
 
   const improved = deltas.some((entry) => entry.delta < -gate.maxVisualDelta);
-  if (gate.requireImprovement && !improved) {
+  if (!allowNoImprovement && gate.requireImprovement && !improved) {
     return { accept: false, reason: "Score gate: no visual improvement detected." };
   }
 
@@ -1653,6 +1702,95 @@ const hashInput = (artifact) => {
   return crypto.createHash("sha256").update(json).digest("hex");
 };
 
+const hashText = (value) =>
+  crypto.createHash("sha256").update(String(value || "")).digest("hex");
+
+const patchSignature = (patch) => {
+  const nodeId = String(patch?.nodeId || "").trim();
+  if (!nodeId) return "";
+  const ops = normalizePatchOps(patch) || {
+    classAdd: [],
+    classRemove: [],
+    classReplace: {},
+    attrAdd: {},
+    attrRemove: [],
+  };
+  const sortObject = (obj) =>
+    Object.keys(obj || {})
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = obj[key];
+        return acc;
+      }, {});
+  return JSON.stringify({
+    nodeId,
+    ops: {
+      classAdd: [...(ops.classAdd || [])].sort(),
+      classRemove: [...(ops.classRemove || [])].sort(),
+      classReplace: sortObject(ops.classReplace || {}),
+      attrAdd: sortObject(ops.attrAdd || {}),
+      attrRemove: [...(ops.attrRemove || [])].sort(),
+    },
+  });
+};
+
+const collectPreviouslyRejectedPatchSignatures = (history, maxEntries = 8) => {
+  const rows = Array.isArray(history) ? history : [];
+  if (!rows.length) return new Set();
+  const recent = rows.slice(-Math.max(1, Number(maxEntries || 8)));
+  const out = new Set();
+  const includeReason = (reason) =>
+    /(score gate:|no-op patch|previously rejected patch signature)/i.test(String(reason || ""));
+  recent.forEach((entry) => {
+    const rejected = Array.isArray(entry?.rejectedByGate)
+      ? entry.rejectedByGate
+      : Array.isArray(entry?.rejectedPatches)
+        ? entry.rejectedPatches
+        : [];
+    rejected.forEach((row) => {
+      if (!includeReason(row?.reason)) return;
+      const sig = patchSignature(row?.patch || row);
+      if (sig) out.add(sig);
+    });
+  });
+  return out;
+};
+
+const rejectedReasonCountsForCooldown = (reason) =>
+  /(score gate:|no-op patch)/i.test(String(reason || ""));
+
+const collectRejectedNodeStrategyCooldownKeys = ({
+  history,
+  htmlHash,
+  inputHash,
+  lookbackEntries = 3,
+}) => {
+  const rows = Array.isArray(history) ? history : [];
+  if (!rows.length) return new Set();
+  const recent = rows.slice(-Math.max(1, Number(lookbackEntries || 3)));
+  const out = new Set();
+  recent.forEach((entry) => {
+    const matchesHtml = htmlHash && entry?.htmlHash && entry.htmlHash === htmlHash;
+    const matchesInput = inputHash && entry?.inputHash && entry.inputHash === inputHash;
+    if (!matchesHtml && !matchesInput) return;
+    const rejected = Array.isArray(entry?.rejectedByGate)
+      ? entry.rejectedByGate
+      : Array.isArray(entry?.rejectedPatches)
+        ? entry.rejectedPatches
+        : [];
+    rejected.forEach((row) => {
+      const reason = String(row?.reason || "").trim();
+      if (!rejectedReasonCountsForCooldown(reason)) return;
+      const patch = row?.patch || row;
+      const nodeId = String(patch?.nodeId || row?.nodeId || "").trim();
+      const strategyName = String(row?.strategyName || patch?.strategyName || "").trim();
+      if (!nodeId || !strategyName) return;
+      out.add(`${nodeId}::${strategyName}`);
+    });
+  });
+  return out;
+};
+
 const readExistingArtifact = (slug) => {
   const existingPath = getArtifactPath(slug);
   if (!fs.existsSync(existingPath)) return null;
@@ -1678,6 +1816,11 @@ const run = async ({
   const logFn = typeof log === "function" ? log : () => {};
   const reporter = createReporter(logFn);
   const stageConfig = configOverride ? { ...config, ...configOverride } : config;
+  const maxProposedTrialsPerNodeRaw =
+    process.env.IMPROVE_MAX_PROPOSED_TRIALS_PER_NODE ??
+    stageConfig.maxProposedTrialsPerNode ??
+    2;
+  const maxProposedTrialsPerNode = Math.max(0, Number(maxProposedTrialsPerNodeRaw) || 2);
 
   reporter.succeed(IMPROVE.LOAD_ARTIFACT);
   const inputArtifact = readInputArtifactFn(slug);
@@ -1687,6 +1830,7 @@ const run = async ({
   const previousHistory = Array.isArray(existing?.diagnostics?.history)
     ? existing.diagnostics.history
     : [];
+  const previouslyRejectedPatchSignatures = collectPreviouslyRejectedPatchSignatures(previousHistory);
   const previousPatches = Array.isArray(existing?.patches) ? existing.patches : [];
   const iteration = Number(existing?.diagnostics?.iteration || 0) + 1;
 
@@ -1695,6 +1839,8 @@ const run = async ({
   const baseFragment = envelope.fragment;
   const currentFragment = applyPatchPlan(baseFragment, previousPatches);
   const currentHtml = envelope.apply(currentFragment);
+  const currentHtmlHash = hashText(currentFragment);
+  const currentInputHash = hashInput(inputArtifact);
 
   reporter.succeed(IMPROVE.EVALUATE_OFFENDERS);
   let evaluationBefore = evaluateFn({ slug, html: currentHtml, artifact: inputArtifact });
@@ -1822,6 +1968,8 @@ const run = async ({
           patch,
           ledgerEntries: [],
           seenOps: new Set(),
+          gateKind: String(patch?.gateKind || "").trim().toLowerCase() || null,
+          strategyName: String(patch?.strategyName || "").trim() || null,
         }))
       : [];
   const strategyStats = normalizeStrategyStats(planResult?.strategyStats);
@@ -1870,6 +2018,16 @@ const run = async ({
   };
   const { accepted: heightAccepted, rejectedWithReasons: heightRejected } =
     guardedHeightPatchFilter(planEntries, guardContext);
+  const cooldownLookbackRaw =
+    process.env.IMPROVE_NODE_STRATEGY_COOLDOWN_LOOKBACK ??
+    stageConfig.nodeStrategyCooldownLookbackEntries ??
+    3;
+  const nodeStrategyCooldownKeys = collectRejectedNodeStrategyCooldownKeys({
+    history: previousHistory,
+    htmlHash: currentHtmlHash,
+    inputHash: currentInputHash,
+    lookbackEntries: Math.max(1, Number(cooldownLookbackRaw) || 3),
+  });
 
   const acceptedEntries = [];
   const rejectedEntries = [];
@@ -1879,6 +2037,7 @@ const run = async ({
       patch: entry.patch,
       reason,
       nodeId,
+      strategyName: entry?.strategyName || "",
     });
   });
 
@@ -1898,20 +2057,66 @@ const run = async ({
       ledgerEntry.nodeId = sanitizedPatch.nodeId;
       if (!ledgerEntry.selector) ledgerEntry.selector = sanitizedPatch.selector;
     });
+    const signature = patchSignature(sanitizedPatch);
+    const strategyName = String(entry?.strategyName || "").trim();
+    const cooldownKey = strategyName ? `${sanitizedPatch.nodeId}::${strategyName}` : "";
+    if (cooldownKey && nodeStrategyCooldownKeys.has(cooldownKey)) {
+      rejectedEntries.push({
+        patch: sanitizedPatch,
+        reason: "Node-strategy cooldown: recently rejected on same HTML; skipping repeat trial.",
+        strategyName,
+      });
+      return;
+    }
+    if (signature && previouslyRejectedPatchSignatures.has(signature)) {
+      rejectedEntries.push({
+        patch: sanitizedPatch,
+        reason: "Previously rejected patch signature; skipping repeat trial.",
+        strategyName,
+      });
+      return;
+    }
     acceptedEntries.push({
       patch: sanitizedPatch,
       ledgerEntries: entry.ledgerEntries,
+      signature,
+      gateKind: entry.gateKind || "visual",
+      strategyName,
     });
   });
 
   reporter.succeed(IMPROVE.APPLY_PATCHES);
-  const proposedEntries = [...acceptedEntries];
+  let proposedSkippedByCap = 0;
+  let rejectedSkippedByCap = 0;
+  const proposedEntries = [];
+  const proposedCountByNode = new Map();
+  acceptedEntries.forEach((entry) => {
+    const nodeId = String(entry.patch?.nodeId || "unknown");
+    const prior = Number(proposedCountByNode.get(nodeId) || 0);
+    if (maxProposedTrialsPerNode > 0 && prior >= maxProposedTrialsPerNode) {
+      rejectedEntries.push({
+        patch: entry.patch,
+        reason: `Proposed trial cap reached for node (${maxProposedTrialsPerNode}); skipping extra candidates before trial gate.`,
+        strategyName: entry?.strategyName || "",
+      });
+      proposedSkippedByCap += 1;
+      return;
+    }
+    proposedCountByNode.set(nodeId, prior + 1);
+    proposedEntries.push(entry);
+  });
   const proposedPatches = proposedEntries.map((entry) => entry.patch);
 
   reporter.succeed(IMPROVE.EVALUATE_VERIFY);
   const gate = resolveGateConfig(stageConfig.gate);
+  const maxRejectedTrialsPerNodeRaw =
+    process.env.IMPROVE_MAX_REJECTED_TRIALS_PER_NODE ??
+    stageConfig.maxRejectedTrialsPerNode ??
+    2;
+  const maxRejectedTrialsPerNode = Math.max(0, Number(maxRejectedTrialsPerNodeRaw) || 2);
   let acceptedByGateEntries = [];
   let rejectedByGate = [];
+  const rejectedTrialCountByNode = new Map();
   let evaluationAfter = evaluationBefore;
   let workingFragment = currentFragment;
   let workingHtml = currentHtml;
@@ -1920,7 +2125,33 @@ const run = async ({
     if (gate.enabled) {
       reporter.log(`Trial-gating ${proposedEntries.length} proposed patch(es) independently...`);
       for (const entry of proposedEntries) {
+        const nodeId = String(entry.patch?.nodeId || "unknown");
+        const priorRejectedCount = Number(rejectedTrialCountByNode.get(nodeId) || 0);
+        if (maxRejectedTrialsPerNode > 0 && priorRejectedCount >= maxRejectedTrialsPerNode) {
+          const reason = `Rejected trial cap reached for node (${maxRejectedTrialsPerNode}); skipping further trials this run.`;
+          rejectedByGate.push({
+            patch: entry.patch,
+            reason,
+            strategyName: entry?.strategyName || "",
+            gateKind: entry?.gateKind || "visual",
+          });
+          rejectedSkippedByCap += 1;
+          reporter.log(`Skipped patch ${nodeId} (${reason})`);
+          continue;
+        }
         const candidateFragment = applyPatchPlan(workingFragment, [entry.patch]);
+        if (candidateFragment === workingFragment) {
+          const reason = "Score gate: no-op patch (no DOM change).";
+          rejectedByGate.push({
+            patch: entry.patch,
+            reason,
+            strategyName: entry?.strategyName || "",
+            gateKind: entry?.gateKind || "visual",
+          });
+          rejectedTrialCountByNode.set(nodeId, priorRejectedCount + 1);
+          reporter.log(`Rejected patch ${entry.patch?.nodeId || "unknown"} (${reason})`);
+          continue;
+        }
         const candidateHtml = envelope.apply(candidateFragment);
         if (requireVisualDiff) {
           try {
@@ -1947,10 +2178,12 @@ const run = async ({
           }
         }
         const candidateEvaluation = evaluateFn({ slug, html: candidateHtml, artifact: inputArtifact });
+        const allowNoImprovement = String(entry?.gateKind || "").toLowerCase() === "cleanup";
         const gateResult = assessScoreGate(
           evaluationAfter?.metrics,
           candidateEvaluation?.metrics,
-          gate
+          gate,
+          { allowNoImprovement }
         );
         if (gateResult.accept) {
           acceptedByGateEntries.push(entry);
@@ -1965,7 +2198,10 @@ const run = async ({
           rejectedByGate.push({
             patch: entry.patch,
             reason,
+            strategyName: entry?.strategyName || "",
+            gateKind: entry?.gateKind || "visual",
           });
+          rejectedTrialCountByNode.set(nodeId, priorRejectedCount + 1);
           reporter.log(`Rejected patch ${entry.patch?.nodeId || "unknown"} (${reason})`);
         }
       }
@@ -2000,6 +2236,9 @@ const run = async ({
   }
 
   rejectedEntries.push(...rejectedByGate);
+  reporter.log(
+    `Trial caps: proposedSkipped=${proposedSkippedByCap}, rejectedSkipped=${rejectedSkippedByCap}`
+  );
   rejectedEntries.forEach((entry) => {
     warnings.push({
       message: `Rejected patch for ${entry.patch?.nodeId || entry.nodeId || "unknown"}: ${entry.reason || "unknown"}`,
@@ -2073,13 +2312,18 @@ const run = async ({
     skippedReason: skippedReason || undefined,
     skippedDetails: skippedDetails || undefined,
     strategyStats,
+    trialCapStats: {
+      proposedSkipped: proposedSkippedByCap,
+      rejectedSkipped: rejectedSkippedByCap,
+    },
     zeroCandidatesReason: zeroCandidatesReason || undefined,
   };
 
   const historyEntry = {
     iteration,
     createdAt: new Date().toISOString(),
-    inputHash: hashInput(inputArtifact),
+    inputHash: currentInputHash,
+    htmlHash: currentHtmlHash,
     proposedPatches,
     acceptedByGate: acceptedPatches,
     rejectedByGate,
@@ -2119,6 +2363,10 @@ const run = async ({
         skippedReason: skippedReason || undefined,
         skippedDetails: skippedDetails || undefined,
         strategyStats,
+        trialCapStats: {
+          proposedSkipped: proposedSkippedByCap,
+          rejectedSkipped: rejectedSkippedByCap,
+        },
         zeroCandidatesReason: zeroCandidatesReason || undefined,
       },
       improveSummary: `Offenders: ${offenders.length} | Proposed: ${patchesProposed} | Accepted: ${patchesAccepted} | Rejected: ${patchesRejected} | Provider: ${provider.id}`,

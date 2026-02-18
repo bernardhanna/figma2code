@@ -36,6 +36,9 @@ Replaces rigid rem widths with fluid rules: `w-[70rem] max-w-full` → `w-full`;
 ### layout/width/dedupeWidths
 Removes redundant child width tokens when the parent already controls width and the child has `max-w-full`. **Does not** remove widths when the parent has no width control.
 
+### layout/width/responsiveWidthContainerGuard
+Enforces responsive width guardrails in two places: section-level containers are canonicalized to `w-full` + `max-w-*` + `mx-auto` (dropping redundant `w-[X]`), and `md:flex-row` parents with exactly two direct column children get `md:flex-1` + `min-w-0` on each column. Also neutralizes md-active inner `max-w-*` caps with `md:max-w-none` while preserving mobile `max-w-full` safety. **Does not** rewrite decorative/media nodes or tiny fixed-size elements (icons/bars).
+
 ### layout/width/enforceWidthIntent
 Ensures `data-w-intent="fixed"` always corresponds to an explicit width constraint. If `data-w-rem`/`data-w-px` exists, it enforces `w-[…]` and removes conflicting base width constraints while preserving responsive overrides. Decorative bars keep fixed width. If no numeric width exists, it rewrites intent to `fill` and applies `w-full max-w-full`, except for allowed media/hero exceptions. **Does not** alter nodes that already match their intent.
 

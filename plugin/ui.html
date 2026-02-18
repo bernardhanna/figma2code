@@ -215,8 +215,8 @@
       reportEl.textContent = lines.join("\n");
     }
 
-    const REQUEST_TIMEOUT_MS = 300000;
-    const REQUEST_TIMEOUT_REFINE_MS = 900000;
+    const REQUEST_TIMEOUT_MS = 900000;
+    const REQUEST_TIMEOUT_REFINE_MS = 1200000;
 
     function isNetworkLikeError(err) {
       const msg = String(err?.message || err || "").toLowerCase();
