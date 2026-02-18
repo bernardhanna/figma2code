@@ -38,6 +38,7 @@ export function viewportScript({ designW }) {
 
       const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
       const minW = 320;
+      const MIN_IFRAME_HEIGHT = 420;
 
       const bpMobileMax = Number(resp?.breakpoints?.mobileMax) || 768;
       const bpTabletMax = Number(resp?.breakpoints?.tabletMax) || 1084;
@@ -174,7 +175,7 @@ export function viewportScript({ designW }) {
             doc.documentElement?.scrollHeight || 0,
             doc.body?.scrollHeight || 0
           );
-          if (h > 0) vpIframe.style.height = h + "px";
+          if (h > 0) vpIframe.style.height = Math.max(MIN_IFRAME_HEIGHT, h) + "px";
         } catch {
           // ignore cross-origin
         }

@@ -99,6 +99,10 @@ export function isCtaChild(node, semantics) {
 export function shouldUseGrid(node, semantics) {
   if (shouldRenderAsLinkOrButton(node)) return false;
 
+  const kids = node.children || [];
+  // Figma Layout guide "Grid Npx" wins over auto layout: designer explicitly chose grid.
+  if (node?.__layoutHints?.layoutGuideGrid && kids.length >= 2) return true;
+
   const al = node.auto || {};
   const hasExplicitAutoLayout =
     !!(al && typeof al === "object" && al.layout && String(al.layout).toUpperCase() !== "NONE");
@@ -124,8 +128,6 @@ export function shouldUseGrid(node, semantics) {
 
   // NEVER grid for vertical stacks (per spec)
   if (inferredLayout === "VERTICAL") return false;
-
-  const kids = node.children || [];
 
   // ✅ CTA Guard: if this is mostly CTA children, force flex (never grid)
   if (kids.length >= 2) {
@@ -181,21 +183,108 @@ export function shouldUseGrid(node, semantics) {
 }
 
 
+/**
+ * Get layout width for a node (bb.w or w).
+ */
+function nodeWidth(n) {
+  const w = n?.bb?.w ?? n?.w;
+  return typeof w === "number" && w > 0 && Number.isFinite(w) ? w : 0;
+}
+
+/**
+ * Round ratio to a "nice" fr pair for 2 columns. Returns e.g. "3fr_7fr" or null for equal.
+ * Only returns a template when proportions are clearly asymmetric (not near 50/50).
+ */
+function twoColFrTemplate(w1, w2) {
+  const total = w1 + w2;
+  if (total <= 0) return null;
+  const r1 = w1 / total;
+  const r2 = w2 / total;
+  const nearHalf = Math.abs(r1 - 0.5) < 0.08;
+  if (nearHalf) return null;
+
+  // Map smaller ratio to nice fr pairs: 0.2->1:4, 0.25->1:3, 0.3->3:7, 0.33->1:2, 0.4->2:3
+  const pairs = [
+    [0.2, 1, 4],
+    [0.25, 1, 3],
+    [0.3, 3, 7],
+    [0.33, 1, 2],
+    [0.4, 2, 3],
+  ];
+  const smaller = Math.min(r1, r2);
+  let best = null;
+  let bestDiff = 1;
+  for (const [ratio, a, b] of pairs) {
+    const d = Math.abs(smaller - ratio);
+    if (d < bestDiff) {
+      bestDiff = d;
+      best = smaller === r1 ? [a, b] : [b, a];
+    }
+  }
+  if (!best) return null;
+  return `${best[0]}fr_${best[1]}fr`;
+}
+
+/**
+ * Three-column proportional template. Returns e.g. "1fr_1fr_2fr" or null.
+ */
+function threeColFrTemplate(ws) {
+  const total = ws[0] + ws[1] + ws[2];
+  if (total <= 0) return null;
+  const r = ws.map((w) => w / total);
+  const minR = Math.min(...r);
+  const maxR = Math.max(...r);
+  if (maxR - minR < 0.15) return null; // near equal
+  // Approximate as integer fr (sum to 10 or 12 for simplicity)
+  const fr = r.map((x) => Math.max(1, Math.round(x * 10)));
+  const sum = fr.reduce((a, b) => a + b, 0);
+  if (sum > 12) {
+    const g = (a, b) => (b ? g(b, a % b) : a);
+    const gcd = fr.reduce((a, n) => g(a, n), fr[0]);
+    return fr.map((n) => n / gcd).join("fr_") + "fr";
+  }
+  return fr.join("fr_") + "fr";
+}
+
+/**
+ * Returns either a number (equal columns: 2, 3, 4) or a template string for arbitrary grid-cols (e.g. "[3fr_7fr]").
+ */
 export function gridColsFor(node) {
   const kids = node.children || [];
   const hints = nameHints(node);
   if (hints.colsHint) return Math.max(1, Math.min(6, hints.colsHint));
   const count = kids.length;
-  if (count === 2) return 2;
-  if (count === 3) return 3;
+  if (count === 2) {
+    const w1 = nodeWidth(kids[0]);
+    const w2 = nodeWidth(kids[1]);
+    if (w1 > 0 && w2 > 0) {
+      const template = twoColFrTemplate(w1, w2);
+      if (template) return `[${template}]`;
+    }
+    return 2;
+  }
+  if (count === 3) {
+    const ws = kids.map((k) => nodeWidth(k));
+    if (ws.every((w) => w > 0)) {
+      const template = threeColFrTemplate(ws);
+      if (template) return `[${template}]`;
+    }
+    return 3;
+  }
   if (count >= 6) return 4;
   if (count >= 4) return 3;
   return 2;
 }
 
-export function gridColsResponsive(maxCols) {
+export function gridColsResponsive(maxColsOrTemplate) {
   const out = ["grid", "grid-cols-1"];
-  if (maxCols >= 2) out.push(`md:grid-cols-${maxCols}`);
+  if (maxColsOrTemplate == null) return out.join(" ");
+  if (typeof maxColsOrTemplate === "string") {
+    // Arbitrary template e.g. "[3fr_7fr]"
+    out.push(`md:grid-cols-${maxColsOrTemplate}`);
+  } else if (Number(maxColsOrTemplate) >= 2) {
+    out.push(`md:grid-cols-${maxColsOrTemplate}`);
+  }
   return out.join(" ");
 }
 

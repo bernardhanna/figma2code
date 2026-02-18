@@ -1,0 +1,852 @@
+{
+  "iteration": 1,
+  "createdAt": "2026-02-18T09:52:18.661Z",
+  "inputHash": "0e3e12427bbff167bcdcaacd6d118887f084afbe00621b3423fd165fefc38912",
+  "htmlHash": "9c1e53393b5e38b43641772849e0631e27932790b6344f98706baa51d0e31b08",
+  "proposedPatches": [
+    {
+      "nodeId": "I418:8132;105:1751",
+      "selector": "[data-node-id=\"I418:8132;105:1751\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.3125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;105:1765",
+      "selector": "[data-node-id=\"I418:8132;105:1765\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.8125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:381",
+      "selector": "[data-node-id=\"I418:8132;84:381\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:382",
+      "selector": "[data-node-id=\"I418:8132;84:382\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:383",
+      "selector": "[data-node-id=\"I418:8132;84:383\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:643",
+      "selector": "[data-node-id=\"I418:8132;84:643\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:654",
+      "selector": "[data-node-id=\"I418:8132;84:654\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:671",
+      "selector": "[data-node-id=\"I418:8132;84:671\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:672",
+      "selector": "[data-node-id=\"I418:8132;84:672\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "acceptedByGate": [
+    {
+      "nodeId": "I418:8132;105:1751",
+      "selector": "[data-node-id=\"I418:8132;105:1751\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.3125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;105:1765",
+      "selector": "[data-node-id=\"I418:8132;105:1765\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.8125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:381",
+      "selector": "[data-node-id=\"I418:8132;84:381\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:382",
+      "selector": "[data-node-id=\"I418:8132;84:382\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:383",
+      "selector": "[data-node-id=\"I418:8132;84:383\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:643",
+      "selector": "[data-node-id=\"I418:8132;84:643\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:654",
+      "selector": "[data-node-id=\"I418:8132;84:654\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:671",
+      "selector": "[data-node-id=\"I418:8132;84:671\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:672",
+      "selector": "[data-node-id=\"I418:8132;84:672\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedByGate": [],
+  "acceptedPatches": [
+    {
+      "nodeId": "I418:8132;105:1751",
+      "selector": "[data-node-id=\"I418:8132;105:1751\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.3125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;105:1765",
+      "selector": "[data-node-id=\"I418:8132;105:1765\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.8125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:381",
+      "selector": "[data-node-id=\"I418:8132;84:381\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:382",
+      "selector": "[data-node-id=\"I418:8132;84:382\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:383",
+      "selector": "[data-node-id=\"I418:8132;84:383\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:643",
+      "selector": "[data-node-id=\"I418:8132;84:643\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:654",
+      "selector": "[data-node-id=\"I418:8132;84:654\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:671",
+      "selector": "[data-node-id=\"I418:8132;84:671\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I418:8132;84:672",
+      "selector": "[data-node-id=\"I418:8132;84:672\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[20rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedPatches": [],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9954492291334397,
+            "source": "visual-diff",
+            "diffPixels": 187244,
+            "totalPixels": 188100,
+            "at": "2026-02-18T09:48:37.121Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 10
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9954492291334397,
+            "source": "visual-diff",
+            "diffPixels": 187244,
+            "totalPixels": 188100,
+            "at": "2026-02-18T09:48:36.960Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 10
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9954492291334397,
+            "source": "visual-diff",
+            "diffPixels": 187244,
+            "totalPixels": 188100,
+            "at": "2026-02-18T09:48:37.189Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 10
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I418:8132;105:1751",
+        "selector": "[data-node-id=\"I418:8132;105:1751\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;105:1765",
+        "selector": "[data-node-id=\"I418:8132;105:1765\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:381",
+        "selector": "[data-node-id=\"I418:8132;84:381\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:382",
+        "selector": "[data-node-id=\"I418:8132;84:382\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:383",
+        "selector": "[data-node-id=\"I418:8132;84:383\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:643",
+        "selector": "[data-node-id=\"I418:8132;84:643\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:654",
+        "selector": "[data-node-id=\"I418:8132;84:654\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:671",
+        "selector": "[data-node-id=\"I418:8132;84:671\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I418:8132;84:672",
+        "selector": "[data-node-id=\"I418:8132;84:672\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@32",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9954492291334397,
+            "source": "visual-diff",
+            "diffPixels": 187244,
+            "totalPixels": 188100,
+            "at": "2026-02-18T09:52:08.632Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9954492291334397,
+            "source": "visual-diff",
+            "diffPixels": 187244,
+            "totalPixels": 188100,
+            "at": "2026-02-18T09:52:13.508Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9954492291334397,
+            "source": "visual-diff",
+            "diffPixels": 187244,
+            "totalPixels": 188100,
+            "at": "2026-02-18T09:52:18.649Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test1911/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test1911/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "div@32",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 10,
+    "selectedOffenders": 10,
+    "generated": 9,
+    "accepted": 9,
+    "rejected": 0,
+    "provider": "rules",
+    "gateAccepted": true,
+    "strategyStats": [
+      {
+        "name": "width-dedupe",
+        "attempted": 10,
+        "candidateOps": 0
+      },
+      {
+        "name": "width-dedupe-smart",
+        "attempted": 10,
+        "candidateOps": 9
+      }
+    ],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0
+    }
+  }
+}

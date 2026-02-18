@@ -1,0 +1,75 @@
+{
+  "slug": "sanctuary-runners-selected",
+  "url": "http://127.0.0.1:5173/preview/sanctuary-runners-selected?ov=0&vpw=768",
+  "viewport": {
+    "width": 768,
+    "height": 900
+  },
+  "screenshot": {
+    "mode": "element",
+    "selector": "#cmp_root",
+    "box": {
+      "x": 13,
+      "y": 118,
+      "width": 742,
+      "height": 960
+    },
+    "minHeight": 200
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-selected/figma.desktop.png",
+    "width": 1024,
+    "height": 506,
+    "src": "/fixtures.out/sanctuary-runners-selected/figma.mobile.png",
+    "mode": "mobile"
+  },
+  "render": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-selected/render.mobile.png",
+    "width": 742,
+    "height": 960
+  },
+  "compared": {
+    "width": 730,
+    "height": 506
+  },
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03,
+    "alignWindow": 12,
+    "alignStep": 2
+  },
+  "alignment": {
+    "dx": -12,
+    "dy": -13
+  },
+  "bestDx": -12,
+  "bestDy": -13,
+  "alignmentSearched": true,
+  "searchRadiusPx": 12,
+  "alignmentDownscale": 0.5,
+  "alignmentDiffRatio": 0.6772537765986247,
+  "diffPixels": 249822,
+  "totalPixels": 369380,
+  "diffRatio": 0.6763279008067573,
+  "layoutDiffPixels": 30291,
+  "layoutDiffRatio": 0.6684984110169492,
+  "layoutDownscale": 0.35,
+  "layoutBlurRadius": 0,
+  "layoutScore": {
+    "conflictingWidthCount": 0
+  },
+  "failureMode": "offsetDominated",
+  "failureSignals": {
+    "absBestDx": 12,
+    "absBestDy": 13,
+    "diffRatio": 0.6763279008067573,
+    "layoutDiffRatio": 0.6684984110169492,
+    "conflictingWidthCount": 0,
+    "overflowXCount": 0,
+    "wrongLayoutModel": false
+  },
+  "pass": false,
+  "at": "2026-02-18T12:27:43.040Z",
+  "mode": "mobile"
+}

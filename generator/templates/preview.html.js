@@ -877,6 +877,17 @@ ${css}
 
 <body class="antialiased bg-white" data-preview-slug="${escapeAttr(slug)}">
   <div id="refine_toast" style="position:fixed;right:16px;bottom:16px;z-index:10040;max-width:420px;display:none;padding:10px 12px;border-radius:10px;background:rgba(15,23,42,.92);color:#fff;font-size:12px;line-height:1.4;box-shadow:0 8px 24px rgba(0,0,0,.25);"></div>
+  <div id="visual_qa_modal_backdrop" style="display:none;position:fixed;inset:0;z-index:10050;background:rgba(0,0,0,.4);align-items:center;justify-content:center;" aria-hidden="true">
+    <div style="background:#fff;border-radius:12px;padding:24px;max-width:380px;box-shadow:0 20px 50px rgba(0,0,0,.2);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:24px;height:24px;border:2px solid rgba(15,23,42,.2);border-top-color:#0f172a;border-radius:50%;animation:visual_qa_spin .8s linear infinite;"></div>
+        <strong style="font-size:15px;">Running Visual QA</strong>
+      </div>
+      <p style="margin:0;font-size:13px;color:#475569;line-height:1.5;">Comparing preview to design and applying class-only patches. This may take 1–2 minutes.</p>
+      <p style="margin:8px 0 0;font-size:12px;color:#94a3b8;">Check the server terminal for progress.</p>
+    </div>
+  </div>
+  <style>@keyframes visual_qa_spin{to{transform:rotate(360deg);}}</style>
   <div class="overlay-toolbar" id="toolbar_root">
     <div class="max-w-[1400px] mx-auto px-4 py-3 flex flex-wrap items-center gap-3">
       <div class="vpbar">
@@ -925,6 +936,9 @@ ${css}
         `
           : ``
       }
+        <button id="visual_qa_btn" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50 border-slate-300" type="button" title="Run Visual QA + Auto-Fix loop (compare vs design, apply class-only patches)">
+          Run Visual QA
+        </button>
       </div>
     </div>
   </div>
@@ -3577,6 +3591,67 @@ ${css}
   `
       : ""
   }
+
+  <script>
+    (function(){
+      const visualQaBtn = document.getElementById('visual_qa_btn');
+      const toast = document.getElementById('refine_toast');
+      const modalBackdrop = document.getElementById('visual_qa_modal_backdrop');
+      if (!visualQaBtn) return;
+      function getSlug() {
+        return String(window.__CURRENT_PREVIEW_SLUG__ || (document.body && document.body.getAttribute("data-preview-slug")) || "").trim();
+      }
+      function showToast(msg, isError) {
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.style.display = "block";
+        toast.style.background = isError ? "rgba(180,0,0,.92)" : "rgba(15,23,42,.92)";
+        setTimeout(function(){ toast.style.display = "none"; }, 8000);
+      }
+      function showModal(show) {
+        if (!modalBackdrop) return;
+        modalBackdrop.style.display = show ? "flex" : "none";
+        modalBackdrop.setAttribute("aria-hidden", show ? "false" : "true");
+      }
+      visualQaBtn.addEventListener('click', async function() {
+        const slug = getSlug();
+        if (!slug) {
+          showToast("No preview slug.", true);
+          return;
+        }
+        visualQaBtn.disabled = true;
+        visualQaBtn.textContent = "Running…";
+        showModal(true);
+        try {
+          const r = await fetch("/api/visual-qa/" + encodeURIComponent(slug), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ passDiffRatio: 0.02, maxIterations: 8, patchBudget: 20 }),
+          });
+          const out = await r.json().catch(function() { return {}; });
+          showModal(false);
+          if (!r.ok) {
+            showToast(out.error || "Visual QA failed (" + r.status + ")", true);
+            return;
+          }
+          const patchCount = out.totalPatchCount || 0;
+          const msg = out.ok
+            ? "Visual QA passed. Patches: " + patchCount + "."
+            : "Visual QA stopped: " + (out.stoppedReason || "done") + ". Patches applied: " + patchCount + ".";
+          showToast(msg, false);
+          if (patchCount > 0 && typeof window.reloadCurrentPreview === "function") {
+            window.reloadCurrentPreview({ preserveOverlayState: true }).catch(function() {});
+          }
+        } catch (e) {
+          showModal(false);
+          showToast((e && e.message) ? e.message : "Visual QA request failed", true);
+        } finally {
+          visualQaBtn.disabled = false;
+          visualQaBtn.textContent = "Run Visual QA";
+        }
+      });
+    })();
+  </script>
 
   <script>
     (function(){

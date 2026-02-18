@@ -42,6 +42,7 @@ import {
 } from "./compareMetrics.js";
 
 import { computeElementDiff } from "../auto/elementDiff.js";
+import { runVisualQALoop } from "../qa/index.js";
 
 function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
@@ -477,6 +478,46 @@ function snapshotCompareArtifacts(outDir, publicSlug, iter, phase, buckets) {
 }
 
 export function registerVisualDiffAndAutofixRoutes(app, { port }) {
+  // Visual QA + Auto-Fix loop (optional: qaMode=1 or refineMode=visual)
+  app.post("/api/visual-qa/:slug", async (req, res) => {
+    const slug = String(req.params.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    console.log("[visual-qa] Started for slug:", slug);
+    try {
+      const passDiffRatio = clampPassDiffRatio(req.body?.passDiffRatio, 0.02);
+      const maxIterations = Math.max(1, Math.min(8, Number(req.body?.maxIterations ?? 8)));
+      const patchBudget = Math.max(1, Math.min(30, Number(req.body?.patchBudget ?? 20)));
+      const fetchCompare = async (s) => {
+        const { response, data } = await fetchJsonInternal(req, port, `/api/compare/${encodeURIComponent(s)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            multi: true,
+            viewports: "all",
+            passDiffRatio,
+            screenshot: { mode: "element", selector: "#cmp_root", minHeight: 50 },
+            waitMs: 200,
+          }),
+        });
+        return { ok: Boolean(response?.ok && data?.ok), error: data?.error };
+      };
+      const result = await runVisualQALoop({
+        slug,
+        port,
+        serverUrl: selfBaseUrl(req, port),
+        fetchCompare,
+        passDiffRatio,
+        maxIterations,
+        patchBudget,
+      });
+      console.log("[visual-qa] Done for slug:", slug, "ok:", result.ok, "stoppedReason:", result.stoppedReason, "iterations:", result.iterations, "patches:", result.totalPatchCount);
+      return res.json(result);
+    } catch (e) {
+      console.log("[visual-qa] Error for slug:", slug, String(e?.message || e));
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
   app.get("/api/refine-status/:jobId", (req, res) => {
     const jobId = String(req.params.jobId || "").trim();
     if (!jobId) return res.status(400).json({ ok: false, error: "Missing jobId" });

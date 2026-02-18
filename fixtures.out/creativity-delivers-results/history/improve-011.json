@@ -1,0 +1,344 @@
+{
+  "iteration": 11,
+  "createdAt": "2026-02-18T11:48:33.214Z",
+  "inputHash": "50d7e0a0f2d8046c0078fa8f84635700a1e7043f6cdb6a44c91f231e6c160602",
+  "htmlHash": "dade9e26fb7208ddd165175e1d161314bd6c3c03dcdfd37b10f7817632e71785",
+  "proposedPatches": [],
+  "acceptedByGate": [],
+  "rejectedByGate": [],
+  "acceptedPatches": [],
+  "rejectedPatches": [],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.04588510354041416,
+            "source": "visual-diff",
+            "diffPixels": 6869,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:47:57.901Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.04588510354041416,
+            "source": "visual-diff",
+            "diffPixels": 6869,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:48:04.039Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.04588510354041416,
+            "source": "visual-diff",
+            "diffPixels": 6869,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:48:09.181Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "div@32",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.04588510354041416,
+            "source": "visual-diff",
+            "diffPixels": 6869,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:47:57.901Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.04588510354041416,
+            "source": "visual-diff",
+            "diffPixels": 6869,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:48:04.039Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.04588510354041416,
+            "source": "visual-diff",
+            "diffPixels": 6869,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:48:09.181Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/creativity-delivers-results/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "div@32",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 1,
+    "selectedOffenders": 1,
+    "generated": 0,
+    "accepted": 0,
+    "rejected": 0,
+    "provider": "rules",
+    "gateAccepted": true,
+    "strategyStats": [],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0
+    },
+    "zeroCandidatesReason": "no strategies matched offender kinds"
+  }
+}

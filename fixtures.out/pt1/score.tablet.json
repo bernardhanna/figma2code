@@ -1,0 +1,30 @@
+{
+  "slug": "pt1",
+  "mode": "tablet",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1254,
+    "height": 150
+  },
+  "diffPixels": 187344,
+  "totalPixels": 188100,
+  "diffRatio": 0.9959808612440192,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/pt1/figma.tablet.png",
+    "width": 1280,
+    "height": 703
+  },
+  "at": "2026-02-18T12:15:49.007Z"
+}

@@ -1,7 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { childSizing, resolveAxisIntents, sizeClassForLeaf, widthTokensForNode } from "../autoLayoutify/sizing.js";
+import {
+  childSizing,
+  paddings,
+  resolveAxisIntents,
+  sizeClassForLeaf,
+  widthTokensForNode,
+} from "../autoLayoutify/sizing.js";
 
 test("horizontal fixed-width child uses mobile-first responsive width tokens", () => {
   const node = {
@@ -78,4 +84,26 @@ test("resolveAxisIntents uses parent axis to derive width/height intents", () =>
   assert.equal(inRow.heightIntent, "HUG");
   assert.equal(inCol.widthIntent, "HUG");
   assert.equal(inCol.heightIntent, "FILL");
+});
+
+test("large padding emits mobile cap and md: full value", () => {
+  const al = { padT: 0, padR: 208, padB: 0, padL: 208 };
+  const cls = paddings(al);
+  assert.match(cls, /\bpr-20\b/);
+  assert.match(cls, /\bmd:pr-52\b/);
+  assert.match(cls, /\bpl-20\b/);
+  assert.match(cls, /\bmd:pl-52\b/);
+});
+
+test("vertical fixed-width content gets responsive width (full on mobile)", () => {
+  const node = {
+    id: "text-frame",
+    name: "Text block",
+    w: 344,
+    size: { primary: "FIXED" },
+  };
+  const tokens = widthTokensForNode(node, "VERTICAL");
+  assert.ok(tokens.includes("w-full"));
+  assert.ok(tokens.includes("md:w-[21.5rem]"));
+  assert.ok(tokens.includes("max-w-full"));
 });

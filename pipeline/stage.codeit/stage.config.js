@@ -41,6 +41,7 @@ module.exports = {
     { id: "layout/section/enforceMobileVerticalPadding", path: "./contracts/layout/section/enforceMobileVerticalPadding.js", options: {} },
     { id: "layout/text/nowrapGuard", path: "./contracts/layout/text/nowrapGuard.js", options: {} },
     { id: "layout/text/shrinkGuard", path: "./contracts/layout/text/shrinkGuard.js", options: {} },
+    { id: "layout/cards/normalizeMetricCards", path: "./contracts/layout/cards/normalizeMetricCards.js", options: {} },
     { id: "layout/align/centerCardContent", path: "./contracts/layout/align/centerCardContent.js", options: {} },
     { id: "layout/grid/upgradeToGridForMatrices", path: "./contracts/layout/grid/upgradeToGridForMatrices.js", options: {} },
     { id: "layout/layoutModel/inferGridFromRepeatingCards", path: "./contracts/layout/layoutModel/inferGridFromRepeatingCards.js", options: {} },

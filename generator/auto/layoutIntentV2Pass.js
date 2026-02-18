@@ -240,6 +240,12 @@ function annotateNode(node) {
       regularity: 0,
     }),
   };
+  // Figma Layout guide "Grid Npx": prefer CSS grid and use N for gap
+  const layoutGuide = node.layoutGuide;
+  if (layoutGuide && layoutGuide.pattern === "GRID" && typeof layoutGuide.sectionSize === "number" && layoutGuide.sectionSize > 0) {
+    node.__layoutHints.layoutGuideGrid = true;
+    node.__layoutHints.layoutGuideGapPx = layoutGuide.sectionSize;
+  }
 }
 
 function walk(node, seen = new Set()) {

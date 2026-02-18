@@ -25,6 +25,21 @@ function isMediaLike(node) {
   );
 }
 
+function isButtonLike(node) {
+  const tag = String(node?.tag || "").toLowerCase();
+  const name = String(node?.name || "").toLowerCase();
+  const key = String(node?.key || "").toLowerCase();
+  if (tag === "button") return true;
+  return name.includes("button") || name.includes("cta") || key.includes("button") || key.includes("cta");
+}
+
+function shouldPreferFixedForFillInRow(node) {
+  const w = num(node?.size?.w) ? node.size.w : num(node?.w) ? node.w : null;
+  if (!pos(w)) return false;
+  if (w > 280) return false;
+  return isButtonLike(node);
+}
+
 function shouldUseResponsiveFixedWidth(node, widthPx) {
   const w = Number(widthPx);
   if (!Number.isFinite(w) || w <= 0) return false;
@@ -81,7 +96,13 @@ export function widthTokensForNode(node, parentLayout, { forText = false } = {})
   if (!pos(w)) return [];
 
   const intent = normalizeSizingIntent(s.primary || node?.auto?.primarySizing);
-  if (forText) return [`w-[${rem(w)}]`, "max-w-full"];
+  // Text/content blocks: full width on mobile, fixed width from md up so small screens aren't over-constrained.
+  if (forText) {
+    if (shouldUseResponsiveFixedWidth(node, w)) {
+      return ["w-full", `md:w-[${rem(w)}]`, "max-w-full"];
+    }
+    return [`w-[${rem(w)}]`, "max-w-full"];
+  }
 
   // In horizontal and grid contexts we stack/reflow on mobile; keep fixed widths at md+.
   if (
@@ -89,6 +110,11 @@ export function widthTokensForNode(node, parentLayout, { forText = false } = {})
     shouldUseResponsiveFixedWidth(node, w) &&
     intent !== "FILL"
   ) {
+    return ["w-full", `md:w-[${rem(w)}]`, "max-w-full", "shrink-0"];
+  }
+
+  // Vertical/other: same responsive behavior so fixed-width content isn't narrow on small viewports.
+  if (shouldUseResponsiveFixedWidth(node, w) && intent !== "FILL") {
     return ["w-full", `md:w-[${rem(w)}]`, "max-w-full", "shrink-0"];
   }
 
@@ -116,10 +142,11 @@ export function sizeClassForLeaf(node, parentLayout, isRoot, isText) {
   const h = num(s.h ?? node.h) ? (s.h ?? node.h) : null;
   const { widthIntent, heightIntent } = resolveAxisIntents(node, parentLayout);
   if (parentLayout === "HORIZONTAL") {
+    const forceFixed = widthIntent === "FILL" && shouldPreferFixedForFillInRow(node);
     const widthTokens =
-      widthIntent === "FILL"
+      widthIntent === "FILL" && !forceFixed
         ? ["grow", "basis-0", "min-w-0"]
-        : widthIntent === "FIXED"
+        : widthIntent === "FIXED" || forceFixed
           ? widthTokensForNode(node, "HORIZONTAL")
           : [];
     if (widthTokens.length) return cls(...widthTokens, heightIntent === "FIXED" && pos(h) ? `h-[${rem(h)}]` : "");
@@ -168,7 +195,9 @@ export function childSizing(node, parentLayout) {
   }
 
   if (parentLayout === "HORIZONTAL") {
-    if (widthIntent === "FILL") out.push("grow", "basis-0", "min-w-0");
+    const forceFixed = widthIntent === "FILL" && shouldPreferFixedForFillInRow(node);
+    if (widthIntent === "FILL" && !forceFixed) out.push("grow", "basis-0", "min-w-0");
+    else if (forceFixed) out.push(...widthTokensForNode(node, "HORIZONTAL"));
     else if (widthIntent === "FIXED" || (!widthIntent && (num(s.w) || num(node.w)))) {
       out.push(...widthTokensForNode(node, "HORIZONTAL"));
     }
@@ -188,6 +217,28 @@ export function alignSelf(node) {
   return SELF[a] || "";
 }
 
+/** Max padding (px) on small viewports; larger padding is applied only from md up. */
+const MOBILE_MAX_PADDING_PX = 80;
+
+function paddingClasses(prefix, px, opts = {}) {
+  const value = Number(px);
+  if (!Number.isFinite(value) || value <= 0) return [];
+  const { forcePxBracket } = opts;
+  const out = [];
+  if (value > MOBILE_MAX_PADDING_PX) {
+    out.push(spacingClass(prefix, MOBILE_MAX_PADDING_PX));
+    const desktopClass = spacingClass(prefix, px, forcePxBracket ? { forcePxBracket: true } : {});
+    if (desktopClass) out.push(`md:${desktopClass}`);
+    return out;
+  }
+  if (forcePxBracket) {
+    out.push(spacingClass(prefix, px, { forcePxBracket: true }));
+    return out;
+  }
+  out.push(spacingClass(prefix, px));
+  return out;
+}
+
 export function paddings(al, opts = {}) {
   const isHero = !!opts.isHero;
   const onWarning = typeof opts.onWarning === "function" ? opts.onWarning : null;
@@ -200,9 +251,17 @@ export function paddings(al, opts = {}) {
         `padding-clamp: non-hero padT=${Number(al.padT)}px exceeds ${MAX_NON_HERO_PADDING_PX}px, using px bracket`
       );
     }
-    out.push(spacingClass("pt", al.padT, forcePx ? { forcePxBracket: true } : {}));
+    out.push(
+      ...paddingClasses("pt", al.padT, {
+        forcePxBracket: forcePx,
+        onWarning,
+        maxNonHeroPx: MAX_NON_HERO_PADDING_PX,
+      })
+    );
   }
-  if (pos(al.padR)) out.push(spacingClass("pr", al.padR));
+  if (pos(al.padR)) {
+    out.push(...paddingClasses("pr", al.padR));
+  }
   if (pos(al.padB)) {
     const forcePx = !isHero && Number(al.padB) > MAX_NON_HERO_PADDING_PX;
     if (forcePx && onWarning) {
@@ -210,8 +269,16 @@ export function paddings(al, opts = {}) {
         `padding-clamp: non-hero padB=${Number(al.padB)}px exceeds ${MAX_NON_HERO_PADDING_PX}px, using px bracket`
       );
     }
-    out.push(spacingClass("pb", al.padB, forcePx ? { forcePxBracket: true } : {}));
+    out.push(
+      ...paddingClasses("pb", al.padB, {
+        forcePxBracket: forcePx,
+        onWarning,
+        maxNonHeroPx: MAX_NON_HERO_PADDING_PX,
+      })
+    );
   }
-  if (pos(al.padL)) out.push(spacingClass("pl", al.padL));
+  if (pos(al.padL)) {
+    out.push(...paddingClasses("pl", al.padL));
+  }
   return out.join(" ");
 }

@@ -124,6 +124,38 @@ test("gridCandidate drives grid inference for repeated card gallery", () => {
   assert.equal(shouldUseGrid(node, {}), true);
 });
 
+test("Figma Layout guide Grid 10px sets layoutGuideGrid and layoutGuideGapPx", () => {
+  const ast = {
+    tree: {
+      id: "root",
+      name: "Frame",
+      layoutGuide: { pattern: "GRID", sectionSize: 10 },
+      children: [
+        makeNode("a", 0, 0, 100, 50),
+        makeNode("b", 110, 0, 100, 50),
+      ],
+    },
+  };
+  layoutIntentV2Pass(ast);
+  const hints = ast.tree.__layoutHints || {};
+  assert.equal(Boolean(hints.layoutGuideGrid), true);
+  assert.equal(hints.layoutGuideGapPx, 10);
+});
+
+test("layoutGuideGrid drives grid when frame has Layout guide Grid", () => {
+  const node = {
+    id: "root",
+    name: "Section",
+    auto: {},
+    __layoutHints: { axis: "horizontal", layoutGuideGrid: true, layoutGuideGapPx: 10 },
+    children: [
+      makeNode("a", 0, 0, 200, 80),
+      makeNode("b", 210, 0, 200, 80),
+    ],
+  };
+  assert.equal(shouldUseGrid(node, {}), true);
+});
+
 test("explicit auto-layout never upgrades to grid heuristics", () => {
   const node = {
     id: "auto-row",

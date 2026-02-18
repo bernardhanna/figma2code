@@ -192,6 +192,9 @@ type NodeBase = {
   // Optional inline SVG payload used for vector-first export of boolean/vector-like nodes.
   svg?: { markup?: string; html?: string };
 
+  /** Layout guide from Figma (e.g. "Grid 10px"). When pattern is GRID, generator prefers CSS grid and uses sectionSize for gap. */
+  layoutGuide?: { pattern: "GRID"; sectionSize: number } | { pattern: "ROWS" | "COLUMNS"; gutterSize: number };
+
   children?: NodeBase[];
 };
 
@@ -379,6 +382,22 @@ function shouldRasterizeNode(node: SceneNode): boolean {
 function shouldForceVectorExport(node: SceneNode): boolean {
   const t = String(node?.type || "").toUpperCase();
   return t === "BOOLEAN_OPERATION";
+}
+
+/** Read Layout guide (e.g. "Grid 10px") from frame. Only FrameNode has layoutGrids. */
+function getLayoutGuide(n: SceneNode): NodeBase["layoutGuide"] | undefined {
+  const grids = (n as any).layoutGrids as ReadonlyArray<{ pattern: string; sectionSize?: number; gutterSize?: number }> | undefined;
+  if (!Array.isArray(grids) || grids.length === 0) return undefined;
+  const first = grids[0];
+  if (!first || typeof first.pattern !== "string") return undefined;
+  const pattern = String(first.pattern).toUpperCase();
+  if (pattern === "GRID" && typeof first.sectionSize === "number" && first.sectionSize > 0) {
+    return { pattern: "GRID", sectionSize: round(first.sectionSize) };
+  }
+  if ((pattern === "ROWS" || pattern === "COLUMNS") && typeof first.gutterSize === "number" && first.gutterSize >= 0) {
+    return { pattern: pattern as "ROWS" | "COLUMNS", gutterSize: round(first.gutterSize) };
+  }
+  return undefined;
 }
 
 function getAutoLayout(n: SceneNode): AutoLayout | undefined {
@@ -1202,6 +1221,7 @@ async function walkForState(
     exportSettings: getExportSettings(node),
 
     auto: getAutoLayout(node),
+    layoutGuide: getLayoutGuide(node),
     size: undefined,
     r: getRadii(node),
     cornerSmoothing: getCornerSmoothing(node),
@@ -1700,6 +1720,7 @@ async function walk(
     blur: getBlur(node),
     clipsContent: (node as any).clipsContent === true,
     actions: getActions(node),
+    layoutGuide: getLayoutGuide(node),
   };
 
   // NEW: if node has IMAGE fills, export the underlying bitmap(s) and attach fill.src

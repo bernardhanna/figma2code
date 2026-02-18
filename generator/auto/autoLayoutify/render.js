@@ -571,6 +571,7 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     Number.isFinite(Number(rawAuto.itemSpacing))
       ? Number(rawAuto.itemSpacing)
       : Number(node?.__layoutHints?.spacingPx || 0);
+  const layoutGuideGapPx = Number(node?.__layoutHints?.layoutGuideGapPx);
   const al = {
     ...rawAuto,
     layout: inferredLayout,
@@ -585,7 +586,6 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const nodeForLayout =
     children === node.children ? node : { ...node, children };
 
-  const gap = pos(al.itemSpacing) ? spacingClass("gap", al.itemSpacing) : "";
   const heroLike =
     /\bhero\b/i.test(String(node?.name || "")) ||
     /\bhero\b/i.test(String(node?.key || "")) ||
@@ -617,6 +617,10 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const isDecorativeBar =
     nameLower.includes("decorativebar") ||
     (nameLower.includes("decorative") && nameLower.includes("bar"));
+
+  // When frame has Layout guide "Grid Npx", use that for gap when rendering grid
+  const gapPx = useGrid && layoutGuideGapPx > 0 ? layoutGuideGapPx : (pos(al.itemSpacing) ? al.itemSpacing : 0);
+  const gap = gapPx > 0 ? spacingClass("gap", gapPx) : (pos(al.itemSpacing) ? spacingClass("gap", al.itemSpacing) : "");
 
   const layoutClasses = useGrid
     ? gridColsResponsive(gridColsFor(nodeForLayout))
