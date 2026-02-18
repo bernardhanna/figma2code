@@ -14,6 +14,7 @@ import { interactiveStatesPass } from "./auto/interactiveStatesPass.js";
 // If you have preventNestedInteractive in your codebase, import it here.
 // If not, pass null and the helper will simply skip it.
 import { preventNestedInteractive } from "./auto/preventNestedInteractive.js"; // adjust if your path differs
+import { learnedRulesPass } from "./auto/learnedRulesPass.js";
 
 import { previewHtml } from "./templates/preview.html.js";
 
@@ -28,6 +29,7 @@ import { initComponentLibrary } from "./componentLibrary/index.js";
 getConfig();
 
 const port = 5173;
+const host = String(process.env.HOST || "127.0.0.1").trim() || "127.0.0.1";
 
 const DEBUG_COMPONENT_LIB = String(process.env.COMPONENT_LIB_DEBUG || "").trim() === "1";
 
@@ -47,10 +49,13 @@ const deps = {
   semanticAccessiblePass,
   interactiveStatesPass,
   preventNestedInteractive: preventNestedInteractive || null,
+  learnedRulesPass: learnedRulesPass || null,
   previewHtml,
   renderOneFragment,
 };
 
 const app = createApp({ port, deps });
 
-app.listen(port, () => console.log(`Generator running: http://localhost:${port}`));
+app.listen(port, host, () =>
+  console.log(`Generator running: http://${host}:${port}`)
+);

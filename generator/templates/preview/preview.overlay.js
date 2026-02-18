@@ -2,6 +2,13 @@
 
 import { escapeHtml } from "./preview.util.js";
 
+function safeScriptString(value) {
+  return JSON.stringify(String(value ?? ""))
+    .replace(/<\//g, "<\\/")
+    .replace(/`/g, "\\`")
+    .replace(/\$/g, "\\$");
+}
+
 export function overlayBlock({ slug, overlaySrc }) {
   const safeSlug = String(slug || "");
   const safeOverlay = String(overlaySrc || "");
@@ -89,7 +96,7 @@ export function overlayBlock({ slug, overlaySrc }) {
 
       if (!cmp || !img) return;
 
-      const key = 'figmaOverlay:' + ${JSON.stringify(safeSlug)};
+      const key = 'figmaOverlay:' + ${safeScriptString(safeSlug)};
       const state = (() => {
         try { return JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch { return {}; }
       })();
@@ -167,7 +174,7 @@ export function overlayBlock({ slug, overlaySrc }) {
         linkDiff: document.getElementById('score_link_diff'),
       };
 
-      const slug = ${JSON.stringify(safeSlug)};
+      const slug = ${safeScriptString(safeSlug)};
 
       function pct(x){
         const n = Number(x);

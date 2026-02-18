@@ -244,6 +244,8 @@ function recoverCtaFromInstance(node) {
 
 function isFillImage(fill) {
   if (!fill || typeof fill !== "object") return false;
+  const kind = String(fill.kind || "").toLowerCase();
+  if (kind === "image") return true;
   const t = String(fill.type || fill.fillType || "").toUpperCase();
   return t === "IMAGE" || t === "IMAGE_FILL";
 }

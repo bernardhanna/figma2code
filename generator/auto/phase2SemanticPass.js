@@ -298,9 +298,82 @@ function isMostlyCoveringParent(node, parentNode) {
   return wr >= 0.75 && hr >= 0.75;
 }
 
-function looksLikeOverlayRect(node, parentNode) {
-  if (!node || node.type !== "RECTANGLE") return false;
+function nodeBox(node) {
+  if (!node) return null;
+  const bb = node.bb || node.bbox || null;
+  if (bb && Number.isFinite(bb.x) && Number.isFinite(bb.y) && Number.isFinite(bb.w) && Number.isFinite(bb.h) && bb.w > 0 && bb.h > 0) {
+    return { x: bb.x, y: bb.y, w: bb.w, h: bb.h };
+  }
+  const x = Number(node.x);
+  const y = Number(node.y);
+  const w = Number(node.w);
+  const h = Number(node.h);
+  if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
+    return { x, y, w, h };
+  }
+  return null;
+}
 
+function overlapMetrics(node, parentNode) {
+  const a = nodeBox(node);
+  const b = nodeBox(parentNode);
+  if (!a || !b) return { nodeRatio: 0, parentRatio: 0, overlap: 0 };
+
+  const ix = Math.max(a.x, b.x);
+  const iy = Math.max(a.y, b.y);
+  const ax = Math.min(a.x + a.w, b.x + b.w);
+  const ay = Math.min(a.y + a.h, b.y + b.h);
+  const iw = Math.max(0, ax - ix);
+  const ih = Math.max(0, ay - iy);
+  const overlap = iw * ih;
+  const nodeArea = a.w * a.h;
+  const parentArea = b.w * b.h;
+  return {
+    overlap,
+    nodeRatio: nodeArea > 0 ? overlap / nodeArea : 0,
+    parentRatio: parentArea > 0 ? overlap / parentArea : 0,
+  };
+}
+
+function hasTextDescendant(node, depth = 3) {
+  if (!node || depth < 0) return false;
+  if (node.text && String(node.text.raw || "").trim()) return true;
+  for (const c of node.children || []) {
+    if (hasTextDescendant(c, depth - 1)) return true;
+  }
+  return false;
+}
+
+function classifyOverlayCandidate(node, parentNode) {
+  if (!node || !parentNode) return { kind: null, metrics: { nodeRatio: 0, parentRatio: 0, overlap: 0 } };
+  const metrics = overlapMetrics(node, parentNode);
+  const highOverlap = metrics.nodeRatio >= 0.55 || metrics.parentRatio >= 0.25;
+  if (!highOverlap) return { kind: null, metrics };
+
+  const name = String(node.name || "").toLowerCase();
+  const bgName = /\b(overlay|gradient|scrim|shade|bg|background)\b/.test(name);
+  const contentName = /\b(badge|chip|label|tag|icon|cta|button)\b/.test(name);
+  const contentSignals =
+    contentName ||
+    !!node?.actions?.openUrl ||
+    node?.actions?.isClickable === true ||
+    hasTextDescendant(node);
+  const bgSignals =
+    bgName ||
+    hasGradientFill(node) ||
+    (node.opacity !== undefined && node.opacity < 1) ||
+    metrics.nodeRatio >= 0.75 ||
+    metrics.parentRatio >= 0.55;
+
+  if (contentSignals && metrics.parentRatio <= 0.5) return { kind: "content-like", metrics };
+  if (bgSignals && !contentSignals) return { kind: "background-like", metrics };
+  if (bgSignals) return { kind: "background-like", metrics };
+  return { kind: null, metrics };
+}
+
+function looksLikeOverlayRect(node, parentNode, classification) {
+  if (!node || node.type !== "RECTANGLE") return false;
+  if (classification?.kind !== "background-like") return false;
   const name = String(node.name || "").toLowerCase();
   const parentName = String(parentNode?.name || "").toLowerCase();
 
@@ -605,7 +678,9 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
   const anyBgCue =
     !!ast?.__bg?.enabled ||
     (Array.isArray(rootAst?.fills) &&
-      rootAst.fills.some((f) => f?.kind === "image" || f?.kind === "gradient")) ||
+      rootAst.fills.some(
+        (f) => f?.kind === "image" || f?.kind === "video" || f?.kind === "gradient"
+      )) ||
     htmlHasAnyBgImageStyle(tokens);
 
   if (sectionIdx >= 0 && anyBgCue) {
@@ -1035,8 +1110,9 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
     if (!node) continue;
 
     const parentNode = parentMap.get(nodeId);
+    const classification = classifyOverlayCandidate(node, parentNode);
 
-    if (looksLikeOverlayRect(node, parentNode)) {
+    if (looksLikeOverlayRect(node, parentNode, classification)) {
       const curClass = getAttr(tag.attrs, "class") || "";
       const cleaned = stripFlowSizingClasses(curClass);
 
@@ -1045,7 +1121,9 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
       setAttr(tag.attrs, "aria-hidden", "true");
 
       tokens[i] = { type: "tag", value: buildTag(tag.name, tag.attrs, "open") };
-      report.fixes.push(`Promoted RECTANGLE overlay to absolute layer (data-node=${nodeId}).`);
+      report.fixes.push(
+        `Promoted background-like RECTANGLE overlay to absolute layer (data-node=${nodeId}, overlap=${classification.metrics.nodeRatio.toFixed(2)}).`
+      );
 
       for (let j = i - 1; j >= 0; j--) {
         const tj = tokens[j];
@@ -1059,6 +1137,10 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
           break;
         }
       }
+    } else if (classification.kind === "content-like") {
+      report.warnings.push(
+        `Detected content-like overlay candidate; kept in flow to preserve interactions (data-node=${nodeId}).`
+      );
     }
   }
 

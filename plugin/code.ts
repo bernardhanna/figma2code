@@ -9,7 +9,10 @@
 // - NEW (CTA fix): INSTANCE nodes are rasterized, but we ALSO export their descendant TEXT runs
 //   as `__instanceText` so the generator can render button labels (instead of empty <button/>).
 
-figma.showUI(__html__, { width: 440, height: 420 });
+figma.showUI(__html__, { width: 440, height: 560 });
+
+/** Generator base URL (must match manifest networkAccess allowedDomains, e.g. localhost not 127.0.0.1) */
+const GENERATOR_BASE = "http://localhost:5173";
 
 /** ===== Exported AST types ===== */
 type SolidFill = { kind: "solid"; r: number; g: number; b: number; a: number };
@@ -37,7 +40,16 @@ type RadialGradient = {
   stops: { r: number; g: number; b: number; a: number; pos: number }[];
 };
 type NoneFill = { kind: "none" };
-type Fill = SolidFill | ImageFill | LinearGradient | RadialGradient | NoneFill;
+/** Video background: native VideoPaint (videoHash, no URL from API) or plugin data/component property (src, poster). */
+type VideoFill = {
+  kind: "video";
+  /** Set when fill comes from Figma VideoPaint; no API to get URL from hash, so generator uses placeholder. */
+  videoHash?: string;
+  scaleMode?: "FILL" | "FIT" | "TILE" | "CROP";
+  src?: string;
+  poster?: string;
+};
+type Fill = SolidFill | ImageFill | LinearGradient | RadialGradient | VideoFill | NoneFill;
 
 type AutoLayout = {
   layout: "NONE" | "HORIZONTAL" | "VERTICAL";
@@ -50,6 +62,10 @@ type AutoLayout = {
   counterAlign?: "MIN" | "CENTER" | "MAX" | "BASELINE";
   primarySizing?: "HUG" | "FIXED";
   counterSizing?: "HUG" | "FIXED";
+  layoutWrap?: "NO_WRAP" | "WRAP" | string;
+  wrap?: boolean;
+  counterAxisAlignContent?: string;
+  counterAxisSpacing?: number;
 };
 
 type Sizing = {
@@ -98,6 +114,21 @@ type TextPayload = {
 type ExportedImage = { src: string; w: number; h: number };
 
 type Actions = { openUrl?: string; isClickable?: boolean };
+type ConstraintsInfo = { horizontal: string; vertical: string };
+type ExportSettingInfo = {
+  format: string;
+  constraintType?: string;
+  constraintValue?: number;
+  suffix?: string;
+};
+type MaskExtraction = {
+  maskType?: string;
+  maskMode?: string;
+  maskKind?: "rect" | "vector" | "unknown";
+  appliesTo?: "siblings" | "children" | "none";
+  targetIds?: string[];
+  preferredRender?: "overflow-hidden" | "svg-mask" | "rasterize";
+};
 
 type BB = { x: number; y: number; w: number; h: number };
 
@@ -110,6 +141,13 @@ type NodeBase = {
 
   // Phase-1 / debug
   bb?: BB;
+  relX?: number;
+  relY?: number;
+  constraints?: ConstraintsInfo;
+  exportSettings?: ExportSettingInfo[];
+  isMask?: boolean;
+  maskedBy?: string;
+  mask?: MaskExtraction;
 
   auto?: AutoLayout;
   size?: Sizing;
@@ -117,6 +155,7 @@ type NodeBase = {
 
   stroke?: Stroke;
   r?: Radius;
+  cornerSmoothing?: number;
 
   shadows?: Shadow[];
   opacity?: number;
@@ -149,6 +188,9 @@ type NodeBase = {
     focus?: NodeBase;
     disabled?: NodeBase;
   };
+
+  // Optional inline SVG payload used for vector-first export of boolean/vector-like nodes.
+  svg?: { markup?: string; html?: string };
 
   children?: NodeBase[];
 };
@@ -273,6 +315,20 @@ function absBB(n: SceneNode): BB | undefined {
   }
 }
 
+function relPosFromParent(
+  node: SceneNode,
+  parent?: SceneNode
+): { relX?: number; relY?: number } {
+  if (!parent) return {};
+  const child = absBB(node);
+  const p = absBB(parent);
+  if (!child || !p) return {};
+  return {
+    relX: round(child.x - p.x),
+    relY: round(child.y - p.y),
+  };
+}
+
 function isNodeVisible(n: SceneNode): boolean {
   try {
     if ((n as any).visible === false) return false;
@@ -313,12 +369,16 @@ function shouldRasterizeNode(node: SceneNode): boolean {
   return (
     t === "INSTANCE" ||
     t === "VECTOR" ||
-    t === "BOOLEAN_OPERATION" ||
     t === "STAR" ||
     t === "LINE" ||
     t === "ELLIPSE" ||
     t === "POLYGON"
   );
+}
+
+function shouldForceVectorExport(node: SceneNode): boolean {
+  const t = String(node?.type || "").toUpperCase();
+  return t === "BOOLEAN_OPERATION";
 }
 
 function getAutoLayout(n: SceneNode): AutoLayout | undefined {
@@ -327,6 +387,30 @@ function getAutoLayout(n: SceneNode): AutoLayout | undefined {
   const anyN = n as any;
   const mode = anyN.layoutMode as "HORIZONTAL" | "VERTICAL" | "NONE";
   if (!mode) return { layout: "NONE" };
+  const layoutWrapRaw = anyN.layoutWrap as "NO_WRAP" | "WRAP" | undefined;
+  const layoutWrap =
+    typeof layoutWrapRaw === "string" && layoutWrapRaw.trim()
+      ? layoutWrapRaw
+      : undefined;
+  const wrap =
+    layoutWrap === "WRAP"
+      ? true
+      : layoutWrap === "NO_WRAP"
+        ? false
+        : undefined;
+  const counterAxisAlignContentRaw = anyN.counterAxisAlignContent as
+    | string
+    | undefined;
+  const counterAxisAlignContent =
+    typeof counterAxisAlignContentRaw === "string" &&
+    counterAxisAlignContentRaw.trim()
+      ? counterAxisAlignContentRaw
+      : undefined;
+  const counterAxisSpacingRaw = anyN.counterAxisSpacing;
+  const counterAxisSpacing =
+    typeof counterAxisSpacingRaw === "number"
+      ? counterAxisSpacingRaw
+      : undefined;
 
   return {
     layout: mode,
@@ -339,6 +423,10 @@ function getAutoLayout(n: SceneNode): AutoLayout | undefined {
     counterAlign: anyN.counterAxisAlignItems ?? "MIN",
     primarySizing: anyN.primaryAxisSizingMode === "AUTO" ? "HUG" : "FIXED",
     counterSizing: anyN.counterAxisSizingMode === "AUTO" ? "HUG" : "FIXED",
+    layoutWrap,
+    wrap,
+    counterAxisAlignContent,
+    counterAxisSpacing,
   };
 }
 
@@ -393,6 +481,29 @@ function getRadii(n: SceneNode): Radius | undefined {
     }
   } catch {}
   return undefined;
+}
+
+function getCornerSmoothing(n: SceneNode): number | undefined {
+  try {
+    const anyN = n as any;
+    const v = Number(anyN.cornerSmoothing);
+    if (!Number.isFinite(v)) return undefined;
+    return Math.max(0, Math.min(1, v));
+  } catch {
+    return undefined;
+  }
+}
+
+function hasRoundedCorners(r?: Radius): boolean {
+  if (!r) return false;
+  return [r.tl, r.tr, r.br, r.bl].some((v) => Number(v) > 0);
+}
+
+function requiresCornerSmoothingRaster(base: NodeBase): boolean {
+  const s = Number(base?.cornerSmoothing);
+  if (!Number.isFinite(s) || s <= 0.001) return false;
+  // Smoothing is only visually relevant when corners are rounded.
+  return hasRoundedCorners(base?.r);
 }
 
 function getShadows(n: SceneNode): Shadow[] | undefined {
@@ -549,44 +660,96 @@ function isSolidVisible(p: SolidPaint | undefined): boolean {
  * PATCH: export ALL visible paints, not just the last one.
  * This is critical for gradient + image background combos.
  * TEXT nodes return none (their fill is text color).
+ *
+ * Video fills:
+ * - Native Figma VideoPaint (type "VIDEO"): push { kind: "video", videoHash, scaleMode }.
+ *   Figma has no getVideoByHash(), so we cannot resolve a URL; generator emits data-bg-type="video"
+ *   with empty URL and codeit shows a placeholder.
+ * - Plugin data or component property: push { kind: "video", src, poster } when URLs are provided.
  */
+function getVideoFromNode(n: SceneNode): { src: string; poster: string } | null {
+  const anyN = n as any;
+  let src = "";
+  let poster = "";
+
+  if (typeof anyN.getPluginData === "function") {
+    const u = anyN.getPluginData("figma2wp:videoUrl") as string | undefined;
+    const p = anyN.getPluginData("figma2wp:posterUrl") as string | undefined;
+    if (typeof u === "string" && u.trim()) src = u.trim();
+    if (typeof p === "string" && p.trim()) poster = p.trim();
+  }
+
+  const compProps = anyN.componentProperties as Record<string, { value?: string; type?: string }> | undefined;
+  if (compProps && typeof compProps === "object") {
+    for (const key of Object.keys(compProps)) {
+      const name = String(key).split("#")[0].toLowerCase();
+      if (!/video|herovideo|backgroundvideo|videourl|poster/.test(name)) continue;
+      const val = compProps[key]?.value;
+      if (typeof val !== "string" || !val.trim()) continue;
+      if (/poster|posterurl|posterurl/i.test(name)) poster = val.trim();
+      else src = val.trim();
+    }
+  }
+
+  if (src || poster) return { src, poster };
+  return null;
+}
+
 function getFills(n: SceneNode): Fill[] {
   try {
     if (n.type === "TEXT") return [{ kind: "none" }];
 
     const anyN = n as any;
     const paints = (anyN.fills || []) as Paint[];
-    if (!Array.isArray(paints) || !paints.length) return [{ kind: "none" }];
-
-    const visible = paints.filter((pp) => (pp as any)?.visible !== false);
-    if (!visible.length) return [{ kind: "none" }];
-
+    const hasPaints = Array.isArray(paints) && paints.length > 0;
+    const visible = hasPaints ? paints.filter((pp: any) => pp?.visible !== false) : [];
     const out: Fill[] = [];
 
-    for (const p of visible) {
-      if (p.type === "SOLID") {
-        if (!isSolidVisible(p as SolidPaint)) continue;
-        out.push(solidFromPaint(p as SolidPaint));
-        continue;
+    if (visible.length > 0) {
+      for (const p of visible) {
+        if (p.type === "SOLID") {
+          if (!isSolidVisible(p as SolidPaint)) continue;
+          out.push(solidFromPaint(p as SolidPaint));
+          continue;
+        }
+
+        if (p.type === "IMAGE") {
+          const mode = (p as any).scaleMode as ImageFill["scaleMode"];
+          const imageHash = (p as any).imageHash as string | undefined;
+
+          out.push({
+            kind: "image",
+            scaleMode: mode,
+            imageHash: imageHash || undefined,
+          });
+
+          continue;
+        }
+
+        if (String((p as any).type || "").startsWith("GRADIENT")) {
+          const g = gradientFromPaint(p as GradientPaint);
+          if (g.kind !== "none") out.push(g);
+          continue;
+        }
+
+        if ((p as any).type === "VIDEO") {
+          const videoHash = (p as any).videoHash as string | undefined;
+          const scaleMode = (p as any).scaleMode as VideoFill["scaleMode"];
+          out.push({
+            kind: "video",
+            videoHash: videoHash || undefined,
+            scaleMode: scaleMode || "FILL",
+          });
+          continue;
+        }
       }
+    }
 
-      if (p.type === "IMAGE") {
-        const mode = (p as any).scaleMode as ImageFill["scaleMode"];
-        const imageHash = (p as any).imageHash as string | undefined;
-
-        out.push({
-          kind: "image",
-          scaleMode: mode,
-          imageHash: imageHash || undefined,
-        });
-
-        continue;
-      }
-
-      if (String((p as any).type || "").startsWith("GRADIENT")) {
-        const g = gradientFromPaint(p as GradientPaint);
-        if (g.kind !== "none") out.push(g);
-        continue;
+    const hasVideoFill = out.some((f) => f.kind === "video");
+    if (!hasVideoFill) {
+      const video = getVideoFromNode(n);
+      if (video) {
+        out.push({ kind: "video", src: video.src || undefined, poster: video.poster || undefined });
       }
     }
 
@@ -690,7 +853,7 @@ async function uploadBytesAsAsset(
   try {
     const b64 = figma.base64Encode(bytes);
 
-    const resp: any = await fetch("http://127.0.0.1:5173/api/upload", {
+    const resp: any = await fetch(`${GENERATOR_BASE}/api/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -748,7 +911,7 @@ async function exportPNG(n: SceneNode): Promise<ExportedImage | undefined> {
         .replace(/^_+|_+$/g, "") || "img";
 
     // PATCH: use any-typed fetch response to avoid TS headers typing issues
-    const resp: any = await fetch("http://127.0.0.1:5173/api/upload", {
+    const resp: any = await fetch(`${GENERATOR_BASE}/api/upload`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -767,6 +930,17 @@ async function exportPNG(n: SceneNode): Promise<ExportedImage | undefined> {
   }
 }
 
+async function exportSVGMarkup(n: SceneNode): Promise<string | undefined> {
+  try {
+    const bytes: Uint8Array = await (n as any).exportAsync({ format: "SVG" });
+    const svg = decodeUtf8(bytes).trim();
+    if (!svg || !/^<svg[\s>]/i.test(svg)) return undefined;
+    return svg;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Reactions → actions (OPEN_URL) */
 function getActions(n: SceneNode): Actions | undefined {
   try {
@@ -782,6 +956,131 @@ function getActions(n: SceneNode): Actions | undefined {
     return { isClickable: true };
   } catch {
     return;
+  }
+}
+
+function getConstraints(n: SceneNode): ConstraintsInfo | undefined {
+  try {
+    const anyN = n as any;
+    const c = anyN.constraints as
+      | { horizontal?: string; vertical?: string }
+      | undefined;
+    if (!c || typeof c !== "object") return undefined;
+    const horizontal = String(c.horizontal || "").trim();
+    const vertical = String(c.vertical || "").trim();
+    if (!horizontal || !vertical) return undefined;
+    return { horizontal, vertical };
+  } catch {
+    return undefined;
+  }
+}
+
+function getExportSettings(n: SceneNode): ExportSettingInfo[] | undefined {
+  try {
+    const anyN = n as any;
+    const list = Array.isArray(anyN.exportSettings) ? anyN.exportSettings : [];
+    const out: ExportSettingInfo[] = [];
+    for (const raw of list) {
+      if (!raw || typeof raw !== "object") continue;
+      const format = String(raw.format || "").trim();
+      if (!format) continue;
+      const constraint = raw.constraint && typeof raw.constraint === "object"
+        ? raw.constraint
+        : null;
+      const constraintType = constraint?.type
+        ? String(constraint.type).trim()
+        : "";
+      const valueNum = Number(constraint?.value);
+      const suffix = raw.suffix ? String(raw.suffix).trim() : "";
+      const entry: ExportSettingInfo = { format };
+      if (constraintType) entry.constraintType = constraintType;
+      if (Number.isFinite(valueNum)) entry.constraintValue = valueNum;
+      if (suffix) entry.suffix = suffix;
+      out.push(entry);
+    }
+    return out.length ? out : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function inferMaskKind(nodeType: string): "rect" | "vector" | "unknown" {
+  const t = String(nodeType || "").toUpperCase();
+  if (t === "RECTANGLE" || t === "FRAME") return "rect";
+  if (
+    t === "VECTOR" ||
+    t === "BOOLEAN_OPERATION" ||
+    t === "STAR" ||
+    t === "LINE" ||
+    t === "ELLIPSE" ||
+    t === "POLYGON"
+  ) {
+    return "vector";
+  }
+  return "unknown";
+}
+
+function getMaskExtraction(n: SceneNode): {
+  isMask?: boolean;
+  mask?: MaskExtraction;
+} {
+  try {
+    const anyN = n as any;
+    const isMask = anyN.isMask === true;
+    const maskTypeRaw = anyN.maskType as string | undefined;
+    const maskModeRaw = anyN.maskMode as string | undefined;
+    const maskType =
+      typeof maskTypeRaw === "string" && maskTypeRaw.trim()
+        ? maskTypeRaw
+        : undefined;
+    const maskMode =
+      typeof maskModeRaw === "string" && maskModeRaw.trim()
+        ? maskModeRaw
+        : undefined;
+
+    if (!isMask && !maskType && !maskMode) return {};
+    const maskKind = inferMaskKind(String((n as any)?.type || ""));
+    const preferredRender =
+      maskKind === "rect"
+        ? "overflow-hidden"
+        : maskKind === "vector"
+          ? "svg-mask"
+          : "rasterize";
+    const maskPayload: MaskExtraction = {
+      maskKind,
+      preferredRender,
+    };
+    if (maskType) maskPayload.maskType = maskType;
+    if (maskMode) maskPayload.maskMode = maskMode;
+    return {
+      isMask,
+      mask: maskPayload,
+    };
+  } catch {
+    return {};
+  }
+}
+
+function applyMaskRelationships(children: NodeBase[]): void {
+  if (!Array.isArray(children) || children.length < 2) return;
+  for (let i = 0; i < children.length; i += 1) {
+    const source = children[i];
+    if (!source || source.isMask !== true) continue;
+
+    const targetIds = children
+      .slice(i + 1)
+      .map((x) => x?.id)
+      .filter((id): id is string => typeof id === "string" && !!id);
+
+    if (!source.mask) source.mask = {};
+    source.mask.appliesTo = targetIds.length ? "siblings" : "none";
+    source.mask.targetIds = targetIds;
+
+    for (let j = i + 1; j < children.length; j += 1) {
+      const target = children[j];
+      if (!target || !target.id) continue;
+      if (!target.maskedBy) target.maskedBy = source.id;
+    }
   }
 }
 
@@ -878,11 +1177,16 @@ function isInteractiveLooking(node: SceneNode, actions?: Actions): boolean {
  * - No PNG export (keeps payload small)
  * - Traverses INSTANCE internals so we can diff backgrounds/text/etc when available
  */
-async function walkForState(node: SceneNode): Promise<NodeBase | null> {
+async function walkForState(
+  node: SceneNode,
+  parent?: SceneNode
+): Promise<NodeBase | null> {
   if (!isNodeVisible(node)) return null;
 
   const { w, h } = sizeOf(node);
 
+  const rel = relPosFromParent(node, parent);
+  const maskMeta = getMaskExtraction(node);
   const base: NodeBase = {
     id: node.id,
     name: node.name,
@@ -890,10 +1194,17 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
     w: round(w),
     h: round(h),
     bb: absBB(node),
+    relX: rel.relX,
+    relY: rel.relY,
+    constraints: getConstraints(node),
+    isMask: maskMeta.isMask,
+    mask: maskMeta.mask,
+    exportSettings: getExportSettings(node),
 
     auto: getAutoLayout(node),
     size: undefined,
     r: getRadii(node),
+    cornerSmoothing: getCornerSmoothing(node),
     shadows: getShadows(node),
     stroke: getStroke(node),
     fills: getFills(node),
@@ -909,8 +1220,17 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
   }
 
   const hasImgFill = base.fills?.some((f) => f.kind === "image") === true;
+  if (shouldForceVectorExport(node)) {
+    const svgMarkup = await exportSVGMarkup(node);
+    if (svgMarkup) {
+      base.svg = { markup: svgMarkup };
+    }
+  }
   const rasterForState =
-    (shouldRasterizeNode(node) && node.type !== "INSTANCE") || hasImgFill;
+    (shouldRasterizeNode(node) && node.type !== "INSTANCE") ||
+    (shouldForceVectorExport(node) && !base.svg) ||
+    requiresCornerSmoothingRaster(base) ||
+    hasImgFill;
   if (rasterForState) {
     const img = await exportPNG(node);
     if (img) base.img = img;
@@ -921,10 +1241,13 @@ async function walkForState(node: SceneNode): Promise<NodeBase | null> {
       .children as readonly SceneNode[];
     const outKids: NodeBase[] = [];
     for (const c of kids) {
-      const child = await walkForState(c);
+      const child = await walkForState(c, node);
       if (child) outKids.push(child);
     }
-    if (outKids.length) base.children = outKids;
+    if (outKids.length) {
+      applyMaskRelationships(outKids);
+      base.children = outKids;
+    }
   }
 
   return base;
@@ -1349,6 +1672,8 @@ async function walk(
 
   const { w, h } = sizeOf(node);
 
+  const rel = relPosFromParent(node, parent);
+  const maskMeta = getMaskExtraction(node);
   const base: NodeBase = {
     id: node.id,
     name: node.name,
@@ -1356,10 +1681,17 @@ async function walk(
     w: round(w),
     h: round(h),
     bb: absBB(node),
+    relX: rel.relX,
+    relY: rel.relY,
+    constraints: getConstraints(node),
+    isMask: maskMeta.isMask,
+    mask: maskMeta.mask,
+    exportSettings: getExportSettings(node),
 
     auto: getAutoLayout(node),
     size: parent ? childSizingInParent(parent, node) : undefined,
     r: getRadii(node),
+    cornerSmoothing: getCornerSmoothing(node),
     shadows: getShadows(node),
     stroke: getStroke(node),
     fills: getFills(node),
@@ -1385,6 +1717,12 @@ async function walk(
   }
 
   const hasImgFill = base.fills?.some((f) => f.kind === "image") === true;
+  if (shouldForceVectorExport(node)) {
+    const svgMarkup = await exportSVGMarkup(node);
+    if (svgMarkup) {
+      base.svg = { markup: svgMarkup };
+    }
+  }
   const complex = shouldRasterizeNode(node);
 
   if (node.type === "INSTANCE") {
@@ -1435,7 +1773,12 @@ async function walk(
   }
 
   // Non-instance raster rules
-  if (hasImgFill || complex) {
+  if (
+    hasImgFill ||
+    complex ||
+    (shouldForceVectorExport(node) && !base.svg) ||
+    requiresCornerSmoothingRaster(base)
+  ) {
     const img = await exportPNG(node);
     if (img) base.img = img;
 
@@ -1458,7 +1801,10 @@ async function walk(
       const child = await walk(c, node);
       if (child) outKids.push(child);
     }
-    if (outKids.length) base.children = outKids;
+    if (outKids.length) {
+      applyMaskRelationships(outKids);
+      base.children = outKids;
+    }
   }
 
   return base;
@@ -1478,9 +1824,39 @@ function findChildByName(
 
 /** ===== UI messaging ===== */
 figma.ui.onmessage = async (msg: {
-  type: "EXPORT_SELECTION" | "EXPORT_PHASE1" | "CLOSE";
+  type: "EXPORT_SELECTION" | "EXPORT_PHASE1" | "CLOSE" | "SET_VIDEO_BG" | "CLEAR_VIDEO_BG";
   slug?: string;
+  videoUrl?: string;
+  posterUrl?: string;
 }) => {
+  if (msg.type === "SET_VIDEO_BG" || msg.type === "CLEAR_VIDEO_BG") {
+    const selection = figma.currentPage.selection || [];
+    if (!selection.length) {
+      figma.notify("Select a frame (or any node) to set video background.");
+      return;
+    }
+
+    const videoUrl = String(msg.videoUrl || "").trim();
+    const posterUrl = String(msg.posterUrl || "").trim();
+    const clearing = msg.type === "CLEAR_VIDEO_BG";
+
+    for (const node of selection) {
+      if (clearing) {
+        node.setPluginData("figma2wp:videoUrl", "");
+        node.setPluginData("figma2wp:posterUrl", "");
+      } else {
+        node.setPluginData("figma2wp:videoUrl", videoUrl);
+        node.setPluginData("figma2wp:posterUrl", posterUrl);
+      }
+    }
+
+    figma.notify(
+      clearing
+        ? `Cleared video background on ${selection.length} node(s).`
+        : `Video background set on ${selection.length} node(s).`
+    );
+    return;
+  }
   if (msg.type === "EXPORT_SELECTION" || msg.type === "EXPORT_PHASE1") {
     try {
       const sel = figma.currentPage.selection;

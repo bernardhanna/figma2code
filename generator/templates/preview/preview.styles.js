@@ -29,6 +29,21 @@ ${bodyFontCss}
   color:#fff;
   border-color: rgba(15,23,42,.3);
 }
+.stagebar{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.stagebtn{
+  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  cursor: pointer;
+  user-select:none;
+}
+.stagebtn[data-active="1"]{
+  background:#0f172a;
+  color:#fff;
+  border-color: rgba(15,23,42,.3);
+}
 .vpmeta{ font-size: 12px; color: rgba(15,23,42,.75); white-space: nowrap; }
 .vptrack{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
 .vprail{
@@ -52,6 +67,52 @@ ${bodyFontCss}
   box-shadow: 0 8px 20px rgba(0,0,0,.16);
 }
 .vprail:active .vpthumb{ transform: translate(-50%,-50%) scale(1.05); }
+
+/* --- Live editor --- */
+.editor-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.editor-field{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  min-width: 180px;
+}
+.editor-input{
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+}
+.editor-textarea{
+  font-size: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.12);
+  background: #fff;
+  width: min(520px, 100%);
+  min-height: 70px;
+  resize: vertical;
+}
+.editor-ledger{
+  max-height: 140px;
+  overflow: auto;
+  font-size: 11px;
+  color: rgba(15,23,42,.8);
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 8px;
+  padding: 8px;
+  background: rgba(248,250,252,.8);
+}
+.editor-ledger-item{ margin-bottom: 6px; }
+.editor-ledger-item:last-child{ margin-bottom: 0; }
+.editor-selected{ font-weight: 600; }
+.editor-code .CodeMirror{
+  height: 220px;
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.12);
+  font-size: 12px;
+}
+.editor-code .CodeMirror-scroll{ min-height: 220px; }
 
 /* --- Non-scaling device frame wrapper --- */
 .preview-stage{
@@ -161,9 +222,24 @@ ${bodyFontCss}
   padding: 24px;
 }
 .modal-backdrop[data-open="1"]{ display:flex; }
+.modal-backdrop:not([data-open="1"]){ pointer-events:none; }
+.modal-backdrop[data-open="1"]{ pointer-events:auto; }
+
+/* Keep stage controls interactive even if an overlay is stuck. */
+#toolbar_root{
+  position: relative;
+  z-index: 1200;
+  pointer-events: auto;
+}
+#toolbar_root *{
+  pointer-events: auto;
+}
 
 .modal{
   width: min(920px, 100%);
+  max-height: min(90vh, 720px);
+  display: flex;
+  flex-direction: column;
   background:#fff;
   border-radius:16px;
   box-shadow: 0 20px 60px rgba(0,0,0,.22);
@@ -181,7 +257,12 @@ ${bodyFontCss}
 }
 .modal-title{ font-size: 14px; font-weight: 700; color:#0f172a; }
 .modal-sub{ font-size: 12px; color: rgba(15,23,42,.7); margin-top: 2px; }
-.modal-bd{ padding: 16px 18px; }
+.modal-bd{
+  padding: 16px 18px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
 .pill{
   display:inline-flex;
   align-items:center;
@@ -196,6 +277,57 @@ ${bodyFontCss}
 }
 .pill[data-kind="pass"]{ border-color: rgba(16,185,129,.35); background: rgba(16,185,129,.10); }
 .pill[data-kind="fail"]{ border-color: rgba(239,68,68,.35); background: rgba(239,68,68,.10); }
+
+/* --- Pipeline progress modal --- */
+.progress-steps{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  margin-top: 10px;
+}
+.progress-step{
+  font-size: 12px;
+  color: rgba(15,23,42,.65);
+}
+.progress-step[data-state="active"]{
+  color:#0f172a;
+  font-weight: 600;
+}
+.progress-step[data-state="done"]{
+  color: #16a34a;
+  font-weight: 600;
+}
+.progress-log{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border: 1px solid rgba(0,0,0,.08);
+  border-radius: 10px;
+  background: rgba(248,250,252,.8);
+  font-size: 11px;
+  white-space: pre-wrap;
+  max-height: 220px;
+  overflow: auto;
+  font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;
+}
+.progress-preview{
+  margin-top: 10px;
+  font-size: 12px;
+  color: rgba(15,23,42,.7);
+}
+.progress-preview a{
+  color: #0f172a;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.progress-actions{
+  display:flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.progress-status{
+  font-size: 12px;
+  color: rgba(15,23,42,.7);
+}
 
 .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 @media (max-width: 720px){ .grid{ grid-template-columns: 1fr; } }

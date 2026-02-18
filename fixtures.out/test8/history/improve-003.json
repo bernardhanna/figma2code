@@ -1,0 +1,1404 @@
+{
+  "iteration": 3,
+  "createdAt": "2026-02-17T16:32:59.924Z",
+  "inputHash": "2720b17f02d662ef679b53db658c283aefb45610c14f3ac5ec3038bd11759775",
+  "proposedPatches": [
+    {
+      "nodeId": "I481:19151;497:11894",
+      "selector": "[data-node-id=\"I481:19151;497:11894\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11894;126:1676",
+      "selector": "[data-node-id=\"I481:19151;497:11894;126:1676\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11894;126:1677;7543:2622",
+      "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2622\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11894;126:1677;7543:2624",
+      "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2624\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11894;126:1677;7543:2625",
+      "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2625\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11895",
+      "selector": "[data-node-id=\"I481:19151;497:11895\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11897",
+      "selector": "[data-node-id=\"I481:19151;497:11897\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11900",
+      "selector": "[data-node-id=\"I481:19151;497:11900\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11900;126:1676",
+      "selector": "[data-node-id=\"I481:19151;497:11900;126:1676\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11900;126:1677;7543:2622",
+      "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2622\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11900;126:1677;7543:2624",
+      "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2624\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11900;126:1677;7543:2625",
+      "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2625\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11900;126:1677;7543:2626",
+      "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2626\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.109375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11901",
+      "selector": "[data-node-id=\"I481:19151;497:11901\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I481:19151;497:11903",
+      "selector": "[data-node-id=\"I481:19151;497:11903\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "acceptedByGate": [
+    {
+      "nodeId": "I481:19151;497:11894",
+      "selector": "[data-node-id=\"I481:19151;497:11894\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedByGate": [
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1676\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2622\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2624\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2625\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11895",
+        "selector": "[data-node-id=\"I481:19151;497:11895\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11897",
+        "selector": "[data-node-id=\"I481:19151;497:11897\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900",
+        "selector": "[data-node-id=\"I481:19151;497:11900\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1676\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2622\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2624\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2625\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2626",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2626\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11901",
+        "selector": "[data-node-id=\"I481:19151;497:11901\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11903",
+        "selector": "[data-node-id=\"I481:19151;497:11903\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    }
+  ],
+  "acceptedPatches": [
+    {
+      "nodeId": "I481:19151;497:11894",
+      "selector": "[data-node-id=\"I481:19151;497:11894\"]",
+      "stage": "improve",
+      "iteration": 3,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[33.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedPatches": [
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1676\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2622\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2624\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2625\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11895",
+        "selector": "[data-node-id=\"I481:19151;497:11895\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11897",
+        "selector": "[data-node-id=\"I481:19151;497:11897\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900",
+        "selector": "[data-node-id=\"I481:19151;497:11900\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1676\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2622\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2624\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2625\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2626",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2626\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[1.109375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11901",
+        "selector": "[data-node-id=\"I481:19151;497:11901\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    },
+    {
+      "patch": {
+        "nodeId": "I481:19151;497:11903",
+        "selector": "[data-node-id=\"I481:19151;497:11903\"]",
+        "stage": "improve",
+        "iteration": 3,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[33.5rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0104."
+    }
+  ],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.03472089314194577,
+            "source": "visual-diff",
+            "diffPixels": 6531,
+            "totalPixels": 188100,
+            "at": "2026-02-17T16:27:10.557Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 16
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.03472089314194577,
+            "source": "visual-diff",
+            "diffPixels": 6531,
+            "totalPixels": 188100,
+            "at": "2026-02-17T16:27:13.691Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 16
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.03472089314194577,
+            "source": "visual-diff",
+            "diffPixels": 6531,
+            "totalPixels": 188100,
+            "at": "2026-02-17T16:27:16.319Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 16
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I481:19151;497:11894",
+        "selector": "[data-node-id=\"I481:19151;497:11894\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1676\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2622\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2624\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2625\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11895",
+        "selector": "[data-node-id=\"I481:19151;497:11895\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11897",
+        "selector": "[data-node-id=\"I481:19151;497:11897\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900",
+        "selector": "[data-node-id=\"I481:19151;497:11900\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1676\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2622\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2624\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2625\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2626",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2626\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11901",
+        "selector": "[data-node-id=\"I481:19151;497:11901\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11903",
+        "selector": "[data-node-id=\"I481:19151;497:11903\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@106",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.024311536416799576,
+            "source": "visual-diff",
+            "diffPixels": 4573,
+            "totalPixels": 188100,
+            "at": "2026-02-17T16:30:00.232Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 15
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.03472089314194577,
+            "source": "visual-diff",
+            "diffPixels": 6531,
+            "totalPixels": 188100,
+            "at": "2026-02-17T16:30:03.818Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 15
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.03472089314194577,
+            "source": "visual-diff",
+            "diffPixels": 6531,
+            "totalPixels": 188100,
+            "at": "2026-02-17T16:30:08.993Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/test8/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/test8/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 15
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I481:19151;497:11894;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1676\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2622\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2624\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11894;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11894;126:1677;7543:2625\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11895",
+        "selector": "[data-node-id=\"I481:19151;497:11895\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11897",
+        "selector": "[data-node-id=\"I481:19151;497:11897\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900",
+        "selector": "[data-node-id=\"I481:19151;497:11900\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1676",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1676\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2622",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2622\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2624",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2624\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2625",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2625\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11900;126:1677;7543:2626",
+        "selector": "[data-node-id=\"I481:19151;497:11900;126:1677;7543:2626\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11901",
+        "selector": "[data-node-id=\"I481:19151;497:11901\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I481:19151;497:11903",
+        "selector": "[data-node-id=\"I481:19151;497:11903\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@106",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 16,
+    "selectedOffenders": 16,
+    "generated": 15,
+    "accepted": 1,
+    "rejected": 14,
+    "provider": "rules",
+    "gateAccepted": false,
+    "gateMessage": "Score gate: regression on mobile by +0.0104. | Score gate: no visual improvement detected.",
+    "strategyStats": [
+      {
+        "name": "width-dedupe",
+        "attempted": 15,
+        "candidateOps": 0
+      },
+      {
+        "name": "width-dedupe-smart",
+        "attempted": 15,
+        "candidateOps": 15
+      }
+    ]
+  }
+}

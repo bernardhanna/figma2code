@@ -22,6 +22,11 @@ import { writeStage } from "./stageStore.js";
 
 import { getComponentLibrary } from "../componentLibrary/index.js";
 import { annotateAstWithComponentMatch } from "../componentLibrary/match.js";
+import {
+  applyNamedBackgroundFallback,
+  setVideoBgFromTree,
+} from "./backgroundFallback.js";
+import { layoutIntentV2Pass } from "../auto/layoutIntentV2Pass.js";
 
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
@@ -145,6 +150,124 @@ function ensurePreviewDir() {
   fs.mkdirSync(PREVIEW_DIR, { recursive: true });
 }
 
+const VOID_TAGS = new Set([
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
+  "meta", "param", "source", "track", "wbr",
+]);
+
+function parseLightHtmlNodes(html) {
+  const source = String(html || "");
+  const nodes = [];
+  const stack = [];
+  const tagRe =
+    /<\/?([a-zA-Z][a-zA-Z0-9-]*)(\s+(?:[^"'<>]+|"[^"]*"|'[^']*')*)?\s*\/?>/g;
+  let m;
+  while ((m = tagRe.exec(source))) {
+    const raw = m[0];
+    const tag = String(m[1] || "").toLowerCase();
+    const attrsRaw = m[2] || "";
+    const start = m.index;
+    const end = start + raw.length;
+    const isClose = raw.startsWith("</");
+    const isSelf = raw.endsWith("/>") || VOID_TAGS.has(tag);
+    if (isClose) {
+      let idx = -1;
+      for (let i = stack.length - 1; i >= 0; i -= 1) {
+        if (stack[i].tag === tag) {
+          idx = i;
+          break;
+        }
+      }
+      if (idx === -1) continue;
+      const open = stack[idx];
+      stack.splice(idx, stack.length - idx);
+      const node = nodes[open.nodeIndex];
+      node.closeStart = start;
+      node.closeEnd = end;
+      node.end = end;
+      continue;
+    }
+    const parentIndex = stack.length ? stack[stack.length - 1].nodeIndex : null;
+    const nodeIndex = nodes.length;
+    const node = {
+      tag,
+      attrsRaw,
+      start,
+      end,
+      openStart: start,
+      openEnd: end,
+      closeStart: null,
+      closeEnd: null,
+      parentIndex,
+      isSelfClosing: isSelf,
+    };
+    nodes.push(node);
+    if (!isSelf) stack.push({ tag, nodeIndex });
+  }
+  return nodes;
+}
+
+function getAttrRaw(attrsRaw, key) {
+  const s = String(attrsRaw || "");
+  let m = s.match(new RegExp(`\\b${key}\\s*=\\s*"([^"]*)"`, "i"));
+  if (m && m[1] != null) return m[1];
+  m = s.match(new RegExp(`\\b${key}\\s*=\\s*'([^']*)'`, "i"));
+  if (m && m[1] != null) return m[1];
+  return "";
+}
+
+function hasRootSignatureLight(node) {
+  const dataKey = String(getAttrRaw(node?.attrsRaw, "data-key") || "").trim().toLowerCase();
+  if (dataKey === "root") return true;
+  const classAttr = String(getAttrRaw(node?.attrsRaw, "class") || "");
+  const tokens = classAttr.split(/\s+/g).filter(Boolean).map((t) => String(t).split(":").pop());
+  const hasWFull = tokens.includes("w-full");
+  const hasMxAuto = tokens.includes("mx-auto");
+  const hasMaxW = tokens.some((t) => /^max-w-/.test(t));
+  return hasWFull && hasMxAuto && hasMaxW;
+}
+
+function blockSnippet(html, node, len = 200) {
+  const source = String(html || "");
+  const start = node?.start ?? node?.openStart ?? 0;
+  const end = node?.end ?? node?.openEnd ?? start;
+  const out = source.slice(start, end).replace(/\s+/g, " ").trim();
+  return out.slice(0, len);
+}
+
+export function assertMergedHtmlIntegrity(html) {
+  const source = String(html || "");
+  const nodes = parseLightHtmlNodes(source);
+
+  const seenDataNode = new Map();
+  for (const node of nodes) {
+    const dnid = String(getAttrRaw(node.attrsRaw, "data-node-id") || "").trim();
+    if (!dnid) continue;
+    if (!seenDataNode.has(dnid)) {
+      seenDataNode.set(dnid, node);
+      continue;
+    }
+    const first = seenDataNode.get(dnid);
+    throw new Error(
+      `MERGE_INTEGRITY_DUPLICATE_DATA_NODE_ID: duplicated data-node-id="${dnid}". first="${blockSnippet(source, first)}" second="${blockSnippet(source, node)}"`
+    );
+  }
+
+  const rootNodes = nodes.filter((n) => String(getAttrRaw(n.attrsRaw, "data-key") || "").trim().toLowerCase() === "root");
+  if (rootNodes.length > 1) {
+    throw new Error(
+      `MERGE_INTEGRITY_DUPLICATE_ROOT_KEY: duplicated data-key="root". first="${blockSnippet(source, rootNodes[0])}" second="${blockSnippet(source, rootNodes[1])}"`
+    );
+  }
+
+  const topRoots = nodes.filter((n) => n.parentIndex == null && hasRootSignatureLight(n));
+  if (topRoots.length > 1) {
+    throw new Error(
+      `MERGE_INTEGRITY_MULTIPLE_TOP_LEVEL_ROOTS: detected ${topRoots.length} top-level roots. first="${blockSnippet(source, topRoots[0])}" second="${blockSnippet(source, topRoots[1])}"`
+    );
+  }
+}
+
 /**
  * Build a single fragment (legacy path) from one AST using your existing passes.
  * IMPORTANT: applies semanticAccessiblePass() to the rendered HTML fragment.
@@ -156,6 +279,7 @@ export function renderOneFragment({
   preventNestedInteractive,
   buildIntentGraph,
   normalizeAst,
+  learnedRulesPass,
   interactiveStatesPass,
   viewport,
   previewOnly,
@@ -166,6 +290,18 @@ export function renderOneFragment({
     const r = normalizeAst(a);
     const un = unwrapAstResult(r, a);
     a = un.ast || a;
+  }
+
+  if (learnedRulesPass) {
+    a = learnedRulesPass(a) || a;
+  }
+  a = layoutIntentV2Pass(a) || a;
+
+  setVideoBgFromTree(a);
+
+  const hasBgSrc = a?.__bg?.src && String(a.__bg.src).trim();
+  if (!hasBgSrc) {
+    applyNamedBackgroundFallback(a);
   }
 
   if (previewOnly) {
@@ -260,7 +396,8 @@ export function buildMergedResponsivePreview({
   semanticAccessiblePass,
   previewHtml,
   previewOnly,
-}) {
+  skipContractsAndPreview,
+} = {}) {
   const { variantsMap, available } = loadVariantsForGroup(groupKey);
 
   if (!available.length) {
@@ -329,6 +466,9 @@ export function buildMergedResponsivePreview({
     breakpoints: { mobileMax: 768, tabletMax: 1084 },
   });
 
+  // Guard against bad merge concatenation/duplication.
+  assertMergedHtmlIntegrity(mergedFragment);
+
   // Build merged AST (metadata carrier)
   const mergedAst = compositeAstForMerged({ groupKey, variantsMap });
   if (!mergedAst?.tree) {
@@ -364,6 +504,19 @@ export function buildMergedResponsivePreview({
 
   writeStage(groupKey, mergedAstWithMatch);
 
+  // When skipContractsAndPreview: return fragment only; orchestrator runs contracts + QA + previewHtml.
+  if (skipContractsAndPreview) {
+    return {
+      ok: true,
+      ast: mergedAstWithMatch,
+      fragment: mergedFragment,
+      preview: null,
+      availableVariants: available,
+      baseVariant,
+      phase2Reports,
+    };
+  }
+
   // IMPORTANT: previewHtml must now render inside an iframe for Tailwind breakpoints
   const contractsOut = applyContracts({ html: mergedFragment, slug: groupKey });
   const preview = previewHtml(mergedAstWithMatch, { fragment: contractsOut.html });
@@ -390,9 +543,11 @@ export async function buildPreviewFragment({
   autoLayoutify,
   semanticAccessiblePass,
   preventNestedInteractive,
+  learnedRulesPass,
   interactiveStatesPass,
   previewHtml,
   previewOnly,
+  returnFragmentOnly,
 }) {
   try {
     if (!astInput || !astInput.tree) {
@@ -423,6 +578,7 @@ export async function buildPreviewFragment({
         preventNestedInteractive,
         buildIntentGraph,
         normalizeAst,
+        learnedRulesPass,
         interactiveStatesPass,
         viewport,
         previewOnly,
@@ -461,9 +617,31 @@ export async function buildPreviewFragment({
         semanticAccessiblePass,
         previewHtml,
         previewOnly,
+        skipContractsAndPreview: returnFragmentOnly,
       });
 
       if (!merged.ok) return merged;
+
+      if (returnFragmentOnly) {
+        return {
+          ok: true,
+          ast: merged.ast,
+          fragment: merged.fragment,
+          preview: null,
+          phase2Report: single.phase2Report || null,
+          phase2Reports: merged.phase2Reports || null,
+          phase2NormalizedPath: null,
+          phase3IntentPath: null,
+          rasterCtaOffenders: null,
+          phase3: single.phase3 || null,
+          responsive: {
+            groupKey,
+            variantSaved: variant,
+            availableVariants: merged.availableVariants,
+            baseVariant: merged.baseVariant,
+          },
+        };
+      }
 
       const previewOut = path.join(PREVIEW_DIR, `${groupKey}.html`);
       fs.writeFileSync(previewOut, merged.preview, "utf8");
@@ -498,12 +676,27 @@ export async function buildPreviewFragment({
       preventNestedInteractive,
       buildIntentGraph,
       normalizeAst,
+      learnedRulesPass,
       interactiveStatesPass,
       viewport,
       previewOnly,
     });
 
     writeStage(single.ast.slug, single.ast);
+
+    if (returnFragmentOnly) {
+      return {
+        ok: true,
+        ast: single.ast,
+        fragment: single.fragment,
+        preview: null,
+        phase2Report: single.phase2Report || null,
+        phase2NormalizedPath: null,
+        phase3IntentPath: null,
+        rasterCtaOffenders: null,
+        phase3: single.phase3 || null,
+      };
+    }
 
     const preview = previewHtml(single.ast, { fragment: single.fragment });
 

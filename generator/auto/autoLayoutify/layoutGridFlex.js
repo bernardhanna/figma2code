@@ -99,8 +99,22 @@ export function isCtaChild(node, semantics) {
 export function shouldUseGrid(node, semantics) {
   if (shouldRenderAsLinkOrButton(node)) return false;
 
-  const al = node.auto;
-  if (!al || al.layout === "NONE") return false;
+  const al = node.auto || {};
+  const hasExplicitAutoLayout =
+    !!(al && typeof al === "object" && al.layout && String(al.layout).toUpperCase() !== "NONE");
+  // 1:1 mapping rule: explicit Figma auto-layout should emit flex, not grid heuristics.
+  if (hasExplicitAutoLayout) return false;
+
+  const hintAxis = String(node?.__layoutHints?.axis || "").toLowerCase();
+  const inferredLayout =
+    al.layout && al.layout !== "NONE"
+      ? al.layout
+      : hintAxis === "horizontal"
+        ? "HORIZONTAL"
+        : hintAxis === "vertical"
+          ? "VERTICAL"
+          : "NONE";
+  if (inferredLayout === "NONE") return false;
 
   const nameLower = String(node?.name || "").toLowerCase();
   // Decorative bars are tiny, ordered strips; flex preserves spacing better than grid.
@@ -109,7 +123,7 @@ export function shouldUseGrid(node, semantics) {
   }
 
   // NEVER grid for vertical stacks (per spec)
-  if (al.layout === "VERTICAL") return false;
+  if (inferredLayout === "VERTICAL") return false;
 
   const kids = node.children || [];
 
@@ -120,6 +134,9 @@ export function shouldUseGrid(node, semantics) {
   }
 
   const hints = nameHints(node);
+  if (node?.__layoutHints?.gridCandidate && Number(node?.__layoutHints?.colsHint || 0) >= 2) {
+    return true;
+  }
   if (hints.colsHint && hints.colsHint >= 2 && hints.colsHint <= 6) return true;
 
   if (isTextualGroup(node)) return false;
@@ -152,6 +169,10 @@ export function shouldUseGrid(node, semantics) {
     if (ratio <= 1.20) return true;
   }
 
+  if (node?.__layoutHints?.collectionLike && Number(node?.__layoutHints?.colsHint || 0) >= 2) {
+    return true;
+  }
+
   // If near-equal, grid is fine
   if (nearEqual) return true;
 
@@ -180,18 +201,29 @@ export function gridColsResponsive(maxCols) {
 
 
 export function flexResponsiveClasses(al, kids, opts = {}) {
+  const layoutRaw = String(al?.layout || "").toUpperCase();
+  const layout = layoutRaw === "HORIZONTAL" || layoutRaw === "VERTICAL" ? layoutRaw : "VERTICAL";
   const forceRow = !!opts.forceRow;
   const noWrap = !!opts.noWrap;
+  const wrapRaw = String(
+    al?.layoutWrap ??
+      al?.wrapMode ??
+      al?.wrap ??
+      al?.isWrap ??
+      al?.counterAxisWrap ??
+      ""
+  ).toUpperCase();
+  const wantsWrap = wrapRaw === "WRAP" || wrapRaw === "TRUE" || wrapRaw === "YES" || wrapRaw === "1";
 
   const base = ["flex", forceRow ? "flex-row" : "flex-col"];
 
   // Desktop direction mirrors Figma auto layout (unless forced row)
   if (!forceRow) {
-    const dirDesktop = al.layout === "HORIZONTAL" ? "md:flex-row" : "md:flex-col";
+    const dirDesktop = layout === "HORIZONTAL" ? "md:flex-row" : "md:flex-col";
     base.push(dirDesktop);
   }
 
-  if (!noWrap && al.layout === "HORIZONTAL" && (kids?.length || 0) >= 3) {
+  if (!noWrap && layout === "HORIZONTAL" && wantsWrap) {
     base.push(forceRow ? "flex-wrap" : "md:flex-wrap");
   }
 

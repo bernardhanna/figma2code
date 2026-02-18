@@ -8,6 +8,11 @@ Figma → **AI Tailwind HTML** → ACF + Frontend PHP (Flexi) → Browser previe
 
 ---
 
+## Code it stage (pipeline)
+The **Code it** stage runs deterministic HTML/Tailwind contracts (layout, semantics, section normalization). Contract order, what each does, and what each intentionally does *not* do are described in [docs/codeit-contracts.md](docs/codeit-contracts.md). Each contract is idempotent and reports a fix count in the run summary.
+
+---
+
 ## Folder tree
 ```
 figma2wp/

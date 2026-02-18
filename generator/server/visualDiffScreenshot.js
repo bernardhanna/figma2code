@@ -1,5 +1,68 @@
 // generator/server/visualDiffScreenshot.js
 
+async function waitForIframeContent(page) {
+  try {
+    await page.waitForSelector("#vp_iframe", { state: "attached", timeout: 8000 });
+  } catch {
+    return;
+  }
+
+  await page.evaluate(async () => {
+    const iframe = document.getElementById("vp_iframe");
+    if (!iframe) return;
+
+    await new Promise((resolve) => {
+      const doc = iframe.contentDocument;
+      if (doc && doc.readyState === "complete") return resolve();
+      iframe.addEventListener("load", () => resolve(), { once: true });
+      setTimeout(resolve, 1500);
+    });
+
+    const doc = iframe.contentDocument;
+    if (!doc) return;
+
+    try {
+      if (doc.fonts?.ready) await doc.fonts.ready;
+    } catch {}
+
+    const imgs = Array.from(doc.images || []);
+    await Promise.all(
+      imgs.map(async (img) => {
+        try {
+          if (!img.complete) {
+            await new Promise((r) => {
+              img.addEventListener("load", r, { once: true });
+              img.addEventListener("error", r, { once: true });
+              setTimeout(r, 1500);
+            });
+          }
+          if (img.decode) await img.decode().catch(() => {});
+        } catch {}
+      })
+    );
+  });
+}
+
+async function waitForPatchReadiness(page) {
+  let warning = "";
+  try {
+    await page.waitForFunction(() => window.__PATCHES_READY__ === true, null, { timeout: 5000 });
+  } catch {
+    warning = "PATCHES_READY timeout on preview window";
+  }
+
+  try {
+    const iframeHandle = await page.$("#vp_iframe");
+    const frame = iframeHandle ? await iframeHandle.contentFrame() : null;
+    if (frame) {
+      await frame.waitForFunction(() => window.__PATCHES_READY__ === true, null, { timeout: 5000 });
+    }
+  } catch {
+    warning = warning ? (warning + "; PATCHES_READY timeout in iframe") : "PATCHES_READY timeout in iframe";
+  }
+  return warning;
+}
+
 export async function stableElementScreenshot(page, url, selector, viewport, waitMs, minHeight) {
   await page.setViewportSize(viewport || { width: 1440, height: 900 });
 
@@ -38,6 +101,9 @@ export async function stableElementScreenshot(page, url, selector, viewport, wai
     );
   });
 
+  await waitForIframeContent(page);
+  const patchReadyWarning = await waitForPatchReadiness(page);
+
   await page.evaluate(() => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r))));
 
   const el = await page.$(selector);
@@ -46,7 +112,7 @@ export async function stableElementScreenshot(page, url, selector, viewport, wai
     const buffer = await page.screenshot({ fullPage: true, animations: "disabled" });
     return {
       buffer,
-      meta: { mode: "fullPageFallback", reason: "selector_not_found", selector },
+      meta: { mode: "fullPageFallback", reason: "selector_not_found", selector, patchReadyWarning: patchReadyWarning || undefined },
     };
   }
 
@@ -64,6 +130,7 @@ export async function stableElementScreenshot(page, url, selector, viewport, wai
         selector,
         box,
         minHeight: minHeight || 0,
+        patchReadyWarning: patchReadyWarning || undefined,
       },
     };
   }
@@ -71,7 +138,7 @@ export async function stableElementScreenshot(page, url, selector, viewport, wai
   const buffer = await el.screenshot({ animations: "disabled" });
   return {
     buffer,
-    meta: { mode: "element", selector, box, minHeight: minHeight || 0 },
+    meta: { mode: "element", selector, box, minHeight: minHeight || 0, patchReadyWarning: patchReadyWarning || undefined },
   };
 }
 

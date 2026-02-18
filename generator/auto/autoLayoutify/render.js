@@ -7,7 +7,7 @@
 // - SVG leaf rendering happens before text/button/img fallbacks
 // - IMPORTANT: layoutGridFlex import is declared ONCE (fixes "already been declared")
 
-import { cls, num, pos, rem, remTypo } from "./precision.js";
+import { cls, num, pos, rem, remTypo, spacingClass } from "./precision.js";
 import { escAttr } from "./escape.js";
 import { twFontClassForFamily } from "./fonts.js";
 
@@ -33,9 +33,10 @@ import {
   sizeClassForLeaf,
   sizeClassForImg,
   fixedBoxSize,
+  resolveAxisIntents,
 } from "./sizing.js";
 
-import { boxDeco, hasOwnBoxDeco } from "./styles.js";
+import { boxDeco, hasOwnBoxDeco, hasUnsupportedBlur } from "./styles.js";
 import { refineCtaClasses } from "./ctaRefine.js";
 
 import { resolveCtaInnerHtml, resolveCtaLabel } from "./ctaLabel.js";
@@ -110,9 +111,8 @@ function attrsForNode(node, extra = "", parentLayout = null) {
   const dn = node?.id ? ` data-node="${escAttr(node.id)}"` : "";
   const dk = node?.key ? ` data-key="${escAttr(node.key)}"` : "";
 
-  const widthIntentValue = normalizeIntent(
-    node?.size?.primary || node?.auto?.primarySizing
-  );
+  const axisIntents = resolveAxisIntents(node, parentLayout);
+  const widthIntentValue = normalizeIntent(axisIntents.widthIntent);
   const widthIntent = widthIntentValue
     ? ` data-w-intent="${widthIntentValue}"`
     : "";
@@ -181,7 +181,37 @@ function attrsForNode(node, extra = "", parentLayout = null) {
   const widthRem = widthPx ? ` data-w-rem="${escAttr(rem(widthPx))}"` : "";
 
   const decorativeAttr = isDecorative ? ` data-decorative="1"` : "";
-  const custom = attrsFromMap(node?.attrs || node?.dataAttrs || null);
+  const maskInfo = maskInfoFromNode(node);
+  const rawCustom =
+    node?.attrs && typeof node.attrs === "object"
+      ? node.attrs
+      : node?.dataAttrs && typeof node.dataAttrs === "object"
+        ? node.dataAttrs
+        : null;
+  const customAttrs = rawCustom ? { ...rawCustom } : {};
+  if (maskInfo?.kind === "svg-path") {
+    const existingStyle = String(customAttrs.style || "").trim();
+    const delim = existingStyle && !existingStyle.endsWith(";") ? ";" : "";
+    const pathCss = escapeCssPathLiteral(maskInfo.path);
+    customAttrs.style = `${existingStyle}${delim} clip-path: path('${pathCss}'); -webkit-clip-path: path('${pathCss}');`.trim();
+    if (!customAttrs["data-mask-type"]) customAttrs["data-mask-type"] = "svg";
+  } else if (maskInfo?.kind === "raster-fallback") {
+    if (!customAttrs["data-mask-fallback"]) customAttrs["data-mask-fallback"] = "rasterize";
+  }
+  const cornerSmoothing = Number(node?.cornerSmoothing);
+  if (Number.isFinite(cornerSmoothing) && cornerSmoothing > 0.001) {
+    if (!customAttrs["data-corner-smoothing"]) {
+      customAttrs["data-corner-smoothing"] = String(Number(cornerSmoothing.toFixed(4)));
+    }
+    if (!customAttrs["data-corner-smoothing-fallback"]) {
+      // CSS border-radius cannot faithfully reproduce Figma corner smoothing.
+      customAttrs["data-corner-smoothing-fallback"] = "rasterize";
+    }
+  }
+  if (hasUnsupportedBlur(node) && !customAttrs["data-blur-fallback"]) {
+    customAttrs["data-blur-fallback"] = "rasterize";
+  }
+  const custom = attrsFromMap(customAttrs);
 
   return (
     dn +
@@ -236,6 +266,115 @@ function remPx(px) {
   if (!isFinite(n) || n <= 0) return "";
   const v = (n / 16).toFixed(6).replace(/0+$/, "").replace(/\.$/, "");
   return `${v}rem`;
+}
+
+function escapeCssPathLiteral(v) {
+  return String(v || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
+}
+
+function maskInfoFromNode(node) {
+  const mask = node?.mask || {};
+  const path = [
+    node?.maskPath,
+    node?.clipPath,
+    mask?.path,
+    mask?.svgPath,
+    mask?.clipPath,
+  ].find((s) => typeof s === "string" && s.trim());
+  if (path) return { kind: "svg-path", path: String(path).trim() };
+
+  const maskType = String(node?.maskType || mask?.type || "").trim();
+  const maskLike = !!(node?.isMask || mask?.enabled === true || maskType);
+  if (maskLike && !node?.clipsContent) return { kind: "raster-fallback" };
+  return null;
+}
+
+function nodeBox(node) {
+  if (!node || typeof node !== "object") return null;
+  const bb = node.bb || node.bbox || null;
+  if (bb) {
+    const x = Number(bb.x), y = Number(bb.y), w = Number(bb.w), h = Number(bb.h);
+    if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
+      return { x, y, w, h };
+    }
+  }
+  const x = Number(node.x), y = Number(node.y), w = Number(node.w), h = Number(node.h);
+  if (Number.isFinite(x) && Number.isFinite(y) && Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0) {
+    return { x, y, w, h };
+  }
+  return null;
+}
+
+function shouldUseAbsoluteFallback(node, children, ctx) {
+  if (!node || !Array.isArray(children) || children.length < 2) return null;
+  const al = String(node?.auto?.layout || "").toUpperCase();
+  if (al && al !== "NONE") return null; // explicit auto-layout should not fallback here.
+  const hints = node?.__layoutHints || {};
+  if (!hints.lowConfidence && !hints.fallbackRecommended) return null;
+  if (hints.collectionLike) return null;
+
+  const parent = nodeBox(node);
+  if (!parent) return null;
+
+  const entries = [];
+  for (const child of children) {
+    const cb = nodeBox(child);
+    if (!cb || !child?.id) return null;
+    const left = cb.x - parent.x;
+    const top = cb.y - parent.y;
+    if (!Number.isFinite(left) || !Number.isFinite(top)) return null;
+    if (left < -8 || top < -8) return null;
+    entries.push({ childId: child.id, left, top, w: cb.w, h: cb.h });
+  }
+
+  const cap = Number.isFinite(Number(ctx?.absoluteFallbackMaxNodes))
+    ? Math.max(0, Number(ctx.absoluteFallbackMaxNodes))
+    : 6;
+  const used = Number.isFinite(Number(ctx?.__absFallbackUsed)) ? Number(ctx.__absFallbackUsed) : 0;
+  if (entries.length > cap || used + entries.length > cap) return null;
+
+  return { parent, entries };
+}
+
+function normalizeConstraintValue(raw) {
+  const v = String(raw || "").trim().toUpperCase();
+  if (!v) return "";
+  return v.replace(/\s+/g, "_").replace(/-/g, "_");
+}
+
+function readConstraintAxis(node, axis) {
+  const c = node?.constraints || node?.constraint || {};
+  if (axis === "horizontal") {
+    return (
+      c.horizontal ??
+      c.x ??
+      c.h ??
+      c.horizontalConstraint ??
+      c.constraintX ??
+      ""
+    );
+  }
+  return c.vertical ?? c.y ?? c.v ?? c.verticalConstraint ?? c.constraintY ?? "";
+}
+
+function hasExplicitWidthToken(node) {
+  const tokens = String(node?.tw || node?.className || "")
+    .split(/\s+/g)
+    .filter(Boolean);
+  return tokens.some((t) => /^(?:\w+:)?(?:w-|max-w-|basis-)/.test(t));
+}
+
+function constraintClassesForNonAutoChild(node) {
+  const horizontal = normalizeConstraintValue(readConstraintAxis(node, "horizontal"));
+  if (!horizontal) return "";
+
+  if (horizontal === "LEFT_RIGHT" || horizontal === "LEFTANDRIGHT" || horizontal === "SCALE" || horizontal === "STRETCH" || horizontal === "BOTH") {
+    if (hasExplicitWidthToken(node)) return "";
+    return "w-full max-w-full";
+  }
+  if (horizontal === "CENTER") return "mx-auto";
+  if (horizontal === "RIGHT") return "ml-auto";
+  return "";
 }
 
 function fixedSizeClassesForCta(node) {
@@ -403,7 +542,12 @@ export function renderNode(node, parentLayout, isRoot, semantics, ctx = {}) {
   if (stack.has(node)) return "";
   stack.add(node);
 
-  const isAuto = node.auto && node.auto.layout && node.auto.layout !== "NONE";
+  const hintedAxis = String(node?.__layoutHints?.axis || "").toLowerCase();
+  const isAuto =
+    (node.auto && node.auto.layout && node.auto.layout !== "NONE") ||
+    ((hintedAxis === "horizontal" || hintedAxis === "vertical") &&
+      Array.isArray(node?.children) &&
+      node.children.length > 1);
   const out = isAuto
     ? renderAuto(node, isRoot, semantics, parentLayout, ctx)
     : renderLeaf(node, parentLayout, isRoot, semantics, ctx);
@@ -415,7 +559,25 @@ export function renderNode(node, parentLayout, isRoot, semantics, ctx = {}) {
 /* ------------------ auto container ------------------ */
 
 function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
-  const al = node.auto;
+  const rawAuto = node.auto || {};
+  const hintAxis = String(node?.__layoutHints?.axis || "").toLowerCase();
+  const inferredLayout =
+    rawAuto.layout && rawAuto.layout !== "NONE"
+      ? rawAuto.layout
+      : hintAxis === "horizontal"
+        ? "HORIZONTAL"
+        : "VERTICAL";
+  const inferredSpacing =
+    Number.isFinite(Number(rawAuto.itemSpacing))
+      ? Number(rawAuto.itemSpacing)
+      : Number(node?.__layoutHints?.spacingPx || 0);
+  const al = {
+    ...rawAuto,
+    layout: inferredLayout,
+    itemSpacing: inferredSpacing,
+    primaryAlign: rawAuto.primaryAlign || "MIN",
+    counterAlign: rawAuto.counterAlign || "MIN",
+  };
   const children =
     (Array.isArray(node.children) && node.children.length
       ? node.children
@@ -423,14 +585,20 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const nodeForLayout =
     children === node.children ? node : { ...node, children };
 
-  const gap = pos(al.itemSpacing)
-    ? `gap-[${(al.itemSpacing / 16)
-      .toFixed(6)
-      .replace(/0+$/, "")
-      .replace(/\.$/, "")}rem]`
-    : "";
-
-  const pad = paddings(al);
+  const gap = pos(al.itemSpacing) ? spacingClass("gap", al.itemSpacing) : "";
+  const heroLike =
+    /\bhero\b/i.test(String(node?.name || "")) ||
+    /\bhero\b/i.test(String(node?.key || "")) ||
+    String(node?.attrs?.role || "").toLowerCase() === "banner";
+  const pad = paddings(al, {
+    isHero: heroLike,
+    onWarning: (msg) => {
+      if (!ctx.__warnings) ctx.__warnings = [];
+      ctx.__warnings.push(String(msg));
+      // Keep visible in logs for deterministic debugging of spacing outliers.
+      if (typeof console !== "undefined" && console.warn) console.warn(`[autoLayoutify] ${msg}`);
+    },
+  });
   const fallbackPx =
     isRoot &&
     ctx?.responsiveFallback?.maxXlPx &&
@@ -853,11 +1021,15 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     const alt = escAttr(node.name || "Image");
 
     // IMPORTANT: injected sizing classes should apply to <img> too, so we use openTag.
+    const booleanRasterFallback =
+      String(node?.type || "").toUpperCase() === "BOOLEAN_OPERATION"
+        ? ` data-boolean-op="raster-fallback"`
+        : "";
     return (
       openTag(
         "img",
         classes,
-        ` src="${escAttr(node.img.src)}" alt="${alt}" loading="lazy" decoding="async"`,
+        ` src="${escAttr(node.img.src)}" alt="${alt}" loading="lazy" decoding="async"${booleanRasterFallback}`,
         node,
         ctx
       ).replace(/>$/, " />") // make it self-closing
@@ -869,13 +1041,43 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
   const baseSize = sizeClassForLeaf(node, parentLayout, isRoot, false);
 
   const inner = (node.children || [])
-    .map((c) => renderNode(c, parentLayout, false, semantics, ctx))
+    .map((c) => {
+      // Basic non-auto constraints interpreter for child anchoring.
+      const constraintCls = constraintClassesForNonAutoChild(c);
+      if (constraintCls && c?.id) {
+        if (!ctx.classInject) ctx.classInject = new Map();
+        const prev = String(ctx.classInject.get(c.id) || "");
+        ctx.classInject.set(c.id, cls(prev, constraintCls));
+      }
+      return renderNode(c, parentLayout, false, semantics, ctx);
+    })
     .join("\n");
+  const kids = Array.isArray(node.children) ? node.children : [];
+  const absPlan = shouldUseAbsoluteFallback(node, kids, ctx);
+  if (absPlan) {
+    if (!ctx.classInject) ctx.classInject = new Map();
+    for (const e of absPlan.entries) {
+      const prev = String(ctx.classInject.get(e.childId) || "");
+      const abs = cls(
+        "absolute",
+        `left-[${remPx(e.left)}]`,
+        `top-[${remPx(e.top)}]`,
+        `w-[${remPx(e.w)}]`
+      );
+      ctx.classInject.set(e.childId, cls(prev, abs));
+    }
+    ctx.__absFallbackUsed = (Number(ctx.__absFallbackUsed) || 0) + absPlan.entries.length;
+  }
 
-  const classes = cls(baseSize, deco, clip);
+  const fallbackClass = absPlan
+    ? cls("relative", `min-h-[${remPx(absPlan.parent.h)}]`)
+    : "";
+  const classes = cls(baseSize, deco, clip, fallbackClass);
   return (
-    openTag("div", classes, attrsForNode(node, "", parentLayout), node, ctx) +
-    inner +
+    openTag("div", classes, attrsForNode(node, absPlan ? ' data-layout-fallback="absolute"' : "", parentLayout), node, ctx) +
+    (absPlan
+      ? kids.map((c) => renderNode(c, parentLayout, false, semantics, ctx)).join("\n")
+      : inner) +
     `</div>`
   );
 }

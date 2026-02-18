@@ -9,7 +9,33 @@
     <input id="slug" placeholder="hero_demo" style="width:100%" />
   </label>
 
+  <div style="margin-top:12px; padding:8px; border:1px solid #e5e7eb; border-radius:6px;">
+    <div style="font-weight:600; margin-bottom:6px;">Video Background</div>
+    <label style="display:block; margin-bottom:6px;">
+      Video URL
+      <input id="videoUrl" placeholder="https://cdn.example.com/hero.mp4" style="width:100%" />
+    </label>
+    <label style="display:block; margin-bottom:6px;">
+      Poster URL
+      <input id="videoPoster" placeholder="https://cdn.example.com/hero.jpg" style="width:100%" />
+    </label>
+    <div style="display:flex; gap:8px; flex-wrap:wrap;">
+      <button id="setVideo" type="button">Set on Selection</button>
+      <button id="clearVideo" type="button">Clear</button>
+    </div>
+    <div style="font-size:11px; color:#6b7280; margin-top:6px;">
+      Figma doesn’t expose video URLs from native fills; paste a public URL here to play video in preview/output.
+    </div>
+  </div>
+
   <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap;">
+    <label style="display:flex; align-items:center; gap:6px;">
+      Preview mode
+      <select id="previewMode">
+        <option value="off">Preview (fast)</option>
+        <option value="ai">Preview + Refine (slower, best match)</option>
+      </select>
+    </label>
     <button id="generatePreview">Generate Preview</button>
   </div>
 
@@ -59,14 +85,32 @@
     const previewTabs = document.getElementById("previewTabs");
     const openPreviewBtn = document.getElementById("openPreview");
     const clearPreviewBtn = document.getElementById("clearPreview");
+    const previewModeEl = document.getElementById("previewMode");
+    const videoUrlInput = document.getElementById("videoUrl");
+    const videoPosterInput = document.getElementById("videoPoster");
     const getSlug = () => document.getElementById("slug").value.trim();
-    const BASE = "http://127.0.0.1:5173";
+    const BASE_CANDIDATES = ["http://127.0.0.1:5173", "http://localhost:5173"];
+    let BASE = BASE_CANDIDATES[0];
     let lastPreviewUrl = "";
     let lastScreenshotUrl = "";
     let lastScreenshotUrls = {};
     let lastReport = null;
     let activeBreakpoint = "desktop";
     let progressTimer = null;
+    const modeKeyForSlug = (slug) => `preview_mode_${String(slug || "").trim() || "_default"}`;
+    function loadPreviewMode(slug) {
+      try {
+        const value = localStorage.getItem(modeKeyForSlug(slug));
+        return value === "ai" ? "ai" : "off";
+      } catch (_) {
+        return "off";
+      }
+    }
+    function savePreviewMode(slug, mode) {
+      try {
+        localStorage.setItem(modeKeyForSlug(slug), mode === "ai" ? "ai" : "off");
+      } catch (_) {}
+    }
 
     const PROGRESS_STEPS = [
       { id: "prepare", label: "Preparing AST…" },
@@ -171,30 +215,78 @@
       reportEl.textContent = lines.join("\n");
     }
 
-    async function postTo(endpoint, payload) {
-      const res = await fetch(BASE + endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+    const REQUEST_TIMEOUT_MS = 900000;
+    const REQUEST_TIMEOUT_REFINE_MS = 1200000;
 
-      const ct = res.headers.get("content-type") || "";
-      const text = await res.text();
-      if (!ct.includes("application/json")) {
-        throw new Error(
-          `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
-        );
+    function isNetworkLikeError(err) {
+      const msg = String(err?.message || err || "").toLowerCase();
+      return /failed to fetch|network|timeout|abort|econnrefused|enotfound|couldn't connect/.test(msg);
+    }
+
+    async function postTo(endpoint, payload, options = {}) {
+      const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS;
+      const orderedBases = [BASE].concat(BASE_CANDIDATES.filter((b) => b !== BASE));
+      let lastErr = null;
+      for (const candidateBase of orderedBases) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+        try {
+          const res = await fetch(candidateBase + endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
+
+          const ct = res.headers.get("content-type") || "";
+          const text = await res.text();
+          if (!ct.includes("application/json")) {
+            throw new Error(
+              `Non-JSON response from ${endpoint} (status ${res.status}). Body:\n${text.slice(0, 1200)}`
+            );
+          }
+          BASE = candidateBase;
+          return JSON.parse(text);
+        } catch (err) {
+          clearTimeout(timeoutId);
+          if (err?.name === "AbortError") {
+            throw new Error(
+              "Request timed out after " + (timeoutMs / 1000) + "s. Check: (1) Generator is running: cd generator && npm start. (2) Open " + candidateBase + " in your browser."
+            );
+          }
+          lastErr = err;
+          if (!isNetworkLikeError(err)) throw err;
+        }
       }
-      return JSON.parse(text);
+      throw lastErr || new Error("Request failed");
     }
 
     document.getElementById("generatePreview").onclick = () => {
+      const slug = getSlug();
+      const selectedMode = previewModeEl ? String(previewModeEl.value || "off") : "off";
+      savePreviewMode(slug, selectedMode);
       resetProgress();
       setProgressState("prepare", "active");
       status.textContent = "Preparing AST (Generate Preview)…";
       setPreviewState({ previewUrl: "", screenshotUrl: "", screenshotUrls: {}, report: null });
       window.__pendingEndpoint = "/api/preview-only";
       parent.postMessage({ pluginMessage: { type: "EXPORT_SELECTION", slug: getSlug() } }, "*");
+    };
+
+    document.getElementById("setVideo").onclick = () => {
+      const videoUrl = String(videoUrlInput?.value || "").trim();
+      const posterUrl = String(videoPosterInput?.value || "").trim();
+      parent.postMessage(
+        { pluginMessage: { type: "SET_VIDEO_BG", videoUrl, posterUrl } },
+        "*"
+      );
+      status.textContent = "Applied video background to selection.";
+    };
+
+    document.getElementById("clearVideo").onclick = () => {
+      parent.postMessage({ pluginMessage: { type: "CLEAR_VIDEO_BG" } }, "*");
+      status.textContent = "Cleared video background on selection.";
     };
 
     clearPreviewBtn.onclick = () => {
@@ -220,26 +312,73 @@
       }
 
       if (type === "AST_READY" || type === "PHASE1_READY") {
+        let waitingInterval = null;
+        const clearWaiting = () => {
+          if (waitingInterval) { clearInterval(waitingInterval); waitingInterval = null; }
+        };
         try {
           const endpoint = window.__pendingEndpoint || "/api/preview-only";
-          status.textContent = `Sending payload to ${endpoint}…`;
+          const currentMode = previewModeEl ? String(previewModeEl.value || "off") : "off";
+          const requestTimeoutMs =
+            endpoint === "/api/preview-only" && currentMode === "ai"
+              ? REQUEST_TIMEOUT_REFINE_MS
+              : REQUEST_TIMEOUT_MS;
+          const modeLabel = currentMode === "ai" ? "refine" : "fast";
+          status.textContent = `Sending payload to ${endpoint}… mode=${modeLabel}, timeout=${Math.round(requestTimeoutMs / 1000)}s`;
           if (endpoint === "/api/preview-only") {
             setProgressState("prepare", "done");
             startServerProgress();
           }
+          let waitedSec = 0;
+          waitingInterval = setInterval(() => {
+            waitedSec += 5;
+            if (status.textContent.indexOf("Request failed") === -1 && status.textContent.indexOf("Preview:") === -1)
+              status.textContent = `Waiting for server… (${waitedSec}s) If this hangs, check the generator terminal for "[preview-only] request received".`;
+          }, 5000);
 
-          const out = await postTo(endpoint, ast);
+          let out;
+          try {
+            const payload = endpoint === "/api/preview-only"
+              ? { ...ast, refineMode: currentMode }
+              : ast;
+            out = await postTo(endpoint, payload, { timeoutMs: requestTimeoutMs });
+          } catch (fetchErr) {
+            clearWaiting();
+            finishProgress(false);
+            let errMsg = String(fetchErr?.message || fetchErr);
+            const isNetwork = /failed to fetch|network|timeout|abort/i.test(errMsg);
+            if (isNetwork) {
+              errMsg += " Make sure the generator is running: in the project run 'cd generator && npm start' (server: " + BASE + ").";
+            }
+            status.textContent = "Request failed: " + errMsg;
+            setPreviewState({
+              previewUrl: "",
+              screenshotUrl: "",
+              screenshotUrls: {},
+              report: { warnings: [], errors: [errMsg], fixes: [] },
+            });
+            return;
+          }
+          clearWaiting();
 
           if (!out || out.ok !== true) {
             finishProgress(false);
-            status.textContent = "Failed: " + (out?.error || out?.message || "unknown");
+            const errMsg = out?.error || out?.message || "unknown";
+            status.textContent = "Failed: " + errMsg;
+            setPreviewState({
+              previewUrl: "",
+              screenshotUrl: "",
+              screenshotUrls: {},
+              report: { warnings: [], errors: ["Server error: " + errMsg], fixes: [] },
+            });
             return;
           }
 
           const openUrl = out.overlayUrl || out.previewUrl;
+          const previewUrl = out.previewUrl || out.overlayUrl || (out.result?.ast?.slug ? "/preview/" + encodeURIComponent(out.result.ast.slug) : "");
 
           status.textContent =
-            (out.overlayUrl ? "Overlay: " : "Preview: ") + (openUrl || "(none)") + "\n" +
+            (out.overlayUrl ? "Overlay: " : "Preview: ") + (openUrl || previewUrl || "(none)") + "\n" +
             (out.paths?.acf ? ("ACF: " + out.paths.acf + "\n") : "") +
             (out.paths?.frontend ? ("Frontend: " + out.paths.frontend + "\n") : "") +
             (out.paths?.raw ? ("Raw: " + out.paths.raw + "\n") : "") +
@@ -248,7 +387,7 @@
           if (endpoint === "/api/preview-only") {
             finishProgress(true);
             setPreviewState({
-              previewUrl: out.previewUrl || out.overlayUrl || "",
+              previewUrl: previewUrl,
               screenshotUrl: out.screenshotUrl || "",
               screenshotUrls: out.screenshotUrls || {},
               report: out.report || null,
@@ -257,8 +396,16 @@
             window.open(BASE + openUrl, "_blank");
           }
         } catch (e) {
+          if (typeof clearWaiting === "function") clearWaiting();
           finishProgress(false);
-          status.textContent = String(e?.message || e);
+          const errMsg = String(e?.message || e);
+          status.textContent = errMsg;
+          setPreviewState({
+            previewUrl: "",
+            screenshotUrl: "",
+            screenshotUrls: {},
+            report: { warnings: [], errors: [errMsg], fixes: [] },
+          });
         }
       }
     };
@@ -266,6 +413,18 @@
     renderProgressList();
     renderReport(null);
     setupPreviewTabs();
+    (function initPreviewMode() {
+      if (!previewModeEl) return;
+      const syncFromSlug = () => {
+        previewModeEl.value = loadPreviewMode(getSlug());
+      };
+      syncFromSlug();
+      const slugInput = document.getElementById("slug");
+      if (slugInput) slugInput.addEventListener("input", syncFromSlug);
+      previewModeEl.addEventListener("change", () => {
+        savePreviewMode(getSlug(), String(previewModeEl.value || "off"));
+      });
+    })();
 
     function setupPreviewTabs() {
       if (!previewTabs) return;
