@@ -13,6 +13,7 @@
     "start": "node server.js",
     "stop": "sh -c 'p=$(lsof -ti tcp:5173); [ -n \"$p\" ] && kill -9 $p || true'",
     "restart": "npm run stop && npm run start",
+    "env:check-docs": "node scripts/check-env-docs.mjs",
     "fixtures:render": "node scripts/render-fixtures.mjs",
     "fixtures:diff": "node scripts/visual-diff.mjs",
     "fixtures:all": "node scripts/render-fixtures.mjs && node scripts/visual-diff.mjs",

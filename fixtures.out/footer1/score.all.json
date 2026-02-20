@@ -1,6 +1,6 @@
 {
   "slug": "footer1",
-  "at": "2026-02-18T12:31:17.859Z",
+  "at": "2026-02-19T09:17:53.525Z",
   "results": {
     "mobile": {
       "slug": "footer1",
@@ -13,9 +13,9 @@
         "width": 1190,
         "height": 150
       },
-      "diffPixels": 177702,
+      "diffPixels": 172433,
       "totalPixels": 178500,
-      "diffRatio": 0.9955294117647059,
+      "diffRatio": 0.9660112044817927,
       "pass": false,
       "compare": {
         "threshold": 0.1,
@@ -30,7 +30,7 @@
         "width": 1216,
         "height": 325
       },
-      "at": "2026-02-18T12:31:11.414Z"
+      "at": "2026-02-19T09:17:47.409Z"
     },
     "tablet": {
       "slug": "footer1",
@@ -43,9 +43,9 @@
         "width": 1190,
         "height": 150
       },
-      "diffPixels": 177702,
+      "diffPixels": 172433,
       "totalPixels": 178500,
-      "diffRatio": 0.9955294117647059,
+      "diffRatio": 0.9660112044817927,
       "pass": false,
       "compare": {
         "threshold": 0.1,
@@ -60,7 +60,7 @@
         "width": 1216,
         "height": 325
       },
-      "at": "2026-02-18T12:31:14.982Z"
+      "at": "2026-02-19T09:17:50.642Z"
     },
     "desktop": {
       "slug": "footer1",
@@ -73,9 +73,9 @@
         "width": 1190,
         "height": 150
       },
-      "diffPixels": 177702,
+      "diffPixels": 172433,
       "totalPixels": 178500,
-      "diffRatio": 0.9955294117647059,
+      "diffRatio": 0.9660112044817927,
       "pass": false,
       "compare": {
         "threshold": 0.1,
@@ -90,7 +90,7 @@
         "width": 1216,
         "height": 325
       },
-      "at": "2026-02-18T12:31:17.844Z"
+      "at": "2026-02-19T09:17:53.510Z"
     }
   }
 }

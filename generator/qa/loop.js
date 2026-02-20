@@ -8,8 +8,7 @@ import { readStage } from "../server/stageStore.js";
 import { loadCompareDeps } from "../server/visualDiffDeps.js";
 import { captureLayoutJson } from "../server/visualDiffLayoutCapture.js";
 import { clusterOffendersFromLayout } from "./cluster.js";
-import { expectedRectsFromAst, writeExpectedRects } from "./expected.js";
-import { diagnose } from "./diagnose.js";
+import { writeExpectedRects } from "./expected.js";
 import {
   createPatch,
   resolveToNodeId,
@@ -17,7 +16,8 @@ import {
   writePatchesFile,
   rollbackPatchesFile,
 } from "./patch.js";
-import { selectFixWithAI, buildAllowedKeys } from "./aiTieBreaker.js";
+import { runConstraintEngine } from "../constraints/engine.js";
+import { validatePatchShape } from "../constraints/utils.js";
 import {
   DEFAULT_PASS_DIFF_RATIO,
   DEFAULT_MAX_ITERATIONS,
@@ -27,9 +27,6 @@ import {
   SCREENSHOT_MIN_HEIGHT,
   SCREENSHOT_WAIT_MS,
 } from "./constants.js";
-
-/** Confidence within this range = tie; may use AI once per breakpoint */
-const CONFIDENCE_TIE_THRESHOLD = 0.15;
 
 /** Epsilon for rollback: if new score is worse by more than this, rollback */
 const ROLLBACK_EPSILON = 0.005;
@@ -63,6 +60,25 @@ function readJson(p, fallback = null) {
   }
 }
 
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, Math.max(0, Number(ms) || 0)));
+}
+
+function readCurrentArtifactHtml(slug) {
+  const safe = String(slug || "").trim();
+  if (!safe) return "";
+  const outDir = path.join(ROOT, "..", "fixtures.out", safe);
+  const order = ["improve", "codeit", "generate"];
+  for (const stage of order) {
+    const file = path.join(outDir, `artifact.${stage}.json`);
+    if (!fs.existsSync(file)) continue;
+    const j = readJson(file, null);
+    const html = String(j?.html || "");
+    if (html) return html;
+  }
+  return "";
+}
+
 function baseSlugFrom(slug) {
   const s = String(slug || "").trim();
   if (!s) return "";
@@ -87,10 +103,26 @@ function resolveOutDir(slug) {
 /**
  * Run one compare cycle (multi viewport), then capture layout per bucket and run diff/cluster.
  */
-async function runCompareAndCapture({ slug, port, vdiffOutDir, qaOutDir, fetchCompare }) {
-  const compareRes = await fetchCompare(slug);
+async function runCompareAndCapture({ slug, port, vdiffOutDir, qaOutDir, fetchCompare, log = () => {} }) {
+  const MAX_COMPARE_ATTEMPTS = 3;
+  const RETRY_BASE_DELAY_MS = 300;
+  let compareRes = null;
+  let lastError = "";
+  for (let attempt = 1; attempt <= MAX_COMPARE_ATTEMPTS; attempt += 1) {
+    try {
+      compareRes = await fetchCompare(slug);
+      if (compareRes?.ok) break;
+      lastError = String(compareRes?.error || "Compare failed");
+    } catch (err) {
+      lastError = String(err?.message || err || "Compare failed");
+    }
+    if (attempt < MAX_COMPARE_ATTEMPTS) {
+      log("Compare attempt failed; retrying", { attempt, max: MAX_COMPARE_ATTEMPTS, error: lastError });
+      await sleep(RETRY_BASE_DELAY_MS * attempt);
+    }
+  }
   if (!compareRes?.ok) {
-    return { ok: false, error: compareRes?.error || "Compare failed" };
+    return { ok: false, error: lastError || compareRes?.error || "Compare failed" };
   }
 
   const scores = {};
@@ -116,10 +148,16 @@ async function runCompareAndCapture({ slug, port, vdiffOutDir, qaOutDir, fetchCo
     layouts[bucket] = layout;
     const rects = {};
     for (const el of layout || []) {
-      const key = (el?.dataKey || el?.nodeId || "").trim();
-      if (!key) continue;
+      const dataKey = String(el?.dataKey || "").trim();
+      const nodeId = String(el?.nodeId || "").trim();
+      if (!dataKey && !nodeId) continue;
       const b = el?.bbox;
-      if (b) rects[key] = { x: b.x, y: b.y, w: b.w, h: b.h };
+      if (!b) continue;
+      const box = { x: b.x, y: b.y, w: b.w, h: b.h };
+      // Keep both aliases so rule lookups work regardless of keying source
+      // (DOM data-key path vs Figma node-id).
+      if (dataKey) rects[dataKey] = box;
+      if (nodeId) rects[nodeId] = box;
     }
     outputRects[bucket] = rects;
 
@@ -171,11 +209,11 @@ export async function runVisualQALoop(options) {
   const {
     slug: slugRaw,
     port = 5173,
-    serverUrl,
     fetchCompare,
     passDiffRatio = DEFAULT_PASS_DIFF_RATIO,
     maxIterations = DEFAULT_MAX_ITERATIONS,
     patchBudget = DEFAULT_PATCH_BUDGET,
+    reportOnly = false,
   } = options;
 
   const slug = String(slugRaw || "").trim();
@@ -186,7 +224,6 @@ export async function runVisualQALoop(options) {
     try { console.log("[visual-qa]", msg, ...args); } catch {}
   };
 
-  const threshold = 1 - passDiffRatio;
   const { outDir: vdiffOutDir } = resolveOutDir(slug);
 
   if (!hasAnyFigmaInDir(vdiffOutDir)) {
@@ -219,15 +256,17 @@ export async function runVisualQALoop(options) {
   // (for example old media width hacks) do not poison the next optimization run.
   let previousPatchesMap = {};
   let currentPatchesMap = {};
-  writePatchesFile(vdiffOutDir, currentPatchesMap);
+  if (!reportOnly) {
+    writePatchesFile(vdiffOutDir, currentPatchesMap);
+  }
   let lastWorstScore = 0;
   let bestMatchScore = 0;
   let itersWithoutImprovement = 0;
   const MAX_ITERS_WITHOUT_IMPROVEMENT = 2;
   let iter = 0;
   let stoppedReason = "";
-  const aiUsedForBreakpoint = new Set();
-  const aiDecisions = [];
+  let lastError = "";
+  let lastExhaustion = null;
 
   while (iter < maxIterations && totalPatchCount < patchBudget) {
     iter += 1;
@@ -238,10 +277,13 @@ export async function runVisualQALoop(options) {
       vdiffOutDir,
       qaOutDir,
       fetchCompare,
+      log,
     });
 
     if (!cycle.ok) {
       stoppedReason = "compare-failed";
+      lastError = String(cycle?.error || "Compare failed");
+      log("Compare failed:", lastError);
       break;
     }
 
@@ -284,108 +326,91 @@ export async function runVisualQALoop(options) {
     // Save state before we apply this iteration's patches so next iter can rollback this batch
     const patchesMapBeforeThisIter = { ...currentPatchesMap };
 
-    const allIssues = [];
-    for (const bucket of ["desktop", "tablet", "mobile"]) {
-      const issues = diagnose({
-        breakpoint: bucket,
-        offenderRects: offenderRects[bucket] || [],
-        outputRects: outputRects[bucket] || {},
-        expectedRects,
-        parentRects,
-        layout: layouts[bucket] || [],
-      });
-      allIssues.push(...issues.map((i) => ({ ...i, _bucket: bucket })));
-    }
+    const htmlForRules = readCurrentArtifactHtml(slug);
+    const issues = runConstraintEngine({
+      report: { offenders: offenderRects },
+      rectsByBp: outputRects,
+      ast,
+      html: htmlForRules,
+    });
 
-    allIssues.sort((a, b) => (b.confidence ?? 0) - (a.confidence ?? 0));
-    const top = allIssues.slice(0, 2);
-    if (top.length === 0) {
+    const iterReportPath = path.join(qaOutDir, `iter-${iter - 1}-report.json`);
+    fs.writeFileSync(
+      iterReportPath,
+      JSON.stringify(
+        {
+          iter,
+          slug,
+          scores: Object.fromEntries(
+            Object.entries(scores).map(([b, s]) => [b, { score: 1 - Number(s?.diffRatio ?? 0), diffRatio: s?.diffRatio }])
+          ),
+          offenders: offenderRects,
+          issues,
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+
+    if (!issues.length) {
       stoppedReason = "no-issues";
       break;
     }
-
-    const bucket = top[0]._bucket;
-    const isTie =
-      top.length >= 2 &&
-      Math.abs((top[0].confidence ?? 0) - (top[1].confidence ?? 0)) <= CONFIDENCE_TIE_THRESHOLD;
-    const mayUseAI = isTie && !aiUsedForBreakpoint.has(bucket);
-
-    let patchesToApply = [];
-    let aiDecision = { used: false, reasoning: null, patchesSelected: 0 };
-
-    if (mayUseAI) {
-      let aiClient = null;
-      try {
-        const { getConfig, getAiClient } = await import("../config/env.js");
-        const cfg = getConfig();
-        aiClient = await getAiClient(cfg);
-      } catch {
-        // No AI client; fall back to deterministic
-      }
-      if (aiClient) {
-        const candidateFixBundles = top
-          .map((issue) => ({ issue, suggestedFix: issue.suggestedFixes?.[0] }))
-          .filter((b) => b.suggestedFix?.classes?.length);
-        const layout = layouts[bucket] || [];
-        const allowedKeys = buildAllowedKeys(candidateFixBundles, layout);
-        const evidence = {
-          expectedRects,
-          outputRects: outputRects[bucket] || {},
-          offenders: offenderRects[bucket] || [],
-          layout,
-          breakpoint: bucket,
-        };
-        const result = await selectFixWithAI(candidateFixBundles, evidence, aiClient, { allowedKeys });
-        aiDecision = {
-          used: result.usedAI,
-          reasoning: result.reasoning ?? null,
-          patchesSelected: result.patches?.length ?? 0,
-        };
-        if (result.usedAI && result.patches?.length) {
-          aiUsedForBreakpoint.add(bucket);
-          patchesToApply = result.patches;
-        }
-      }
-    }
-
-    if (patchesToApply.length === 0) {
-      for (const issue of top) {
-        const fix = issue.suggestedFixes?.[0];
-        if (!fix?.classes?.length) continue;
-        patchesToApply.push({
-          targetKey: issue.targetKey,
-          op: fix.op === "classRemove" ? "classRemove" : fix.op === "classReplace" ? "classReplace" : "classAdd",
-          classes: fix.classes,
-        });
-      }
+    if (reportOnly) {
+      stoppedReason = "report-only";
+      break;
     }
 
     let appliedThisIter = 0;
-    const layoutForApply = layouts[bucket] || [];
-    for (const p of patchesToApply) {
-      if (totalPatchCount >= patchBudget) break;
-      const nodeId = resolveToNodeId(layoutForApply, p.targetKey);
-      if (!nodeId) continue;
-      const patch = createPatch({ targetKey: p.targetKey, op: p.op, classes: p.classes });
-      if (!patch.classes?.length) continue;
-      const prevEntry = JSON.stringify(currentPatchesMap[nodeId] || {});
-      const nextMap = mergePatchIntoMap(currentPatchesMap, patch, nodeId);
-      const nextEntry = JSON.stringify(nextMap[nodeId] || {});
-      // Skip duplicate/no-op patch merges so we don't burn budget on unchanged ops.
-      if (prevEntry === nextEntry) continue;
-      currentPatchesMap = nextMap;
-      writePatchesFile(vdiffOutDir, currentPatchesMap);
-      const topIssue = top.find((i) => (i.dataKey || i.targetKey) === p.targetKey) || top[0];
-      patchesApplied.push({ iter, issueType: topIssue?.issueType, targetKey: p.targetKey, patch });
-      appliedThisIter += 1;
-      totalPatchCount += 1;
-    }
-    if (aiDecision.used || (mayUseAI && aiDecision.reasoning)) {
-      aiDecisions.push({ iter, breakpoint: bucket, ...aiDecision });
+    let attemptedPatchCount = 0;
+    let validPatchCount = 0;
+    let resolvedNodeCount = 0;
+    let mergeablePatchCount = 0;
+    // Try ranked issues/candidates until we find a patch batch that is applicable.
+    issueLoop: for (const issue of issues) {
+      const bucket = String(issue?.bp || "desktop").toLowerCase();
+      const layoutForApply = layouts[bucket] || [];
+      const candidates = Array.isArray(issue?.candidates) ? issue.candidates : [];
+      for (const candidate of candidates) {
+        const candidatePatches = Array.isArray(candidate?.patches) ? candidate.patches : [];
+        let appliedThisCandidate = 0;
+        for (const p of candidatePatches) {
+          if (totalPatchCount >= patchBudget) break issueLoop;
+          attemptedPatchCount += 1;
+          if (!validatePatchShape(p)) continue;
+          validPatchCount += 1;
+          const nodeId = resolveToNodeId(layoutForApply, p.targetKey);
+          if (!nodeId) continue;
+          resolvedNodeCount += 1;
+          const patch = createPatch({ targetKey: p.targetKey, op: p.op, classes: p.classes });
+          if (!patch.classes?.length) continue;
+          const prevEntry = JSON.stringify(currentPatchesMap[nodeId] || {});
+          const nextMap = mergePatchIntoMap(currentPatchesMap, patch, nodeId);
+          const nextEntry = JSON.stringify(nextMap[nodeId] || {});
+          // Skip duplicate/no-op patch merges so we don't burn budget on unchanged ops.
+          if (prevEntry === nextEntry) continue;
+          mergeablePatchCount += 1;
+          currentPatchesMap = nextMap;
+          writePatchesFile(vdiffOutDir, currentPatchesMap);
+          patchesApplied.push({ iter, issueType: issue?.issueType, targetKey: p.targetKey, patch });
+          appliedThisIter += 1;
+          appliedThisCandidate += 1;
+          totalPatchCount += 1;
+        }
+        // Commit one applicable candidate batch per iteration, then re-render.
+        if (appliedThisCandidate > 0) break issueLoop;
+      }
     }
 
     if (appliedThisIter === 0) {
-      stoppedReason = "no-applicable-fix";
+      lastExhaustion = {
+        attemptedPatchCount,
+        validPatchCount,
+        resolvedNodeCount,
+        mergeablePatchCount,
+      };
+      stoppedReason = attemptedPatchCount > 0 ? "exhausted-candidates" : "no-applicable-fix";
       break;
     }
     previousPatchesMap = patchesMapBeforeThisIter;
@@ -405,10 +430,11 @@ export async function runVisualQALoop(options) {
     ok: stoppedReason === "pass",
     slug,
     stoppedReason,
+    error: lastError || undefined,
     iterations: iter,
     totalPatchCount,
     patchesApplied,
-    aiDecisions: aiDecisions.length ? aiDecisions : undefined,
+    exhausted: lastExhaustion || undefined,
     reportPath: finalReportPath,
     patchesPath,
     qaOutDir,

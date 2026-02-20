@@ -933,12 +933,12 @@ ${css}
         <button id="ov_scores" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50">
           Scores
         </button>
+        <span id="analysis_source_badge" class="text-xs px-2 py-1 border rounded-md bg-slate-50 text-slate-600 border-slate-200" title="Visual analysis source">
+          analysis: —
+        </span>
         `
           : ``
       }
-        <button id="visual_qa_btn" class="text-sm px-3 py-1 border rounded-md bg-white hover:bg-slate-50 border-slate-300" type="button" title="Run Visual QA + Auto-Fix loop (compare vs design, apply class-only patches)">
-          Run Visual QA
-        </button>
       </div>
     </div>
   </div>
@@ -1219,6 +1219,8 @@ ${css}
           "Running validation…",
           "Rendering screenshot…",
           "Sending payload…",
+          "Running Visual QA…",
+          "Improving fidelity…",
           "Done.",
         ],
         codeit: [
@@ -1578,6 +1580,85 @@ ${css}
         }
       };
 
+      const appendLog = (line) => {
+        const next = String(line || "").trim();
+        if (!next) return;
+        const prev = logEl ? String(logEl.textContent || "").trim() : "";
+        setLog(prev ? (prev + "\\n" + next) : next);
+      };
+
+      const runGeneratePostSteps = async () => {
+        const currentSlug = String(window.__CURRENT_PREVIEW_SLUG__ || slug || "").trim();
+        if (!currentSlug) return;
+        appendLog("[post-generate] starting Visual QA + Improve fidelity…");
+
+        setStepState("Running Visual QA…", "active");
+        setStatus("Running Visual QA…");
+        try {
+          const qaResp = await fetch("/api/visual-qa/" + encodeURIComponent(currentSlug), {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              mode: "report",
+              reportOnly: true,
+              passDiffRatio: 0.02,
+              maxIterations: 1,
+              patchBudget: 1,
+            }),
+          });
+          const qaOut = await qaResp.json().catch(() => ({}));
+          if (!qaResp.ok) {
+            appendLog("[post-generate][visual-qa] failed: " + String(qaOut?.error || qaResp.status));
+          } else {
+            appendLog(
+              "[post-generate][visual-qa] " +
+                String(qaOut?.stoppedReason || "done") +
+                " (iterations=" +
+                String(qaOut?.iterations ?? 0) +
+                ")"
+            );
+          }
+        } catch (e) {
+          appendLog("[post-generate][visual-qa] error: " + String(e?.message || e));
+        } finally {
+          setStepState("Running Visual QA…", "done");
+        }
+
+        setStepState("Improving fidelity…", "active");
+        setStatus("Running Improve fidelity…");
+        try {
+          const improveResp = await fetch("/api/build-preview", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              slug: currentSlug,
+              refineMode: "visual",
+              autoFix: 1,
+              maxIterations: 5,
+              patchBudget: 10,
+            }),
+          });
+          const improveOut = await improveResp.json().catch(() => ({}));
+          if (!improveResp.ok || !improveOut?.ok) {
+            appendLog("[post-generate][improve] failed: " + String(improveOut?.error || improveResp.status));
+          } else {
+            const patches = Number(improveOut?.qa?.totalPatchCount || 0);
+            appendLog(
+              "[post-generate][improve] " +
+                String(improveOut?.qa?.stoppedReason || "done") +
+                " (patches=" +
+                String(patches) +
+                ")"
+            );
+          }
+        } catch (e) {
+          appendLog("[post-generate][improve] error: " + String(e?.message || e));
+        } finally {
+          setStepState("Improving fidelity…", "done");
+        }
+        appendLog("[post-generate] completed Visual QA + Improve fidelity.");
+      };
+
       const runPipelineStage = async (stage) => {
         setStageActive(stage, true);
         if (!modalBackdrop) {
@@ -1618,6 +1699,9 @@ ${css}
                 "?stage=" +
                 encodeURIComponent(stage) +
                 location.hash);
+            if (stage === "generate") {
+              await runGeneratePostSteps();
+            }
             setStatus("Done. Review output in this modal, then use Open preview.");
             setPreviewUrl(previewUrl);
             setStepState("Done.", "done");
@@ -1739,7 +1823,16 @@ ${css}
         const parser = new DOMParser();
         const parsed = parser.parseFromString("<div>" + html + "</div>", "text/html");
         const incomingLayer = parsed.querySelector(".content-layer");
-        if (incomingLayer) {
+        const currentIframe = document.getElementById("vp_iframe");
+        const incomingIframe = incomingLayer ? incomingLayer.querySelector("#vp_iframe") : null;
+        const incomingSrcdoc = incomingIframe ? String(incomingIframe.getAttribute("srcdoc") || "") : "";
+
+        // Preserve the existing iframe node so viewport/resize listeners stay bound.
+        if (currentIframe && incomingSrcdoc) {
+          const incomingStyle = incomingIframe ? String(incomingIframe.getAttribute("style") || "") : "";
+          if (incomingStyle) currentIframe.setAttribute("style", incomingStyle);
+          currentIframe.setAttribute("srcdoc", incomingSrcdoc);
+        } else if (incomingLayer) {
           contentLayer.innerHTML = incomingLayer.innerHTML;
         } else {
           // Fallback only if embed payload shape changed.
@@ -1760,6 +1853,9 @@ ${css}
           if (ovEnabled) ovEnabled.dispatchEvent(new Event("change", { bubbles: true }));
           if (ovOpacity) ovOpacity.dispatchEvent(new Event("input", { bubbles: true }));
           if (ovDiff) ovDiff.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+        if (typeof window.__previewViewportSync === "function") {
+          window.__previewViewportSync();
         }
       };
       window.__reloadCurrentPreview__ = window.reloadCurrentPreview;
@@ -3428,6 +3524,7 @@ ${css}
 
       // Scores modal unchanged (uses window.__CURRENT_PREVIEW_SLUG__)
       const scoreBtn = document.getElementById('ov_scores');
+      const analysisSourceBadge = document.getElementById('analysis_source_badge');
       const modalBackdrop = document.getElementById('score_modal_backdrop');
       const modalClose = document.getElementById('score_modal_close');
       const runCompareBtn = document.getElementById('score_run_compare');
@@ -3469,6 +3566,29 @@ ${css}
         } catch { return '—'; }
       }
 
+      function applyAnalysisSourceBadge(score){
+        if (!analysisSourceBadge) return;
+        const source = String(score?.analysisSource || '').trim().toLowerCase();
+        if (source === 'python') {
+          analysisSourceBadge.textContent = 'analysis: python';
+          analysisSourceBadge.style.background = 'rgba(220,252,231,1)';
+          analysisSourceBadge.style.borderColor = 'rgba(134,239,172,1)';
+          analysisSourceBadge.style.color = 'rgba(22,101,52,1)';
+          return;
+        }
+        if (source === 'js') {
+          analysisSourceBadge.textContent = 'analysis: js';
+          analysisSourceBadge.style.background = 'rgba(241,245,249,1)';
+          analysisSourceBadge.style.borderColor = 'rgba(203,213,225,1)';
+          analysisSourceBadge.style.color = 'rgba(51,65,85,1)';
+          return;
+        }
+        analysisSourceBadge.textContent = 'analysis: —';
+        analysisSourceBadge.style.background = 'rgba(248,250,252,1)';
+        analysisSourceBadge.style.borderColor = 'rgba(226,232,240,1)';
+        analysisSourceBadge.style.color = 'rgba(100,116,139,1)';
+      }
+
       function applyScore(score){
         if (!scoreEls.pill) return;
 
@@ -3482,6 +3602,7 @@ ${css}
           scoreEls.passDiffRatio.textContent = "—";
           scoreEls.viewport.textContent = "—";
           scoreEls.at.textContent = "—";
+          applyAnalysisSourceBadge(null);
           return;
         }
 
@@ -3502,6 +3623,7 @@ ${css}
             ? \`\${score.viewport.width}×\${score.viewport.height}\`
             : '—';
         scoreEls.at.textContent = fmtDate(score.at);
+        applyAnalysisSourceBadge(score);
 
         const currentSlug = getSlug();
         const base = \`/fixtures.out/\${encodeURIComponent(currentSlug)}\`;
@@ -3581,11 +3703,18 @@ ${css}
             scoreEls.pill.textContent = "Compare error";
           }
           if (scoreEls.main) scoreEls.main.textContent = (e && e.message) ? e.message : String(e);
+          applyAnalysisSourceBadge(null);
         } finally {
           runCompareBtn.disabled = false;
           runCompareBtn.textContent = "Run compare";
         }
       });
+
+      // Keep toolbar badge informative even when modal is closed.
+      (async function initAnalysisSourceBadge(){
+        const score = await loadLatestScore();
+        applyAnalysisSourceBadge(score);
+      })();
     })();
   </script>
   `
@@ -3595,9 +3724,10 @@ ${css}
   <script>
     (function(){
       const visualQaBtn = document.getElementById('visual_qa_btn');
+      const improveBtn = document.getElementById('improve_fidelity_btn');
       const toast = document.getElementById('refine_toast');
       const modalBackdrop = document.getElementById('visual_qa_modal_backdrop');
-      if (!visualQaBtn) return;
+      if (!visualQaBtn && !improveBtn) return;
       function getSlug() {
         return String(window.__CURRENT_PREVIEW_SLUG__ || (document.body && document.body.getAttribute("data-preview-slug")) || "").trim();
       }
@@ -3613,7 +3743,26 @@ ${css}
         modalBackdrop.style.display = show ? "flex" : "none";
         modalBackdrop.setAttribute("aria-hidden", show ? "false" : "true");
       }
-      visualQaBtn.addEventListener('click', async function() {
+      function applyFinalHtmlToIframe(finalHtml) {
+        const html = String(finalHtml || "").trim();
+        if (!html) return false;
+        const iframe = document.getElementById("vp_iframe");
+        if (!iframe) return false;
+        let doc = null;
+        try { doc = iframe.contentDocument; } catch {}
+        if (!doc || !doc.body) return false;
+        const root = doc.querySelector('[data-key="root"]');
+        const target = (root && (root.closest("section") || root)) || doc.querySelector("section") || null;
+        if (!target) return false;
+        try {
+          target.outerHTML = html;
+          if (typeof window.__previewViewportSync === "function") window.__previewViewportSync();
+          return true;
+        } catch {
+          return false;
+        }
+      }
+      if (visualQaBtn) visualQaBtn.addEventListener('click', async function() {
         const slug = getSlug();
         if (!slug) {
           showToast("No preview slug.", true);
@@ -3626,7 +3775,7 @@ ${css}
           const r = await fetch("/api/visual-qa/" + encodeURIComponent(slug), {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ passDiffRatio: 0.02, maxIterations: 8, patchBudget: 20 }),
+            body: JSON.stringify({ mode: "report", reportOnly: true, passDiffRatio: 0.02, maxIterations: 1, patchBudget: 1 }),
           });
           const out = await r.json().catch(function() { return {}; });
           showModal(false);
@@ -3634,20 +3783,52 @@ ${css}
             showToast(out.error || "Visual QA failed (" + r.status + ")", true);
             return;
           }
-          const patchCount = out.totalPatchCount || 0;
-          const msg = out.ok
-            ? "Visual QA passed. Patches: " + patchCount + "."
-            : "Visual QA stopped: " + (out.stoppedReason || "done") + ". Patches applied: " + patchCount + ".";
+          const issueCount = Number(out?.exhausted?.attemptedPatchCount || 0);
+          const msg = "Visual QA report finished: " + (out.stoppedReason || "done") + ".";
           showToast(msg, false);
-          if (patchCount > 0 && typeof window.reloadCurrentPreview === "function") {
-            window.reloadCurrentPreview({ preserveOverlayState: true }).catch(function() {});
-          }
+          if (issueCount > 0) console.log("[visual-qa] report summary", out);
         } catch (e) {
           showModal(false);
           showToast((e && e.message) ? e.message : "Visual QA request failed", true);
         } finally {
           visualQaBtn.disabled = false;
           visualQaBtn.textContent = "Run Visual QA";
+        }
+      });
+
+      if (improveBtn) improveBtn.addEventListener('click', async function() {
+        const slug = getSlug();
+        if (!slug) {
+          showToast("No preview slug.", true);
+          return;
+        }
+        improveBtn.disabled = true;
+        improveBtn.textContent = "Improving…";
+        showModal(true);
+        try {
+          const r = await fetch("/api/build-preview", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ slug, refineMode: "visual", autoFix: 1, maxIterations: 5, patchBudget: 10 }),
+          });
+          const out = await r.json().catch(function() { return {}; });
+          showModal(false);
+          if (!r.ok || !out?.ok) {
+            showToast(out?.error || "Improve fidelity failed", true);
+            return;
+          }
+          const patchCount = Number(out?.qa?.totalPatchCount || 0);
+          const appliedInline = applyFinalHtmlToIframe(out?.finalHtml);
+          showToast("Improve fidelity finished. Patches: " + patchCount + (appliedInline ? " (applied to preview)." : "."), false);
+          if (!appliedInline && typeof window.reloadCurrentPreview === "function") {
+            window.reloadCurrentPreview({ preserveOverlayState: true }).catch(function() {});
+          }
+        } catch (e) {
+          showModal(false);
+          showToast((e && e.message) ? e.message : "Improve fidelity request failed", true);
+        } finally {
+          improveBtn.disabled = false;
+          improveBtn.textContent = "Improve fidelity";
         }
       });
     })();

@@ -162,3 +162,31 @@ test("overlay pass classifies content-like overlaps and keeps them in flow", () 
     "expected content-like overlay warning"
   );
 });
+
+test("semantic pass converts structural spans in button trees to div wrappers", () => {
+  const html = `
+<button data-node="b1" class="btn" type="button">
+  <span data-node="outer" class="flex gap-1">
+    <span data-node="label">Find a group</span>
+    <span data-node="icon-wrap" class="overflow-hidden w-full">
+      <img data-node="icon" src="/assets/icon-x.png" />
+    </span>
+  </span>
+</button>
+`.trim();
+
+  const ast = {
+    tree: {
+      id: "root",
+      type: "FRAME",
+      name: "root",
+      children: [],
+    },
+  };
+
+  const { html: out } = semanticAccessiblePass({ html, ast, semantics: {} });
+  assert.match(out, /<button\b[^>]*>/i);
+  assert.match(out, /<div data-node="outer" class="flex gap-1">/i);
+  assert.match(out, /<div data-node="icon-wrap" class="overflow-hidden w-full">/i);
+  assert.match(out, /<span data-node="label">Find a group<\/span>/i);
+});

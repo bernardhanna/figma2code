@@ -1,0 +1,30 @@
+{
+  "slug": "icontest6",
+  "mode": "mobile",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1254,
+    "height": 150
+  },
+  "diffPixels": 24515,
+  "totalPixels": 188100,
+  "diffRatio": 0.13032961190855927,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/icontest6/figma.mobile.png",
+    "width": 1280,
+    "height": 494
+  },
+  "at": "2026-02-19T10:50:59.354Z"
+}

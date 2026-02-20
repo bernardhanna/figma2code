@@ -243,6 +243,69 @@ test("improve caps proposed candidates per node before trial gate", async () => 
   assert.ok(Number(capGroup.count || 0) >= 2, "proposed cap should skip at least two candidates");
 });
 
+test("improve caps total trial-gate attempts per run", async () => {
+  const inputArtifact = {
+    schemaVersion: PIPELINE_ARTIFACT_SCHEMA_VERSION,
+    slug: "improve-thrash-global-cap",
+    stage: "codeit",
+    createdAt: new Date().toISOString(),
+    html: "<div data-key=\"node-1\">A</div><div data-key=\"node-2\">B</div><div data-key=\"node-3\">C</div>",
+    patches: [],
+    assets: {},
+    diagnostics: {},
+    metrics: baseMetrics,
+  };
+
+  let written = null;
+  await run({
+    slug: "improve-thrash-global-cap",
+    evaluateFn: () => ({ diagnostics: {}, metrics: baseMetrics }),
+    readInputArtifactFn: () => inputArtifact,
+    readExistingArtifactFn: () => null,
+    writeArtifactFn: (_slug, artifact) => {
+      written = artifact;
+    },
+    writeHistorySnapshotFn: () => {},
+    generatePatchPlanFn: () => ({
+      patches: [
+        {
+          nodeId: "node-1",
+          selector: "[data-key=\"node-1\"]",
+          ops: { classAdd: ["text-sm"], classRemove: [], classReplace: {}, attrAdd: {}, attrRemove: [] },
+        },
+        {
+          nodeId: "node-2",
+          selector: "[data-key=\"node-2\"]",
+          ops: { classAdd: ["text-lg"], classRemove: [], classReplace: {}, attrAdd: {}, attrRemove: [] },
+        },
+        {
+          nodeId: "node-3",
+          selector: "[data-key=\"node-3\"]",
+          ops: { classAdd: ["text-xl"], classRemove: [], classReplace: {}, attrAdd: {}, attrRemove: [] },
+        },
+      ],
+      diagnostics: [],
+      warnings: [],
+    }),
+    configOverride: {
+      requireVisualDiff: false,
+      maxTotalTrialsPerRun: 1,
+      gate: { enabled: true, maxVisualDelta: 0, requireImprovement: true },
+    },
+    log: () => {},
+  });
+
+  assert.ok(written, "artifact should be written");
+  const groups = Array.isArray(written?.diagnostics?.rejectionReasonGroups)
+    ? written.diagnostics.rejectionReasonGroups
+    : [];
+  const capGroup = groups.find((g) =>
+    /Global trial cap reached/i.test(String(g?.reason || ""))
+  );
+  assert.ok(capGroup, "global trial cap reason should be present");
+  assert.ok(Number(capGroup.count || 0) >= 1, "global trial cap should skip remaining trials");
+});
+
 test("cleanup-kind patches can pass gate with no visual improvement", async () => {
   const inputArtifact = {
     schemaVersion: PIPELINE_ARTIFACT_SCHEMA_VERSION,

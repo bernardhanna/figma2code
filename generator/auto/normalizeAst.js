@@ -16,6 +16,8 @@
 // - Input nodes match your exported schema (id/type/name/children/text/typography/img/actions/auto/etc).
 // - This file is invoked before autoLayoutify/render.
 //
+import { resolveInteractiveIntent } from "./interactiveIntent.js";
+
 
 function isObj(x) {
   return x && typeof x === "object" && !Array.isArray(x);
@@ -351,6 +353,8 @@ function normalizeNode(node, seen = new Map()) {
       }
     }
   }
+
+  n.intent = resolveInteractiveIntent(n, { semantics: null });
 
   return n;
 }

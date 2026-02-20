@@ -27,6 +27,9 @@ import {
   setVideoBgFromTree,
 } from "./backgroundFallback.js";
 import { layoutIntentV2Pass } from "../auto/layoutIntentV2Pass.js";
+import { iconIsolationPass } from "../passes/iconIsolationPass.js";
+import { svgViewBoxValidationPass } from "../passes/svgViewBoxValidationPass.js";
+import { rasterIconComposePass } from "../passes/rasterIconComposePass.js";
 
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
@@ -285,6 +288,9 @@ export function renderOneFragment({
   previewOnly,
 }) {
   let a = maybeAnnotateWithComponentMatch(ast);
+  a = iconIsolationPass(a) || a;
+  a = svgViewBoxValidationPass(a) || a;
+  a = rasterIconComposePass(a) || a;
 
   if (normalizeAst) {
     const r = normalizeAst(a);

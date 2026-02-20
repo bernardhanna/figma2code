@@ -73,6 +73,21 @@ test("horizontal hug child does not force width class", () => {
   assert.equal(cls.trim(), "");
 });
 
+test("horizontal tiny icon wrapper with fill intent stays fixed width", () => {
+  const node = {
+    id: "icon-wrap",
+    name: "Icon",
+    w: 20,
+    h: 20,
+    size: { primary: "FILL", counter: "HUG" },
+    children: [{ id: "icon-leaf" }],
+  };
+  const cls = childSizing(node, "HORIZONTAL");
+  assert.ok(cls.includes("w-[1.25rem]"));
+  assert.ok(!cls.includes("grow"));
+  assert.ok(!cls.includes("basis-0"));
+});
+
 test("resolveAxisIntents uses parent axis to derive width/height intents", () => {
   const node = {
     id: "axis-intent",
@@ -89,10 +104,10 @@ test("resolveAxisIntents uses parent axis to derive width/height intents", () =>
 test("large padding emits mobile cap and md: full value", () => {
   const al = { padT: 0, padR: 208, padB: 0, padL: 208 };
   const cls = paddings(al);
-  assert.match(cls, /\bpr-20\b/);
-  assert.match(cls, /\bmd:pr-52\b/);
-  assert.match(cls, /\bpl-20\b/);
-  assert.match(cls, /\bmd:pl-52\b/);
+  assert.match(cls, /\bpr-5\b/);
+  assert.match(cls, /\bxl:pr-52\b/);
+  assert.match(cls, /\bpl-5\b/);
+  assert.match(cls, /\bxl:pl-52\b/);
 });
 
 test("vertical fixed-width content gets responsive width (full on mobile)", () => {

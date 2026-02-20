@@ -134,6 +134,13 @@ function sizeClassesFromNode(node) {
   const w = typeof node?.w === "number" && node.w > 0 ? node.w : null;
   const h = typeof node?.h === "number" && node.h > 0 ? node.h : null;
 
+  const locked = node?.__lockedLayout === true;
+  if (locked) {
+    const wc = w ? `w-[${rem(w)}]` : "w-4";
+    const hc = h ? `h-[${rem(h)}]` : "";
+    return cls("inline-block", "align-middle", "object-contain", "shrink-0", wc, hc);
+  }
+
   // Prefer your manual arrow sizing: w-4 (~16px)
   const wc = w && Math.abs(w - 16) <= 1 ? "w-4" : w ? `w-[${rem(w)}]` : "w-4";
   const hc = h && Math.abs(h - 16) <= 1 ? "h-4" : h ? `h-[${rem(h)}]` : "";
@@ -141,8 +148,17 @@ function sizeClassesFromNode(node) {
   return cls("object-contain", "self-stretch", "my-auto", "shrink-0", wc, hc);
 }
 
+function dimensionsForSvg(node) {
+  const w = typeof node?.w === "number" && node.w > 0 ? node.w : 16;
+  const h = typeof node?.h === "number" && node.h > 0 ? node.h : 16;
+  return { w, h };
+}
+
 export function renderSvgLeaf(node) {
-  const svg = node?.svg || node?.vector || null;
+  const svg =
+    typeof node?.svg === "string" && node.svg.trim()
+      ? { markup: node.svg }
+      : node?.svg || node?.vector || null;
   if (!svg) return "";
 
   const stateClasses = node?.tw ? String(node.tw).trim() : "";
@@ -151,9 +167,12 @@ export function renderSvgLeaf(node) {
 
   // Case 1: full markup
   if (svg.markup || svg.html) {
-    const markup = stripOuterSvg(svg.markup || svg.html);
+    let markup = stripOuterSvg(svg.markup || svg.html);
     if (!markup) return "";
     if (MAX_INLINE_DATA > 0 && markup.length > MAX_INLINE_DATA) return "";
+    if (node?.__lockedLayout === true && !/preserveAspectRatio=/i.test(markup)) {
+      markup = markup.replace("<svg", '<svg preserveAspectRatio="xMidYMid meet"');
+    }
 
     const classes = allClasses;
     const color = colorFromNode(node);
@@ -180,6 +199,7 @@ export function renderSvgLeaf(node) {
         null;
 
   if (paths && paths.length) {
+    const { w, h } = dimensionsForSvg(node);
     const classes = allClasses;
     const color = colorFromNode(node);
     const mode = drawMode(node);
@@ -204,7 +224,7 @@ export function renderSvgLeaf(node) {
       includeAria: true,
       style: color ? `color:${color};` : "",
     });
-    return `<svg${attrs} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">${dMarkup}</svg>`;
+    return `<svg${attrs} width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">${dMarkup}</svg>`;
   }
 
   // Case 3: single d string
@@ -215,6 +235,7 @@ export function renderSvgLeaf(node) {
 
   if (d && d.trim()) {
     if (MAX_INLINE_DATA > 0 && d.length > MAX_INLINE_DATA) return "";
+    const { w, h } = dimensionsForSvg(node);
     const classes = allClasses;
     const color = colorFromNode(node);
     const mode = drawMode(node);
@@ -227,7 +248,7 @@ export function renderSvgLeaf(node) {
       includeAria: true,
       style: color ? `color:${color};` : "",
     });
-    return `<svg${attrs} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="${escAttr(d.trim())}"${strokeAttrs}></path></svg>`;
+    return `<svg${attrs} width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="${escAttr(d.trim())}"${strokeAttrs}></path></svg>`;
   }
 
   return "";

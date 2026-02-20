@@ -33,9 +33,21 @@ function isButtonLike(node) {
   return name.includes("button") || name.includes("cta") || key.includes("button") || key.includes("cta");
 }
 
+function isIconWrapperLike(node) {
+  const name = String(node?.name || "").toLowerCase();
+  const key = String(node?.key || "").toLowerCase();
+  const hasKids = Array.isArray(node?.children) && node.children.length > 0;
+  const w = Number(node?.w);
+  const h = Number(node?.h);
+  const tiny = Number.isFinite(w) && Number.isFinite(h) && w > 0 && h > 0 && w <= 48 && h <= 48;
+  const tag = String(node?.tag || "").toLowerCase();
+  return hasKids && (tiny || /\b(icon|arrow|chevron|caret|glyph)\b/.test(name) || /\b(icon|arrow|chevron|caret|glyph)\b/.test(key) || tag === "svg");
+}
+
 function shouldPreferFixedForFillInRow(node) {
   const w = num(node?.size?.w) ? node.size.w : num(node?.w) ? node.w : null;
   if (!pos(w)) return false;
+  if (isIconWrapperLike(node)) return true;
   if (w > 280) return false;
   return isButtonLike(node);
 }
@@ -142,6 +154,9 @@ export function sizeClassForLeaf(node, parentLayout, isRoot, isText) {
   const h = num(s.h ?? node.h) ? (s.h ?? node.h) : null;
   const { widthIntent, heightIntent } = resolveAxisIntents(node, parentLayout);
   if (parentLayout === "HORIZONTAL") {
+    if (isIconWrapperLike(node) && num(s.w ?? node.w)) {
+      return cls(...widthTokensForNode(node, "HORIZONTAL"), pos(h) ? `h-[${rem(h)}]` : "");
+    }
     const forceFixed = widthIntent === "FILL" && shouldPreferFixedForFillInRow(node);
     const widthTokens =
       widthIntent === "FILL" && !forceFixed
@@ -195,6 +210,10 @@ export function childSizing(node, parentLayout) {
   }
 
   if (parentLayout === "HORIZONTAL") {
+    if (isIconWrapperLike(node) && (num(s.w) || num(node.w))) {
+      out.push(...widthTokensForNode(node, "HORIZONTAL"));
+      return out.join(" ");
+    }
     const forceFixed = widthIntent === "FILL" && shouldPreferFixedForFillInRow(node);
     if (widthIntent === "FILL" && !forceFixed) out.push("grow", "basis-0", "min-w-0");
     else if (forceFixed) out.push(...widthTokensForNode(node, "HORIZONTAL"));
@@ -217,18 +236,25 @@ export function alignSelf(node) {
   return SELF[a] || "";
 }
 
-/** Max padding (px) on small viewports; larger padding is applied only from md up. */
-const MOBILE_MAX_PADDING_PX = 80;
+/** Conservative side padding on small viewports; avoid ultra-wide gutters on phones. */
+const MOBILE_MAX_PADDING_PX_X = 20;
+/** Top/bottom can stay roomier than side gutters on small viewports. */
+const MOBILE_MAX_PADDING_PX_Y = 80;
+/** Very large side padding should only activate on large desktop viewports. */
+const LARGE_SIDE_PADDING_PX = 80;
 
 function paddingClasses(prefix, px, opts = {}) {
   const value = Number(px);
   if (!Number.isFinite(value) || value <= 0) return [];
-  const { forcePxBracket } = opts;
+  const { forcePxBracket, axis = "y" } = opts;
+  const isHorizontal = axis === "x";
+  const mobileCap = isHorizontal ? MOBILE_MAX_PADDING_PX_X : MOBILE_MAX_PADDING_PX_Y;
+  const responsiveBp = isHorizontal && value > LARGE_SIDE_PADDING_PX ? "xl" : "md";
   const out = [];
-  if (value > MOBILE_MAX_PADDING_PX) {
-    out.push(spacingClass(prefix, MOBILE_MAX_PADDING_PX));
+  if (value > mobileCap) {
+    out.push(spacingClass(prefix, mobileCap));
     const desktopClass = spacingClass(prefix, px, forcePxBracket ? { forcePxBracket: true } : {});
-    if (desktopClass) out.push(`md:${desktopClass}`);
+    if (desktopClass) out.push(`${responsiveBp}:${desktopClass}`);
     return out;
   }
   if (forcePxBracket) {
@@ -260,7 +286,7 @@ export function paddings(al, opts = {}) {
     );
   }
   if (pos(al.padR)) {
-    out.push(...paddingClasses("pr", al.padR));
+    out.push(...paddingClasses("pr", al.padR, { axis: "x" }));
   }
   if (pos(al.padB)) {
     const forcePx = !isHero && Number(al.padB) > MAX_NON_HERO_PADDING_PX;
@@ -278,7 +304,7 @@ export function paddings(al, opts = {}) {
     );
   }
   if (pos(al.padL)) {
-    out.push(...paddingClasses("pl", al.padL));
+    out.push(...paddingClasses("pl", al.padL, { axis: "x" }));
   }
   return out.join(" ");
 }

@@ -4,6 +4,13 @@ import { visibleStroke } from "./stroke.js";
 import { blendToTW } from "./paint.js";
 import { gradientToCss } from "./paint.js";
 
+function toTailwindArbitraryValue(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  // Tailwind arbitrary values in class attributes cannot contain literal spaces.
+  return raw.replace(/\s+/g, "_");
+}
+
 export function firstFill(node) {
   const fills = Array.isArray(node.fills) ? node.fills : [];
   return fills.find((f) => f && f.kind && f.kind !== "none");
@@ -150,7 +157,7 @@ function bgFromFills(node) {
 
   if (gradients.length) {
     const gcss = gradientToCss(gradients[0]);
-    if (gcss) bgImageCss = `bg-[${gcss}]`;
+    if (gcss) bgImageCss = `bg-[${toTailwindArbitraryValue(gcss)}]`;
   } else if (solids.length) {
     const f = solids[solids.length - 1];
     const r255 = Math.round(f.r * 255);

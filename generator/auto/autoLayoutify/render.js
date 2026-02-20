@@ -10,6 +10,7 @@
 import { cls, num, pos, rem, remTypo, spacingClass } from "./precision.js";
 import { escAttr } from "./escape.js";
 import { twFontClassForFamily } from "./fonts.js";
+import { resolveInteractiveIntent } from "../interactiveIntent.js";
 
 import {
   aiTagFor,
@@ -41,7 +42,10 @@ import { refineCtaClasses } from "./ctaRefine.js";
 
 import { resolveCtaInnerHtml, resolveCtaLabel } from "./ctaLabel.js";
 import { renderSvgLeaf } from "./svgRender.js";
-import { isCtaNode } from "./interactiveRules.js";
+import {
+  applyTextLinkClassContract,
+} from "./textLinkContract.js";
+import { renderTextLinkSimplifiedBody } from "../../contracts/textLinkSimplifier.contract.js";
 
 /* ------------------ tag helpers ------------------ */
 
@@ -55,7 +59,21 @@ function openTag(tag, classes = "", attrs = "", node, ctx) {
 
   const injectedFromNode = node?.tw ? String(node.tw) : "";
 
-  const finalClasses = cls(classes, injectedFromNode, injectedFromCtx);
+  let finalClasses = cls(classes, injectedFromNode, injectedFromCtx);
+  const isRootLikeTextLink =
+    node?.intent?.interactiveStyle === "text_link" &&
+    node?.intent?.interactiveType === "link" &&
+    (tag === "a" || tag === "button");
+  const isTextLinkNode = isRootLikeTextLink;
+  if (isTextLinkNode) {
+    finalClasses = applyTextLinkClassContract({
+      node,
+      classString: finalClasses,
+      role: "root",
+      hasIcon: true,
+      strictWidth: false,
+    });
+  }
 
   return `<${tag}${nodeId}${attrs}${finalClasses ? ` class="${finalClasses}"` : ""}>`;
 }
@@ -72,6 +90,120 @@ function attrsFromMap(attrs) {
     })
     .filter(Boolean)
     .join("");
+}
+
+function stripIconClassAttrsInInteractiveInner(html) {
+  const s = String(html || "");
+  if (!s.trim()) return s;
+  let out = s
+    .replace(/<img\b([^>]*?)\sclass="[^"]*"([^>]*?)\/?>/gi, (m, pre, post) => {
+      const selfClose = /\/>$/.test(m);
+      return `<img${pre}${post}${selfClose ? " />" : ">"}`;
+    })
+    .replace(/<svg\b([^>]*?)\sclass="[^"]*"([^>]*?)>/gi, (_m, pre, post) => {
+      return `<svg${pre}${post}>`;
+    });
+  // Strip classes from icon-only wrapper spans/divs.
+  out = out
+    .replace(
+      /<(span|div)\b([^>]*?)\sclass="[^"]*"([^>]*?)>(\s*(?:<(?:span|div)\b[^>]*>\s*<\/(?:span|div)>\s*)?(?:<svg[\s\S]*?<\/svg>|<img\b[^>]*\/?>)\s*)<\/\1>/gi,
+      (_m, tag, pre, post, inner) => `<${tag}${pre}${post}>${inner}</${tag}>`
+    )
+    .replace(
+      /<(span|div)\b([^>]*?)\sclass="[^"]*"([^>]*?)>\s*<\/\1>/gi,
+      (_m, tag, pre, post) => `<${tag}${pre}${post}></${tag}>`
+    );
+  return out;
+}
+
+function ctaTypographyClasses(node, ctx) {
+  const textNodes = collectTextNodesDeep(node, []);
+  const firstText = textNodes[0] || null;
+  const textTypo = firstText?.typography || {};
+  const textLeaf = firstText?.text || {};
+  const recoveredFromText = {
+    family: textTypo.family || textLeaf.fontFamily || textLeaf.family || textLeaf.fontName?.family || "",
+    sizePx:
+      typeof textTypo.sizePx === "number"
+        ? textTypo.sizePx
+        : typeof textLeaf.fontSize === "number"
+          ? textLeaf.fontSize
+          : null,
+    lineHeightPx:
+      typeof textTypo.lineHeightPx === "number"
+        ? textTypo.lineHeightPx
+        : typeof textLeaf.lineHeightPx === "number"
+          ? textLeaf.lineHeightPx
+          : null,
+    letterSpacingPx:
+      typeof textTypo.letterSpacingPx === "number"
+        ? textTypo.letterSpacingPx
+        : typeof textLeaf.letterSpacingPx === "number"
+          ? textLeaf.letterSpacingPx
+          : 0,
+    weight:
+      typeof textTypo.weight === "number"
+        ? textTypo.weight
+        : typeof textLeaf.fontWeight === "number"
+          ? textLeaf.fontWeight
+          : null,
+    italic: !!(textTypo.italic || textLeaf.italic),
+    uppercase: !!(textTypo.uppercase || textLeaf.uppercase),
+    decoration: textTypo.decoration || textLeaf.decoration || "",
+    colorHex: textTypo.colorHex || textLeaf.colorHex || textLeaf.fillHex || "",
+  };
+  const t = node?.cta?.typography || recoveredFromText || {};
+  if (!t || typeof t !== "object") return "";
+
+  const family = String(t.family || "").trim();
+  const ffClass = family ? twFontClassForFamily(family, ctx?.fontMap) : "";
+  const fs = typeof t.sizePx === "number" ? `text-[${remTypo(t.sizePx)}]` : "";
+  const lh =
+    typeof t.lineHeightPx === "number" && t.lineHeightPx > 0
+      ? `leading-[${remTypo(t.lineHeightPx)}]`
+      : "";
+  const ls =
+    typeof t.letterSpacingPx === "number" && t.letterSpacingPx !== 0
+      ? `tracking-[${remTypo(t.letterSpacingPx)}]`
+      : "";
+  const fw = typeof t.weight === "number" ? `font-[${t.weight}]` : "";
+  const ital = t.italic ? "italic" : "";
+  const tt = t.uppercase ? "uppercase" : "";
+  const decoText =
+    t.decoration === "underline"
+      ? "underline"
+      : t.decoration === "line-through"
+        ? "line-through"
+        : "";
+  const colorHex = typeof t.colorHex === "string" ? t.colorHex.trim() : "";
+  const color = colorHex ? `text-[${colorHex}]` : "";
+
+  return cls(fs, lh, ls, fw, color, ffClass, ital, decoText, tt);
+}
+
+function isTimelineRailNode(node) {
+  const key = String(node?.key || "").toLowerCase();
+  const name = String(node?.name || "").toLowerCase();
+  const children = Array.isArray(node?.children) ? node.children : [];
+  const eventChildren = children.filter((c) => {
+    const ck = String(c?.key || "").toLowerCase();
+    const cn = String(c?.name || "").toLowerCase();
+    return ck.includes("frame:event") || /\bevent\b/.test(cn);
+  });
+  const lineLikeChild = children.some((c) => {
+    const w = Number(c?.w);
+    const ck = String(c?.key || "").toLowerCase();
+    const cn = String(c?.name || "").toLowerCase();
+    return (Number.isFinite(w) && w > 0 && w <= 2) || ck.includes("rectangle") || cn.includes("rectangle");
+  });
+  return (key.includes("frame:time") || /\btime|timeline\b/.test(name)) && eventChildren.length >= 3 && lineLikeChild;
+}
+
+function shouldRelaxTinyInteractiveWidth(node) {
+  const w = Number(node?.w);
+  if (!Number.isFinite(w) || w <= 0 || w > 32) return false;
+  const textNodes = collectTextNodesDeep(node, []);
+  return textNodes.some((t) => String(t?.text?.raw || "").trim().length > 0);
 }
 
 function normalizeIntent(raw) {
@@ -585,6 +717,8 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
       : node?.__states?.default?.children) || [];
   const nodeForLayout =
     children === node.children ? node : { ...node, children };
+  const interactiveIntent = resolveInteractiveIntent(node, { semantics });
+  if (!node.intent || node.intent === null) node.intent = interactiveIntent;
 
   const heroLike =
     /\bhero\b/i.test(String(node?.name || "")) ||
@@ -629,12 +763,20 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
         noWrap: isDecorativeBar,
       });
 
+  const hasCtaMeta = !!node.cta;
+
   let tag =
     aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
+  if (interactiveIntent.interactiveType === "link") tag = "a";
+  else if (interactiveIntent.interactiveType === "button") tag = "button";
+  else if (hasCtaMeta && tag === "div") tag = "button";
 
   // SAFETY: never render auto-layout containers as interactive unless they have explicit actions
   const hasChildren = Array.isArray(children) && children.length > 0;
-  const hasActions = !!(node?.actions?.openUrl || node?.actions?.isClickable === true);
+  const hasActions = !!(
+    interactiveIntent.interactiveType !== "none" ||
+    hasCtaMeta
+  );
 
   if (hasChildren && (tag === "a" || tag === "button") && !hasActions) {
     tag = "div";
@@ -652,53 +794,83 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   ]);
   if (!containerOk.has(tag)) tag = "div";
 
-  const hrefFromAI = aiHrefFor(node, semantics);
+  const hrefFromAI = aiHrefFor(node, semantics) || interactiveIntent.href;
 
   const isButtonTag = tag === "button";
   const isLinkTag = tag === "a";
   const isButtonLikeLink = isLinkTag && (node.actions?.openUrl || hrefFromAI);
 
-  const hasCtaMeta = !!node.cta;
   const isCtaInteractive = hasCtaMeta && (isButtonTag || isButtonLikeLink);
 
-  const refined = hasCtaMeta ? refineCtaClasses(node) : null;
+  const refined =
+    hasCtaMeta && interactiveIntent.interactiveStyle === "button"
+      ? refineCtaClasses(node)
+      : null;
 
-  const ctaFixed = hasCtaMeta ? fixedSizeClassesForCta(node) : "";
+  const ctaFixed =
+    hasCtaMeta && interactiveIntent.interactiveStyle === "button"
+      ? fixedSizeClassesForCta(node)
+      : "";
+  const isTextLinkCta =
+    interactiveIntent.interactiveType === "link" &&
+    interactiveIntent.interactiveStyle === "text_link";
 
-  const ctaBase = hasCtaMeta
+  const ctaBase = hasCtaMeta && interactiveIntent.interactiveStyle === "button"
     ? cls(
       "btn",
-      "inline-flex justify-center items-center gap-2",
+      "inline-flex",
       "whitespace-nowrap",
       "hover:opacity-90 transition-opacity duration-200",
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
       refined?.pad || "",
       refined?.minH || "",
+      ctaTypographyClasses(node, ctx),
       ctaFixed
     )
     : "";
 
   const fixedSize = fixedBoxSize(node, /*allowH=*/ true);
-  const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize);
+  const timelineRailClasses = isTimelineRailNode(node)
+    ? cls(
+        Number.isFinite(Number(node?.w)) && Number(node.w) > 0 ? `w-[${rem(node.w)}]` : "",
+        Number.isFinite(Number(node?.h)) && Number(node.h) > 0 ? `min-h-[${rem(node.h)}]` : "",
+        "shrink-0",
+        "items-center",
+        "justify-between"
+      )
+    : "";
+  const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize, timelineRailClasses);
 
-  const pieces = children
-    .map((child) => {
-      if (ctx?.suppressBgIds?.has(child.id)) return null;
-
-      const sizing = childSizing(child, useGrid ? "GRID" : al.layout);
-      const self = alignSelf(child);
-
-      // Instead of wrapping in a <div>, inject these onto the child's own root element.
-      if ((sizing || self) && child?.id) {
-        if (!ctx.classInject) ctx.classInject = new Map();
-        const prev = String(ctx.classInject.get(child.id) || "");
-        ctx.classInject.set(child.id, cls(prev, sizing, self));
-      }
-
-      return renderNode(child, useGrid ? "GRID" : al.layout, false, semantics, ctx);
+  const simplifiedTextLinkBody = isTextLinkCta
+    ? renderTextLinkSimplifiedBody({
+      node,
+      semantics,
+      ctx,
+      renderNode,
+      typographyClassesFromTextNode,
+      fallbackLabel: bestCtaLabel(node, semantics),
+      fallbackTypoClass: typographyClassesFromRecovered(node, ctx),
     })
-    .filter(Boolean)
-    .join("\n");
+    : null;
+
+  const pieces = simplifiedTextLinkBody || children
+        .map((child) => {
+          if (ctx?.suppressBgIds?.has(child.id)) return null;
+
+          const sizing = childSizing(child, useGrid ? "GRID" : al.layout);
+          const self = alignSelf(child);
+
+          // Instead of wrapping in a <div>, inject these onto the child's own root element.
+          if ((sizing || self) && child?.id) {
+            if (!ctx.classInject) ctx.classInject = new Map();
+            const prev = String(ctx.classInject.get(child.id) || "");
+            ctx.classInject.set(child.id, cls(prev, sizing, self));
+          }
+
+          return renderNode(child, useGrid ? "GRID" : al.layout, false, semantics, ctx);
+        })
+        .filter(Boolean)
+        .join("\n");
 
   const hrefAttr = isLinkTag
     ? ` href="${escAttr(hrefFromAI || node.actions?.openUrl || "#")}"`
@@ -709,8 +881,11 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     ? bestCtaLabel(node, semantics)
     : (aiLabelFor(node, semantics) || "").trim();
 
+  const hasVisibleTextLabel = !!bestCtaLabel(node, semantics);
   const aria =
-    isCtaInteractive && label ? ` aria-label="${escAttr(label)}"` : "";
+    isCtaInteractive && label && !hasVisibleTextLabel
+      ? ` aria-label="${escAttr(label)}"`
+      : "";
 
   let body = pieces;
 
@@ -731,6 +906,10 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     }
   } else {
     body = body || "";
+  }
+
+  if (isCtaInteractive) {
+    body = stripIconClassAttrsInInteractiveInner(body);
   }
 
   return (
@@ -783,6 +962,8 @@ function renderOptionsFromList(options) {
 }
 
 function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
+  const interactiveIntent = resolveInteractiveIntent(node, { semantics });
+  if (!node.intent || node.intent === null) node.intent = interactiveIntent;
   const svg = renderSvgLeaf(node);
   if (svg) return svg;
 
@@ -889,6 +1070,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
           ? "line-through"
           : "";
 
+    const relaxTinyWidth = shouldRelaxTinyInteractiveWidth(node);
     const classes = cls(
       baseSize,
       deco,
@@ -914,23 +1096,27 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     );
   }
 
-  const forced =
+  let forced =
     aiLeafTag === "a" || aiLeafTag === "button" ? aiLeafTag : shouldRenderAsLinkOrButton(node);
+  if (interactiveIntent.interactiveType === "link") forced = "a";
+  else if (interactiveIntent.interactiveType === "button") forced = "button";
 
   if (forced === "a" || forced === "button") {
     const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ false);
     const clip = node.clipsContent ? "overflow-hidden" : "";
     const baseSize = sizeClassForLeaf(node, parentLayout, isRoot, false);
 
-    const refined = refineCtaClasses(node);
+    const refined =
+      interactiveIntent.interactiveStyle === "button" ? refineCtaClasses(node) : null;
 
-    const href = aiLeafHref || node.actions?.openUrl || "";
+    const href = aiLeafHref || interactiveIntent.href || node.actions?.openUrl || "";
     const isLink = forced === "a" || !!href;
     const tag = isLink ? "a" : "button";
 
     const recoveredLabel = (node?.cta?.label || "").trim();
     const label = recoveredLabel || resolveCtaLabel(node, semantics) || "";
-    const aria = label ? ` aria-label="${escAttr(label)}"` : "";
+    const hasVisibleText = !!collectTextNodesDeep(node, []).length;
+    const aria = label && !hasVisibleText ? ` aria-label="${escAttr(label)}"` : "";
 
     let inner = resolveCtaInnerHtml(node, semantics, (c) =>
       renderNode(c, parentLayout, false, semantics, ctx)
@@ -985,15 +1171,26 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
         `</span>`;
     }
 
+    inner = stripIconClassAttrsInInteractiveInner(inner);
+    const relaxTinyWidth = shouldRelaxTinyInteractiveWidth(node);
+
     const classes = cls(
       baseSize,
       deco,
       clip,
-      "flex gap-2 justify-center items-center",
-      "w-fit whitespace-nowrap max-sm:w-full",
+      interactiveIntent.interactiveStyle === "text_link"
+        ? "inline-flex gap-1 justify-start items-center whitespace-nowrap"
+        : "flex gap-2 justify-center items-center",
+      interactiveIntent.interactiveStyle === "text_link" ? "" : "w-fit whitespace-nowrap max-sm:w-full",
       refined?.pad || "",
       refined?.minH || "",
-      "btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+      relaxTinyWidth ? `!w-auto !max-w-none min-w-[${rem(node.w)}]` : "",
+      interactiveIntent.interactiveStyle === "text_link"
+        ? "hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        : cls(
+            "btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+            ctaTypographyClasses(node, ctx)
+          )
     );
 
     const hrefAttr = isLink ? ` href="${escAttr(href || "#")}"` : "";
@@ -1017,10 +1214,37 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
   }
 
   if (node.img?.src) {
-    const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ true);
+    const iconishName = /\b(icon|vector|arrow|chevron|caret|glyph|logo|ellipse)\b/i.test(
+      String(node?.name || "")
+    );
+    const iconishSrc = /\/assets\/(?:icon|vector|ellipse)-/i.test(String(node?.img?.src || ""));
+    const isIconLikeImage =
+      !!(node?.__iconComposedImage || node?.__lockedLayout || iconishName || iconishSrc);
+
+    const keepIconBoxDeco = !!(node?.__iconComposedImage && hasOwnBoxDeco(node));
+    const deco =
+      isIconLikeImage && !keepIconBoxDeco
+        ? ""
+        : boxDeco(node, /*isText=*/ false, /*omitBg=*/ !keepIconBoxDeco);
     const clip = node.clipsContent ? "overflow-hidden" : "";
-    const sizeForImg = sizeClassForImg(node, parentLayout);
-    const classes = cls(sizeForImg, deco, clip, "object-cover");
+    const baseImgSize = sizeClassForImg(node, parentLayout);
+    const iw = typeof node?.w === "number" && node.w > 0 ? node.w : node?.img?.w;
+    const ih = typeof node?.h === "number" && node.h > 0 ? node.h : node?.img?.h;
+    const iconSize =
+      isIconLikeImage && iw && ih
+        ? cls(`w-[${rem(iw)}]`, `h-[${rem(ih)}]`, "shrink-0")
+        : "";
+    const sizeForImg = iconSize || baseImgSize;
+    const roundedHint =
+      (node?.__iconComposedImage || node?.__lockedLayout) &&
+      isIconLikeImage &&
+      iw &&
+      ih &&
+      Math.abs(Number(iw) - Number(ih)) <= 0.5
+        ? "rounded-full"
+        : "";
+    const objectMode = isIconLikeImage ? "object-contain" : "object-cover";
+    const classes = cls(sizeForImg, deco, roundedHint, clip, objectMode);
 
     const alt = escAttr(node.name || "Image");
 

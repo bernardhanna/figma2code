@@ -116,6 +116,60 @@ function tokensToString(tokens) {
   return tokens.map((t) => t.value).join("");
 }
 
+function findMatchingCloseIndex(tokens, openIndex, tagName) {
+  let depth = 0;
+  const target = String(tagName || "").toLowerCase();
+  for (let i = openIndex; i < tokens.length; i++) {
+    const tk = tokens[i];
+    if (tk.type !== "tag") continue;
+    const p = parseTag(tk.value);
+    if (p.name !== target) continue;
+    if (p.kind === "open") depth++;
+    if (p.kind === "close") depth--;
+    if (depth === 0) return i;
+  }
+  return -1;
+}
+
+function collapseStructuralSpans(tokens, report) {
+  // Replace span wrappers that contain structural children with div wrappers.
+  // This keeps text spans intact but avoids button markup like span>span>img stacks.
+  for (let i = 0; i < tokens.length; i++) {
+    const tk = tokens[i];
+    if (tk.type !== "tag") continue;
+    const open = parseTag(tk.value);
+    if (open.kind !== "open" || open.name !== "span") continue;
+
+    const closeIndex = findMatchingCloseIndex(tokens, i, "span");
+    if (closeIndex <= i) continue;
+
+    let hasStructuralChild = false;
+    let hasTextOnly = false;
+    for (let j = i + 1; j < closeIndex; j++) {
+      const inner = tokens[j];
+      if (inner.type === "text" && trimText(inner.value)) {
+        hasTextOnly = true;
+        continue;
+      }
+      if (inner.type !== "tag") continue;
+      const p = parseTag(inner.value);
+      if (p.kind === "open" || p.kind === "self") {
+        if (p.name !== "span" || p.kind === "self") hasStructuralChild = true;
+      }
+    }
+    if (!hasStructuralChild) continue;
+    if (hasTextOnly && !getAttr(open.attrs, "data-node")) continue;
+
+    // rewrite open span -> div
+    tokens[i] = { type: "tag", value: buildTag("div", open.attrs, "open") };
+
+    // rewrite matching close span -> div
+    const close = parseTag(tokens[closeIndex].value);
+    tokens[closeIndex] = { type: "tag", value: buildTag("div", close.attrs, "close") };
+    report?.fixes?.push("Converted structural span wrapper to div for cleaner interactive markup.");
+  }
+}
+
 function findNodeById(astTree, id) {
   if (!astTree || !id) return null;
   let found = null;
@@ -1143,6 +1197,8 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
       );
     }
   }
+
+  collapseStructuralSpans(tokens, report);
 
   let outHtml = tokensToString(tokens);
   outHtml = upgradeRootHeroBanner({ html: outHtml, ast, semantics, report });

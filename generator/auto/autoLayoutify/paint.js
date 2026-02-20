@@ -1,16 +1,28 @@
 // generator/auto/autoLayoutify/paint.js
 import { rnd } from "./precision.js";
 
+function figmaToCssLinearAngle(angleDeg) {
+  const a = Number(angleDeg);
+  if (!Number.isFinite(a)) return 0;
+  const css = (450 - a) % 360;
+  return css < 0 ? css + 360 : css;
+}
+
+function stopPct(pos) {
+  const p = Number(pos);
+  if (!Number.isFinite(p)) return "0%";
+  const clamped = Math.max(0, Math.min(1, p));
+  return `${rnd(clamped * 100, 2)}%`;
+}
+
 export function gradientToCss(g) {
   if (!g || g.kind !== "gradient") return "";
   if (g.type === "LINEAR") {
-    const angle = `${rnd(g.angle, 6)}deg`;
+    const angle = `${rnd(figmaToCssLinearAngle(g.angle), 6)}deg`;
     const stops = (g.stops || [])
       .map(
         (s) =>
-          `rgba(${Math.round(s.r * 255)},${Math.round(s.g * 255)},${Math.round(s.b * 255)},${s.a ?? 1}) ${Math.round(
-            (s.pos ?? 0) * 100
-          )}%`
+          `rgba(${Math.round(s.r * 255)},${Math.round(s.g * 255)},${Math.round(s.b * 255)},${s.a ?? 1}) ${stopPct(s.pos)}`
       )
       .join(", ");
     return `linear-gradient(${angle}, ${stops})`;
@@ -21,9 +33,7 @@ export function gradientToCss(g) {
     const stops = (g.stops || [])
       .map(
         (s) =>
-          `rgba(${Math.round(s.r * 255)},${Math.round(s.g * 255)},${Math.round(s.b * 255)},${s.a ?? 1}) ${Math.round(
-            (s.pos ?? 0) * 100
-          )}%`
+          `rgba(${Math.round(s.r * 255)},${Math.round(s.g * 255)},${Math.round(s.b * 255)},${s.a ?? 1}) ${stopPct(s.pos)}`
       )
       .join(", ");
     return `radial-gradient(circle at ${cx}% ${cy}%, ${stops})`;

@@ -27,6 +27,8 @@ import {
 } from "./fragmentPipeline.js";
 import { runBuildAndPreview } from "./buildOrchestrator.js";
 import { listStages, deleteStage } from "./stageStore.js";
+import { runVisualQALoop } from "../qa/loop.js";
+import { applyPatches } from "../qa/applyPatches.js";
 
 import { normalizeAst } from "../auto/normalizeAst.js";
 import { buildIntentGraph } from "../auto/intentGraphPass.js";
@@ -280,6 +282,23 @@ function normalizeRefineModeInput(raw) {
   return "off";
 }
 
+function isVisualRefineMode(raw) {
+  const mode = String(raw || "").trim().toLowerCase();
+  return mode === "visual" || mode === "preview+visual" || mode === "preview_visual";
+}
+
+function readBestArtifactHtml(slug) {
+  const s = String(slug || "").trim();
+  if (!s) return "";
+  const order = ["improve", "codeit", "generate"];
+  for (const stage of order) {
+    const artifact = readArtifact(s, stage);
+    const html = String(artifact?.html || "");
+    if (html) return html;
+  }
+  return "";
+}
+
 function requestBaseUrl(req, port) {
   const proto = String(req?.headers?.["x-forwarded-proto"] || req?.protocol || "http")
     .split(",")[0]
@@ -387,7 +406,15 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
 
       if (!r.ok) return res.status(r.status || 500).json({ ok: false, error: r.error });
 
-      const refineMode = normalizeRefineModeInput(req?.body?.refineMode);
+      const refineModeRaw = req?.body?.refineMode;
+      const refineMode = normalizeRefineModeInput(refineModeRaw);
+      const autoFixMode =
+        String(req?.body?.autoFix || "").trim() === "1" ||
+        req?.body?.autoFix === true ||
+        isVisualRefineMode(refineModeRaw);
+      const qaMode =
+        String(req?.body?.qaMode || "").trim() === "1" ||
+        req?.body?.qaMode === true;
       const build = await runBuildAndPreview({
         slug: r.ast.slug,
         refineMode,
@@ -403,6 +430,58 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       }
       const buildReport = readBuildReport(build.reportPath);
       const previewOut = path.join(PREVIEW_DIR, `${r.ast.slug}.html`);
+
+      let qaResult = null;
+      let finalHtml = "";
+      if (autoFixMode || qaMode) {
+        const baseUrl = requestBaseUrl(req, port);
+        const fetchCompare = async (slug) => {
+          const url = `${baseUrl}/api/compare/${encodeURIComponent(String(slug || "").trim())}`;
+          try {
+            const resp = await fetch(url, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                multi: true,
+                viewports: "all",
+                passDiffRatio: 0.02,
+                screenshot: { mode: "element", selector: "#cmp_root", minHeight: 50 },
+                waitMs: 250,
+              }),
+            });
+            const data = await resp.json().catch(() => ({}));
+            return { ok: Boolean(resp.ok && data?.ok), error: data?.error || (resp.ok ? "" : "compare failed") };
+          } catch (e) {
+            return { ok: false, error: String(e?.message || e) };
+          }
+        };
+
+        qaResult = await runVisualQALoop({
+          slug: r.ast.slug,
+          port,
+          fetchCompare,
+          passDiffRatio: 0.015, // score target ~= 0.985
+          maxIterations: Math.max(1, Math.min(10, Number(req?.body?.maxIterations ?? 5))),
+          patchBudget: Math.max(1, Math.min(30, Number(req?.body?.patchBudget ?? 10))),
+          reportOnly: qaMode && !autoFixMode,
+        });
+
+        if (autoFixMode) {
+          const htmlBase = readBestArtifactHtml(r.ast.slug);
+          const patchOps = Array.isArray(qaResult?.patchesApplied)
+            ? qaResult.patchesApplied.map((entry) => entry?.patch).filter(Boolean)
+            : [];
+          const patched = applyPatches(htmlBase, patchOps);
+          finalHtml = String(patched?.html || "");
+          if (qaResult?.qaOutDir && finalHtml) {
+            try {
+              fs.writeFileSync(path.join(qaResult.qaOutDir, "final.html"), finalHtml, "utf8");
+            } catch {
+              // non-fatal
+            }
+          }
+        }
+      }
 
       const { viewports, minHeight } = resolvePreviewViewports(r.ast);
       let screenshotUrls = {};
@@ -426,17 +505,18 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       const contractsSummary = buildContractsSummary(buildReport?.contracts || null);
 
       console.log("[preview-only] sending response, slug:", r.ast.slug);
-      return res.json(
-        buildPreviewResponse({
-          previewUrl: `/preview/${r.ast.slug}`,
-          screenshotUrl,
-          screenshotUrls,
-          report,
-          contractsSummary,
-          paths: { preview: previewOut },
-          result: r,
-        })
-      );
+      const response = buildPreviewResponse({
+        previewUrl: `/preview/${r.ast.slug}`,
+        screenshotUrl,
+        screenshotUrls,
+        report,
+        contractsSummary,
+        paths: { preview: previewOut },
+        result: r,
+      });
+      if (qaResult) response.qa = qaResult;
+      if (finalHtml) response.finalHtml = finalHtml;
+      return res.json(response);
     } catch (e) {
       console.error("[preview-only] error:", e);
       return res.status(500).json({ ok: false, error: String(e?.message || e) });
@@ -860,7 +940,12 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
     if (!slug) {
       return res.status(400).json({ ok: false, error: "Missing slug", stage: "inputs" });
     }
-    const refineMode = normalizeRefineModeInput(req?.body?.refineMode ?? req?.query?.refineMode);
+    const refineModeRaw = req?.body?.refineMode ?? req?.query?.refineMode;
+    const refineMode = normalizeRefineModeInput(refineModeRaw);
+    const autoFixMode =
+      String(req?.body?.autoFix ?? req?.query?.autoFix ?? "").trim() === "1" ||
+      req?.body?.autoFix === true ||
+      isVisualRefineMode(refineModeRaw);
     try {
       const result = await runBuildAndPreview({
         slug,
@@ -868,6 +953,38 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         baseUrl: requestBaseUrl(req, port),
       });
       if (result.ok) {
+        let qaResult = null;
+        if (autoFixMode) {
+          const baseUrl = requestBaseUrl(req, port);
+          const fetchCompare = async (slugValue) => {
+            const url = `${baseUrl}/api/compare/${encodeURIComponent(String(slugValue || "").trim())}`;
+            try {
+              const resp = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  multi: true,
+                  viewports: "all",
+                  passDiffRatio: 0.02,
+                  screenshot: { mode: "element", selector: "#cmp_root", minHeight: 50 },
+                  waitMs: 250,
+                }),
+              });
+              const data = await resp.json().catch(() => ({}));
+              return { ok: Boolean(resp.ok && data?.ok), error: data?.error || (resp.ok ? "" : "compare failed") };
+            } catch (e) {
+              return { ok: false, error: String(e?.message || e) };
+            }
+          };
+          qaResult = await runVisualQALoop({
+            slug,
+            port,
+            fetchCompare,
+            passDiffRatio: 0.015,
+            maxIterations: Math.max(1, Math.min(10, Number(req?.body?.maxIterations ?? req?.query?.maxIterations ?? 5))),
+            patchBudget: Math.max(1, Math.min(30, Number(req?.body?.patchBudget ?? req?.query?.patchBudget ?? 10))),
+          });
+        }
         const prefersJson =
           /application\/json/i.test(String(req.get("accept") || "")) ||
           req.get("accept") === "*/*";
@@ -877,7 +994,8 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
             slug: result.slug,
             reportPath: result.reportPath,
             previewUrl: `/preview/${encodeURIComponent(result.slug)}`,
-            refineMode,
+            refineMode: autoFixMode ? "visual" : refineMode,
+            qa: qaResult,
           });
         }
         return res.redirect(302, `/preview/${encodeURIComponent(result.slug)}`);
@@ -994,6 +1112,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       <select id="refine_mode" name="refineMode" style="margin-left:0.5rem;">
         <option value="off">Preview (fast)</option>
         <option value="ai">Preview + Refine (slower, best match)</option>
+        <option value="visual">Improve fidelity (visual auto-fix)</option>
       </select>
     </label>
     <button type="submit" style="padding:0.5rem 1rem;cursor:pointer;">Build &amp; Open Preview</button>
@@ -1058,7 +1177,9 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
         var mode = String(report.refineMode || "off").toLowerCase();
         modeEl.textContent = mode === "ai"
           ? "Mode: preview + refine (slower, best match)"
-          : "Mode: preview (fast)";
+          : mode === "visual"
+            ? "Mode: improve fidelity (visual auto-fix)"
+            : "Mode: preview (fast)";
       }
       var nodes = document.querySelectorAll("#build-steps li[data-stage]");
       nodes.forEach(function(node) {
@@ -1205,7 +1326,9 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       if (modeEl) {
         modeEl.textContent = refineMode === "ai"
           ? "Mode: preview + refine (slower, best match)"
-          : "Mode: preview (fast)";
+          : refineMode === "visual"
+            ? "Mode: improve fidelity (visual auto-fix)"
+            : "Mode: preview (fast)";
       }
       var btn = form.querySelector('button');
       btn.disabled = true;
@@ -1236,7 +1359,7 @@ export function registerPreviewAndGenerateRoutes(app, { port } = {}) {
       var refineModeEl = document.getElementById("refine_mode");
       if (!refineModeEl) return;
       var saved = loadRefineMode();
-      if (saved === "ai" || saved === "off") {
+      if (saved === "ai" || saved === "off" || saved === "visual") {
         refineModeEl.value = saved;
       } else {
         refineModeEl.value = "off";

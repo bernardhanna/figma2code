@@ -1,0 +1,261 @@
+{
+  "slug": "map1",
+  "at": "2026-02-19T10:05:01.896Z",
+  "results": {
+    "mobile": {
+      "score": {
+        "slug": "map1",
+        "url": "http://127.0.0.1:5173/preview/map1?ov=0&vpw=768",
+        "viewport": {
+          "width": 768,
+          "height": 900
+        },
+        "screenshot": {
+          "mode": "element",
+          "selector": "#cmp_root",
+          "box": {
+            "x": 13,
+            "y": 156,
+            "width": 742,
+            "height": 1400
+          },
+          "minHeight": 200
+        },
+        "figma": {
+          "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/figma.png",
+          "width": 1280,
+          "height": 632,
+          "src": "/fixtures.out/map1/figma.mobile.png",
+          "mode": "mobile"
+        },
+        "render": {
+          "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/render.mobile.png",
+          "width": 742,
+          "height": 1400
+        },
+        "compared": {
+          "width": 742,
+          "height": 632
+        },
+        "compare": {
+          "threshold": 0.1,
+          "includeAA": true,
+          "passDiffRatio": 0.03,
+          "alignWindow": 12,
+          "alignStep": 2
+        },
+        "alignment": {
+          "dx": 0,
+          "dy": 0
+        },
+        "bestDx": 0,
+        "bestDy": 0,
+        "alignmentSearched": true,
+        "searchRadiusPx": 12,
+        "alignmentDownscale": 0.5,
+        "alignmentDiffRatio": 0.31205999653199235,
+        "analysisSource": "js",
+        "diffPixels": 128962,
+        "totalPixels": 468944,
+        "diffRatio": 0.2750051178818793,
+        "layoutDiffPixels": 16862,
+        "layoutDiffRatio": 0.2934563174382179,
+        "layoutDownscale": 0.35,
+        "layoutBlurRadius": 0,
+        "layoutScore": {
+          "conflictingWidthCount": 0
+        },
+        "failureMode": "none",
+        "failureSignals": {
+          "absBestDx": 0,
+          "absBestDy": 0,
+          "diffRatio": 0.2750051178818793,
+          "layoutDiffRatio": 0.2934563174382179,
+          "conflictingWidthCount": 0,
+          "overflowXCount": 0,
+          "wrongLayoutModel": false
+        },
+        "pass": false,
+        "at": "2026-02-19T10:04:39.169Z",
+        "mode": "mobile"
+      },
+      "scorePath": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/score.mobile.json",
+      "artifacts": {
+        "figma": "/fixtures.out/map1/figma.mobile.png",
+        "render": "/fixtures.out/map1/render.mobile.png",
+        "diff": "/fixtures.out/map1/diff.mobile.png",
+        "score": "/fixtures.out/map1/score.mobile.json"
+      }
+    },
+    "tablet": {
+      "score": {
+        "slug": "map1",
+        "url": "http://127.0.0.1:5173/preview/map1?ov=0&vpw=1024",
+        "viewport": {
+          "width": 1024,
+          "height": 900
+        },
+        "screenshot": {
+          "mode": "element",
+          "selector": "#cmp_root",
+          "box": {
+            "x": 13,
+            "y": 156,
+            "width": 998,
+            "height": 1400
+          },
+          "minHeight": 200
+        },
+        "figma": {
+          "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/figma.png",
+          "width": 1280,
+          "height": 632,
+          "src": "/fixtures.out/map1/figma.tablet.png",
+          "mode": "tablet"
+        },
+        "render": {
+          "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/render.tablet.png",
+          "width": 998,
+          "height": 1400
+        },
+        "compared": {
+          "width": 986,
+          "height": 632
+        },
+        "compare": {
+          "threshold": 0.1,
+          "includeAA": true,
+          "passDiffRatio": 0.03,
+          "alignWindow": 12,
+          "alignStep": 2
+        },
+        "alignment": {
+          "dx": -12,
+          "dy": -11
+        },
+        "bestDx": -12,
+        "bestDy": -11,
+        "alignmentSearched": true,
+        "searchRadiusPx": 12,
+        "alignmentDownscale": 0.5,
+        "alignmentDiffRatio": 0.33408863327085525,
+        "analysisSource": "js",
+        "diffPixels": 201565,
+        "totalPixels": 623152,
+        "diffRatio": 0.3234604077335867,
+        "layoutDiffPixels": 26263,
+        "layoutDiffRatio": 0.3444553741228933,
+        "layoutDownscale": 0.35,
+        "layoutBlurRadius": 0,
+        "layoutScore": {
+          "conflictingWidthCount": 0
+        },
+        "failureMode": "offsetDominated",
+        "failureSignals": {
+          "absBestDx": 12,
+          "absBestDy": 11,
+          "diffRatio": 0.3234604077335867,
+          "layoutDiffRatio": 0.3444553741228933,
+          "conflictingWidthCount": 0,
+          "overflowXCount": 0,
+          "wrongLayoutModel": false
+        },
+        "pass": false,
+        "at": "2026-02-19T10:04:51.214Z",
+        "mode": "tablet"
+      },
+      "scorePath": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/score.tablet.json",
+      "artifacts": {
+        "figma": "/fixtures.out/map1/figma.tablet.png",
+        "render": "/fixtures.out/map1/render.tablet.png",
+        "diff": "/fixtures.out/map1/diff.tablet.png",
+        "score": "/fixtures.out/map1/score.tablet.json"
+      }
+    },
+    "desktop": {
+      "score": {
+        "slug": "map1",
+        "url": "http://127.0.0.1:5173/preview/map1?ov=0&vpw=1280",
+        "viewport": {
+          "width": 1280,
+          "height": 900
+        },
+        "screenshot": {
+          "mode": "element",
+          "selector": "#cmp_root",
+          "box": {
+            "x": 13,
+            "y": 118,
+            "width": 1254,
+            "height": 1171
+          },
+          "minHeight": 200
+        },
+        "figma": {
+          "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/figma.desktop.png",
+          "width": 1280,
+          "height": 632,
+          "src": "/fixtures.out/map1/figma.desktop.png",
+          "mode": "desktop"
+        },
+        "render": {
+          "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/render.desktop.png",
+          "width": 1254,
+          "height": 1171
+        },
+        "compared": {
+          "width": 1254,
+          "height": 632
+        },
+        "compare": {
+          "threshold": 0.1,
+          "includeAA": true,
+          "passDiffRatio": 0.03,
+          "alignWindow": 12,
+          "alignStep": 2
+        },
+        "alignment": {
+          "dx": 0,
+          "dy": 0
+        },
+        "bestDx": 0,
+        "bestDy": 0,
+        "alignmentSearched": true,
+        "searchRadiusPx": 12,
+        "alignmentDownscale": 0.5,
+        "alignmentDiffRatio": 0.3893169449030759,
+        "analysisSource": "js",
+        "diffPixels": 284685,
+        "totalPixels": 792528,
+        "diffRatio": 0.359211283386833,
+        "layoutDiffPixels": 35833,
+        "layoutDiffRatio": 0.3693400261804389,
+        "layoutDownscale": 0.35,
+        "layoutBlurRadius": 0,
+        "layoutScore": {
+          "conflictingWidthCount": 0
+        },
+        "failureMode": "none",
+        "failureSignals": {
+          "absBestDx": 0,
+          "absBestDy": 0,
+          "diffRatio": 0.359211283386833,
+          "layoutDiffRatio": 0.3693400261804389,
+          "conflictingWidthCount": 0,
+          "overflowXCount": 0,
+          "wrongLayoutModel": false
+        },
+        "pass": false,
+        "at": "2026-02-19T10:05:01.847Z",
+        "mode": "desktop"
+      },
+      "scorePath": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/map1/score.desktop.json",
+      "artifacts": {
+        "figma": "/fixtures.out/map1/figma.desktop.png",
+        "render": "/fixtures.out/map1/render.desktop.png",
+        "diff": "/fixtures.out/map1/diff.desktop.png",
+        "score": "/fixtures.out/map1/score.desktop.json"
+      }
+    }
+  }
+}
