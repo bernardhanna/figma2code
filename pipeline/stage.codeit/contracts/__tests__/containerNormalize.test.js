@@ -25,7 +25,7 @@ test("wrapper div -> section becomes section -> container div", () => {
     hasStructure(out.html, "section", "div"),
     "section is outer, div with w-full max-w is inner"
   );
-  assert.ok(out.html.includes("max-w-[80rem]"), "canonical container class");
+  assert.ok(out.html.includes("max-w-7xl"), "container keeps source max-w class");
   assert.ok(out.html.includes("mx-auto"), "mx-auto on container");
   assert.ok(out.html.includes("<h2>Title</h2>"), "content preserved");
   assert.equal(out.stats.normalized, 1);
@@ -45,7 +45,7 @@ test("section styling (padding/bg) preserved on section after swap", () => {
     out.html.includes("py-12") || out.html.includes("bg-gray-100"),
     "section-level classes from div preserved on section"
   );
-  assert.ok(out.html.includes("w-full max-w-[80rem] mx-auto"), "container inner");
+  assert.ok(out.html.includes("w-full max-w-6xl mx-auto"), "container inner keeps wrapper max-w");
   assert.equal(out.stats.normalized, 1);
 });
 

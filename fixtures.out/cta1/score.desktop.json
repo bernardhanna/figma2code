@@ -1,76 +1,30 @@
 {
   "slug": "cta1",
-  "url": "http://127.0.0.1:5173/preview/cta1?ov=0&vpw=1280",
+  "mode": "desktop",
   "viewport": {
     "width": 1280,
     "height": 900
   },
-  "screenshot": {
-    "mode": "element",
-    "selector": "#cmp_root",
-    "box": {
-      "x": 13,
-      "y": 118,
-      "width": 1254,
-      "height": 420
-    },
-    "minHeight": 200
-  },
-  "figma": {
-    "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/cta1/figma.desktop.png",
-    "width": 1280,
-    "height": 308,
-    "src": "/fixtures.out/cta1/figma.desktop.png",
-    "mode": "desktop"
-  },
-  "render": {
-    "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/cta1/render.desktop.png",
+  "crop": {
     "width": 1254,
-    "height": 420
+    "height": 150
   },
-  "compared": {
-    "width": 1254,
-    "height": 308
-  },
+  "diffPixels": 182263,
+  "totalPixels": 188100,
+  "diffRatio": 0.9689686337054758,
+  "pass": false,
   "compare": {
     "threshold": 0.1,
     "includeAA": true,
-    "passDiffRatio": 0.03,
-    "alignWindow": 12,
-    "alignStep": 2
+    "passDiffRatio": 0.03
   },
-  "alignment": {
-    "dx": 0,
-    "dy": 0
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
   },
-  "bestDx": 0,
-  "bestDy": 0,
-  "alignmentSearched": true,
-  "searchRadiusPx": 12,
-  "alignmentDownscale": 0.5,
-  "alignmentDiffRatio": 0.300552104899931,
-  "analysisSource": "js",
-  "diffPixels": 85041,
-  "totalPixels": 386232,
-  "diffRatio": 0.22018113465481887,
-  "layoutDiffPixels": 11567,
-  "layoutDiffRatio": 0.2439677718720999,
-  "layoutDownscale": 0.35,
-  "layoutBlurRadius": 0,
-  "layoutScore": {
-    "conflictingWidthCount": 0
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/cta1/figma.desktop.png",
+    "width": 1280,
+    "height": 308
   },
-  "failureMode": "none",
-  "failureSignals": {
-    "absBestDx": 0,
-    "absBestDy": 0,
-    "diffRatio": 0.22018113465481887,
-    "layoutDiffRatio": 0.2439677718720999,
-    "conflictingWidthCount": 0,
-    "overflowXCount": 0,
-    "wrongLayoutModel": false
-  },
-  "pass": false,
-  "at": "2026-02-19T09:06:03.945Z",
-  "mode": "desktop"
+  "at": "2026-02-23T13:17:45.879Z"
 }

@@ -240,6 +240,10 @@ const run = async ({
 
   const repoRoot = path.resolve(__dirname, "..", "..");
   const testsDir = path.join(__dirname, "contracts", "__tests__");
+  const autoGeneralityTest = path.join(repoRoot, "generator", "auto", "__tests__", "generalityGuard.test.js");
+  const testTargets = [];
+  if (fs.existsSync(testsDir)) testTargets.push(testsDir);
+  if (fs.existsSync(autoGeneralityTest)) testTargets.push(autoGeneralityTest);
   let contractTests = {
     status: "skipped",
     total: 0,
@@ -247,9 +251,9 @@ const run = async ({
     failed: 0,
     skipped: 0,
     failures: [],
-    summary: "Contract tests directory not found.",
+    summary: "Contract test targets not found.",
   };
-  if (fs.existsSync(testsDir)) {
+  if (testTargets.length) {
     emitProgress({
       type: "test",
       scope: "codeit.contractTests",
@@ -257,7 +261,7 @@ const run = async ({
       message: "Running contract tests",
     });
     reporter.step(CODEIT.CONTRACT_TESTS);
-    const testResult = spawnSync(process.execPath, ["--test", testsDir], {
+    const testResult = spawnSync(process.execPath, ["--test", ...testTargets], {
       cwd: repoRoot,
       encoding: "utf8",
       maxBuffer: 4 * 1024 * 1024,
@@ -312,13 +316,39 @@ const run = async ({
       type: "test",
       scope: "codeit.contractTests",
       status: "skipped",
-      message: "Contract tests directory not found",
+      message: "Contract test targets not found",
     });
   }
 
   reporter.succeed(CODEIT.LOAD_ARTIFACT);
   const inputArtifact = readInputArtifactFn(slug);
   assertValidArtifact(inputArtifact);
+
+  let normalizeBackgroundStylePass = (value) => String(value || "");
+  let promoteSectionBgToHeroMediaPass = (value) => String(value || "");
+  let normalizeMediaSlotInteractivityPass = (value) => String(value || "");
+  let normalizeHeroLandmarkDriftPass = (value) => String(value || "");
+  let removePhantomInteractivePass = (value) => String(value || "");
+  try {
+    const htmlPasses = await loadGeneratorModule("auto/htmlDeterministicPasses.js");
+    if (typeof htmlPasses?.normalizeBackgroundStylePass === "function") {
+      normalizeBackgroundStylePass = htmlPasses.normalizeBackgroundStylePass;
+    }
+    if (typeof htmlPasses?.promoteSectionBgToHeroMediaPass === "function") {
+      promoteSectionBgToHeroMediaPass = htmlPasses.promoteSectionBgToHeroMediaPass;
+    }
+    if (typeof htmlPasses?.normalizeMediaSlotInteractivityPass === "function") {
+      normalizeMediaSlotInteractivityPass = htmlPasses.normalizeMediaSlotInteractivityPass;
+    }
+    if (typeof htmlPasses?.normalizeHeroLandmarkDriftPass === "function") {
+      normalizeHeroLandmarkDriftPass = htmlPasses.normalizeHeroLandmarkDriftPass;
+    }
+    if (typeof htmlPasses?.removePhantomInteractivePass === "function") {
+      removePhantomInteractivePass = htmlPasses.removePhantomInteractivePass;
+    }
+  } catch {
+    // non-fatal; contracts and stage output continue without this helper
+  }
 
   const baseHtml = typeof inputArtifact.html === "string" ? inputArtifact.html : "";
   const envelope = resolveHtmlEnvelope(baseHtml);
@@ -430,6 +460,14 @@ const run = async ({
       throw err;
     }
   }
+
+  html = removePhantomInteractivePass(
+    normalizeHeroLandmarkDriftPass(
+      normalizeMediaSlotInteractivityPass(
+        promoteSectionBgToHeroMediaPass(normalizeBackgroundStylePass(html))
+      )
+    )
+  );
 
   reporter.succeed(CODEIT.VALIDATION);
   let validation = null;

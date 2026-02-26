@@ -1,0 +1,30 @@
+{
+  "slug": "subscribe1",
+  "mode": "desktop",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1262,
+    "height": 150
+  },
+  "diffPixels": 101959,
+  "totalPixels": 189300,
+  "diffRatio": 0.5386106708927628,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/subscribe1/figma.desktop.png",
+    "width": 1280,
+    "height": 292
+  },
+  "at": "2026-02-24T13:44:01.753Z"
+}

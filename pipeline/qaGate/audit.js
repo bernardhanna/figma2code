@@ -89,6 +89,20 @@ function makeIssue(severity, rule, message, selector, snippetText, nodeIndex = n
 
 const normalizeToken = (t) => String(t || "").split(":").pop();
 
+const isMediaSlotDataKey = (value) => {
+  const key = String(value || "").toLowerCase();
+  return (
+    key.includes("frame:image") ||
+    key.includes("frame:hero") ||
+    key.includes("frame:media")
+  );
+};
+
+const isFrameLikeNonButtonDataKey = (value) => {
+  const key = String(value || "").toLowerCase();
+  return key.includes("frame:") && !/instance:button|\/button[#/]|^button[#/:]/i.test(key);
+};
+
 const BG_IMAGE_INTENT_TOKENS = new Set(["bg-cover", "bg-contain", "bg-no-repeat", "bg-fixed"]);
 const hasImageBackgroundIntentFromClasses = (tokens) =>
   tokens.some((t) => BG_IMAGE_INTENT_TOKENS.has(normalizeToken(t)) || /^bg-\[.*url\(.+\)/.test(normalizeToken(t)));
@@ -115,6 +129,22 @@ const hasGeneratorBgImageHint = (attrs) => {
   if (/image|video/i.test(fillType) && (hasBgSource || (mediaValue && urlish.test(mediaValue)))) return true;
 
   return false;
+};
+
+const hasBackgroundImageIntent = (attrs) => {
+  const style = String(getAttrValue(attrs, "style") || "");
+  if (/background-image\s*:/i.test(style)) return true;
+  const tokens = getClassTokens(attrs || {}).map(normalizeToken);
+  return tokens.some((t) => /^bg-\[.*url\(/i.test(t));
+};
+
+const isAbsoluteBackgroundFillLayer = (node) => {
+  if (!node?.attrs) return false;
+  const tokens = getClassTokens(node.attrs).map(normalizeToken);
+  const absolute = tokens.includes("absolute");
+  const inset0 = tokens.includes("inset-0");
+  const coverLike = tokens.includes("bg-cover") || tokens.includes("bg-contain");
+  return absolute && inset0 && coverLike && hasBackgroundImageIntent(node.attrs);
 };
 
 const isDecorativeKey = (attrs) => {
@@ -149,7 +179,7 @@ const MAX_W_ANY = /^max-w-/;
 const W_FIXED_SCALE = /^w-(?:\d+|px)$/;
 
 const BLOCK_LAYOUT_TAGS = new Set(["div", "section", "main", "article", "aside", "header", "footer", "nav"]);
-const BUTTON_LIKE_CLASSES = /btn|button|cursor-pointer|rounded|px-\d|py-\d|hover:|focus:|active:/;
+const BUTTON_LIKE_CLASSES = /btn|button|cursor-pointer|hover:|focus:|active:/;
 
 const topLevelAncestorIndex = (nodes, idx) => {
   let cur = idx;
@@ -346,26 +376,28 @@ function audit(html) {
     if (tag === "div") {
       const cls = getAttrValue(node?.attrs, "class") || "";
       const dataKey = String(getAttrValue(node?.attrs, "data-key") || "");
-      const isBtnLike =
-        /btn/.test(cls) || /instance:button/i.test(dataKey) || BUTTON_LIKE_CLASSES.test(cls);
-      if (isBtnLike) {
-        const childIdxs = getDirectChildren(childrenMap, nodeIndex);
-        const hasBlockLayout = childIdxs.some((idx) => {
-          const child = nodes[idx];
-          const t = (child?.tag || "").toLowerCase();
-          return BLOCK_LAYOUT_TAGS.has(t);
-        });
-        if (!hasBlockLayout) {
-          issues.push(
-            makeIssue(
-              "error",
-              RULES.DIV_BUTTON_SHOULD_BE_BUTTON,
-              "Div has button styling; convert to <button type=\"button\">",
-              nodeSignature(node),
-              snippet(source, node),
-              nodeIndex
-            )
-          );
+      if (!isMediaSlotDataKey(dataKey) && !isFrameLikeNonButtonDataKey(dataKey)) {
+        const isBtnLike =
+          /btn/.test(cls) || /instance:button/i.test(dataKey) || BUTTON_LIKE_CLASSES.test(cls);
+        if (isBtnLike) {
+          const childIdxs = getDirectChildren(childrenMap, nodeIndex);
+          const hasBlockLayout = childIdxs.some((idx) => {
+            const child = nodes[idx];
+            const t = (child?.tag || "").toLowerCase();
+            return BLOCK_LAYOUT_TAGS.has(t);
+          });
+          if (!hasBlockLayout) {
+            issues.push(
+              makeIssue(
+                "error",
+                RULES.DIV_BUTTON_SHOULD_BE_BUTTON,
+                "Div has button styling; convert to <button type=\"button\">",
+                nodeSignature(node),
+                snippet(source, node),
+                nodeIndex
+              )
+            );
+          }
         }
       }
     }
@@ -557,6 +589,8 @@ function audit(html) {
       const tokens = getClassTokens(node.attrs).map(normalizeToken);
       if (tokens.includes("overflow-hidden")) {
         const childIdxs = getDirectChildren(childrenMap, nodeIndex);
+        const hasAbsoluteBgLayer = childIdxs.some((idx) => isAbsoluteBackgroundFillLayer(nodes[idx]));
+        if (hasAbsoluteBgLayer) return;
         const directChildIsMedia = childIdxs.some((idx) => {
           const t = (nodes[idx]?.tag || "").toLowerCase();
           return t === "img" || t === "video";

@@ -1,0 +1,96 @@
+{
+  "slug": "sol3",
+  "at": "2026-02-23T11:55:16.786Z",
+  "results": {
+    "mobile": {
+      "slug": "sol3",
+      "mode": "mobile",
+      "viewport": {
+        "width": 1088,
+        "height": 900
+      },
+      "crop": {
+        "width": 432,
+        "height": 150
+      },
+      "diffPixels": 64800,
+      "totalPixels": 64800,
+      "diffRatio": 1,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sol3/figma.mobile.png",
+        "width": 1088,
+        "height": 384
+      },
+      "at": "2026-02-23T11:55:11.244Z"
+    },
+    "tablet": {
+      "slug": "sol3",
+      "mode": "tablet",
+      "viewport": {
+        "width": 1088,
+        "height": 900
+      },
+      "crop": {
+        "width": 432,
+        "height": 150
+      },
+      "diffPixels": 64800,
+      "totalPixels": 64800,
+      "diffRatio": 1,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sol3/figma.tablet.png",
+        "width": 1088,
+        "height": 384
+      },
+      "at": "2026-02-23T11:55:13.948Z"
+    },
+    "desktop": {
+      "slug": "sol3",
+      "mode": "desktop",
+      "viewport": {
+        "width": 1088,
+        "height": 900
+      },
+      "crop": {
+        "width": 432,
+        "height": 150
+      },
+      "diffPixels": 64800,
+      "totalPixels": 64800,
+      "diffRatio": 1,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sol3/figma.desktop.png",
+        "width": 1088,
+        "height": 384
+      },
+      "at": "2026-02-23T11:55:16.778Z"
+    }
+  }
+}

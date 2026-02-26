@@ -1,7 +1,12 @@
 // generator/auto/layoutIntentV2Pass.js
 //
 // Deterministic geometric layout hints for non-auto-layout groups.
-// This pass annotates nodes with __layoutHints and leaves semantics untouched.
+// This pass annotates nodes with:
+// - __layoutHints (geometry observations)
+// - __layoutPriors (raw Figma layout flags)
+// - __layoutModel (final normalized intent consumed by codegen)
+
+import { buildLayoutModelForNode } from "./layoutModel.js";
 
 function asArr(v) {
   return Array.isArray(v) ? v : [];
@@ -202,63 +207,246 @@ function inferCollectionFromRows(children) {
   };
 }
 
-function annotateNode(node) {
-  const kids = asArr(node?.children);
-  if (!kids.length) return;
-  const inferred = inferAxisAndSpacing(kids);
-  if (!inferred) return;
-  const collectionRows = inferCollectionFromRows(kids);
-  const collectionClassic = inferCollection(kids);
-  const collection = collectionRows || collectionClassic;
-  const lowConfidence =
-    inferred.confidence < 0.55 &&
-    kids.length >= 3 &&
-    inferred.spreadX > 0 &&
-    inferred.spreadY > 0 &&
-    !(collection && collection.collectionLike);
-  node.__layoutHints = {
-    axis: inferred.axis,
-    spacingPx: inferred.spacing,
-    confidence: inferred.confidence,
-    lowConfidence,
-    fallbackRecommended: lowConfidence,
-    spreadX: inferred.spreadX,
-    spreadY: inferred.spreadY,
-    ...(collection || {
-      collectionLike: false,
-      colsHint: 0,
-      rowCount: 0,
-      colCount: 0,
-      alignedColumns: false,
-      alignedTrackCount: 0,
-      repeatedWidths: false,
-      widthRepeatScore: 0,
-      gridCandidate: false,
-      rowGapPx: 0,
-      colGapPx: 0,
-      rowBandTolerancePx: 0,
-      regularity: 0,
-    }),
-  };
-  // Figma Layout guide "Grid Npx": prefer CSS grid and use N for gap
-  const layoutGuide = node.layoutGuide;
-  if (layoutGuide && layoutGuide.pattern === "GRID" && typeof layoutGuide.sectionSize === "number" && layoutGuide.sectionSize > 0) {
-    node.__layoutHints.layoutGuideGrid = true;
-    node.__layoutHints.layoutGuideGapPx = layoutGuide.sectionSize;
+function modeInt(values) {
+  const counts = new Map();
+  for (const raw of asArr(values)) {
+    const n = Math.round(Number(raw));
+    if (!Number.isFinite(n) || n <= 0) continue;
+    counts.set(n, (counts.get(n) || 0) + 1);
   }
+  let best = 0;
+  let bestCount = 0;
+  for (const [n, c] of counts.entries()) {
+    if (c > bestCount || (c === bestCount && n > best)) {
+      best = n;
+      bestCount = c;
+    }
+  }
+  return best;
 }
 
-function walk(node, seen = new Set()) {
+function bucketByTolerance(value, tolerance) {
+  const t = Math.max(1, Number(tolerance) || 1);
+  return Math.round(Number(value) / t) * t;
+}
+
+function overlapArea(a, b) {
+  const ix = Math.max(0, Math.min(a.right, b.right) - Math.max(a.x, b.x));
+  const iy = Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.y, b.y));
+  return ix * iy;
+}
+
+function inferGridFromGeometry(children) {
+  const grouped = inferRowsByYBand(children);
+  if (!grouped || !grouped.rows || grouped.rows.length < 1) return null;
+  const rows = grouped.rows.map((r) => ({ ...r, items: asArr(r.items).slice().sort((a, b) => a.x - b.x) }));
+  const allItems = rows.flatMap((r) => r.items);
+  if (allItems.length < 3) return null;
+
+  const widths = allItems.map((i) => i.w).filter((n) => Number.isFinite(n) && n > 0);
+  const heights = allItems.map((i) => i.h).filter((n) => Number.isFinite(n) && n > 0);
+  if (!widths.length || !heights.length) return null;
+  const widthMedian = median(widths);
+  const widthRatio = Math.max(...widths) / Math.max(1, Math.min(...widths));
+
+  // Guardrail: reject likely masonry/tag-cloud sets.
+  if (widthRatio > 1.22) return null;
+
+  // Guardrail: reject overlap-heavy sets.
+  let overlapPairs = 0;
+  let totalPairs = 0;
+  for (let i = 0; i < allItems.length; i += 1) {
+    for (let j = i + 1; j < allItems.length; j += 1) {
+      totalPairs += 1;
+      const a = allItems[i];
+      const b = allItems[j];
+      const area = overlapArea(a, b);
+      if (area <= 0) continue;
+      const minArea = Math.min(a.w * a.h, b.w * b.h);
+      if (minArea > 0 && area / minArea > 0.12) overlapPairs += 1;
+    }
+  }
+  const overlapRatio = totalPairs > 0 ? overlapPairs / totalPairs : 0;
+  if (overlapRatio > 0.18) return null;
+
+  const rowLens = rows.map((r) => r.items.length).filter((n) => n > 0);
+  if (!rowLens.length) return null;
+
+  const rowCount = rows.length;
+  const modeCols = modeInt(rowLens);
+  const maxStableCols = Math.max(...rowLens);
+  const cols = Math.max(1, modeCols || maxStableCols);
+  if (cols < 2) return null;
+
+  // Validate base shape: either multiple rows or at least 3 clear columns.
+  if (!(rowCount >= 2 || cols >= 3)) return null;
+
+  const xTol = Math.max(8, Math.round(Math.max(widthMedian * 0.2, 6)));
+  const colBuckets = new Map();
+  for (const row of rows) {
+    for (const item of row.items) {
+      const key = bucketByTolerance(item.x, xTol);
+      if (!colBuckets.has(key)) colBuckets.set(key, []);
+      colBuckets.get(key).push(item.x);
+    }
+  }
+  const canonicalColumns = [...colBuckets.entries()]
+    .map(([key, xs]) => ({ key: Number(key), x: median(xs), hits: xs.length }))
+    .sort((a, b) => a.x - b.x);
+
+  if (canonicalColumns.length < 2) return null;
+
+  let aligned = 0;
+  let total = 0;
+  const xResiduals = [];
+  for (const row of rows) {
+    for (const item of row.items) {
+      total += 1;
+      let bestDist = Number.POSITIVE_INFINITY;
+      for (const col of canonicalColumns) {
+        const d = Math.abs(item.x - col.x);
+        if (d < bestDist) bestDist = d;
+      }
+      if (bestDist <= xTol) aligned += 1;
+      if (Number.isFinite(bestDist)) xResiduals.push(bestDist);
+    }
+  }
+  const xAlignment = total > 0 ? aligned / total : 0;
+  if (xAlignment < 0.85) return null;
+
+  const canonicalXs = canonicalColumns.map((c) => c.x);
+  const canonicalGaps = [];
+  for (let i = 1; i < canonicalXs.length; i += 1) {
+    canonicalGaps.push(Math.max(0, canonicalXs[i] - canonicalXs[i - 1]));
+  }
+  const rowGaps = [];
+  for (let i = 1; i < rows.length; i += 1) {
+    const prevBottom = Math.max(...rows[i - 1].items.map((x) => x.bottom));
+    const nextTop = Math.min(...rows[i].items.map((x) => x.y));
+    rowGaps.push(Math.max(0, nextTop - prevBottom));
+  }
+
+  const gapX = Math.max(0, median(canonicalGaps));
+  const gapY = Math.max(0, median(rowGaps));
+
+  // Conservative 2-col behavior: only upgrade when geometry is very stable.
+  if (cols === 2) {
+    const twoByTwoStrong =
+      rowCount >= 2 &&
+      rowLens.every((n) => n === 2) &&
+      xAlignment >= 0.95 &&
+      widthRatio <= 1.05 &&
+      median(xResiduals) <= Math.max(4, Math.round(widthMedian * 0.08));
+    const veryStable =
+      (rowCount >= 3 &&
+        xAlignment >= 0.93 &&
+        widthRatio <= 1.08 &&
+        median(xResiduals) <= Math.max(6, Math.round(widthMedian * 0.12))) ||
+      twoByTwoStrong;
+    if (!veryStable) return null;
+  }
+
+  return {
+    collectionLike: true,
+    layoutType: "grid",
+    metadata: {
+      cols,
+      gapX,
+      gapY,
+    },
+    layoutMetadata: {
+      cols,
+      gapX,
+      gapY,
+    },
+    gridCandidate: true,
+    colsHint: cols,
+    rowCount,
+    colCount: cols,
+    rowGapPx: gapY,
+    colGapPx: gapX,
+    rowBandTolerancePx: grouped.tolerancePx,
+    widthRepeatScore: Math.max(0, Math.min(1, 1 - (widthRatio - 1))),
+    repeatedWidths: widthRatio <= 1.15,
+    alignedColumns: true,
+    alignedTrackCount: canonicalColumns.length,
+    regularity: rowLens.length ? Math.min(...rowLens) / Math.max(...rowLens) : 0,
+    overlapRatio,
+    xAlignment,
+  };
+}
+
+function annotateNode(node, opts = {}) {
+  const kids = asArr(node?.children);
+  if (kids.length) {
+    const inferred = inferAxisAndSpacing(kids);
+    if (inferred) {
+      const gridFromGeometry = inferGridFromGeometry(kids);
+      const collectionRows = inferCollectionFromRows(kids);
+      const collectionClassic = inferCollection(kids);
+      const collection = gridFromGeometry || collectionRows || collectionClassic;
+      const lowConfidence =
+        inferred.confidence < 0.55 &&
+        kids.length >= 3 &&
+        inferred.spreadX > 0 &&
+        inferred.spreadY > 0 &&
+        !(collection && collection.collectionLike);
+      node.__layoutHints = {
+        axis: inferred.axis,
+        spacingPx: inferred.spacing,
+        confidence: inferred.confidence,
+        lowConfidence,
+        fallbackRecommended: lowConfidence,
+        spreadX: inferred.spreadX,
+        spreadY: inferred.spreadY,
+        ...(collection || {
+          collectionLike: false,
+          colsHint: 0,
+          layoutType: "flex",
+          layoutMetadata: null,
+          rowCount: 0,
+          colCount: 0,
+          alignedColumns: false,
+          alignedTrackCount: 0,
+          repeatedWidths: false,
+          widthRepeatScore: 0,
+          gridCandidate: false,
+          rowGapPx: 0,
+          colGapPx: 0,
+          rowBandTolerancePx: 0,
+          regularity: 0,
+        }),
+      };
+    }
+    // Figma Layout guide "Grid Npx": prefer CSS grid and use N for gap
+    const layoutGuide = node.layoutGuide;
+    if (
+      layoutGuide &&
+      layoutGuide.pattern === "GRID" &&
+      typeof layoutGuide.sectionSize === "number" &&
+      layoutGuide.sectionSize > 0
+    ) {
+      if (!node.__layoutHints) node.__layoutHints = {};
+      node.__layoutHints.layoutGuideGrid = true;
+      node.__layoutHints.layoutGuideGapPx = layoutGuide.sectionSize;
+    }
+  }
+  const model = buildLayoutModelForNode(node, { isRoot: !!opts.isRoot });
+  node.__layoutPriors = model.priors;
+  node.__layoutModel = model;
+}
+
+function walk(node, seen = new Set(), isRoot = false) {
   if (!node || typeof node !== "object" || seen.has(node)) return;
   seen.add(node);
-  annotateNode(node);
-  for (const child of asArr(node.children)) walk(child, seen);
+  annotateNode(node, { isRoot });
+  for (const child of asArr(node.children)) walk(child, seen, false);
 }
 
 export function layoutIntentV2Pass(ast) {
   if (!ast || typeof ast !== "object") return ast;
   if (!ast.tree || typeof ast.tree !== "object") return ast;
-  walk(ast.tree);
+  walk(ast.tree, new Set(), true);
   return ast;
 }
 

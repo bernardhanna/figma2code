@@ -57,6 +57,49 @@ function toMinHeroMobileHeightRem(rootHeightPx) {
   return Number(clamped.toFixed(4)).toString().replace(/\.?0+$/, "");
 }
 
+function parseRemWidth(raw) {
+  const value = String(raw || "").trim().toLowerCase();
+  if (!value) return 0;
+  const rem = value.match(/^(\d+(?:\.\d+)?)rem$/);
+  if (rem) return Number(rem[1]) * 16;
+  const px = value.match(/^(\d+(?:\.\d+)?)px$/);
+  if (px) return Number(px[1]);
+  const num = value.match(/^(\d+(?:\.\d+)?)$/);
+  if (num) return Number(num[1]);
+  return 0;
+}
+
+function inferContentRootWidthPx(tree) {
+  const frameW = Number(tree?.w || 0);
+  const children = Array.isArray(tree?.children) ? tree.children : [];
+  if (!children.length) return 0;
+
+  const rootLike = children.find((c) => String(c?.key || "").toLowerCase() === "root");
+  if (rootLike) {
+    const explicitRem = parseRemWidth(rootLike?.attrs?.["data-w-rem"]);
+    const explicitNodeRem = parseRemWidth(rootLike?.["data-w-rem"]);
+    const byMeta = explicitRem || explicitNodeRem;
+    if (Number.isFinite(byMeta) && byMeta > 0) return byMeta;
+    const byWidth = Number(rootLike?.w || 0);
+    if (Number.isFinite(byWidth) && byWidth > 0) return byWidth;
+  }
+
+  const widths = children
+    .map((c) => Number(c?.w || 0))
+    .filter((w) => Number.isFinite(w) && w > 0);
+  if (!widths.length) return 0;
+  if (frameW > 0 && widths.length >= 2) {
+    const maxChild = Math.max(...widths);
+    const hasWideChild = widths.some((w) => w >= frameW * 0.45);
+    const hasNarrowSibling = widths.some((w) => w <= frameW * 0.35);
+    if (maxChild < frameW * 0.75 && hasWideChild && hasNarrowSibling) {
+      return frameW;
+    }
+  }
+  const narrower = widths.filter((w) => frameW > 0 && w < frameW);
+  return narrower.length ? Math.max(...narrower) : Math.max(...widths);
+}
+
 export function autoLayoutify(ast, opts = {}) {
   const semantics = opts.semantics || {}; // { [id]: { tag, href?, role?, label? } }
   const wrap = opts.wrap !== false; // default true
@@ -117,7 +160,20 @@ export function autoLayoutify(ast, opts = {}) {
 
   // Content container:
   // Use max-width based on the root Figma frame width (NOT max-w-container).
-  const rootW = Math.max(1, Math.round(ast?.tree?.w || ast?.frame?.w || 1200));
+  const modeledMaxWidth = Number(ast?.tree?.__layoutModel?.containerIntent?.maxWidth || 0);
+  const inferredContentWidth = inferContentRootWidthPx(ast?.tree || null);
+  const effectiveModeledWidth =
+    Number.isFinite(modeledMaxWidth) && modeledMaxWidth > 0 ? modeledMaxWidth : 0;
+  const effectiveInferredWidth =
+    Number.isFinite(inferredContentWidth) && inferredContentWidth > 0
+      ? inferredContentWidth
+      : 0;
+  const preferredWidth =
+    effectiveInferredWidth &&
+    (!effectiveModeledWidth || effectiveModeledWidth > effectiveInferredWidth)
+      ? effectiveInferredWidth
+      : effectiveModeledWidth;
+  const rootW = Math.max(1, Math.round(preferredWidth || ast?.tree?.w || ast?.frame?.w || 1200));
   const maxWClass = `max-w-[${rem(rootW)}]`;
 
   const innerOpen = `<div class="relative z-20 w-full ${maxWClass} mx-auto">`;

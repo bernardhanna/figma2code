@@ -66,3 +66,40 @@ test("idempotent: running twice makes no further changes", () => {
   assert.equal(second.html, first.html, "second run output equals first run output");
   assert.equal(second.stats.wrapped, 0, "no new wraps on second run");
 });
+
+test("section root without max-w derives container max-w from data-w-rem", () => {
+  const html = `<section data-key="root" class="w-full pt-8 pb-8 bg-gray-100">
+  <div data-w-rem="68rem" class="flex">Content</div>
+</section>`;
+  const out = apply({ html });
+  assert.ok(
+    /<section[^>]*>\s*<div[^>]*class="[^"]*w-full[^"]*mx-auto[^"]*max-w-\[68rem\][^"]*"/i.test(
+      out.html
+    ),
+    "inner container uses max-w from data-w-rem"
+  );
+});
+
+test("multi-column root prefers own data-w-rem over narrower child max-w", () => {
+  const html = `<section data-key="root" data-w-rem="80rem" class="w-full pt-8 pb-8 bg-gray-100 md:flex-row">
+  <div class="flex max-w-[47.875rem]">Content</div>
+</section>`;
+  const out = apply({ html });
+  assert.ok(
+    /<section[^>]*>\s*<div[^>]*class="[^"]*w-full[^"]*mx-auto[^"]*max-w-\[80rem\][^"]*"/i.test(
+      out.html
+    ),
+    "inner container should use root data-w-rem for multi-column layouts"
+  );
+});
+
+test("updates existing inner container max-w for multi-column root", () => {
+  const html = `<section data-key="root" data-w-rem="80rem" class="w-full pt-8 pb-8 md:flex-row">
+  <div class="w-full max-w-[47.875rem] mx-auto"><div class="md:flex-row">Content</div></div>
+</section>`;
+  const out = apply({ html });
+  assert.ok(
+    /<div[^>]*class="[^"]*w-full[^"]*max-w-\[80rem\][^"]*mx-auto[^"]*"/i.test(out.html),
+    "existing inner container should be widened to root data-w-rem"
+  );
+});

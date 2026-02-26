@@ -1,0 +1,30 @@
+{
+  "slug": "cta222",
+  "mode": "desktop",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1254,
+    "height": 150
+  },
+  "diffPixels": 44307,
+  "totalPixels": 188100,
+  "diffRatio": 0.23555023923444976,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/cta222/figma.desktop.png",
+    "width": 1280,
+    "height": 512
+  },
+  "at": "2026-02-23T14:24:05.551Z"
+}

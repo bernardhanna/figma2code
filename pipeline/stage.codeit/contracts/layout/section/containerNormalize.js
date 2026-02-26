@@ -12,7 +12,7 @@ const id = "layout/section/containerNormalize";
 
 const normalizeToken = (token) => String(token || "").split(":").pop();
 
-const CONTAINER_CANONICAL = "w-full max-w-[80rem] mx-auto";
+const MAX_W_TOKEN = /^max-w-/;
 
 const buildChildrenMap = (nodes) => {
   const map = new Map();
@@ -71,6 +71,14 @@ const mergeClasses = (aTokens, bTokens) => {
     }
   }
   return out;
+};
+
+const pickContainerMaxW = (tokens) => {
+  const list = (tokens || []).filter((t) => {
+    const core = normalizeToken(t);
+    return MAX_W_TOKEN.test(core) && core !== "max-w-full";
+  });
+  return list.length ? list[0] : "";
 };
 
 const mergeAttrs = (baseAttrs, baseOrder, extraAttrs, extraOrder) => {
@@ -190,7 +198,8 @@ const apply = ({ html }) => {
       sectionOrder,
       false
     );
-    const innerDivAttrs = { class: CONTAINER_CANONICAL };
+    const preferredMaxW = pickContainerMaxW(divTokens) || "max-w-[80rem]";
+    const innerDivAttrs = { class: `w-full ${preferredMaxW} mx-auto` };
     const innerDivOrder = ["class"];
     const innerDivOpen = buildOpenTag(
       "div",

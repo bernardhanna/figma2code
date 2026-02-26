@@ -1,0 +1,50 @@
+{
+  "slug": "layout_model_already_good",
+  "tree": {
+    "id": "root-good",
+    "name": "layout_model_already_good@desktop",
+    "type": "FRAME",
+    "w": 960,
+    "h": 120,
+    "auto": {
+      "layout": "HORIZONTAL",
+      "itemSpacing": 24,
+      "primaryAlign": "MIN",
+      "counterAlign": "CENTER"
+    },
+    "children": [
+      {
+        "id": "a",
+        "type": "TEXT",
+        "x": 0,
+        "y": 0,
+        "w": 220,
+        "h": 40,
+        "text": {
+          "raw": "Left",
+          "fontSize": 16,
+          "lineHeightPx": 22,
+          "fontWeight": 500,
+          "align": "left"
+        },
+        "children": []
+      },
+      {
+        "id": "b",
+        "type": "TEXT",
+        "x": 260,
+        "y": 0,
+        "w": 220,
+        "h": 40,
+        "text": {
+          "raw": "Right",
+          "fontSize": 16,
+          "lineHeightPx": 22,
+          "fontWeight": 500,
+          "align": "left"
+        },
+        "children": []
+      }
+    ]
+  }
+}

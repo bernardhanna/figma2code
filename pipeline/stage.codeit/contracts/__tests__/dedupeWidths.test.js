@@ -71,3 +71,43 @@ test("apply removes redundant descendant max-w under canonical ancestor containe
   assert.ok(tokens.includes("w-full"));
   assert.ok(!tokens.includes("max-w-[33.5rem]"));
 });
+
+test("apply prefers width token matching data-w-rem when widths conflict", () => {
+  const html = `
+    <section class="w-full">
+      <div data-key="frame" data-w-rem="68rem" class="w-[68rem] w-[80rem] max-w-full">Content</div>
+    </section>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const tokens = getTokens(out.html, "frame");
+  assert.ok(tokens.includes("w-[68rem]"));
+  assert.ok(!tokens.includes("w-[80rem]"));
+});
+
+test("apply replaces single mismatched width token using data-w-rem intent", () => {
+  const html = `
+    <section class="w-full">
+      <div data-key="frame" data-w-rem="68rem" class="w-[80rem] max-w-full">Content</div>
+    </section>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const tokens = getTokens(out.html, "frame");
+  assert.ok(tokens.includes("w-[68rem]"));
+  assert.ok(!tokens.includes("w-[80rem]"));
+});
+
+test("media-like wrapper keeps fluid width when conflicting fixed width is removed", () => {
+  const html = `
+    <section class="w-full">
+      <div data-key="card" class="max-w-full w-[16.375rem] relative">
+        <div class="absolute inset-0 bg-cover" style="background-image:url('/x.jpg')"></div>
+        <img src="/x.jpg" alt="" />
+      </div>
+    </section>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const tokens = getTokens(out.html, "card");
+  assert.ok(tokens.includes("max-w-full"));
+  assert.ok(tokens.includes("w-full"));
+  assert.ok(!tokens.includes("w-[16.375rem]"));
+});

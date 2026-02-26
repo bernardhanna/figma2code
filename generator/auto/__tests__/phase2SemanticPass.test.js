@@ -190,3 +190,118 @@ test("semantic pass converts structural spans in button trees to div wrappers", 
   assert.match(out, /<div data-node="icon-wrap" class="overflow-hidden w-full">/i);
   assert.match(out, /<span data-node="label">Find a group<\/span>/i);
 });
+
+test("landmark pass does not produce invalid main banner combo", () => {
+  const rootId = "ROOT_MAIN_HERO";
+  const html = `
+<section style="background-image:url('/hero.png')">
+  <div data-node="${rootId}">
+    <h1>Heading</h1>
+  </div>
+</section>
+`.trim();
+
+  const ast = {
+    tree: {
+      id: rootId,
+      name: "Main Hero",
+      fills: [{ kind: "image", src: "/hero.png" }],
+      children: [],
+    },
+  };
+
+  const { html: out } = semanticAccessiblePass({
+    html,
+    ast,
+    semantics: { enableLandmarks: true, strictLandmarks: true, rootHeroFallback: true },
+  });
+
+  assert.doesNotMatch(out, /<main\b[^>]*role="banner"/i);
+  assert.match(out, /role="banner"/i);
+});
+
+test("banner wrapper does not force sibling hero media slot into header landmark", () => {
+  const rootId = "ROOT_WRAP";
+  const heroSlotId = "HERO_SLOT";
+  const html = `
+<section style="background-image:url('/hero.png')">
+  <div data-node="${rootId}">
+    <h1>Heading</h1>
+    <div data-node="${heroSlotId}"></div>
+  </div>
+</section>
+`.trim();
+
+  const ast = {
+    tree: {
+      id: rootId,
+      name: "Root",
+      fills: [{ kind: "image", src: "/hero.png" }],
+      children: [{ id: heroSlotId, name: "Hero", children: [] }],
+    },
+  };
+
+  const { html: out } = semanticAccessiblePass({
+    html,
+    ast,
+    semantics: { enableLandmarks: true, strictLandmarks: true, rootHeroFallback: true, upgradeTopLevelFrames: true },
+  });
+
+  assert.match(out, /role="banner"/i);
+  assert.doesNotMatch(out, new RegExp(`<header\\b[^>]*data-node="${heroSlotId}"`, "i"));
+});
+
+test("hero with background-color style keeps banner on section and avoids root main upgrade", () => {
+  const rootId = "ROOT_BG_COLOR";
+  const html = `
+<section style="background-color: rgba(0,157,230,1)">
+  <div data-node="${rootId}">
+    <h1>Heading</h1>
+    <div data-node="hero_text_box"></div>
+  </div>
+</section>
+`.trim();
+  const ast = {
+    tree: {
+      id: rootId,
+      name: "Main",
+      fills: [{ kind: "solid", r: 0, g: 157 / 255, b: 230 / 255, a: 1 }],
+      children: [{ id: "hero_text_box", name: "Hero text box", children: [] }],
+    },
+  };
+  const { html: out } = semanticAccessiblePass({
+    html,
+    ast,
+    semantics: { enableLandmarks: true, strictLandmarks: true, rootHeroFallback: true, upgradeTopLevelFrames: true },
+  });
+  assert.match(out, /<section\b[^>]*role="banner"/i);
+  assert.doesNotMatch(out, new RegExp(`<main\\b[^>]*data-node="${rootId}"`, "i"));
+  assert.doesNotMatch(out, /<header\b[^>]*data-node="hero_text_box"[^>]*role="banner"/i);
+});
+
+test("landmark upgrades keep root and hero text wrappers structural", () => {
+  const rootId = "ROOT_STRUCTURAL";
+  const heroTextId = "HERO_TEXT_WRAP";
+  const html = `
+<section style="background-color: rgba(0,157,230,1)">
+  <div data-node="${rootId}">
+    <div data-node="${heroTextId}"></div>
+  </div>
+</section>
+`.trim();
+  const ast = {
+    tree: {
+      id: rootId,
+      name: "Main",
+      fills: [{ kind: "solid", r: 0, g: 157 / 255, b: 230 / 255, a: 1 }],
+      children: [{ id: heroTextId, name: "Hero text box", children: [] }],
+    },
+  };
+  const { html: out } = semanticAccessiblePass({
+    html,
+    ast,
+    semantics: { enableLandmarks: true, strictLandmarks: true, rootHeroFallback: false, upgradeTopLevelFrames: true },
+  });
+  assert.doesNotMatch(out, new RegExp(`<main\\b[^>]*data-node="${rootId}"`, "i"));
+  assert.doesNotMatch(out, new RegExp(`<header\\b[^>]*data-node="${heroTextId}"`, "i"));
+});

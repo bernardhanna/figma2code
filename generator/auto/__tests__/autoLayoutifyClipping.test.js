@@ -27,3 +27,14 @@ test("section wrapper includes overflow-hidden only when root clips", () => {
   const html = autoLayoutify(makeAst({ clipsContent: true }), { wrap: true });
   assert.ok(html.includes("overflow-hidden"));
 });
+
+test("uses frame width for mixed multi-column child widths", () => {
+  const ast = makeAst({ clipsContent: false });
+  ast.tree.w = 1280;
+  ast.tree.children = [
+    { id: "a", key: "frame:left", tag: "div", w: 186, h: 100, children: [] },
+    { id: "b", key: "frame:right", tag: "div", w: 766, h: 100, children: [] },
+  ];
+  const html = autoLayoutify(ast, { wrap: true });
+  assert.ok(html.includes("max-w-[80rem]"));
+});

@@ -1,0 +1,58 @@
+{
+  "slug": "layout_model_messy_flags",
+  "tree": {
+    "id": "root-messy",
+    "name": "layout_model_messy_flags@desktop",
+    "type": "GROUP",
+    "w": 980,
+    "h": 200,
+    "auto": {
+      "layout": "NONE",
+      "itemSpacing": 0,
+      "primaryAlign": "MAX",
+      "counterAlign": "MAX"
+    },
+    "children": [
+      {
+        "id": "left",
+        "type": "TEXT",
+        "x": 0,
+        "y": 0,
+        "w": 300,
+        "h": 90,
+        "size": {
+          "primary": "HUG",
+          "counter": "HUG"
+        },
+        "text": {
+          "raw": "Primary content",
+          "fontSize": 16,
+          "lineHeightPx": 22,
+          "fontWeight": 500,
+          "align": "left"
+        },
+        "children": []
+      },
+      {
+        "id": "right",
+        "type": "TEXT",
+        "x": 380,
+        "y": 4,
+        "w": 520,
+        "h": 90,
+        "size": {
+          "primary": "FIXED",
+          "counter": "HUG"
+        },
+        "text": {
+          "raw": "Secondary content",
+          "fontSize": 16,
+          "lineHeightPx": 22,
+          "fontWeight": 500,
+          "align": "left"
+        },
+        "children": []
+      }
+    ]
+  }
+}

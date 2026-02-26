@@ -37,6 +37,9 @@ module.exports = {
     { id: "media/fill/preserveBackgroundContainerHeight", path: "./contracts/media/fill/preserveBackgroundContainerHeight.js", options: {} },
     { id: "media/videoFillSupport", path: "./contracts/media/videoFillSupport.js", options: {} },
     { id: "media/img/objectContainOnSmall", path: "./contracts/media/img/objectContainOnSmall.js", options: {} },
+    { id: "media/img/normalizeIconChips", path: "./contracts/media/img/normalizeIconChips.js", options: {} },
+    { id: "layout/cards/normalizeRepeatingCardMedia", path: "./contracts/layout/cards/normalizeRepeatingCardMedia.js", options: {} },
+    { id: "layout/cards/normalizeRepeatingCardText", path: "./contracts/layout/cards/normalizeRepeatingCardText.js", options: {} },
     { id: "layout/section/responsiveHorizontalPadding", path: "./contracts/layout/section/responsiveHorizontalPadding.js", options: {} },
     { id: "layout/section/enforceMobileVerticalPadding", path: "./contracts/layout/section/enforceMobileVerticalPadding.js", options: {} },
     { id: "layout/text/nowrapGuard", path: "./contracts/layout/text/nowrapGuard.js", options: {} },
@@ -59,5 +62,7 @@ module.exports = {
     { id: "layout/section/containerPattern", path: "./contracts/layout/section/containerPattern.js", options: {} },
     { id: "layout/section/containerNormalize", path: "./contracts/layout/section/containerNormalize.js", options: {} },
     { id: "layout/section/containerRootOnly", path: "./contracts/layout/section/containerRootOnly.js", options: {} },
+    { id: "layout/cards/metricPairStack", path: "./contracts/layout/cards/metricPairStack.js", options: {} },
+    { id: "layout/width/pruneRedundantFlexSizing", path: "./contracts/layout/width/pruneRedundantFlexSizing.js", options: {} },
   ],
 };

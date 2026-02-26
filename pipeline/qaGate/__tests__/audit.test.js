@@ -44,6 +44,20 @@ test("audit: div with btn but containing section does not report (unsafe)", () =
   assert.ok(!issue);
 });
 
+test("audit: media slot div is not flagged as button", () => {
+  const html = `<div class="btn rounded" data-key="frame:image#1"><img src="/x.png" alt="x" /></div>`;
+  const out = audit(html);
+  const issue = out.issues.find((i) => i.rule === RULES.DIV_BUTTON_SHOULD_BE_BUTTON);
+  assert.ok(!issue);
+});
+
+test("audit: frame layout container is not flagged as button", () => {
+  const html = `<div class="rounded-[0.5rem] px-4 py-3" data-key="frame:frame-2332#1"><h3>Title</h3><h4>Body</h4></div>`;
+  const out = audit(html);
+  const issue = out.issues.find((i) => i.rule === RULES.DIV_BUTTON_SHOULD_BE_BUTTON);
+  assert.ok(!issue);
+});
+
 test("audit: bg-cover without background-image reports BACKGROUND_INTENT_MISSING_IMAGE", () => {
   const html = `<div class="bg-cover bg-center bg-no-repeat" data-node-id="x">Content</div>`;
   const out = audit(html);
@@ -201,6 +215,13 @@ test("audit: overflow-hidden on div that does not wrap img/video is reported", (
 
 test("audit: overflow-hidden on img wrapper is not reported", () => {
   const html = `<div class="overflow-hidden"><img src="/x.png" alt=""></div>`;
+  const out = audit(html);
+  const issue = out.issues.find((i) => i.rule === RULES.OVERFLOW_HIDDEN_ON_NON_MEDIA_WRAPPER);
+  assert.ok(!issue);
+});
+
+test("audit: overflow-hidden with absolute bg fill layer is not reported", () => {
+  const html = `<div class="relative overflow-hidden h-[20rem]"><div class="absolute inset-0 bg-cover bg-no-repeat bg-center" style="background-image:url('/x.jpg')"></div><img src="/x.jpg" alt=""></div>`;
   const out = audit(html);
   const issue = out.issues.find((i) => i.rule === RULES.OVERFLOW_HIDDEN_ON_NON_MEDIA_WRAPPER);
   assert.ok(!issue);

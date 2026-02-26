@@ -22,6 +22,7 @@ import { previewCss } from "./preview/preview.styles.js";
 import { viewportScript } from "./preview/preview.viewport.js";
 import { patchesScript } from "./preview/preview.patches.js";
 import { responsiveScript } from "./preview/preview.responsive.js";
+import { injectHeroMediaByKeyPass } from "../auto/htmlDeterministicPasses.js";
 
 const ENABLE_NICESELECT = String(process.env.WIDGET_NICESELECT || "").trim() === "1";
 const NICESELECT_CSS =
@@ -56,6 +57,43 @@ const JQUERY_JS =
 const JQUERY_JS_FALLBACK =
   String(process.env.WIDGET_SLICK_JQUERY_FALLBACK || "").trim() ||
   "https://unpkg.com/jquery@3.7.1/dist/jquery.min.js";
+
+function isImageLikeFill(fill) {
+  const kind = String(fill?.kind || "").toLowerCase();
+  const type = String(fill?.type || fill?.fillType || "").toUpperCase();
+  return kind === "image" || type === "IMAGE" || type === "IMAGE_FILL";
+}
+
+function pickHeroMediaSrcFromAst(ast) {
+  const root = ast?.tree || ast?.root || ast?.frameNode || ast?.node || null;
+  if (!root || typeof root !== "object") return "";
+  const seen = new Set();
+  const queue = [root];
+  while (queue.length) {
+    const n = queue.shift();
+    if (!n || typeof n !== "object" || seen.has(n)) continue;
+    seen.add(n);
+    const key = String(n?.key || "").toLowerCase();
+    const name = String(n?.name || "").toLowerCase();
+    const isHeroMediaSlot =
+      key.includes("frame:image") ||
+      key.includes("frame:hero") ||
+      (/\b(hero|image|video|media)\b/.test(`${key} ${name}`) &&
+        !/\b(text|headline|title|copy|paragraph)\b/.test(`${key} ${name}`));
+    if (isHeroMediaSlot) {
+      const imgSrc = String(n?.img?.src || "").trim();
+      if (imgSrc) return imgSrc;
+      const fills = Array.isArray(n?.fills) ? n.fills : Array.isArray(n?.fill) ? n.fill : [];
+      for (const f of fills) {
+        if (!isImageLikeFill(f)) continue;
+        const src = String(f?.src || f?.url || f?.image?.src || f?.asset?.src || "").trim();
+        if (src) return src;
+      }
+    }
+    if (Array.isArray(n?.children)) queue.push(...n.children);
+  }
+  return "";
+}
 
 const CODEMIRROR_CSS =
   String(process.env.CODEMIRROR_CSS || "").trim() ||
@@ -830,6 +868,12 @@ export function previewHtml(ast, opts = {}) {
         )}" loading="lazy" />`
       : ""
   );
+
+  const preferredHeroMediaSrc = pickHeroMediaSrcFromAst(ast);
+  if (preferredHeroMediaSrc) {
+    fragment = injectHeroMediaByKeyPass(fragment, preferredHeroMediaSrc, "frame:image#1");
+    fragment = injectHeroMediaByKeyPass(fragment, preferredHeroMediaSrc, "frame:hero#1");
+  }
 
   const bodyFontCss = primaryFontFamily
     ? `body{ font-family: ${cssFontStack(primaryFontFamily)}; }`

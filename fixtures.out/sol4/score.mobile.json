@@ -1,0 +1,30 @@
+{
+  "slug": "sol4",
+  "mode": "mobile",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1254,
+    "height": 150
+  },
+  "diffPixels": 37713,
+  "totalPixels": 188100,
+  "diffRatio": 0.20049441786283892,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sol4/figma.mobile.png",
+    "width": 1280,
+    "height": 512
+  },
+  "at": "2026-02-23T13:13:47.813Z"
+}

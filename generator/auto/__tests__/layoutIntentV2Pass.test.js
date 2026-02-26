@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { layoutIntentV2Pass } from "../layoutIntentV2Pass.js";
-import { flexResponsiveClasses, shouldUseGrid } from "../autoLayoutify/layoutGridFlex.js";
+import { flexResponsiveClasses, gridColsResponsive, shouldUseGrid } from "../autoLayoutify/layoutGridFlex.js";
 
 function makeNode(id, x, y, w, h) {
   return { id, x, y, w, h, children: [] };
@@ -22,6 +22,8 @@ test("layoutIntentV2 infers horizontal axis for side-by-side children", () => {
   layoutIntentV2Pass(ast);
   assert.equal(ast.tree.__layoutHints?.axis, "horizontal");
   assert.equal(Boolean(ast.tree.__layoutHints?.collectionLike), true);
+  assert.equal(ast.tree.__layoutModel?.layoutType, "grid");
+  assert.equal(ast.tree.__layoutPriors?.figma?.layout, "NONE");
 });
 
 test("layoutIntentV2 infers vertical axis for stacked children", () => {
@@ -37,6 +39,7 @@ test("layoutIntentV2 infers vertical axis for stacked children", () => {
   };
   layoutIntentV2Pass(ast);
   assert.equal(ast.tree.__layoutHints?.axis, "vertical");
+  assert.equal(ast.tree.__layoutModel?.layoutType, "col");
 });
 
 test("grid selection can use collection hint when auto layout is absent", () => {
@@ -69,13 +72,17 @@ test("layoutIntentV2 detects y-band rows and infers row/column gaps", () => {
   layoutIntentV2Pass(ast);
   const hints = ast.tree.__layoutHints || {};
   assert.equal(hints.collectionLike, true);
+  assert.equal(hints.layoutType, "grid");
   assert.equal(hints.rowCount, 2);
   assert.equal(hints.colCount, 2);
   assert.equal(Boolean(hints.alignedColumns), true);
   assert.equal(Boolean(hints.repeatedWidths), true);
   assert.equal(Boolean(hints.gridCandidate), true);
+  assert.equal(Number(hints.metadata?.cols), 2);
   assert.ok(Number(hints.rowGapPx) >= 40);
   assert.ok(Number(hints.colGapPx) >= 20);
+  assert.ok(Number(hints.metadata?.gapX) >= 20);
+  assert.ok(Number(hints.metadata?.gapY) >= 40);
 });
 
 test("layoutIntentV2 flags low-confidence ambiguous non-auto groups", () => {
@@ -122,6 +129,68 @@ test("gridCandidate drives grid inference for repeated card gallery", () => {
     ],
   };
   assert.equal(shouldUseGrid(node, {}), true);
+});
+
+test("3x2 geometry infers deterministic grid cols and stable gaps", () => {
+  const ast = {
+    tree: {
+      id: "grid-3x2",
+      children: [
+        makeNode("a", 0, 0, 120, 90),
+        makeNode("b", 160, 1, 120, 90),
+        makeNode("c", 320, 0, 120, 90),
+        makeNode("d", 0, 130, 120, 90),
+        makeNode("e", 160, 131, 120, 90),
+        makeNode("f", 320, 130, 120, 90),
+      ],
+    },
+  };
+  layoutIntentV2Pass(ast);
+  const hints = ast.tree.__layoutHints || {};
+  assert.equal(hints.layoutType, "grid");
+  assert.equal(Boolean(hints.gridCandidate), true);
+  assert.equal(Number(hints.metadata?.cols), 3);
+  assert.ok(Number(hints.metadata?.gapX) >= 30);
+  assert.ok(Number(hints.metadata?.gapY) >= 30);
+});
+
+test("tags cloud with variable widths does not convert to grid", () => {
+  const ast = {
+    tree: {
+      id: "tags-cloud",
+      children: [
+        makeNode("a", 0, 0, 72, 36),
+        makeNode("b", 84, 1, 164, 36),
+        makeNode("c", 260, 0, 96, 36),
+        makeNode("d", 0, 54, 188, 36),
+        makeNode("e", 200, 53, 82, 36),
+        makeNode("f", 294, 54, 142, 36),
+      ],
+    },
+  };
+  layoutIntentV2Pass(ast);
+  const hints = ast.tree.__layoutHints || {};
+  assert.notEqual(hints.layoutType, "grid");
+  assert.equal(Boolean(hints.gridCandidate), false);
+  assert.equal(Boolean(shouldUseGrid(ast.tree, {})), false);
+});
+
+test("two-column list stays non-grid without strong signal", () => {
+  const ast = {
+    tree: {
+      id: "two-col-list",
+      children: [
+        makeNode("a", 0, 0, 220, 28),
+        makeNode("b", 260, 0, 120, 28),
+        makeNode("c", 0, 46, 220, 28),
+        makeNode("d", 260, 46, 124, 28),
+      ],
+    },
+  };
+  layoutIntentV2Pass(ast);
+  const hints = ast.tree.__layoutHints || {};
+  assert.notEqual(hints.layoutType, "grid");
+  assert.equal(Boolean(shouldUseGrid(ast.tree, {})), false);
 });
 
 test("Figma Layout guide Grid 10px sets layoutGuideGrid and layoutGuideGapPx", () => {
@@ -182,5 +251,22 @@ test("flex wrap mapping follows explicit auto wrap signal", () => {
   );
   assert.ok(withWrap.includes("md:flex-wrap"));
   assert.ok(!noWrap.includes("md:flex-wrap"));
+});
+
+test("grid responsive classes can be driven by inferred breakpoint plan", () => {
+  const cls = gridColsResponsive({ base: 1, md: 2, lg: 4 });
+  assert.match(cls, /\bgrid-cols-1\b/);
+  assert.match(cls, /\bmd:grid-cols-2\b/);
+  assert.match(cls, /\blg:grid-cols-4\b/);
+});
+
+test("flex responsive classes can use inferred two-column stack plan", () => {
+  const cls = flexResponsiveClasses(
+    { layout: "HORIZONTAL", primaryAlign: "MIN", counterAlign: "MIN" },
+    [makeNode("a", 0, 0, 100, 40), makeNode("b", 110, 0, 100, 40)],
+    { node: { __responsivePlan: { layout: { flexDirection: { base: "col", md: "row" } } } } }
+  );
+  assert.match(cls, /\bflex-col\b/);
+  assert.match(cls, /\bmd:flex-row\b/);
 });
 

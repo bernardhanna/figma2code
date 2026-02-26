@@ -2,13 +2,9 @@
 import { cls, num, pos, rem, spacingClass } from "./precision.js";
 import { SELF } from "./layoutGridFlex.js";
 import { hasOwnBoxDeco } from "./styles.js";
+import { normalizeSizingIntent, resolveAxisIntentsFromLayoutModel } from "../layoutModel.js";
 
 /* ================== SIZING RULES ================== */
-
-function normalizeSizingIntent(raw) {
-  const v = String(raw || "").toUpperCase();
-  return v === "FILL" || v === "FIXED" || v === "HUG" ? v : "";
-}
 
 function isMediaLike(node) {
   const tag = String(node?.tag || "").toLowerCase();
@@ -61,12 +57,16 @@ function shouldUseResponsiveFixedWidth(node, widthPx) {
   return true;
 }
 
-const normalizeIntent = (raw) => {
-  const v = String(raw || "").toUpperCase();
-  return v === "FILL" || v === "FIXED" || v === "HUG" ? v : "";
-};
+const normalizeIntent = (raw) => normalizeSizingIntent(raw).toUpperCase();
 
 export function resolveAxisIntents(node, parentLayout = null) {
+  const fromModel = resolveAxisIntentsFromLayoutModel(node, parentLayout);
+  if (fromModel?.widthIntent || fromModel?.heightIntent) {
+    return {
+      widthIntent: normalizeIntent(fromModel.widthIntent),
+      heightIntent: normalizeIntent(fromModel.heightIntent),
+    };
+  }
   const parent = String(parentLayout || "").toUpperCase();
   const size = node?.size || {};
   const auto = node?.auto || {};
@@ -103,6 +103,16 @@ export function resolveAxisIntents(node, parentLayout = null) {
 }
 
 export function widthTokensForNode(node, parentLayout, { forText = false } = {}) {
+  const widthPlan = node?.__responsivePlan?.width || null;
+  if (widthPlan?.base === "full") {
+    const out = ["w-full", "max-w-full"];
+    if (widthPlan.md === "1/2") out.push("md:w-1/2");
+    else if (typeof widthPlan.md === "string" && widthPlan.md.trim()) out.push(`md:w-${widthPlan.md.trim()}`);
+    if (widthPlan.lg === "1/2") out.push("lg:w-1/2");
+    else if (typeof widthPlan.lg === "string" && widthPlan.lg.trim()) out.push(`lg:w-${widthPlan.lg.trim()}`);
+    if (widthPlan.md || widthPlan.lg) out.push("shrink-0");
+    return out;
+  }
   const s = node?.size || {};
   const w = num(s.w) ? s.w : num(node?.w) ? node.w : null;
   if (!pos(w)) return [];
@@ -246,10 +256,20 @@ const LARGE_SIDE_PADDING_PX = 80;
 function paddingClasses(prefix, px, opts = {}) {
   const value = Number(px);
   if (!Number.isFinite(value) || value <= 0) return [];
-  const { forcePxBracket, axis = "y" } = opts;
+  const { forcePxBracket, axis = "y", responsivePlan = null } = opts;
   const isHorizontal = axis === "x";
   const mobileCap = isHorizontal ? MOBILE_MAX_PADDING_PX_X : MOBILE_MAX_PADDING_PX_Y;
   const responsiveBp = isHorizontal && value > LARGE_SIDE_PADDING_PX ? "xl" : "md";
+  const sidePlan = isHorizontal ? responsivePlan?.paddingX || null : null;
+  if (sidePlan && (prefix === "pl" || prefix === "pr")) {
+    const lgPx = prefix === "pl" ? Number(sidePlan.lgLeftPx || 0) : Number(sidePlan.lgRightPx || 0);
+    const basePx = Number(sidePlan.basePx || 0);
+    if (lgPx > 0 && basePx > 0) {
+      const baseClass = spacingClass(prefix, basePx);
+      const desktopClass = spacingClass(prefix, lgPx);
+      return [baseClass, desktopClass ? `lg:${desktopClass}` : ""].filter(Boolean);
+    }
+  }
   const out = [];
   if (value > mobileCap) {
     out.push(spacingClass(prefix, mobileCap));
@@ -267,6 +287,7 @@ function paddingClasses(prefix, px, opts = {}) {
 
 export function paddings(al, opts = {}) {
   const isHero = !!opts.isHero;
+  const responsivePlan = opts?.responsivePlan?.spacing || null;
   const onWarning = typeof opts.onWarning === "function" ? opts.onWarning : null;
   const MAX_NON_HERO_PADDING_PX = 256;
   const out = [];
@@ -280,13 +301,14 @@ export function paddings(al, opts = {}) {
     out.push(
       ...paddingClasses("pt", al.padT, {
         forcePxBracket: forcePx,
+        responsivePlan,
         onWarning,
         maxNonHeroPx: MAX_NON_HERO_PADDING_PX,
       })
     );
   }
   if (pos(al.padR)) {
-    out.push(...paddingClasses("pr", al.padR, { axis: "x" }));
+    out.push(...paddingClasses("pr", al.padR, { axis: "x", responsivePlan }));
   }
   if (pos(al.padB)) {
     const forcePx = !isHero && Number(al.padB) > MAX_NON_HERO_PADDING_PX;
@@ -298,13 +320,14 @@ export function paddings(al, opts = {}) {
     out.push(
       ...paddingClasses("pb", al.padB, {
         forcePxBracket: forcePx,
+        responsivePlan,
         onWarning,
         maxNonHeroPx: MAX_NON_HERO_PADDING_PX,
       })
     );
   }
   if (pos(al.padL)) {
-    out.push(...paddingClasses("pl", al.padL, { axis: "x" }));
+    out.push(...paddingClasses("pl", al.padL, { axis: "x", responsivePlan }));
   }
   return out.join(" ");
 }

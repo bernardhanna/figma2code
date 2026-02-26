@@ -63,6 +63,20 @@ const hasRootSignature = (node) => {
   return tokens.includes("w-full") && tokens.includes("mx-auto") && tokens.some((t) => MAX_W_ANY.test(t));
 };
 
+const isMediaSlotDataKey = (value) => {
+  const key = String(value || "").toLowerCase();
+  return (
+    key.includes("frame:image") ||
+    key.includes("frame:hero") ||
+    key.includes("frame:media")
+  );
+};
+
+const isFrameLikeNonButtonDataKey = (value) => {
+  const key = String(value || "").toLowerCase();
+  return key.includes("frame:") && !/instance:button|\/button[#/]|^button[#/:]/i.test(key);
+};
+
 const CLEAN_METADATA_EXACT = new Set([
   "data-node-id",
   "data-node",
@@ -145,6 +159,22 @@ const hasGeneratorBgImageHint = (attrs) => {
   if (!attrs) return false;
   const keys = ["data-bg-url", "data-bg-image", "data-bg-mobile", "data-bg-tablet", "data-bg-desktop"];
   return keys.some((k) => String(getAttrValue(attrs, k) || "").trim().length > 0);
+};
+
+const hasBackgroundImageIntent = (attrs) => {
+  const style = String(getAttrValue(attrs, "style") || "");
+  if (/background-image\s*:/i.test(style)) return true;
+  const tokens = getClassTokens(attrs || {}).map(normalizeToken);
+  return tokens.some((t) => /^bg-\[.*url\(/i.test(t));
+};
+
+const isAbsoluteBackgroundFillLayer = (node) => {
+  if (!node?.attrs) return false;
+  const tokens = getClassTokens(node.attrs).map(normalizeToken);
+  const absolute = tokens.includes("absolute");
+  const inset0 = tokens.includes("inset-0");
+  const coverLike = tokens.includes("bg-cover") || tokens.includes("bg-contain");
+  return absolute && inset0 && coverLike && hasBackgroundImageIntent(node.attrs);
 };
 
 const materializeBackgroundImageFromData = (attrs, order) => {
@@ -454,6 +484,8 @@ function fix(html, issues, opts = {}) {
     if (issue.rule === RULES.DIV_BUTTON_SHOULD_BE_BUTTON) {
       const node = nodes[issue.nodeIndex];
       if (!node || (node.tag || "").toLowerCase() !== "div") return;
+      const dataKey = String(getAttrValue(node?.attrs, "data-key") || "");
+      if (isMediaSlotDataKey(dataKey) || isFrameLikeNonButtonDataKey(dataKey)) return;
 
       const attrs = { ...node.attrs };
       const order = [...(node.attrOrder || Object.keys(node.attrs))];
@@ -593,6 +625,11 @@ function fix(html, issues, opts = {}) {
     if (issue.rule === RULES.OVERFLOW_HIDDEN_ON_NON_MEDIA_WRAPPER) {
       const node = nodes[issue.nodeIndex];
       if (!node?.attrs) return;
+      const childIdxs = nodes
+        .map((n, idx) => (n?.parentIndex === issue.nodeIndex ? idx : -1))
+        .filter((idx) => idx >= 0);
+      const hasAbsoluteBgLayer = childIdxs.some((idx) => isAbsoluteBackgroundFillLayer(nodes[idx]));
+      if (hasAbsoluteBgLayer) return;
       const tokens = getClassTokens(node.attrs);
       const cleaned = tokens.filter((t) => normalizeToken(t) !== "overflow-hidden");
       if (cleaned.length === tokens.length) return;

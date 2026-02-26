@@ -17,6 +17,7 @@
 // - This file is invoked before autoLayoutify/render.
 //
 import { resolveInteractiveIntent } from "./interactiveIntent.js";
+import { accidentalHugWrapperCleanupPass } from "./accidentalHugWrapperCleanupPass.js";
 
 
 function isObj(x) {
@@ -273,12 +274,88 @@ function firstImageFill(node) {
 
     return { src, objectFit, objectPosition };
   }
-
-  // sometimes fill image ends up on node.img
-  const nsrc = typeof node?.img?.src === "string" ? node.img.src.trim() : "";
-  if (nsrc) return { src: nsrc, objectFit: "cover", objectPosition: "center" };
-
   return null;
+}
+
+function isFillVideo(fill) {
+  if (!fill || typeof fill !== "object") return false;
+  const kind = String(fill.kind || "").toLowerCase();
+  if (kind === "video") return true;
+  const t = String(fill.type || fill.fillType || "").toUpperCase();
+  return t === "VIDEO" || t === "VIDEO_FILL";
+}
+
+function firstVideoFill(node) {
+  const fills = Array.isArray(node?.fills) ? node.fills : Array.isArray(node?.fill) ? node.fill : [];
+  for (const f of fills) {
+    if (!isFillVideo(f)) continue;
+    const src =
+      (typeof f.src === "string" && f.src.trim()) ||
+      (typeof f.url === "string" && f.url.trim()) ||
+      (typeof f.video?.src === "string" && f.video.src.trim()) ||
+      "";
+    const poster =
+      (typeof f.poster === "string" && f.poster.trim()) ||
+      (typeof f.posterUrl === "string" && f.posterUrl.trim()) ||
+      (typeof f.poster?.src === "string" && f.poster.src.trim()) ||
+      "";
+    if (!src && !poster) continue;
+    return { src, poster };
+  }
+  return null;
+}
+
+function isHeroMediaSlotNode(node) {
+  const name = String(node?.name || "").toLowerCase();
+  const key = String(node?.key || "").toLowerCase();
+  const w = Number(node?.w ?? node?.size?.w);
+  const haystack = `${name} ${key}`;
+  const looksHeroMedia = /\b(hero|image|video|media)\b/.test(haystack);
+  const textLike = /\b(text|headline|title|copy|paragraph)\b/.test(haystack);
+  if (!looksHeroMedia || textLike) return false;
+  if (Number.isFinite(w) && w >= 220) return true;
+  // Some payloads omit numeric width on media wrappers, but keys remain explicit.
+  if (key.includes("frame:image") || key.includes("frame:hero")) return true;
+  return false;
+}
+
+function mediaSourceFromNode(node) {
+  const imgSrc = typeof node?.img?.src === "string" ? node.img.src.trim() : "";
+  if (imgSrc) return { kind: "image", src: imgSrc, objectFit: "cover", objectPosition: "center" };
+  const imgFill = firstImageFill(node);
+  if (imgFill?.src) return { kind: "image", ...imgFill };
+  const vidFill = firstVideoFill(node);
+  if (vidFill?.src || vidFill?.poster) return { kind: "video", ...vidFill };
+  const seen = new Set();
+  const queue = Array.isArray(node?.children) ? [...node.children] : [];
+  while (queue.length) {
+    const cur = queue.shift();
+    if (!cur || typeof cur !== "object" || seen.has(cur)) continue;
+    seen.add(cur);
+    const cImgSrc = typeof cur?.img?.src === "string" ? cur.img.src.trim() : "";
+    if (cImgSrc) return { kind: "image", src: cImgSrc, objectFit: "cover", objectPosition: "center" };
+    const cImgFill = firstImageFill(cur);
+    if (cImgFill?.src) return { kind: "image", ...cImgFill };
+    const cVidFill = firstVideoFill(cur);
+    if (cVidFill?.src || cVidFill?.poster) return { kind: "video", ...cVidFill };
+    if (Array.isArray(cur.children)) queue.push(...cur.children);
+  }
+  return null;
+}
+
+function findHeroMediaDescendant(root) {
+  let found = null;
+  const seen = new Set();
+  (function walk(n) {
+    if (!n || found || seen.has(n)) return;
+    seen.add(n);
+    if (isHeroMediaSlotNode(n)) {
+      found = n;
+      return;
+    }
+    for (const c of n.children || []) walk(c);
+  })(root);
+  return found;
 }
 
 function pickRootNodeForBg(ast) {
@@ -290,6 +367,53 @@ function enforceBgFromFill(ast) {
   if (!root) return;
 
   const fillBg = firstImageFill(root);
+  const heroMediaNode = findHeroMediaDescendant(root);
+  let heroMediaSource = heroMediaNode ? mediaSourceFromNode(heroMediaNode) : null;
+
+  if (
+    heroMediaNode &&
+    heroMediaSource?.kind === "image" &&
+    heroMediaSource?.src &&
+    !String(heroMediaNode?.img?.src || "").trim()
+  ) {
+    heroMediaNode.img = {
+      ...(isObj(heroMediaNode.img) ? heroMediaNode.img : {}),
+      src: heroMediaSource.src,
+    };
+  }
+
+  // If root image fill appears to actually belong to a dedicated hero/media slot,
+  // prefer explicit media rendering in that slot and keep section background as color-only.
+  if (fillBg?.src && heroMediaNode && heroMediaNode !== root) {
+    if (!heroMediaSource) {
+      heroMediaNode.img = {
+        ...(isObj(heroMediaNode.img) ? heroMediaNode.img : {}),
+        src: fillBg.src,
+      };
+      heroMediaSource = mediaSourceFromNode(heroMediaNode);
+    }
+    ast.__bg = {
+      ...(isObj(ast.__bg) ? ast.__bg : {}),
+      enabled: false,
+      src: "",
+      objectFit: "cover",
+      objectPosition: "center",
+      source: "media-slot",
+    };
+    return;
+  }
+
+  if (heroMediaNode && heroMediaSource) {
+    ast.__bg = {
+      ...(isObj(ast.__bg) ? ast.__bg : {}),
+      enabled: false,
+      src: "",
+      objectFit: "cover",
+      objectPosition: "center",
+      source: "media-slot",
+    };
+    return;
+  }
 
   // If we find a fill image, force __bg to it and enable.
   if (fillBg?.src) {
@@ -364,6 +488,7 @@ export function normalizeAst(ast) {
 
   const out = { ...ast };
   if (isObj(out.tree)) out.tree = normalizeNode(out.tree);
+  accidentalHugWrapperCleanupPass(out);
 
   // NEW: enforce background selection rules
   enforceBgFromFill(out);

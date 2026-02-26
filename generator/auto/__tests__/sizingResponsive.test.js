@@ -122,3 +122,31 @@ test("vertical fixed-width content gets responsive width (full on mobile)", () =
   assert.ok(tokens.includes("md:w-[21.5rem]"));
   assert.ok(tokens.includes("max-w-full"));
 });
+
+test("responsive width plan prefers full->md half chain", () => {
+  const node = {
+    id: "planned-half",
+    w: 600,
+    size: { primary: "FIXED" },
+    __responsivePlan: { width: { base: "full", md: "1/2" } },
+  };
+  const tokens = widthTokensForNode(node, "HORIZONTAL");
+  assert.ok(tokens.includes("w-full"));
+  assert.ok(tokens.includes("md:w-1/2"));
+  assert.ok(!tokens.some((t) => /^md:w-\[/.test(t)));
+});
+
+test("responsive padding plan restores desktop spacing at lg", () => {
+  const al = { padL: 96, padR: 72 };
+  const cls = paddings(al, {
+    responsivePlan: {
+      spacing: {
+        paddingX: { basePx: 20, lgLeftPx: 96, lgRightPx: 72 },
+      },
+    },
+  });
+  assert.match(cls, /\bpl-5\b/);
+  assert.match(cls, /\blg:pl-24\b/);
+  assert.match(cls, /\bpr-5\b/);
+  assert.ok(cls.includes("lg:pr-[4.5rem]"));
+});

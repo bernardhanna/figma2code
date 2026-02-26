@@ -572,6 +572,14 @@ function nameLandmarkHint(nodeName) {
   return null;
 }
 
+function hasMeaningfulRenderablePayload(node) {
+  if (!node || typeof node !== "object") return false;
+  if (node.text && typeof node.text.raw === "string" && node.text.raw.trim()) return true;
+  if (node.img?.src) return true;
+  if (Array.isArray(node?.fills) && node.fills.length > 0) return true;
+  return Array.isArray(node?.children) && node.children.length > 0;
+}
+
 function deriveNavLabel(nodeName, sem) {
   const fromSem =
     typeof sem?.label === "string" && sem.label.trim()
@@ -649,6 +657,17 @@ function htmlHasAnyBgImageStyle(tokens) {
     if (tag.kind !== "open") continue;
     const style = getAttr(tag.attrs, "style") || "";
     if (/background-image\s*:/i.test(style)) return true;
+  }
+  return false;
+}
+
+function htmlHasAnyBgColorStyle(tokens) {
+  for (const t of tokens) {
+    if (t.type !== "tag") continue;
+    const tag = parseTag(t.value);
+    if (tag.kind !== "open") continue;
+    const style = getAttr(tag.attrs, "style") || "";
+    if (/background-color\s*:/i.test(style)) return true;
   }
   return false;
 }
@@ -733,9 +752,14 @@ function applyRootHeroBannerEarly(tokens, ast, semantics, opts, report) {
     !!ast?.__bg?.enabled ||
     (Array.isArray(rootAst?.fills) &&
       rootAst.fills.some(
-        (f) => f?.kind === "image" || f?.kind === "video" || f?.kind === "gradient"
+        (f) =>
+          f?.kind === "image" ||
+          f?.kind === "video" ||
+          f?.kind === "gradient" ||
+          f?.kind === "solid"
       )) ||
-    htmlHasAnyBgImageStyle(tokens);
+    htmlHasAnyBgImageStyle(tokens) ||
+    htmlHasAnyBgColorStyle(tokens);
 
   if (sectionIdx >= 0 && anyBgCue) {
     const tok = tokens[sectionIdx];
@@ -968,7 +992,67 @@ export function semanticAccessiblePass({ html, ast, semantics }) {
           target = semHint || nameHint;
         }
 
+        // Keep root node structural unless semantics explicitly requests landmark tag.
+        if (isRootNode && !semHint && target) {
+          target = null;
+        }
+
+        // Guardrail: keep root frame structural in hero-like wrapper layouts.
+        // This avoids drifting to <main> under a section wrapper and preserves stable wrappers.
+        if (isRootNode && target?.kind === "main" && isRootWrapper) {
+          target = null;
+        }
+
+        // If wrapper/section already carries hero banner, do not promote top-level hero text/media
+        // blocks into additional banner landmarks.
+        const heroTextLike = /\b(hero\s*text|text\s*box)\b/.test(normHint(nameForHint));
+        if (
+          target &&
+          isTopLevel &&
+          !isRootNode &&
+          bannerApplied &&
+          target.role === "banner" &&
+          heroTextLike
+        ) {
+          target = null;
+        }
+
+        // If banner already lives on the outer wrapper, do not promote sibling hero/media blocks
+        // to additional <header> landmarks just because their name contains "hero".
+        if (
+          target &&
+          isTopLevel &&
+          !isRootNode &&
+          bannerOnWrapperLike &&
+          target.kind === "header" &&
+          target.role === "banner"
+        ) {
+          target = null;
+        }
+
+        // Guardrail: hero text wrappers should remain structural even when semantic hints drift.
+        if (
+          target &&
+          isTopLevel &&
+          !isRootNode &&
+          target.kind === "header" &&
+          /\b(hero\s*text|text\s*box)\b/.test(normHint(nameForHint))
+        ) {
+          target = null;
+        }
+
+        // Guardrail: avoid upgrading empty structural nodes by name hint only.
+        // This prevents empty hero/media slots from becoming empty <header>/<main>.
+        if (target && !semHint && !hasMeaningfulRenderablePayload(node)) {
+          target = null;
+        }
+
         if (target && isContainerishHtmlTag(tag.name) && !insideInteractive) {
+          const existingRole = String(getAttr(tag.attrs, "role") || "").toLowerCase();
+          // Invalid combo guard: never allow <main role="banner">.
+          if (target.kind === "main" && (target.role === "banner" || existingRole === "banner")) {
+            target = { kind: "section", role: "banner" };
+          }
           if (target.kind === "main" && mainApplied) target = null;
 
           const canRename = canRenameToLandmark({

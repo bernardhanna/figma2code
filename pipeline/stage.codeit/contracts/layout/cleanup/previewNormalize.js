@@ -245,7 +245,141 @@ const normalizeClasses = (tokens) => {
     seen.add(t);
     out.push(t);
   }
+  const parsed = out.map((token) => ({
+    token,
+    core: normalizeToken(token),
+    prefix: getPrefix(token),
+  }));
+  const byPrefix = new Map();
+  parsed.forEach((item) => {
+    if (!byPrefix.has(item.prefix)) byPrefix.set(item.prefix, []);
+    byPrefix.get(item.prefix).push(item);
+  });
+  const drop = new Set();
+  byPrefix.forEach((items) => {
+    const gaps = items.filter((x) => /^gap-/.test(x.core) && !/^gap-[xy]-/.test(x.core));
+    if (gaps.length > 1) {
+      const last = gaps[gaps.length - 1].token;
+      gaps.forEach((g) => {
+        if (g.token !== last) drop.add(g.token);
+      });
+    }
+    const px = items.filter((x) => /^px-/.test(x.core));
+    if (px.length) {
+      const lastPx = px[px.length - 1].token;
+      px.forEach((p) => {
+        if (p.token !== lastPx) drop.add(p.token);
+      });
+      items
+        .filter((x) => /^pl-/.test(x.core) || /^pr-/.test(x.core))
+        .forEach((x) => drop.add(x.token));
+    }
+    const py = items.filter((x) => /^py-/.test(x.core));
+    if (py.length) {
+      const lastPy = py[py.length - 1].token;
+      py.forEach((p) => {
+        if (p.token !== lastPy) drop.add(p.token);
+      });
+      items
+        .filter((x) => /^pt-/.test(x.core) || /^pb-/.test(x.core))
+        .forEach((x) => drop.add(x.token));
+    }
+  });
+  return out.filter((token) => !drop.has(token));
+};
+
+const parseDataWRem = (node) => {
+  const raw = String(getAttrValue(node?.attrs, "data-w-rem") || "").trim().toLowerCase();
+  if (!raw) return 0;
+  const rem = raw.match(/^(\d+(?:\.\d+)?)rem$/);
+  if (rem) return Number(rem[1]);
+  const px = raw.match(/^(\d+(?:\.\d+)?)px$/);
+  if (px) return Number(px[1]) / 16;
+  const num = raw.match(/^(\d+(?:\.\d+)?)$/);
+  if (num) return Number(num[1]);
+  return 0;
+};
+
+const applyDataWRemPolicies = (node, tokens) => {
+  const rem = parseDataWRem(node);
+  if (!(rem > 0)) return tokens;
+  const remText = `${rem}rem`;
+  const tag = String(node?.tag || "").toLowerCase();
+  const dataKey = String(getAttrValue(node?.attrs, "data-key") || "").toLowerCase();
+  const textLikeTag = new Set([
+    "h1",
+    "h2",
+    "h3",
+    "h4",
+    "h5",
+    "h6",
+    "p",
+    "span",
+    "label",
+    "small",
+    "strong",
+    "em",
+  ]);
+  const hasLayoutClass = (tokens || []).some((token) => {
+    const core = normalizeToken(token);
+    return core === "flex" || core === "grid";
+  });
+  const frameLike = dataKey.includes("frame:") || dataKey === "root";
+  const canFluidizeWideFrame = rem >= 60 && !textLikeTag.has(tag) && (frameLike || hasLayoutClass);
+  const out = [];
+  const seen = new Set();
+  for (const token of tokens) {
+    const prefix = getPrefix(token);
+    const core = normalizeToken(token);
+    if (rem <= 70 && prefix === "lg" && /^p[lrx]-/.test(core)) {
+      continue;
+    }
+    const normalized =
+      prefix === "" && /^w-\[[^\]]+\]$/.test(core)
+        ? canFluidizeWideFrame
+          ? "w-full"
+          : `w-[${remText}]`
+        : token;
+    if (seen.has(normalized)) continue;
+    seen.add(normalized);
+    out.push(normalized);
+  }
   return out;
+};
+
+const hasDirectImgChild = (nodes, childrenMap, nodeIndex) => {
+  const children = childrenMap.get(nodeIndex) || [];
+  return children.some((idx) => String(nodes[idx]?.tag || "").toLowerCase() === "img");
+};
+
+const normalizeRectangleImageLayer = (node, nodeIndex, nodes, childrenMap, tokens) => {
+  const dataKey = String(getAttrValue(node?.attrs, "data-key") || "").toLowerCase();
+  if (!dataKey.includes("rectangle:image")) return { tokens, changed: false };
+  if (!hasDirectImgChild(nodes, childrenMap, nodeIndex)) return { tokens, changed: false };
+  const next = [];
+  const blocked = new Set([
+    "absolute",
+    "inset-0",
+    "pointer-events-none",
+    "bg-cover",
+    "bg-no-repeat",
+    "bg-center",
+  ]);
+  for (const token of tokens) {
+    const prefix = getPrefix(token);
+    const core = normalizeToken(token);
+    if (blocked.has(core)) continue;
+    if (/^w-\[[^\]]+\]$/.test(core)) continue;
+    if (/^h-\[[^\]]+\]$/.test(core)) continue;
+    if (prefix === "max-md" && core === "h-auto") continue;
+    next.push(token);
+  }
+  if (!next.includes("w-full")) next.push("w-full");
+  if (!next.includes("h-full")) next.push("h-full");
+  return {
+    tokens: next,
+    changed: next.length !== tokens.length || next.some((t, i) => t !== tokens[i]),
+  };
 };
 
 const mergeDataAttributes = (parent, child) => {
@@ -328,6 +462,7 @@ const apply = ({ html }) => {
     const childTokens = addStateTokensFromData(child, getClassTokens(child.attrs || {}));
     let mergedTokens = mergeClassTokens(parentTokens, childTokens);
     mergedTokens = normalizeClasses(mergedTokens);
+    mergedTokens = applyDataWRemPolicies(child, mergedTokens);
 
     if (getAttrValue(wrapper.attrs, "style") && !getAttrValue(child.attrs, "style")) {
       setAttrValue(child.attrs, child.attrOrder, "style", getAttrValue(wrapper.attrs, "style"));
@@ -367,8 +502,13 @@ const apply = ({ html }) => {
     if (updated.has(nodeIndex)) return;
     const tokens = addStateTokensFromData(node, getClassTokens(node.attrs || {}));
     if (!tokens.length) return;
-    const next = normalizeClasses(tokens);
-    if (next.length === tokens.length && next.every((t, i) => t === tokens[i])) return;
+    const rectNormalized = normalizeRectangleImageLayer(node, nodeIndex, nodes, childrenMap, tokens);
+    const next = applyDataWRemPolicies(node, normalizeClasses(rectNormalized.tokens));
+    const style = String(getAttrValue(node.attrs, "style") || "");
+    const removeBgStyle = rectNormalized.changed && /background-image\s*:/i.test(style);
+    const changedByClasses = next.length !== tokens.length || next.some((t, i) => t !== tokens[i]);
+    if (!changedByClasses && !removeBgStyle) return;
+    if (removeBgStyle) removeAttr(node.attrs, node.attrOrder, "style");
     setClassTokens(node.attrs, node.attrOrder, next);
     patches.push(
       createPatch(
@@ -386,6 +526,16 @@ const apply = ({ html }) => {
       value: "removed duplicates",
       reason: "Removed redundant class tokens",
     });
+    if (rectNormalized.changed) {
+      changes.push({
+        contractId: id,
+        nodeId: meta.nodeId,
+        selector: meta.selector,
+        op: "normalizeRectangleImageLayer",
+        value: "w-full h-full",
+        reason: "Flatten rectangle image layer to match direct image card shape",
+      });
+    }
     normalized += 1;
   });
 

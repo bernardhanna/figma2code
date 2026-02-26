@@ -1,6 +1,7 @@
 // generator/auto/autoLayoutify/layoutGridFlex.js
 import { cls } from "./precision.js";
 import { nameHints, shouldRenderAsLinkOrButton } from "./semantics.js";
+import { normalizeSizingIntent } from "../layoutModel.js";
 
 /* ------------------ layout enums ------------------ */
 
@@ -100,6 +101,22 @@ export function shouldUseGrid(node, semantics) {
   if (shouldRenderAsLinkOrButton(node)) return false;
 
   const kids = node.children || [];
+  const modelType = String(node?.__layoutModel?.layoutType || "").toLowerCase();
+  if (modelType) {
+    if (modelType === "grid") return kids.length >= 2;
+    if (modelType === "row" || modelType === "col" || modelType === "stack" || modelType === "absolute") {
+      return false;
+    }
+  }
+  const hintedCols = Number(
+    node?.__layoutHints?.metadata?.cols ??
+      node?.__layoutHints?.layoutMetadata?.cols ??
+      node?.__layoutHints?.colsHint ??
+      0
+  );
+  if (String(node?.__layoutHints?.layoutType || "").toLowerCase() === "grid" && hintedCols >= 2) {
+    return true;
+  }
   // Figma Layout guide "Grid Npx" wins over auto layout: designer explicitly chose grid.
   if (node?.__layoutHints?.layoutGuideGrid && kids.length >= 2) return true;
 
@@ -171,7 +188,11 @@ export function shouldUseGrid(node, semantics) {
     if (ratio <= 1.20) return true;
   }
 
-  if (node?.__layoutHints?.collectionLike && Number(node?.__layoutHints?.colsHint || 0) >= 2) {
+  if (
+    node?.__layoutHints?.collectionLike &&
+    Number(node?.__layoutHints?.colsHint || 0) >= 2 &&
+    ratio <= 1.15
+  ) {
     return true;
   }
 
@@ -251,6 +272,13 @@ function threeColFrTemplate(ws) {
  */
 export function gridColsFor(node) {
   const kids = node.children || [];
+  const hintedCols = Number(
+    node?.__layoutHints?.metadata?.cols ??
+      node?.__layoutHints?.layoutMetadata?.cols ??
+      node?.__layoutHints?.colsHint ??
+      0
+  );
+  if (hintedCols >= 2) return Math.max(1, Math.min(6, hintedCols));
   const hints = nameHints(node);
   if (hints.colsHint) return Math.max(1, Math.min(6, hints.colsHint));
   const count = kids.length;
@@ -277,6 +305,13 @@ export function gridColsFor(node) {
 }
 
 export function gridColsResponsive(maxColsOrTemplate) {
+  if (maxColsOrTemplate && typeof maxColsOrTemplate === "object" && !Array.isArray(maxColsOrTemplate)) {
+    const plan = maxColsOrTemplate;
+    const out = ["grid", `grid-cols-${Math.max(1, Number(plan.base) || 1)}`];
+    if (Number(plan.md) >= 2) out.push(`md:grid-cols-${Math.max(1, Number(plan.md))}`);
+    if (Number(plan.lg) >= 2) out.push(`lg:grid-cols-${Math.max(1, Number(plan.lg))}`);
+    return out.join(" ");
+  }
   const out = ["grid", "grid-cols-1"];
   if (maxColsOrTemplate == null) return out.join(" ");
   if (typeof maxColsOrTemplate === "string") {
@@ -304,11 +339,26 @@ export function flexResponsiveClasses(al, kids, opts = {}) {
   ).toUpperCase();
   const wantsWrap = wrapRaw === "WRAP" || wrapRaw === "TRUE" || wrapRaw === "YES" || wrapRaw === "1";
 
-  const base = ["flex", forceRow ? "flex-row" : "flex-col"];
+  const planDir = opts?.node?.__responsivePlan?.layout?.flexDirection || null;
+  const forcedMdDir = String(opts?.forceMdDir || "").toLowerCase();
+  const forcedMdJustify = String(opts?.forceMdJustify || "").trim();
+  const forcedMdItems = String(opts?.forceMdItems || "").trim();
+  const baseDir = planDir?.base === "row" ? "flex-row" : "flex-col";
+  const mdDirPlanned =
+    forcedMdDir === "row"
+      ? "md:flex-row"
+      : forcedMdDir === "col"
+        ? "md:flex-col"
+        : planDir?.md === "row"
+          ? "md:flex-row"
+          : planDir?.md === "col"
+            ? "md:flex-col"
+            : "";
+  const base = ["flex", forceRow ? "flex-row" : baseDir];
 
   // Desktop direction mirrors Figma auto layout (unless forced row)
   if (!forceRow) {
-    const dirDesktop = layout === "HORIZONTAL" ? "md:flex-row" : "md:flex-col";
+    const dirDesktop = mdDirPlanned || (layout === "HORIZONTAL" ? "md:flex-row" : "md:flex-col");
     base.push(dirDesktop);
   }
 
@@ -320,6 +370,25 @@ export function flexResponsiveClasses(al, kids, opts = {}) {
   const items = ITEMS[al.counterAlign || "MIN"];
   if (just) base.push(forceRow ? just : `md:${just}`);
   if (items) base.push(forceRow ? items : `md:${items}`);
+  if (forcedMdJustify) base.push(`md:${forcedMdJustify}`);
+  if (forcedMdItems) base.push(`md:${forcedMdItems}`);
 
   return cls(...base);
+}
+
+export function parentLayoutTypeToAxis(parentLayoutType) {
+  const p = String(parentLayoutType || "").toLowerCase();
+  if (p === "row") return "HORIZONTAL";
+  if (p === "col") return "VERTICAL";
+  if (p === "grid") return "GRID";
+  return "";
+}
+
+export function isFillWidthIntent(node, parentLayoutType) {
+  const p = String(parentLayoutType || "").toLowerCase();
+  const sizingByParent = node?.__layoutModel?.sizingByParent || {};
+  const parentSizing = sizingByParent[p] || null;
+  const fallback = node?.__layoutModel?.sizing || {};
+  const widthIntent = normalizeSizingIntent(parentSizing?.widthIntent || fallback?.widthIntent);
+  return widthIntent === "fill";
 }
