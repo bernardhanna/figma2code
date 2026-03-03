@@ -75,3 +75,44 @@ test("does not collapse centered container wrappers into children", () => {
   assert.ok(out.html.includes('data-key="card"'), "child remains intact");
   assert.ok(out.stats.merged === 0, "no wrapper collapse should happen");
 });
+
+test("normalizes large frame width to fluid and removes lg padding compensation", () => {
+  const html = `<div data-key="frame:frame-2332#1" data-w-rem="68rem" class="w-[80rem] pl-5 pr-5 lg:pl-24 lg:pr-24"></div>`;
+  const out = apply({ html, artifact: {}, options: {} });
+  const cls = getClass(out.html, "frame:frame-2332#1");
+  assert.ok(cls.includes("w-full"));
+  assert.ok(!cls.includes("w-[80rem]"));
+  assert.ok(!cls.includes("lg:pl-24"));
+  assert.ok(!cls.includes("lg:pr-24"));
+});
+
+test("flattens rectangle image layers with direct img child", () => {
+  const html = `
+    <div id="keep-wrapper" data-key="frame:image#1" class="relative overflow-hidden w-full h-[20rem]">
+      <div data-key="frame:image#1/rectangle:image-11#1" class="w-[49.8125rem] h-[33.1875rem] bg-cover bg-no-repeat bg-center absolute inset-0 pointer-events-none" style="background-image:url('/x.jpg')">
+        <img src="/x.jpg" alt="" class="w-full h-full object-cover" />
+      </div>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const cls = getClass(out.html, "frame:image#1/rectangle:image-11#1");
+  assert.ok(cls.includes("w-full"));
+  assert.ok(!cls.includes("h-[33.1875rem]"));
+  assert.ok(!cls.includes("absolute"));
+  assert.ok(!cls.includes("bg-cover"));
+  assert.ok(!out.html.includes("background-image:url('/x.jpg')"));
+});
+
+test("removes conflicting gap and duplicate axis padding families", () => {
+  const html = `<div data-key="x" class="gap-12 gap-4 pl-5 pr-5 px-6 py-8 pt-2 pb-2"></div>`;
+  const out = apply({ html, artifact: {}, options: {} });
+  const cls = getClass(out.html, "x");
+  assert.ok(cls.includes("gap-4"));
+  assert.ok(!cls.includes("gap-12"));
+  assert.ok(cls.includes("px-6"));
+  assert.ok(!cls.includes("pl-5"));
+  assert.ok(!cls.includes("pr-5"));
+  assert.ok(cls.includes("py-8"));
+  assert.ok(!cls.includes("pt-2"));
+  assert.ok(!cls.includes("pb-2"));
+});

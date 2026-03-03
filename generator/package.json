@@ -10,9 +10,20 @@
     "openai": "^4.104.0"
   },
   "scripts": {
+    "start": "node server.js",
+    "stop": "sh -c 'p=$(lsof -ti tcp:5173); [ -n \"$p\" ] && kill -9 $p || true'",
+    "restart": "npm run stop && npm run start",
+    "env:check-docs": "node scripts/check-env-docs.mjs",
     "fixtures:render": "node scripts/render-fixtures.mjs",
     "fixtures:diff": "node scripts/visual-diff.mjs",
-    "fixtures:all": "node scripts/render-fixtures.mjs && node scripts/visual-diff.mjs"
+    "fixtures:all": "node scripts/render-fixtures.mjs && node scripts/visual-diff.mjs",
+    "mcp:ingest": "node ../tools/figma2code-mcp/dist/cli.js ingest",
+    "mcp:build": "cd ../tools/figma2code-mcp && npm run build",
+    "mcp:compare": "sh -c 'test -n \"$SLUG\" || { echo \"Set SLUG=...\"; exit 1; }; curl -s -X POST \"${COMPARE_BASE:-http://127.0.0.1:5173}/api/compare/${SLUG}\" -H \"Content-Type: application/json\" -d \"{\\\"multi\\\":true,\\\"viewports\\\":\\\"all\\\",\\\"passDiffRatio\\\":0.02,\\\"screenshot\\\":{\\\"mode\\\":\\\"element\\\",\\\"selector\\\":\\\"#cmp_root\\\",\\\"minHeight\\\":50}}\"'",
+    "mcp:refine": "sh -c 'test -n \"$SLUG\" || { echo \"Set SLUG=...\"; exit 1; }; curl -s -X POST \"${COMPARE_BASE:-http://127.0.0.1:5173}/api/refine/${SLUG}\" -H \"Content-Type: application/json\" -d \"{\\\"provider\\\":\\\"visual-optimizer\\\",\\\"bucket\\\":\\\"desktop\\\",\\\"maxIters\\\":3,\\\"passDiffRatio\\\":0.02,\\\"topOffenders\\\":12}\"'",
+    "mcp:preview:hi-fi": "sh -c 'test -n \"$FIGMA_URL\" || { echo \"Set FIGMA_URL=...\"; exit 1; }; npm run mcp:build && node ../tools/figma2code-mcp/dist/cli.js ingest --desktop --url \"$FIGMA_URL\" ${SLUG:+--slug \"$SLUG\"} --mcp \"${MCP_ENDPOINT:-http://127.0.0.1:3845/mcp}\" --post \"${PREVIEW_ENDPOINT:-http://127.0.0.1:5173/api/preview-only}\" --refineMode \"${REFINE_MODE:-1}\" --verbose && { if [ -n \"$SLUG\" ]; then npm run mcp:compare; else echo \"Tip: set SLUG=... to auto-run visual compare\"; fi; }'",
+    "mcp:preview:hi-fi:selected": "sh -c 'npm run mcp:build && node ../tools/figma2code-mcp/dist/cli.js ingest --desktop ${SLUG:+--slug \"$SLUG\"} --mcp \"${MCP_ENDPOINT:-http://127.0.0.1:3845/mcp}\" --post \"${PREVIEW_ENDPOINT:-http://127.0.0.1:5173/api/preview-only}\" --refineMode \"${REFINE_MODE:-1}\" --verbose && { if [ -n \"$SLUG\" ]; then npm run mcp:compare; else echo \"Tip: set SLUG=... to auto-run visual compare\"; fi; }'",
+    "mcp:preview:hi-fi:selected:refine": "sh -c 'test -n \"$SLUG\" || { echo \"Set SLUG=...\"; exit 1; }; npm run mcp:build && node ../tools/figma2code-mcp/dist/cli.js ingest --desktop --slug \"$SLUG\" --mcp \"${MCP_ENDPOINT:-http://127.0.0.1:3845/mcp}\" --post \"${PREVIEW_ENDPOINT:-http://127.0.0.1:5173/api/preview-only}\" --refineMode \"${REFINE_MODE:-1}\" --verbose && npm run mcp:compare && npm run mcp:refine'"
   },
   "devDependencies": {
     "pixelmatch": "^7.1.0",

@@ -1,0 +1,30 @@
+{
+  "slug": "creativity-delivers-results",
+  "mode": "mobile",
+  "viewport": {
+    "width": 1024,
+    "height": 900
+  },
+  "crop": {
+    "width": 998,
+    "height": 150
+  },
+  "diffPixels": 6869,
+  "totalPixels": 149700,
+  "diffRatio": 0.04588510354041416,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/creativity-delivers-results/figma.mobile.png",
+    "width": 1024,
+    "height": 451
+  },
+  "at": "2026-02-18T11:47:57.901Z"
+}

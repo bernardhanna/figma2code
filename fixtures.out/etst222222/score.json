@@ -1,0 +1,30 @@
+{
+  "slug": "etst222222",
+  "mode": "desktop",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1262,
+    "height": 150
+  },
+  "diffPixels": 50244,
+  "totalPixels": 189300,
+  "diffRatio": 0.26541996830427894,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/etst222222/figma.desktop.png",
+    "width": 1280,
+    "height": 632
+  },
+  "at": "2026-02-18T15:29:56.652Z"
+}

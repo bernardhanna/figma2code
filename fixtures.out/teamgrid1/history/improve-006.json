@@ -1,0 +1,886 @@
+{
+  "iteration": 6,
+  "createdAt": "2026-02-24T12:27:35.878Z",
+  "inputHash": "ee532c7acdf99a9a577a85ff55858aee27c6843b2f807488431cee232fa03529",
+  "htmlHash": "4d8227ae124ff38d118a987726d53387fbe9476234bafd5fe0b15ad8e7475777",
+  "proposedPatches": [
+    {
+      "nodeId": "4127:14238",
+      "selector": "[data-node-id=\"4127:14238\"]",
+      "stage": "improve",
+      "iteration": 6,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "self-start"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "4127:14244",
+      "selector": "[data-node-id=\"4127:14244\"]",
+      "stage": "improve",
+      "iteration": 6,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "self-start"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "4127:14245",
+      "selector": "[data-node-id=\"4127:14245\"]",
+      "stage": "improve",
+      "iteration": 6,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[49.8125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "4127:14250",
+      "selector": "[data-node-id=\"4127:14250\"]",
+      "stage": "improve",
+      "iteration": 6,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "self-start"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "acceptedByGate": [],
+  "rejectedByGate": [
+    {
+      "patch": {
+        "nodeId": "4127:14238",
+        "selector": "[data-node-id=\"4127:14238\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "self-start"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14244",
+        "selector": "[data-node-id=\"4127:14244\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "self-start"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14245",
+        "selector": "[data-node-id=\"4127:14245\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[49.8125rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14250",
+        "selector": "[data-node-id=\"4127:14250\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "self-start"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    }
+  ],
+  "acceptedPatches": [],
+  "rejectedPatches": [
+    {
+      "patch": {
+        "nodeId": "4127:14247",
+        "selector": "[data-node-id=\"4127:14247\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[8.6875rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Previously rejected patch signature; skipping repeat trial.",
+      "strategyName": "width-dedupe-smart"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14248",
+        "selector": "[data-node-id=\"4127:14248\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[8.6875rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Previously rejected patch signature; skipping repeat trial.",
+      "strategyName": "width-dedupe-smart"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14259",
+        "selector": "[data-node-id=\"4127:14259\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [
+            "w-full",
+            "max-w-[42.5625rem]"
+          ],
+          "classRemove": [
+            "w-[42.5625rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Previously rejected patch signature; skipping repeat trial.",
+      "strategyName": "image-wrapper-fluid"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14238",
+        "selector": "[data-node-id=\"4127:14238\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "self-start"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14244",
+        "selector": "[data-node-id=\"4127:14244\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "self-start"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14245",
+        "selector": "[data-node-id=\"4127:14245\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[49.8125rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "4127:14250",
+        "selector": "[data-node-id=\"4127:14250\"]",
+        "stage": "improve",
+        "iteration": 6,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "self-start"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0089.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    }
+  ],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.028314726209463053,
+            "source": "visual-diff",
+            "diffPixels": 5326,
+            "totalPixels": 188100,
+            "at": "2026-02-24T12:23:51.264Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.028314726209463053,
+            "source": "visual-diff",
+            "diffPixels": 5326,
+            "totalPixels": 188100,
+            "at": "2026-02-24T12:23:53.987Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.028314726209463053,
+            "source": "visual-diff",
+            "diffPixels": 5326,
+            "totalPixels": 188100,
+            "at": "2026-02-24T12:23:56.715Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "4127:14238",
+        "selector": "[data-node-id=\"4127:14238\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14244",
+        "selector": "[data-node-id=\"4127:14244\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14245",
+        "selector": "[data-node-id=\"4127:14245\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14247",
+        "selector": "[data-node-id=\"4127:14247\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14248",
+        "selector": "[data-node-id=\"4127:14248\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14250",
+        "selector": "[data-node-id=\"4127:14250\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14251",
+        "selector": "[data-node-id=\"4127:14251\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14252",
+        "selector": "[data-node-id=\"4127:14252\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14255",
+        "selector": "[data-node-id=\"4127:14255\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14256",
+        "selector": "[data-node-id=\"4127:14256\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14258",
+        "selector": "[data-node-id=\"4127:14258\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14262",
+        "selector": "[data-node-id=\"4127:14262\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@129",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.028314726209463053,
+            "source": "visual-diff",
+            "diffPixels": 5326,
+            "totalPixels": 188100,
+            "at": "2026-02-24T12:23:51.264Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.028314726209463053,
+            "source": "visual-diff",
+            "diffPixels": 5326,
+            "totalPixels": 188100,
+            "at": "2026-02-24T12:23:53.987Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.028314726209463053,
+            "source": "visual-diff",
+            "diffPixels": 5326,
+            "totalPixels": 188100,
+            "at": "2026-02-24T12:23:56.715Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/teamgrid1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/teamgrid1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 13
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "4127:14238",
+        "selector": "[data-node-id=\"4127:14238\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14244",
+        "selector": "[data-node-id=\"4127:14244\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14245",
+        "selector": "[data-node-id=\"4127:14245\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14247",
+        "selector": "[data-node-id=\"4127:14247\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14248",
+        "selector": "[data-node-id=\"4127:14248\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14250",
+        "selector": "[data-node-id=\"4127:14250\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14251",
+        "selector": "[data-node-id=\"4127:14251\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14252",
+        "selector": "[data-node-id=\"4127:14252\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14255",
+        "selector": "[data-node-id=\"4127:14255\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14256",
+        "selector": "[data-node-id=\"4127:14256\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14258",
+        "selector": "[data-node-id=\"4127:14258\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "4127:14262",
+        "selector": "[data-node-id=\"4127:14262\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@129",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 13,
+    "selectedOffenders": 8,
+    "generated": 7,
+    "accepted": 0,
+    "rejected": 7,
+    "provider": "rules",
+    "gateAccepted": false,
+    "gateMessage": "Score gate: regression on mobile by +0.0089.",
+    "strategyStats": [
+      {
+        "name": "width-dedupe",
+        "attempted": 8,
+        "candidateOps": 0
+      },
+      {
+        "name": "width-dedupe-smart",
+        "attempted": 8,
+        "candidateOps": 6
+      },
+      {
+        "name": "image-wrapper-fluid",
+        "attempted": 1,
+        "candidateOps": 2
+      }
+    ],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0,
+      "globalSkipped": 0,
+      "maxTotalTrialsPerRun": 8,
+      "attemptedTrials": 4
+    }
+  }
+}

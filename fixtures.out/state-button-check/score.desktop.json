@@ -1,0 +1,30 @@
+{
+  "slug": "state-button-check",
+  "mode": "desktop",
+  "viewport": {
+    "width": 344,
+    "height": 900
+  },
+  "crop": {
+    "width": 318,
+    "height": 52
+  },
+  "diffPixels": 8335,
+  "totalPixels": 16536,
+  "diffRatio": 0.5040517658442186,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/state-button-check/figma.desktop.png",
+    "width": 344,
+    "height": 52
+  },
+  "at": "2026-02-18T12:49:58.072Z"
+}

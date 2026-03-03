@@ -1,0 +1,96 @@
+{
+  "slug": "state-variant-check",
+  "at": "2026-02-18T12:47:21.699Z",
+  "results": {
+    "mobile": {
+      "slug": "state-variant-check",
+      "mode": "mobile",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "crop": {
+        "width": 998,
+        "height": 150
+      },
+      "diffPixels": 55907,
+      "totalPixels": 149700,
+      "diffRatio": 0.3734602538410154,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/state-variant-check/figma.mobile.png",
+        "width": 1024,
+        "height": 506
+      },
+      "at": "2026-02-18T12:47:12.654Z"
+    },
+    "tablet": {
+      "slug": "state-variant-check",
+      "mode": "tablet",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "crop": {
+        "width": 998,
+        "height": 150
+      },
+      "diffPixels": 55907,
+      "totalPixels": 149700,
+      "diffRatio": 0.3734602538410154,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/state-variant-check/figma.tablet.png",
+        "width": 1024,
+        "height": 506
+      },
+      "at": "2026-02-18T12:47:18.208Z"
+    },
+    "desktop": {
+      "slug": "state-variant-check",
+      "mode": "desktop",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "crop": {
+        "width": 998,
+        "height": 150
+      },
+      "diffPixels": 55907,
+      "totalPixels": 149700,
+      "diffRatio": 0.3734602538410154,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/state-variant-check/figma.desktop.png",
+        "width": 1024,
+        "height": 506
+      },
+      "at": "2026-02-18T12:47:21.684Z"
+    }
+  }
+}

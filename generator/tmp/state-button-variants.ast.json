@@ -1,0 +1,27 @@
+{
+  "slug": "state-button-variants",
+  "type": "flexi_block",
+  "frame": {
+    "w": 0,
+    "h": 0
+  },
+  "tree": {
+    "id": "root",
+    "name": "state-button-variants",
+    "type": "FRAME",
+    "w": 0,
+    "h": 0,
+    "children": []
+  },
+  "slots": {},
+  "meta": {
+    "schema": "figma-ast-mcp",
+    "version": 1,
+    "exportedAt": "2026-02-18T14:21:58.842Z",
+    "figma": {
+      "frameName": "state-button-variants"
+    },
+    "screenshot": "Rate limit exceeded, please try again tomorrow",
+    "variables": "Rate limit exceeded, please try again tomorrow"
+  }
+}

@@ -40,8 +40,10 @@ import {
   estimateWrongLayoutModel,
   findBestAlignment,
 } from "./compareMetrics.js";
+import { analyzeWithPythonVisual, buildAlignedComparedPngs } from "./pythonVisualClient.js";
 
 import { computeElementDiff } from "../auto/elementDiff.js";
+import { runVisualQALoop } from "../qa/index.js";
 
 function ensureDir(p) {
   fs.mkdirSync(p, { recursive: true });
@@ -477,6 +479,48 @@ function snapshotCompareArtifacts(outDir, publicSlug, iter, phase, buckets) {
 }
 
 export function registerVisualDiffAndAutofixRoutes(app, { port }) {
+  // Visual QA + Auto-Fix loop (optional: qaMode=1 or refineMode=visual)
+  app.post("/api/visual-qa/:slug", async (req, res) => {
+    const slug = String(req.params.slug || "").trim();
+    if (!slug) return res.status(400).json({ ok: false, error: "Missing slug" });
+    console.log("[visual-qa] Started for slug:", slug);
+    try {
+      const passDiffRatio = clampPassDiffRatio(req.body?.passDiffRatio, 0.02);
+      const maxIterations = Math.max(1, Math.min(8, Number(req.body?.maxIterations ?? 8)));
+      const patchBudget = Math.max(1, Math.min(30, Number(req.body?.patchBudget ?? 20)));
+      const reportOnly = req.body?.reportOnly === true || String(req.body?.mode || "").toLowerCase() === "report";
+      const fetchCompare = async (s) => {
+        const { response, data } = await fetchJsonInternal(req, port, `/api/compare/${encodeURIComponent(s)}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            multi: true,
+            viewports: "all",
+            passDiffRatio,
+            screenshot: { mode: "element", selector: "#cmp_root", minHeight: 50 },
+            waitMs: 200,
+          }),
+        });
+        return { ok: Boolean(response?.ok && data?.ok), error: data?.error };
+      };
+      const result = await runVisualQALoop({
+        slug,
+        port,
+        serverUrl: selfBaseUrl(req, port),
+        fetchCompare,
+        passDiffRatio,
+        maxIterations,
+        patchBudget,
+        reportOnly,
+      });
+      console.log("[visual-qa] Done for slug:", slug, "ok:", result.ok, "stoppedReason:", result.stoppedReason, "iterations:", result.iterations, "patches:", result.totalPatchCount);
+      return res.json(result);
+    } catch (e) {
+      console.log("[visual-qa] Error for slug:", slug, String(e?.message || e));
+      return res.status(500).json({ ok: false, error: String(e?.message || e) });
+    }
+  });
+
   app.get("/api/refine-status/:jobId", (req, res) => {
     const jobId = String(req.params.jobId || "").trim();
     if (!jobId) return res.status(400).json({ ok: false, error: "Missing jobId" });
@@ -848,9 +892,49 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
             pixelmatch,
           });
           if (aligned?.diffPng) fs.writeFileSync(dPath, PNG.sync.write(aligned.diffPng));
-          const totalPixels = Math.max(1, Number(aligned?.compared?.width || 0) * Number(aligned?.compared?.height || 0));
-          const diffPixels = Number(aligned?.diffPixels || 0);
-          const diffRatio = Number(aligned?.diffRatio ?? (diffPixels / totalPixels));
+          let totalPixels = Math.max(1, Number(aligned?.compared?.width || 0) * Number(aligned?.compared?.height || 0));
+          let diffPixels = Number(aligned?.diffPixels || 0);
+          let diffRatio = Number(aligned?.diffRatio ?? (diffPixels / totalPixels));
+          let analysisSource = "js";
+          let pySsim = null;
+          let pyHints = null;
+          let pyOffenders = null;
+          try {
+            const compared = buildAlignedComparedPngs({
+              PNG,
+              figmaPng: figma.png,
+              renderPng,
+              dx: aligned.bestDx,
+              dy: aligned.bestDy,
+            });
+            if (compared) {
+              const py = await analyzeWithPythonVisual({
+                baselinePngBuffer: PNG.sync.write(compared.baseline),
+                outputPngBuffer: PNG.sync.write(compared.output),
+                breakpoint: mode,
+                metadata: {
+                  slug: publicSlug,
+                  alignment: { dx: Number(aligned.bestDx || 0), dy: Number(aligned.bestDy || 0) },
+                },
+              });
+              if (py) {
+                analysisSource = "python";
+                if (Number.isFinite(py.diffPixels)) diffPixels = Number(py.diffPixels);
+                if (Number.isFinite(py.totalPixels) && py.totalPixels > 0) totalPixels = Number(py.totalPixels);
+                if (Number.isFinite(py.diffRatio)) diffRatio = Number(py.diffRatio);
+                if (py.diffMaskPngBuffer) fs.writeFileSync(dPath, py.diffMaskPngBuffer);
+                if (Number.isFinite(py.ssim)) pySsim = Number(py.ssim);
+                if (py.hints && typeof py.hints === "object") pyHints = py.hints;
+                if (Array.isArray(py.offenders) && py.offenders.length) {
+                  pyOffenders = py.offenders;
+                  const pyOffendersPath = key ? path.join(outDir, `offenders.${key}.json`) : path.join(outDir, "offenders.json");
+                  fs.writeFileSync(pyOffendersPath, JSON.stringify(py.offenders, null, 2), "utf8");
+                }
+              }
+            }
+          } catch {
+            // optional service; ignore and keep JS metrics
+          }
           const layoutMetric = computeLayoutDiff(renderPng, figma.png, aligned.bestDx, aligned.bestDy, {
             layoutScale: 0.35,
             blurRadius: 0,
@@ -887,6 +971,7 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
             searchRadiusPx: Number(aligned.searchRadiusPx || alignWindow || 16),
             alignmentDownscale: Number(aligned.alignmentDownscale || 0.5),
             alignmentDiffRatio: Number(aligned.alignmentDiffRatio ?? diffRatio),
+            analysisSource,
             diffPixels,
             totalPixels,
             diffRatio,
@@ -895,6 +980,9 @@ export function registerVisualDiffAndAutofixRoutes(app, { port }) {
             layoutDownscale: Number(layoutMetric?.layoutDownscale || 0.35),
             layoutBlurRadius: Number(layoutMetric?.layoutBlurRadius || 0),
             layoutScore,
+            ssim: Number.isFinite(pySsim) ? pySsim : undefined,
+            pyHints: pyHints || undefined,
+            pyOffenders: pyOffenders || undefined,
             failureMode: String(failure?.failureMode || "none"),
             failureSignals: failure?.failureSignals || {},
             pass: diffRatio <= passDiffRatio,

@@ -89,7 +89,7 @@ const hasLayoutChild = (nodes, childrenMap, nodeIndex) => {
     const tokens = getClassTokens(child.attrs);
     return tokens.some((t) => {
       const core = normalizeToken(t);
-      return core === "flex" || core === "grid";
+      return core === "flex" || core === "grid" || core === "flex-row" || core === "flex-col" || /^grid-cols-/.test(core);
     });
   });
 };
@@ -113,6 +113,41 @@ const getMaxWidthTokens = (tokens) =>
     const core = normalizeToken(t);
     return MAX_W_TOKEN.test(core) && core !== "max-w-full";
   });
+
+const parseRemValue = (raw) => {
+  const value = String(raw || "").trim().toLowerCase();
+  if (!value) return "";
+  const remMatch = value.match(/^(\d+(?:\.\d+)?)rem$/);
+  if (remMatch) return `${Number(remMatch[1])}rem`;
+  const pxMatch = value.match(/^(\d+(?:\.\d+)?)px$/);
+  if (pxMatch) return `${Number(pxMatch[1]) / 16}rem`;
+  const numMatch = value.match(/^(\d+(?:\.\d+)?)$/);
+  if (numMatch) return `${Number(numMatch[1])}rem`;
+  return "";
+};
+
+const maxWidthTokenFromDataWRem = (node) => {
+  const rem = parseRemValue(getAttrValue(node?.attrs, "data-w-rem"));
+  if (!rem) return "";
+  return `max-w-[${rem}]`;
+};
+
+const pickLargestDataWRemTokenFromChildren = (nodes, childrenMap, nodeIndex) => {
+  const children = getElementChildren(nodes, childrenMap, nodeIndex);
+  if (!children.length) return "";
+  let best = "";
+  let bestRem = 0;
+  for (const idx of children) {
+    const child = nodes[idx];
+    const rem = parseRemValue(getAttrValue(child?.attrs, "data-w-rem"));
+    if (!rem) continue;
+    const val = Number(rem.replace("rem", ""));
+    if (!Number.isFinite(val) || val <= bestRem) continue;
+    bestRem = val;
+    best = `max-w-[${rem}]`;
+  }
+  return best;
+};
 
 const parseMaxWValue = (token) => {
   const core = normalizeToken(token);
@@ -140,6 +175,14 @@ const parseMaxWValue = (token) => {
   return null;
 };
 
+const parseRemFromMaxWToken = (token) => {
+  const core = normalizeToken(token);
+  const m = core.match(/^max-w-\[([0-9]+(?:\.[0-9]+)?)rem\]$/);
+  if (!m) return null;
+  const n = Number(m[1]);
+  return Number.isFinite(n) ? n : null;
+};
+
 const pickLargestMaxW = (tokens) => {
   if (!tokens.length) return null;
   let best = null;
@@ -156,6 +199,25 @@ const pickLargestMaxW = (tokens) => {
     }
   }
   return best;
+};
+
+const hasDesktopMultiColumnIntent = (node, nodes, childrenMap, nodeIndex) => {
+  const ownTokens = getClassTokens(node?.attrs || {});
+  const hasOwnDesktopRow = ownTokens.some((t) => {
+    const raw = String(t || "");
+    const core = normalizeToken(t);
+    return /^(md|lg|xl|2xl):/.test(raw) && (core === "flex-row" || /^grid-cols-/.test(core));
+  });
+  if (hasOwnDesktopRow) return true;
+  const children = getElementChildren(nodes, childrenMap, nodeIndex);
+  return children.some((idx) => {
+    const childTokens = getClassTokens(nodes[idx]?.attrs || {});
+    return childTokens.some((t) => {
+      const raw = String(t || "");
+      const core = normalizeToken(t);
+      return /^(md|lg|xl|2xl):/.test(raw) && (core === "flex-row" || /^grid-cols-/.test(core));
+    });
+  });
 };
 
 const hasMaxWContainerToken = (nodes) =>
@@ -257,6 +319,24 @@ const cleanRootTokens = (tokens) => {
   return cleaned;
 };
 
+const replaceMaxWToken = (tokens, preferredMaxW) => {
+  const next = [];
+  let inserted = false;
+  for (const token of tokens) {
+    const core = normalizeToken(token);
+    if (MAX_W_TOKEN.test(core)) {
+      if (!inserted && preferredMaxW) {
+        next.push(preferredMaxW);
+        inserted = true;
+      }
+      continue;
+    }
+    next.push(token);
+  }
+  if (!inserted && preferredMaxW) next.push(preferredMaxW);
+  return dedupeByCore(next);
+};
+
 const apply = ({ html }) => {
   let source = String(html || "");
   if (!source) {
@@ -292,12 +372,15 @@ const apply = ({ html }) => {
 
     const tokens = getClassTokens(node.attrs);
     if (!hasPaddingOrBg(tokens)) return;
-    if (!hasLayoutChild(nodes, childrenMap, nodeIndex)) return;
+    const containerChildIndex = hasInnerContainerChild(nodes, childrenMap, nodeIndex);
+    const hasLayoutEvidence =
+      hasLayoutChild(nodes, childrenMap, nodeIndex) ||
+      (containerChildIndex != null && hasLayoutChild(nodes, childrenMap, containerChildIndex));
+    if (!hasLayoutEvidence) return;
     if (isDecorative(node)) return;
     if (isMediaOnlyRoot(nodes, childrenMap, nodeIndex)) return;
     if (node.closeStart == null) return;
 
-    const containerChildIndex = hasInnerContainerChild(nodes, childrenMap, nodeIndex);
     const cleanedRootTokens = cleanRootTokens(tokens);
 
     if (!tokensEqual(cleanedRootTokens, tokens)) {
@@ -325,8 +408,24 @@ const apply = ({ html }) => {
       const container = nodes[containerChildIndex];
       if (!container?.attrs) return;
       const containerTokens = getClassTokens(container.attrs);
-      if (!containerTokens.some((t) => normalizeToken(t) === "w-full")) {
-        const nextTokens = dedupeByCore(["w-full", ...containerTokens]);
+      const ownWidthToken = maxWidthTokenFromDataWRem(node);
+      const ownRem = parseRemFromMaxWToken(ownWidthToken);
+      const currentMaxW = pickLargestMaxW(getMaxWidthTokens(containerTokens));
+      const currentRem = parseRemFromMaxWToken(currentMaxW || "");
+      const prefersOwnForMultiColumn =
+        ownWidthToken &&
+        ownRem != null &&
+        currentRem != null &&
+        ownRem > currentRem &&
+        hasDesktopMultiColumnIntent(node, nodes, childrenMap, nodeIndex);
+      let nextTokens = containerTokens;
+      if (prefersOwnForMultiColumn) {
+        nextTokens = replaceMaxWToken(nextTokens, ownWidthToken);
+      }
+      if (!nextTokens.some((t) => normalizeToken(t) === "w-full")) {
+        nextTokens = dedupeByCore(["w-full", ...nextTokens]);
+      }
+      if (!tokensEqual(nextTokens, containerTokens)) {
         setClassTokens(container.attrs, container.attrOrder, nextTokens);
         patches.push(
           createPatch(
@@ -346,8 +445,10 @@ const apply = ({ html }) => {
           nodeId: meta.nodeId,
           selector: meta.selector,
           op: "containerNormalize",
-          value: "add w-full",
-          reason: "Container pattern requires full-width inner wrapper",
+          value: prefersOwnForMultiColumn ? `set ${ownWidthToken}` : "add w-full",
+          reason: prefersOwnForMultiColumn
+            ? "Multi-column root prefers own container width over narrower child max-w"
+            : "Container pattern requires full-width inner wrapper",
         });
         adjusted += 1;
       }
@@ -364,8 +465,20 @@ const apply = ({ html }) => {
     });
 
     let chosenMaxW = null;
-    if (childMaxW.length) {
-      chosenMaxW = pickLargestMaxW(childMaxW);
+    const childChosenMaxW = childMaxW.length ? pickLargestMaxW(childMaxW) : null;
+    const ownWidthToken = maxWidthTokenFromDataWRem(node);
+    const ownRem = parseRemFromMaxWToken(ownWidthToken);
+    const childRem = parseRemFromMaxWToken(childChosenMaxW || "");
+    const prefersOwnForMultiColumn =
+      ownWidthToken &&
+      ownRem != null &&
+      childRem != null &&
+      ownRem > childRem &&
+      hasDesktopMultiColumnIntent(node, nodes, childrenMap, nodeIndex);
+    if (prefersOwnForMultiColumn) {
+      chosenMaxW = ownWidthToken;
+    } else if (childChosenMaxW) {
+      chosenMaxW = childChosenMaxW;
     }
 
     if (!chosenMaxW) {
@@ -378,6 +491,16 @@ const apply = ({ html }) => {
         .map((t) => t.replace("w-[", "max-w-["));
       const rootCandidates = [...rootMaxW, ...rootFixedAsMaxW];
       chosenMaxW = pickLargestMaxW(rootCandidates);
+    }
+
+    if (!chosenMaxW) {
+      const ownWidthToken = maxWidthTokenFromDataWRem(node);
+      const childWidthToken = pickLargestDataWRemTokenFromChildren(
+        nodes,
+        childrenMap,
+        nodeIndex
+      );
+      chosenMaxW = ownWidthToken || childWidthToken;
     }
 
     if (!chosenMaxW) {

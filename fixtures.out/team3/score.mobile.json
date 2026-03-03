@@ -1,0 +1,30 @@
+{
+  "slug": "team3",
+  "mode": "mobile",
+  "viewport": {
+    "width": 320,
+    "height": 900
+  },
+  "crop": {
+    "width": 262,
+    "height": 150
+  },
+  "diffPixels": 38739,
+  "totalPixels": 39300,
+  "diffRatio": 0.9857251908396947,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/team3/figma.mobile.png",
+    "width": 262,
+    "height": 384
+  },
+  "at": "2026-02-24T13:29:48.047Z"
+}

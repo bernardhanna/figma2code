@@ -44,8 +44,42 @@ const isTopLevelLayoutWrapper = (node, nodes) => {
 const isFixedHorizontalPaddingCore = (core) =>
   /^p[lr]-20$/.test(core) || /^p[lr]-\[[^\]]+\]$/.test(core) || /^px-20$/.test(core) || /^px-\[[^\]]+\]$/.test(core);
 
+const parseDataWRem = (node) => {
+  const raw = String(getAttrValue(node?.attrs, "data-w-rem") || "").trim().toLowerCase();
+  if (!raw) return 0;
+  const rem = raw.match(/^(\d+(?:\.\d+)?)rem$/);
+  if (rem) return Number(rem[1]);
+  const px = raw.match(/^(\d+(?:\.\d+)?)px$/);
+  if (px) return Number(px[1]) / 16;
+  const num = raw.match(/^(\d+(?:\.\d+)?)$/);
+  if (num) return Number(num[1]);
+  return 0;
+};
+
+const parseMaxWRemFromTokens = (tokens) => {
+  for (const token of tokens || []) {
+    const core = normalizeToken(token);
+    const m = core.match(/^max-w-\[(\d+(?:\.\d+)?)rem\]$/);
+    if (m) return Number(m[1]);
+  }
+  return 0;
+};
+
+const nearestAncestorMaxWRem = (node, nodes) => {
+  let p = node?.parentIndex;
+  while (p != null && nodes[p]) {
+    const tokens = getClassTokens(nodes[p].attrs || {});
+    const rem = parseMaxWRemFromTokens(tokens);
+    if (rem > 0) return rem;
+    p = nodes[p].parentIndex;
+  }
+  return 0;
+};
+
 const hasMdHorizontalPadding = (tokens) =>
   tokens.some((t) => getPrefix(t) === "md" && /^p[lrx]-/.test(normalizeToken(t)));
+const hasAnyHorizontalPadding = (tokens) =>
+  tokens.some((t) => /^p[lrx]-/.test(normalizeToken(t)));
 
 const getBaseToken = (tokens, matcher) => {
   for (let i = tokens.length - 1; i >= 0; i -= 1) {
@@ -82,6 +116,7 @@ const apply = ({ html }) => {
     if (!tokens.length) return;
 
     const hasMd = hasMdHorizontalPadding(tokens);
+    const hasAnyHorizontal = hasAnyHorizontalPadding(tokens);
     const basePx = getBaseToken(tokens, (core) => /^px-/.test(core));
     const basePl = getBaseToken(tokens, (core) => /^pl-/.test(core));
     const basePr = getBaseToken(tokens, (core) => /^pr-/.test(core));
@@ -89,30 +124,64 @@ const apply = ({ html }) => {
     const hasSymmetricFixedPair = equivalentSymmetricPair(basePl, basePr);
     const hasFixedPx = Boolean(basePx && isFixedHorizontalPaddingCore(normalizeToken(basePx)));
 
-    if (!hasFixedPx && !(hasSymmetricFixedPair && !hasMd)) return;
+    const frameRem = parseDataWRem(node);
+    const ancestorMaxWRem = nearestAncestorMaxWRem(node, nodes);
+    const effectiveFrameRem =
+      frameRem > 0 && ancestorMaxWRem > 0 ? Math.min(frameRem, ancestorMaxWRem) : frameRem || ancestorMaxWRem;
+    const hasLargeLgHorizontal = tokens.some((token) => {
+      if (getPrefix(token) !== "lg") return false;
+      const core = normalizeToken(token);
+      return /^p[lrx]-/.test(core);
+    });
+
+    const shouldNormalizeCore = hasFixedPx || (hasSymmetricFixedPair && !hasMd) || hasAnyHorizontal;
+    const shouldTrimLgCompensation = frameRem > 0 && frameRem <= 70 && hasLargeLgHorizontal;
+    if (!shouldNormalizeCore && !shouldTrimLgCompensation) return;
 
     let next = [...tokens];
     let changed = false;
 
-    // Remove base horizontal padding tokens only.
-    next = next.filter((token) => {
-      if (getPrefix(token) !== "") return true;
-      const core = normalizeToken(token);
-      if (/^pl-/.test(core) || /^pr-/.test(core) || /^px-/.test(core)) {
-        changed = true;
-        return false;
-      }
-      return true;
-    });
-
-    if (!next.includes("px-5")) {
-      next.push("px-5");
+    // Always normalize max-xl horizontal padding for top-level wrappers.
+    const withoutMaxXlPx = next.filter((token) => !/^max-xl:px-/.test(String(token || "")));
+    if (withoutMaxXlPx.length !== next.length) changed = true;
+    next = withoutMaxXlPx;
+    if (!next.includes("max-xl:px-5")) {
+      next.push("max-xl:px-5");
       changed = true;
     }
 
-    if (!hasMd && !next.includes("md:px-20")) {
-      next.push("md:px-20");
-      changed = true;
+    if (hasFixedPx || (hasSymmetricFixedPair && !hasMd)) {
+      // Remove base horizontal padding tokens only.
+      next = next.filter((token) => {
+        if (getPrefix(token) !== "") return true;
+        const core = normalizeToken(token);
+        if (/^pl-/.test(core) || /^pr-/.test(core) || /^px-/.test(core)) {
+          changed = true;
+          return false;
+        }
+        return true;
+      });
+
+      if (!next.includes("px-5")) {
+        next.push("px-5");
+        changed = true;
+      }
+
+      if (!(effectiveFrameRem > 0 && effectiveFrameRem <= 70) && !hasMd && !next.includes("md:px-20")) {
+        next.push("md:px-20");
+        changed = true;
+      }
+    }
+
+    // For narrower content frames, remove large-screen padding compensation.
+    if (effectiveFrameRem > 0 && effectiveFrameRem <= 70) {
+      const stripped = next.filter((token) => {
+        if (getPrefix(token) !== "lg") return true;
+        const core = normalizeToken(token);
+        return !/^p[lrx]-/.test(core);
+      });
+      if (stripped.length !== next.length) changed = true;
+      next = stripped;
     }
 
     if (!changed) return;
@@ -131,7 +200,7 @@ const apply = ({ html }) => {
       nodeId: meta.nodeId,
       selector: meta.selector,
       op: "paddingResponsive",
-      value: "px-5 md:px-20",
+      value: "max-xl:px-5 px-5 md:px-20",
       reason: "Patch: make horizontal padding responsive at md to restore full-width feel",
     });
     adjusted += 1;

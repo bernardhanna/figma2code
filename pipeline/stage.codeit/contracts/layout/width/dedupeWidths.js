@@ -2,6 +2,7 @@ const {
   applyPatches,
   buildOpenTag,
   createPatch,
+  getAttrValue,
   getClassTokens,
   parseHtmlNodes,
   setClassTokens,
@@ -97,6 +98,18 @@ const ancestorHasCanonicalContainerConstraint = (nodes, node, remValue) => {
 };
 
 const REASON = "Resolved conflicting Tailwind class token(s)";
+
+const remFromDataWRem = (node) => {
+  const raw = String(getAttrValue(node?.attrs, "data-w-rem") || "").trim().toLowerCase();
+  if (!raw) return null;
+  const rem = raw.match(/^(\d+(?:\.\d+)?)rem$/);
+  if (rem) return Number(rem[1]);
+  const px = raw.match(/^(\d+(?:\.\d+)?)px$/);
+  if (px) return Number(px[1]) / 16;
+  const num = raw.match(/^(\d+(?:\.\d+)?)$/);
+  if (num) return Number(num[1]);
+  return null;
+};
 
 const pickWinner = (items) => {
   if (!Array.isArray(items) || !items.length) return null;
@@ -207,6 +220,67 @@ const apply = ({ html }) => {
     const maxRemItems = widthItems.filter((item) => item.family === "max-w" && Number.isFinite(item.rem));
     const hasWFull = tokens.some((token) => getCore(token) === "w-full");
 
+    // Prefer explicit data-w-rem intent when conflicting arbitrary width tokens exist.
+    const preferredRem = remFromDataWRem(node);
+    if (Number.isFinite(preferredRem) && wRemItems.length === 1) {
+      const current = wRemItems[0];
+      if (current.rem !== preferredRem) {
+        const preferredToken = `${current.prefix ? `${current.prefix}:` : ""}w-[${preferredRem}rem]`;
+        const cleaned = tokens.map((token) => (token === current.token ? preferredToken : token));
+        setClassTokens(node.attrs, node.attrOrder, cleaned);
+        patches.push(
+          createPatch(
+            node.openStart,
+            node.openEnd,
+            buildOpenTag(node.tag, node.attrs, node.attrOrder, node.isSelfClosing)
+          )
+        );
+        const meta = getNodeMeta(node);
+        changes.push({
+          contractId: id,
+          nodeId: meta.nodeId,
+          selector: meta.selector,
+          op: "classReplace",
+          value: `${current.token} -> ${preferredToken}`,
+          reason: "Preferred width token matching data-w-rem intent",
+        });
+        removed += 1;
+        return;
+      }
+    }
+
+    if (Number.isFinite(preferredRem) && wRemItems.length > 1) {
+      const matches = wRemItems.filter((item) => item.rem === preferredRem);
+      if (matches.length === 1) {
+        const preferred = matches[0];
+        const removable = wRemItems.filter((item) => item.token !== preferred.token);
+        if (removable.length) {
+          const cleaned = tokens.filter((token) => !removable.some((item) => item.token === token));
+          setClassTokens(node.attrs, node.attrOrder, cleaned);
+          patches.push(
+            createPatch(
+              node.openStart,
+              node.openEnd,
+              buildOpenTag(node.tag, node.attrs, node.attrOrder, node.isSelfClosing)
+            )
+          );
+          const meta = getNodeMeta(node);
+          removable.forEach((item) => {
+            changes.push({
+              contractId: id,
+              nodeId: meta.nodeId,
+              selector: meta.selector,
+              op: "classRemove",
+              value: item.token,
+              reason: "Preferred width token matching data-w-rem intent",
+            });
+          });
+          removed += removable.length;
+          return;
+        }
+      }
+    }
+
     // Canonical container: if node has both w-[Xrem] and max-w-[Xrem], prefer w-full + max-w-[Xrem]
     if (!mediaLike && wRemItems.length && maxRemItems.length) {
       const matching = wRemItems.find((wItem) => maxRemItems.some((mItem) => mItem.rem === wItem.rem));
@@ -308,6 +382,8 @@ const apply = ({ html }) => {
       childWidthTokens.includes(token)
     );
     if (!removedTokens.length) return;
+    const shouldAddFluidWidthForMedia = mediaLike && !cleaned.some((token) => getCore(token) === "w-full");
+    if (shouldAddFluidWidthForMedia) cleaned.push("w-full");
 
     setClassTokens(node.attrs, node.attrOrder, cleaned);
     patches.push(createPatch(node.openStart, node.openEnd, buildOpenTag(node.tag, node.attrs, node.attrOrder, node.isSelfClosing)));
@@ -323,6 +399,16 @@ const apply = ({ html }) => {
         reason: REASON,
       });
     });
+    if (shouldAddFluidWidthForMedia) {
+      changes.push({
+        contractId: id,
+        nodeId: meta.nodeId,
+        selector: meta.selector,
+        op: "classAdd",
+        value: "w-full",
+        reason: "Preserve media wrapper width after removing conflicting fixed width",
+      });
+    }
     removed += removedTokens.length;
   });
 

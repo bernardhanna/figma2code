@@ -10,6 +10,7 @@ module.exports = {
   maxOffenders: 25,
   maxProposedTrialsPerNode: 2,
   maxRejectedTrialsPerNode: 2,
+  maxTotalTrialsPerRun: 24,
   nodeStrategyCooldownLookbackEntries: 3,
   gate: {
     enabled: true,

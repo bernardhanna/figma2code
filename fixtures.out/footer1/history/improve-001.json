@@ -1,0 +1,1943 @@
+{
+  "iteration": 1,
+  "createdAt": "2026-02-18T12:31:17.861Z",
+  "inputHash": "47d878308145c09ca5519bd7c81dee4e957ee200aef871dd56b483eb89183f5b",
+  "htmlHash": "f5ea689f2ed06d52c4e1b28f1f24f7860396d530d46a3a159e0424278f8cd403",
+  "proposedPatches": [
+    {
+      "nodeId": "I161:5440;142:2191",
+      "selector": "[data-node-id=\"I161:5440;142:2191\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.75rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;147:2364",
+      "selector": "[data-node-id=\"I161:5440;147:2364\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[5.75rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;147:2391",
+      "selector": "[data-node-id=\"I161:5440;147:2391\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[7rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2436",
+      "selector": "[data-node-id=\"I161:5440;149:2436\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.4375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2437",
+      "selector": "[data-node-id=\"I161:5440;149:2437\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[12.8125rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2481",
+      "selector": "[data-node-id=\"I161:5440;149:2481\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;151:2575",
+      "selector": "[data-node-id=\"I161:5440;151:2575\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;151:2583",
+      "selector": "[data-node-id=\"I161:5440;151:2583\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;167:6555",
+      "selector": "[data-node-id=\"I161:5440;167:6555\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[13.1875rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;168:6638",
+      "selector": "[data-node-id=\"I161:5440;168:6638\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;168:6648",
+      "selector": "[data-node-id=\"I161:5440;168:6648\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;168:6660",
+      "selector": "[data-node-id=\"I161:5440;168:6660\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;168:6674",
+      "selector": "[data-node-id=\"I161:5440;168:6674\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;332:11252",
+      "selector": "[data-node-id=\"I161:5440;332:11252\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;142:2320",
+      "selector": "[data-node-id=\"I161:5440;142:2320\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [
+          "w-full",
+          "max-w-[7.375rem]"
+        ],
+        "classRemove": [
+          "w-[7.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;333:11280",
+      "selector": "[data-node-id=\"I161:5440;333:11280\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [
+          "w-full",
+          "max-w-[6.25rem]"
+        ],
+        "classRemove": [
+          "w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "acceptedByGate": [
+    {
+      "nodeId": "I161:5440;142:2191",
+      "selector": "[data-node-id=\"I161:5440;142:2191\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.75rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2436",
+      "selector": "[data-node-id=\"I161:5440;149:2436\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.4375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2481",
+      "selector": "[data-node-id=\"I161:5440;149:2481\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;167:6555",
+      "selector": "[data-node-id=\"I161:5440;167:6555\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[13.1875rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;168:6638",
+      "selector": "[data-node-id=\"I161:5440;168:6638\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;332:11252",
+      "selector": "[data-node-id=\"I161:5440;332:11252\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedByGate": [
+    {
+      "patch": {
+        "nodeId": "I161:5440;147:2364",
+        "selector": "[data-node-id=\"I161:5440;147:2364\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[5.75rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on tablet by +0.0016.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;147:2391",
+        "selector": "[data-node-id=\"I161:5440;147:2391\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[7rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on tablet by +0.0016.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;149:2437",
+        "selector": "[data-node-id=\"I161:5440;149:2437\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[12.8125rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on desktop by +0.0017.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;151:2575",
+        "selector": "[data-node-id=\"I161:5440;151:2575\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[2rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0002.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;151:2583",
+        "selector": "[data-node-id=\"I161:5440;151:2583\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[2rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0002.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;168:6648",
+        "selector": "[data-node-id=\"I161:5440;168:6648\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[4rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;168:6660",
+        "selector": "[data-node-id=\"I161:5440;168:6660\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[4rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;168:6674",
+        "selector": "[data-node-id=\"I161:5440;168:6674\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[4rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;142:2320",
+        "selector": "[data-node-id=\"I161:5440;142:2320\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "w-full",
+            "max-w-[7.375rem]"
+          ],
+          "classRemove": [
+            "w-[7.375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "image-wrapper-fluid",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;333:11280",
+        "selector": "[data-node-id=\"I161:5440;333:11280\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "w-full",
+            "max-w-[6.25rem]"
+          ],
+          "classRemove": [
+            "w-[6.25rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0002.",
+      "strategyName": "image-wrapper-fluid",
+      "gateKind": "visual"
+    }
+  ],
+  "acceptedPatches": [
+    {
+      "nodeId": "I161:5440;142:2191",
+      "selector": "[data-node-id=\"I161:5440;142:2191\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.75rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2436",
+      "selector": "[data-node-id=\"I161:5440;149:2436\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.4375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;149:2481",
+      "selector": "[data-node-id=\"I161:5440;149:2481\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;167:6555",
+      "selector": "[data-node-id=\"I161:5440;167:6555\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[13.1875rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;168:6638",
+      "selector": "[data-node-id=\"I161:5440;168:6638\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I161:5440;332:11252",
+      "selector": "[data-node-id=\"I161:5440;332:11252\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedPatches": [
+    {
+      "patch": {
+        "nodeId": "I161:5440;147:2364",
+        "selector": "[data-node-id=\"I161:5440;147:2364\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[5.75rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on tablet by +0.0016.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;147:2391",
+        "selector": "[data-node-id=\"I161:5440;147:2391\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[7rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on tablet by +0.0016.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;149:2437",
+        "selector": "[data-node-id=\"I161:5440;149:2437\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[12.8125rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on desktop by +0.0017.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;151:2575",
+        "selector": "[data-node-id=\"I161:5440;151:2575\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[2rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0002.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;151:2583",
+        "selector": "[data-node-id=\"I161:5440;151:2583\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[2rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0002.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;168:6648",
+        "selector": "[data-node-id=\"I161:5440;168:6648\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[4rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;168:6660",
+        "selector": "[data-node-id=\"I161:5440;168:6660\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[4rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;168:6674",
+        "selector": "[data-node-id=\"I161:5440;168:6674\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[4rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;142:2320",
+        "selector": "[data-node-id=\"I161:5440;142:2320\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "w-full",
+            "max-w-[7.375rem]"
+          ],
+          "classRemove": [
+            "w-[7.375rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0000.",
+      "strategyName": "image-wrapper-fluid",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "I161:5440;333:11280",
+        "selector": "[data-node-id=\"I161:5440;333:11280\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "w-full",
+            "max-w-[6.25rem]"
+          ],
+          "classRemove": [
+            "w-[6.25rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0002.",
+      "strategyName": "image-wrapper-fluid",
+      "gateKind": "visual"
+    }
+  ],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.995327731092437,
+            "source": "visual-diff",
+            "diffPixels": 177666,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:26:15.582Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 24
+        },
+        "type": {
+          "wrapAnomalyCount": 17
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.995327731092437,
+            "source": "visual-diff",
+            "diffPixels": 177666,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:26:15.396Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 24
+        },
+        "type": {
+          "wrapAnomalyCount": 17
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9955742296918767,
+            "source": "visual-diff",
+            "diffPixels": 177710,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:26:15.635Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 24
+        },
+        "type": {
+          "wrapAnomalyCount": 17
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I161:5440;142:2191",
+        "selector": "[data-node-id=\"I161:5440;142:2191\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;147:2364",
+        "selector": "[data-node-id=\"I161:5440;147:2364\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;147:2391",
+        "selector": "[data-node-id=\"I161:5440;147:2391\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;149:2436",
+        "selector": "[data-node-id=\"I161:5440;149:2436\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;149:2437",
+        "selector": "[data-node-id=\"I161:5440;149:2437\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;149:2481",
+        "selector": "[data-node-id=\"I161:5440;149:2481\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2556",
+        "selector": "[data-node-id=\"I161:5440;151:2556\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2575",
+        "selector": "[data-node-id=\"I161:5440;151:2575\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2576",
+        "selector": "[data-node-id=\"I161:5440;151:2576\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2583",
+        "selector": "[data-node-id=\"I161:5440;151:2583\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2584",
+        "selector": "[data-node-id=\"I161:5440;151:2584\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;167:6555",
+        "selector": "[data-node-id=\"I161:5440;167:6555\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6638",
+        "selector": "[data-node-id=\"I161:5440;168:6638\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6648",
+        "selector": "[data-node-id=\"I161:5440;168:6648\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6660",
+        "selector": "[data-node-id=\"I161:5440;168:6660\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6674",
+        "selector": "[data-node-id=\"I161:5440;168:6674\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;332:11248",
+        "selector": "[data-node-id=\"I161:5440;332:11248\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;332:11252",
+        "selector": "[data-node-id=\"I161:5440;332:11252\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11281",
+        "selector": "[data-node-id=\"I161:5440;333:11281\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11282",
+        "selector": "[data-node-id=\"I161:5440;333:11282\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11283",
+        "selector": "[data-node-id=\"I161:5440;333:11283\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11284",
+        "selector": "[data-node-id=\"I161:5440;333:11284\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11285",
+        "selector": "[data-node-id=\"I161:5440;333:11285\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@49",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;147:2338",
+        "selector": "[data-node-id=\"I161:5440;147:2338\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2345",
+        "selector": "[data-node-id=\"I161:5440;147:2345\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2351",
+        "selector": "[data-node-id=\"I161:5440;147:2351\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2357",
+        "selector": "[data-node-id=\"I161:5440;147:2357\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2366",
+        "selector": "[data-node-id=\"I161:5440;147:2366\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2367",
+        "selector": "[data-node-id=\"I161:5440;147:2367\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2368",
+        "selector": "[data-node-id=\"I161:5440;147:2368\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2393",
+        "selector": "[data-node-id=\"I161:5440;147:2393\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2394",
+        "selector": "[data-node-id=\"I161:5440;147:2394\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2395",
+        "selector": "[data-node-id=\"I161:5440;147:2395\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2396",
+        "selector": "[data-node-id=\"I161:5440;147:2396\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2417",
+        "selector": "[data-node-id=\"I161:5440;149:2417\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2423",
+        "selector": "[data-node-id=\"I161:5440;149:2423\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2429",
+        "selector": "[data-node-id=\"I161:5440;149:2429\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2438",
+        "selector": "[data-node-id=\"I161:5440;149:2438\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2439",
+        "selector": "[data-node-id=\"I161:5440;149:2439\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2440",
+        "selector": "[data-node-id=\"I161:5440;149:2440\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9952829131652661,
+            "source": "visual-diff",
+            "diffPixels": 177658,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:30:40.086Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 18
+        },
+        "type": {
+          "wrapAnomalyCount": 17
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.995327731092437,
+            "source": "visual-diff",
+            "diffPixels": 177666,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:30:48.636Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 18
+        },
+        "type": {
+          "wrapAnomalyCount": 17
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9955294117647059,
+            "source": "visual-diff",
+            "diffPixels": 177702,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:30:49.527Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 18
+        },
+        "type": {
+          "wrapAnomalyCount": 17
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I161:5440;147:2364",
+        "selector": "[data-node-id=\"I161:5440;147:2364\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;147:2391",
+        "selector": "[data-node-id=\"I161:5440;147:2391\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;149:2437",
+        "selector": "[data-node-id=\"I161:5440;149:2437\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2556",
+        "selector": "[data-node-id=\"I161:5440;151:2556\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2575",
+        "selector": "[data-node-id=\"I161:5440;151:2575\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2576",
+        "selector": "[data-node-id=\"I161:5440;151:2576\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2583",
+        "selector": "[data-node-id=\"I161:5440;151:2583\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;151:2584",
+        "selector": "[data-node-id=\"I161:5440;151:2584\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6648",
+        "selector": "[data-node-id=\"I161:5440;168:6648\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6660",
+        "selector": "[data-node-id=\"I161:5440;168:6660\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;168:6674",
+        "selector": "[data-node-id=\"I161:5440;168:6674\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;332:11248",
+        "selector": "[data-node-id=\"I161:5440;332:11248\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11281",
+        "selector": "[data-node-id=\"I161:5440;333:11281\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11282",
+        "selector": "[data-node-id=\"I161:5440;333:11282\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11283",
+        "selector": "[data-node-id=\"I161:5440;333:11283\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11284",
+        "selector": "[data-node-id=\"I161:5440;333:11284\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;333:11285",
+        "selector": "[data-node-id=\"I161:5440;333:11285\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@49",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I161:5440;147:2338",
+        "selector": "[data-node-id=\"I161:5440;147:2338\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2345",
+        "selector": "[data-node-id=\"I161:5440;147:2345\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2351",
+        "selector": "[data-node-id=\"I161:5440;147:2351\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2357",
+        "selector": "[data-node-id=\"I161:5440;147:2357\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2366",
+        "selector": "[data-node-id=\"I161:5440;147:2366\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2367",
+        "selector": "[data-node-id=\"I161:5440;147:2367\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2368",
+        "selector": "[data-node-id=\"I161:5440;147:2368\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2393",
+        "selector": "[data-node-id=\"I161:5440;147:2393\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2394",
+        "selector": "[data-node-id=\"I161:5440;147:2394\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2395",
+        "selector": "[data-node-id=\"I161:5440;147:2395\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;147:2396",
+        "selector": "[data-node-id=\"I161:5440;147:2396\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2417",
+        "selector": "[data-node-id=\"I161:5440;149:2417\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2423",
+        "selector": "[data-node-id=\"I161:5440;149:2423\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2429",
+        "selector": "[data-node-id=\"I161:5440;149:2429\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2438",
+        "selector": "[data-node-id=\"I161:5440;149:2438\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2439",
+        "selector": "[data-node-id=\"I161:5440;149:2439\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I161:5440;149:2440",
+        "selector": "[data-node-id=\"I161:5440;149:2440\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 41,
+    "selectedOffenders": 25,
+    "generated": 16,
+    "accepted": 6,
+    "rejected": 10,
+    "provider": "rules",
+    "gateAccepted": false,
+    "gateMessage": "Score gate: regression on tablet by +0.0016. | Score gate: regression on desktop by +0.0017. | Score gate: regression on mobile by +0.0002. | Score gate: regression on mobile by +0.0000.",
+    "strategyStats": [
+      {
+        "name": "width-dedupe",
+        "attempted": 24,
+        "candidateOps": 0
+      },
+      {
+        "name": "width-dedupe-smart",
+        "attempted": 24,
+        "candidateOps": 14
+      },
+      {
+        "name": "image-wrapper-fluid",
+        "attempted": 2,
+        "candidateOps": 4
+      }
+    ],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0
+    }
+  }
+}

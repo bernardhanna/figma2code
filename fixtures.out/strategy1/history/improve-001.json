@@ -1,0 +1,2165 @@
+{
+  "iteration": 1,
+  "createdAt": "2026-02-19T09:46:24.470Z",
+  "inputHash": "55fac0a4f53e9c3a94c79bc2174af671871f1e866658471ebdadd6eb7fcf64b2",
+  "htmlHash": "9b64ee7b31507ce7b7abad4068ae4d0281301cda20a00320831dffbe0db4dc8c",
+  "proposedPatches": [
+    {
+      "nodeId": "203:6166",
+      "selector": "[data-node-id=\"203:6166\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[10.9375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6172",
+      "selector": "[data-node-id=\"203:6172\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6179",
+      "selector": "[data-node-id=\"203:6179\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6187",
+      "selector": "[data-node-id=\"203:6187\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6194",
+      "selector": "[data-node-id=\"203:6194\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6206",
+      "selector": "[data-node-id=\"203:6206\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2.625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6210",
+      "selector": "[data-node-id=\"203:6210\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "w-full"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6239",
+      "selector": "[data-node-id=\"203:6239\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6241",
+      "selector": "[data-node-id=\"203:6241\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6243",
+      "selector": "[data-node-id=\"203:6243\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6245",
+      "selector": "[data-node-id=\"203:6245\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3525",
+      "selector": "[data-node-id=\"I203:6259;218:3525\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[11rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3688",
+      "selector": "[data-node-id=\"I203:6259;218:3688\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "md:w-[80rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3690",
+      "selector": "[data-node-id=\"I203:6259;218:3690\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4016",
+      "selector": "[data-node-id=\"I203:6259;218:4016\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4066",
+      "selector": "[data-node-id=\"I203:6259;218:4066\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.5625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4222",
+      "selector": "[data-node-id=\"I203:6259;218:4222\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[9.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6231",
+      "selector": "[data-node-id=\"203:6231\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [
+          "text-white"
+        ],
+        "classRemove": [],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6236",
+      "selector": "[data-node-id=\"203:6236\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [
+          "text-white"
+        ],
+        "classRemove": [],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6252",
+      "selector": "[data-node-id=\"203:6252\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [
+          "text-white"
+        ],
+        "classRemove": [],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6257",
+      "selector": "[data-node-id=\"203:6257\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [
+          "text-white"
+        ],
+        "classRemove": [],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "acceptedByGate": [
+    {
+      "nodeId": "203:6166",
+      "selector": "[data-node-id=\"203:6166\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[10.9375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6172",
+      "selector": "[data-node-id=\"203:6172\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6179",
+      "selector": "[data-node-id=\"203:6179\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6187",
+      "selector": "[data-node-id=\"203:6187\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6194",
+      "selector": "[data-node-id=\"203:6194\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6206",
+      "selector": "[data-node-id=\"203:6206\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2.625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6210",
+      "selector": "[data-node-id=\"203:6210\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "w-full"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6239",
+      "selector": "[data-node-id=\"203:6239\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6241",
+      "selector": "[data-node-id=\"203:6241\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6243",
+      "selector": "[data-node-id=\"203:6243\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6245",
+      "selector": "[data-node-id=\"203:6245\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3525",
+      "selector": "[data-node-id=\"I203:6259;218:3525\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[11rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3688",
+      "selector": "[data-node-id=\"I203:6259;218:3688\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "md:w-[80rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3690",
+      "selector": "[data-node-id=\"I203:6259;218:3690\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4016",
+      "selector": "[data-node-id=\"I203:6259;218:4016\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4066",
+      "selector": "[data-node-id=\"I203:6259;218:4066\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.5625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4222",
+      "selector": "[data-node-id=\"I203:6259;218:4222\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[9.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedByGate": [
+    {
+      "patch": {
+        "nodeId": "203:6231",
+        "selector": "[data-node-id=\"203:6231\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "203:6236",
+        "selector": "[data-node-id=\"203:6236\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "203:6252",
+        "selector": "[data-node-id=\"203:6252\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "203:6257",
+        "selector": "[data-node-id=\"203:6257\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    }
+  ],
+  "acceptedPatches": [
+    {
+      "nodeId": "203:6166",
+      "selector": "[data-node-id=\"203:6166\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[10.9375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6172",
+      "selector": "[data-node-id=\"203:6172\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6179",
+      "selector": "[data-node-id=\"203:6179\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6187",
+      "selector": "[data-node-id=\"203:6187\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6194",
+      "selector": "[data-node-id=\"203:6194\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[3.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6206",
+      "selector": "[data-node-id=\"203:6206\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[2.625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6210",
+      "selector": "[data-node-id=\"203:6210\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "w-full"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6239",
+      "selector": "[data-node-id=\"203:6239\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6241",
+      "selector": "[data-node-id=\"203:6241\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6243",
+      "selector": "[data-node-id=\"203:6243\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "203:6245",
+      "selector": "[data-node-id=\"203:6245\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[1.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3525",
+      "selector": "[data-node-id=\"I203:6259;218:3525\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[11rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3688",
+      "selector": "[data-node-id=\"I203:6259;218:3688\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "md:w-[80rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:3690",
+      "selector": "[data-node-id=\"I203:6259;218:3690\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4016",
+      "selector": "[data-node-id=\"I203:6259;218:4016\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4066",
+      "selector": "[data-node-id=\"I203:6259;218:4066\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.5625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:6259;218:4222",
+      "selector": "[data-node-id=\"I203:6259;218:4222\"]",
+      "stage": "improve",
+      "iteration": 1,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[9.5rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedPatches": [
+    {
+      "patch": {
+        "nodeId": "203:6231",
+        "selector": "[data-node-id=\"203:6231\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "203:6236",
+        "selector": "[data-node-id=\"203:6236\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "203:6252",
+        "selector": "[data-node-id=\"203:6252\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    },
+    {
+      "patch": {
+        "nodeId": "203:6257",
+        "selector": "[data-node-id=\"203:6257\"]",
+        "stage": "improve",
+        "iteration": 1,
+        "ops": {
+          "classAdd": [
+            "text-white"
+          ],
+          "classRemove": [],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: no visual improvement detected.",
+      "strategyName": "a11y-contrast-guard",
+      "gateKind": "visual"
+    }
+  ],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20982987772461456,
+            "source": "visual-diff",
+            "diffPixels": 39469,
+            "totalPixels": 188100,
+            "at": "2026-02-19T09:38:10.361Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 20
+        },
+        "type": {
+          "wrapAnomalyCount": 30
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20982987772461456,
+            "source": "visual-diff",
+            "diffPixels": 39469,
+            "totalPixels": 188100,
+            "at": "2026-02-19T09:38:10.611Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 20
+        },
+        "type": {
+          "wrapAnomalyCount": 30
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20982987772461456,
+            "source": "visual-diff",
+            "diffPixels": 39469,
+            "totalPixels": 188100,
+            "at": "2026-02-19T09:38:10.834Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 20
+        },
+        "type": {
+          "wrapAnomalyCount": 30
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "203:6166",
+        "selector": "[data-node-id=\"203:6166\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6172",
+        "selector": "[data-node-id=\"203:6172\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6179",
+        "selector": "[data-node-id=\"203:6179\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6187",
+        "selector": "[data-node-id=\"203:6187\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6194",
+        "selector": "[data-node-id=\"203:6194\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6206",
+        "selector": "[data-node-id=\"203:6206\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6210",
+        "selector": "[data-node-id=\"203:6210\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6239",
+        "selector": "[data-node-id=\"203:6239\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6241",
+        "selector": "[data-node-id=\"203:6241\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6243",
+        "selector": "[data-node-id=\"203:6243\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6245",
+        "selector": "[data-node-id=\"203:6245\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:3200",
+        "selector": "[data-node-id=\"I203:6259;218:3200\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:3205",
+        "selector": "[data-node-id=\"I203:6259;218:3205\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:3525",
+        "selector": "[data-node-id=\"I203:6259;218:3525\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:3688",
+        "selector": "[data-node-id=\"I203:6259;218:3688\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:3690",
+        "selector": "[data-node-id=\"I203:6259;218:3690\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:4016",
+        "selector": "[data-node-id=\"I203:6259;218:4016\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:4066",
+        "selector": "[data-node-id=\"I203:6259;218:4066\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:4222",
+        "selector": "[data-node-id=\"I203:6259;218:4222\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@32",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6175",
+        "selector": "[data-node-id=\"203:6175\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "203:6182",
+        "selector": "[data-node-id=\"203:6182\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "203:6190",
+        "selector": "[data-node-id=\"203:6190\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "203:6197",
+        "selector": "[data-node-id=\"203:6197\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3198",
+        "selector": "[data-node-id=\"I203:6259;218:3198\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3200",
+        "selector": "[data-node-id=\"I203:6259;218:3200\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3205",
+        "selector": "[data-node-id=\"I203:6259;218:3205\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3693",
+        "selector": "[data-node-id=\"I203:6259;218:3693\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3973",
+        "selector": "[data-node-id=\"I203:6259;218:3973\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3979",
+        "selector": "[data-node-id=\"I203:6259;218:3979\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3985",
+        "selector": "[data-node-id=\"I203:6259;218:3985\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3991",
+        "selector": "[data-node-id=\"I203:6259;218:3991\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4017",
+        "selector": "[data-node-id=\"I203:6259;218:4017\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4018",
+        "selector": "[data-node-id=\"I203:6259;218:4018\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4019",
+        "selector": "[data-node-id=\"I203:6259;218:4019\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4020",
+        "selector": "[data-node-id=\"I203:6259;218:4020\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4227",
+        "selector": "[data-node-id=\"I203:6259;218:4227\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4239",
+        "selector": "[data-node-id=\"I203:6259;218:4239\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4245",
+        "selector": "[data-node-id=\"I203:6259;218:4245\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4251",
+        "selector": "[data-node-id=\"I203:6259;218:4251\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4257",
+        "selector": "[data-node-id=\"I203:6259;218:4257\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4271",
+        "selector": "[data-node-id=\"I203:6259;218:4271\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:35316",
+        "selector": "[data-node-id=\"I203:6259;4029:35316\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36163",
+        "selector": "[data-node-id=\"I203:6259;4029:36163\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36445",
+        "selector": "[data-node-id=\"I203:6259;4029:36445\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36446",
+        "selector": "[data-node-id=\"I203:6259;4029:36446\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36447",
+        "selector": "[data-node-id=\"I203:6259;4029:36447\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36448",
+        "selector": "[data-node-id=\"I203:6259;4029:36448\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36449",
+        "selector": "[data-node-id=\"I203:6259;4029:36449\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36450",
+        "selector": "[data-node-id=\"I203:6259;4029:36450\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20982987772461456,
+            "source": "visual-diff",
+            "diffPixels": 39469,
+            "totalPixels": 188100,
+            "at": "2026-02-19T09:45:12.819Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 3
+        },
+        "type": {
+          "wrapAnomalyCount": 30
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20982987772461456,
+            "source": "visual-diff",
+            "diffPixels": 39469,
+            "totalPixels": 188100,
+            "at": "2026-02-19T09:45:13.327Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 3
+        },
+        "type": {
+          "wrapAnomalyCount": 30
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20982987772461456,
+            "source": "visual-diff",
+            "diffPixels": 39469,
+            "totalPixels": 188100,
+            "at": "2026-02-19T09:45:13.767Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/strategy1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/strategy1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 3
+        },
+        "type": {
+          "wrapAnomalyCount": 30
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I203:6259;218:3200",
+        "selector": "[data-node-id=\"I203:6259;218:3200\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:6259;218:3205",
+        "selector": "[data-node-id=\"I203:6259;218:3205\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@32",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "203:6175",
+        "selector": "[data-node-id=\"203:6175\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "203:6182",
+        "selector": "[data-node-id=\"203:6182\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "203:6190",
+        "selector": "[data-node-id=\"203:6190\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "203:6197",
+        "selector": "[data-node-id=\"203:6197\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3198",
+        "selector": "[data-node-id=\"I203:6259;218:3198\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3200",
+        "selector": "[data-node-id=\"I203:6259;218:3200\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3205",
+        "selector": "[data-node-id=\"I203:6259;218:3205\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3693",
+        "selector": "[data-node-id=\"I203:6259;218:3693\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3973",
+        "selector": "[data-node-id=\"I203:6259;218:3973\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3979",
+        "selector": "[data-node-id=\"I203:6259;218:3979\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3985",
+        "selector": "[data-node-id=\"I203:6259;218:3985\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:3991",
+        "selector": "[data-node-id=\"I203:6259;218:3991\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4017",
+        "selector": "[data-node-id=\"I203:6259;218:4017\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4018",
+        "selector": "[data-node-id=\"I203:6259;218:4018\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4019",
+        "selector": "[data-node-id=\"I203:6259;218:4019\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4020",
+        "selector": "[data-node-id=\"I203:6259;218:4020\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4227",
+        "selector": "[data-node-id=\"I203:6259;218:4227\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4239",
+        "selector": "[data-node-id=\"I203:6259;218:4239\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4245",
+        "selector": "[data-node-id=\"I203:6259;218:4245\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4251",
+        "selector": "[data-node-id=\"I203:6259;218:4251\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4257",
+        "selector": "[data-node-id=\"I203:6259;218:4257\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;218:4271",
+        "selector": "[data-node-id=\"I203:6259;218:4271\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:35316",
+        "selector": "[data-node-id=\"I203:6259;4029:35316\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36163",
+        "selector": "[data-node-id=\"I203:6259;4029:36163\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36445",
+        "selector": "[data-node-id=\"I203:6259;4029:36445\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36446",
+        "selector": "[data-node-id=\"I203:6259;4029:36446\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36447",
+        "selector": "[data-node-id=\"I203:6259;4029:36447\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36448",
+        "selector": "[data-node-id=\"I203:6259;4029:36448\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36449",
+        "selector": "[data-node-id=\"I203:6259;4029:36449\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:6259;4029:36450",
+        "selector": "[data-node-id=\"I203:6259;4029:36450\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 50,
+    "selectedOffenders": 25,
+    "generated": 21,
+    "accepted": 17,
+    "rejected": 4,
+    "provider": "rules",
+    "gateAccepted": false,
+    "gateMessage": "Score gate: no visual improvement detected.",
+    "strategyStats": [
+      {
+        "name": "width-dedupe",
+        "attempted": 20,
+        "candidateOps": 1
+      },
+      {
+        "name": "width-dedupe-smart",
+        "attempted": 18,
+        "candidateOps": 15
+      },
+      {
+        "name": "container-width-canonicalize",
+        "attempted": 1,
+        "candidateOps": 2
+      },
+      {
+        "name": "a11y-contrast-guard",
+        "attempted": 4,
+        "candidateOps": 4
+      }
+    ],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0
+    }
+  }
+}

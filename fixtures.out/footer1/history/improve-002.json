@@ -1,0 +1,1100 @@
+{
+  "iteration": 2,
+  "createdAt": "2026-02-19T09:17:53.528Z",
+  "inputHash": "97529a4856ae8ff7df722005b476a4f902617e505f13620ce68b9597ce4b507c",
+  "htmlHash": "4eee5d7cb63a9247a133d07a24dc0f6aa7cfee364d1ca54039342bdbb38209e0",
+  "proposedPatches": [
+    {
+      "nodeId": "I203:15415;218:3525",
+      "selector": "[data-node-id=\"I203:15415;218:3525\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[11rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:3690",
+      "selector": "[data-node-id=\"I203:15415;218:3690\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:4016",
+      "selector": "[data-node-id=\"I203:15415;218:4016\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:4066",
+      "selector": "[data-node-id=\"I203:15415;218:4066\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.5625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "acceptedByGate": [
+    {
+      "nodeId": "I203:15415;218:3690",
+      "selector": "[data-node-id=\"I203:15415;218:3690\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:4016",
+      "selector": "[data-node-id=\"I203:15415;218:4016\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:4066",
+      "selector": "[data-node-id=\"I203:15415;218:4066\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.5625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedByGate": [
+    {
+      "patch": {
+        "nodeId": "I203:15415;218:3525",
+        "selector": "[data-node-id=\"I203:15415;218:3525\"]",
+        "stage": "improve",
+        "iteration": 2,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[11rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0045.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    }
+  ],
+  "acceptedPatches": [
+    {
+      "nodeId": "I203:15415;218:3690",
+      "selector": "[data-node-id=\"I203:15415;218:3690\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[6.25rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:4016",
+      "selector": "[data-node-id=\"I203:15415;218:4016\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[4.375rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    },
+    {
+      "nodeId": "I203:15415;218:4066",
+      "selector": "[data-node-id=\"I203:15415;218:4066\"]",
+      "stage": "improve",
+      "iteration": 2,
+      "ops": {
+        "classAdd": [],
+        "classRemove": [
+          "max-w-[8.5625rem]"
+        ],
+        "classReplace": {},
+        "attrAdd": {},
+        "attrRemove": []
+      }
+    }
+  ],
+  "rejectedPatches": [
+    {
+      "patch": {
+        "nodeId": "I203:15415;218:3525",
+        "selector": "[data-node-id=\"I203:15415;218:3525\"]",
+        "stage": "improve",
+        "iteration": 2,
+        "ops": {
+          "classAdd": [],
+          "classRemove": [
+            "max-w-[11rem]"
+          ],
+          "classReplace": {},
+          "attrAdd": {},
+          "attrRemove": []
+        }
+      },
+      "reason": "Score gate: regression on mobile by +0.0045.",
+      "strategyName": "width-dedupe-smart",
+      "gateKind": "cleanup"
+    }
+  ],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9955294117647059,
+            "source": "visual-diff",
+            "diffPixels": 177702,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:31:11.414Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 10
+        },
+        "type": {
+          "wrapAnomalyCount": 20
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9955294117647059,
+            "source": "visual-diff",
+            "diffPixels": 177702,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:31:14.982Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 10
+        },
+        "type": {
+          "wrapAnomalyCount": 20
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9955294117647059,
+            "source": "visual-diff",
+            "diffPixels": 177702,
+            "totalPixels": 178500,
+            "at": "2026-02-18T12:31:17.844Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 10
+        },
+        "type": {
+          "wrapAnomalyCount": 20
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I203:15415;213:3170",
+        "selector": "[data-node-id=\"I203:15415;213:3170\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3200",
+        "selector": "[data-node-id=\"I203:15415;218:3200\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3205",
+        "selector": "[data-node-id=\"I203:15415;218:3205\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3525",
+        "selector": "[data-node-id=\"I203:15415;218:3525\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3690",
+        "selector": "[data-node-id=\"I203:15415;218:3690\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:4016",
+        "selector": "[data-node-id=\"I203:15415;218:4016\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:4066",
+        "selector": "[data-node-id=\"I203:15415;218:4066\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;252:2224;51:6911;10:11039",
+        "selector": "[data-node-id=\"I203:15415;252:2224;51:6911;10:11039\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;4204:56420",
+        "selector": "[data-node-id=\"I203:15415;4204:56420\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@322",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3198",
+        "selector": "[data-node-id=\"I203:15415;218:3198\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3200",
+        "selector": "[data-node-id=\"I203:15415;218:3200\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3205",
+        "selector": "[data-node-id=\"I203:15415;218:3205\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3693",
+        "selector": "[data-node-id=\"I203:15415;218:3693\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3973",
+        "selector": "[data-node-id=\"I203:15415;218:3973\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3979",
+        "selector": "[data-node-id=\"I203:15415;218:3979\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3985",
+        "selector": "[data-node-id=\"I203:15415;218:3985\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3991",
+        "selector": "[data-node-id=\"I203:15415;218:3991\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4017",
+        "selector": "[data-node-id=\"I203:15415;218:4017\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4018",
+        "selector": "[data-node-id=\"I203:15415;218:4018\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4019",
+        "selector": "[data-node-id=\"I203:15415;218:4019\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4020",
+        "selector": "[data-node-id=\"I203:15415;218:4020\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:35316",
+        "selector": "[data-node-id=\"I203:15415;4029:35316\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36163",
+        "selector": "[data-node-id=\"I203:15415;4029:36163\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36445",
+        "selector": "[data-node-id=\"I203:15415;4029:36445\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36446",
+        "selector": "[data-node-id=\"I203:15415;4029:36446\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36447",
+        "selector": "[data-node-id=\"I203:15415;4029:36447\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36448",
+        "selector": "[data-node-id=\"I203:15415;4029:36448\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36449",
+        "selector": "[data-node-id=\"I203:15415;4029:36449\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36450",
+        "selector": "[data-node-id=\"I203:15415;4029:36450\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9660112044817927,
+            "source": "visual-diff",
+            "diffPixels": 172433,
+            "totalPixels": 178500,
+            "at": "2026-02-19T09:17:47.409Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 7
+        },
+        "type": {
+          "wrapAnomalyCount": 20
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9660112044817927,
+            "source": "visual-diff",
+            "diffPixels": 172433,
+            "totalPixels": 178500,
+            "at": "2026-02-19T09:17:50.642Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 7
+        },
+        "type": {
+          "wrapAnomalyCount": 20
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.9660112044817927,
+            "source": "visual-diff",
+            "diffPixels": 172433,
+            "totalPixels": 178500,
+            "at": "2026-02-19T09:17:53.510Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/footer1/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 7
+        },
+        "type": {
+          "wrapAnomalyCount": 20
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "I203:15415;213:3170",
+        "selector": "[data-node-id=\"I203:15415;213:3170\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3200",
+        "selector": "[data-node-id=\"I203:15415;218:3200\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3205",
+        "selector": "[data-node-id=\"I203:15415;218:3205\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3525",
+        "selector": "[data-node-id=\"I203:15415;218:3525\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;252:2224;51:6911;10:11039",
+        "selector": "[data-node-id=\"I203:15415;252:2224;51:6911;10:11039\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;4204:56420",
+        "selector": "[data-node-id=\"I203:15415;4204:56420\"]",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "div@322",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      },
+      {
+        "nodeId": "I203:15415;218:3198",
+        "selector": "[data-node-id=\"I203:15415;218:3198\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3200",
+        "selector": "[data-node-id=\"I203:15415;218:3200\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3205",
+        "selector": "[data-node-id=\"I203:15415;218:3205\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3693",
+        "selector": "[data-node-id=\"I203:15415;218:3693\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3973",
+        "selector": "[data-node-id=\"I203:15415;218:3973\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3979",
+        "selector": "[data-node-id=\"I203:15415;218:3979\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3985",
+        "selector": "[data-node-id=\"I203:15415;218:3985\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:3991",
+        "selector": "[data-node-id=\"I203:15415;218:3991\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4017",
+        "selector": "[data-node-id=\"I203:15415;218:4017\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4018",
+        "selector": "[data-node-id=\"I203:15415;218:4018\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4019",
+        "selector": "[data-node-id=\"I203:15415;218:4019\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;218:4020",
+        "selector": "[data-node-id=\"I203:15415;218:4020\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:35316",
+        "selector": "[data-node-id=\"I203:15415;4029:35316\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36163",
+        "selector": "[data-node-id=\"I203:15415;4029:36163\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36445",
+        "selector": "[data-node-id=\"I203:15415;4029:36445\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36446",
+        "selector": "[data-node-id=\"I203:15415;4029:36446\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36447",
+        "selector": "[data-node-id=\"I203:15415;4029:36447\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36448",
+        "selector": "[data-node-id=\"I203:15415;4029:36448\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36449",
+        "selector": "[data-node-id=\"I203:15415;4029:36449\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      },
+      {
+        "nodeId": "I203:15415;4029:36450",
+        "selector": "[data-node-id=\"I203:15415;4029:36450\"]",
+        "breakpoint": "all",
+        "category": "type",
+        "impact": 40,
+        "suggestedStage": "improve",
+        "suggestedContract": null,
+        "hint": "Potential text wrap anomaly"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 30,
+    "selectedOffenders": 25,
+    "generated": 4,
+    "accepted": 3,
+    "rejected": 1,
+    "provider": "rules",
+    "gateAccepted": false,
+    "gateMessage": "Score gate: regression on mobile by +0.0045.",
+    "strategyStats": [
+      {
+        "name": "width-dedupe",
+        "attempted": 9,
+        "candidateOps": 0
+      },
+      {
+        "name": "width-dedupe-smart",
+        "attempted": 9,
+        "candidateOps": 4
+      }
+    ],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0
+    }
+  }
+}

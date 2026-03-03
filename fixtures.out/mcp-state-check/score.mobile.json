@@ -1,0 +1,75 @@
+{
+  "slug": "mcp-state-check",
+  "url": "http://127.0.0.1:5173/preview/mcp-state-check?ov=0&vpw=768",
+  "viewport": {
+    "width": 768,
+    "height": 900
+  },
+  "screenshot": {
+    "mode": "element",
+    "selector": "#cmp_root",
+    "box": {
+      "x": 13,
+      "y": 118,
+      "width": 742,
+      "height": 216
+    },
+    "minHeight": 200
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/mcp-state-check/figma.desktop.png",
+    "width": 1024,
+    "height": 506,
+    "src": "/fixtures.out/mcp-state-check/figma.mobile.png",
+    "mode": "mobile"
+  },
+  "render": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/mcp-state-check/render.mobile.png",
+    "width": 742,
+    "height": 216
+  },
+  "compared": {
+    "width": 730,
+    "height": 203
+  },
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03,
+    "alignWindow": 12,
+    "alignStep": 2
+  },
+  "alignment": {
+    "dx": -12,
+    "dy": -13
+  },
+  "bestDx": -12,
+  "bestDy": -13,
+  "alignmentSearched": true,
+  "searchRadiusPx": 12,
+  "alignmentDownscale": 0.5,
+  "alignmentDiffRatio": 0.3482675261885576,
+  "diffPixels": 48184,
+  "totalPixels": 148190,
+  "diffRatio": 0.32515014508401374,
+  "layoutDiffPixels": 6756,
+  "layoutDiffRatio": 0.3716989436619718,
+  "layoutDownscale": 0.35,
+  "layoutBlurRadius": 0,
+  "layoutScore": {
+    "conflictingWidthCount": 0
+  },
+  "failureMode": "offsetDominated",
+  "failureSignals": {
+    "absBestDx": 12,
+    "absBestDy": 13,
+    "diffRatio": 0.32515014508401374,
+    "layoutDiffRatio": 0.3716989436619718,
+    "conflictingWidthCount": 0,
+    "overflowXCount": 0,
+    "wrongLayoutModel": false
+  },
+  "pass": false,
+  "at": "2026-02-18T12:44:32.077Z",
+  "mode": "mobile"
+}

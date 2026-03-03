@@ -38,6 +38,26 @@ test("fix: DIV_BUTTON_SHOULD_BE_BUTTON -> div becomes button", () => {
   assert.ok(appliedFixes.some((f) => f.action === "div-to-button"));
 });
 
+test("fix: media slot div is never converted to button", () => {
+  const html = `<div class="btn px-4" data-key="frame:image#1"><img src="/x.png" alt="x" /></div>`;
+  const report = audit(html);
+  const { fixedHtml, appliedFixes } = fix(html, report.issues);
+
+  assert.ok(!fixedHtml.includes("<button "), "should remain non-interactive wrapper");
+  assert.ok(fixedHtml.includes("<div "), "keeps div tag");
+  assert.ok(!appliedFixes.some((f) => f.action === "div-to-button"));
+});
+
+test("fix: frame layout container div is never converted to button", () => {
+  const html = `<div class="btn px-4" data-key="frame:frame-2332#1"><h3>Title</h3></div>`;
+  const report = audit(html);
+  const { fixedHtml, appliedFixes } = fix(html, report.issues);
+
+  assert.ok(!fixedHtml.includes("<button "), "should remain non-interactive wrapper");
+  assert.ok(fixedHtml.includes("<div "), "keeps div tag");
+  assert.ok(!appliedFixes.some((f) => f.action === "div-to-button"));
+});
+
 test("fix: DUPLICATE_FIXED_WIDTH_CLASSES -> redundant w-[X] removed", () => {
   const html = `<div class="w-full w-[120px] max-w-[120px]">X</div>`;
   const report = audit(html);
@@ -148,6 +168,14 @@ test("fix: OVERFLOW_HIDDEN_ON_NON_MEDIA_WRAPPER -> removes overflow-hidden", () 
 
   assert.ok(!fixedHtml.includes("overflow-hidden"));
   assert.ok(appliedFixes.some((f) => f.action === "remove-overflow-hidden"));
+});
+
+test("fix: OVERFLOW_HIDDEN is preserved for absolute background fill wrappers", () => {
+  const html = `<div class="relative overflow-hidden h-[20rem]"><div class="absolute inset-0 bg-cover bg-no-repeat bg-center" style="background-image:url('/x.jpg')"></div><img src="/x.jpg" alt=""></div>`;
+  const report = audit(html);
+  const { fixedHtml, appliedFixes } = fix(html, report.issues);
+  assert.ok(fixedHtml.includes("overflow-hidden"));
+  assert.ok(!appliedFixes.some((f) => f.action === "remove-overflow-hidden"));
 });
 
 test("fix: does not remove duplicates when second does not immediately follow first", () => {

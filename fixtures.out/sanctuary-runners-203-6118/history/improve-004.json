@@ -1,0 +1,344 @@
+{
+  "iteration": 4,
+  "createdAt": "2026-02-18T12:03:53.763Z",
+  "inputHash": "2815e2ecb150b59e6e16e57809174bfca75a1afafc8d5f503a07915f8fb66799",
+  "htmlHash": "f4ea09cd9536cacd3484e8baa0ebd710b283502c5c09f3025ab8e030ecab6e13",
+  "proposedPatches": [],
+  "acceptedByGate": [],
+  "rejectedByGate": [],
+  "acceptedPatches": [],
+  "rejectedPatches": [],
+  "scoreBefore": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20548430193720774,
+            "source": "visual-diff",
+            "diffPixels": 30761,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:57:44.291Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20548430193720774,
+            "source": "visual-diff",
+            "diffPixels": 30761,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:57:48.481Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20548430193720774,
+            "source": "visual-diff",
+            "diffPixels": 30761,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:57:51.799Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "div@88",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "scoreAfter": {
+    "breakpoints": {
+      "mobile": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20548430193720774,
+            "source": "visual-diff",
+            "diffPixels": 30761,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:57:44.291Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.mobile.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.mobile.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/figma.mobile.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/render.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/render.mobile.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/diff.mobile.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/diff.mobile.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "tablet": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20548430193720774,
+            "source": "visual-diff",
+            "diffPixels": 30761,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:57:48.481Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.tablet.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.tablet.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/figma.tablet.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/render.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/render.tablet.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/diff.tablet.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/diff.tablet.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      },
+      "desktop": {
+        "visual": {
+          "pixelDiffRatio": {
+            "value": 0.20548430193720774,
+            "source": "visual-diff",
+            "diffPixels": 30761,
+            "totalPixels": 149700,
+            "at": "2026-02-18T11:57:51.799Z",
+            "diagnostics": {
+              "scoreFile": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.desktop.json",
+              "searched": {
+                "scoreFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/score.all.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.desktop.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.json",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/score.all.json"
+                ],
+                "figmaFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/figma.desktop.png"
+                ],
+                "renderFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/render.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/render.desktop.png"
+                ],
+                "diffFiles": [
+                  "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/diff.desktop.png",
+                  "/Users/bernardhanna/Desktop/figma2wp/generator/fixtures.out/sanctuary-runners-203-6118/diff.desktop.png"
+                ]
+              }
+            }
+          }
+        },
+        "layout": {
+          "fixedHeightWrapperCount": 0,
+          "overflowXCount": 0,
+          "conflictingWidthCount": 1
+        },
+        "type": {
+          "wrapAnomalyCount": 0
+        },
+        "a11y": {
+          "imgMissingAltCount": 0,
+          "interactiveNameMissingCount": 0,
+          "total": 0
+        }
+      }
+    },
+    "offenders": [
+      {
+        "nodeId": "div@88",
+        "selector": "div",
+        "breakpoint": "all",
+        "category": "layout",
+        "impact": 60,
+        "suggestedStage": "codeit",
+        "suggestedContract": "layout/width/dedupeWidths",
+        "hint": "Conflicting width utilities"
+      }
+    ]
+  },
+  "patchPlan": {
+    "offendersFound": 1,
+    "selectedOffenders": 1,
+    "generated": 0,
+    "accepted": 0,
+    "rejected": 0,
+    "provider": "rules",
+    "gateAccepted": true,
+    "strategyStats": [],
+    "trialCapStats": {
+      "proposedSkipped": 0,
+      "rejectedSkipped": 0
+    },
+    "zeroCandidatesReason": "no strategies matched offender kinds"
+  }
+}

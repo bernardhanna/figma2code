@@ -52,6 +52,26 @@ const isRemovableHeightToken = (token) => {
 const getDirectChildren = (childrenMap, nodeIndex) =>
   childrenMap.get(nodeIndex) || [];
 
+const hasBackgroundImageIntent = (node) => {
+  const attrs = node?.attrs || {};
+  const style = String(getAttrValue(attrs, "style") || "");
+  if (/background-image\s*:/i.test(style)) return true;
+  const cores = getClassTokens(attrs).map(normalizeToken);
+  return cores.some((c) => /^bg-\[.*url\(/i.test(c));
+};
+
+const isAbsoluteBackgroundFillLayer = (node) => {
+  if (!node?.attrs) return false;
+  const cores = getClassTokens(node.attrs).map(normalizeToken);
+  const absolute = cores.includes("absolute");
+  const inset0 = cores.includes("inset-0");
+  const bgCoverLike = cores.includes("bg-cover") || cores.includes("bg-contain");
+  const dataKey = String(getAttrValue(node.attrs, "data-key") || "").toLowerCase();
+  const figmaRectImageLike = /rectangle:image|image-/.test(dataKey);
+  const bgImage = hasBackgroundImageIntent(node);
+  return absolute && inset0 && bgCoverLike && (bgImage || figmaRectImageLike);
+};
+
 /** True media wrapper: overflow-hidden AND first child is img/video with object-cover or object-contain. */
 const isTrueMediaWrapper = (node, nodes, childrenMap, nodeIndex) => {
   const tokens = getClassTokens(node.attrs || {});
@@ -67,6 +87,12 @@ const isTrueMediaWrapper = (node, nodes, childrenMap, nodeIndex) => {
   const childCores = childTokens.map(normalizeToken);
   if (!childCores.some((c) => c === "object-cover" || c === "object-contain")) return false;
   return true;
+};
+
+const wrapsAbsoluteBackgroundLayer = (nodes, childrenMap, nodeIndex) => {
+  const childIdxs = getDirectChildren(childrenMap, nodeIndex);
+  if (!childIdxs.length) return false;
+  return childIdxs.some((idx) => isAbsoluteBackgroundFillLayer(nodes[idx]));
 };
 
 const apply = ({ html }) => {
@@ -92,6 +118,8 @@ const apply = ({ html }) => {
     if (removable.length === 0) return;
 
     if (isTrueMediaWrapper(node, nodes, childrenMap, nodeIndex)) return;
+    if (isAbsoluteBackgroundFillLayer(node)) return;
+    if (wrapsAbsoluteBackgroundLayer(nodes, childrenMap, nodeIndex)) return;
 
     const { cleaned: out } = removeTokens(tokens, isRemovableHeightToken);
     if (!out.some((t) => normalizeToken(t) === "h-auto")) out.push("h-auto");

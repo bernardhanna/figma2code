@@ -1,0 +1,30 @@
+{
+  "slug": "sanctuary-runners-203-6118",
+  "mode": "mobile",
+  "viewport": {
+    "width": 1024,
+    "height": 900
+  },
+  "crop": {
+    "width": 998,
+    "height": 150
+  },
+  "diffPixels": 30761,
+  "totalPixels": 149700,
+  "diffRatio": 0.20548430193720774,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-203-6118/figma.mobile.png",
+    "width": 1024,
+    "height": 525
+  },
+  "at": "2026-02-18T11:57:44.291Z"
+}

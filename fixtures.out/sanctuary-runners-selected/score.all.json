@@ -1,0 +1,96 @@
+{
+  "slug": "sanctuary-runners-selected",
+  "at": "2026-02-18T12:28:14.961Z",
+  "results": {
+    "mobile": {
+      "slug": "sanctuary-runners-selected",
+      "mode": "mobile",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "crop": {
+        "width": 998,
+        "height": 150
+      },
+      "diffPixels": 62559,
+      "totalPixels": 149700,
+      "diffRatio": 0.4178957915831663,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-selected/figma.mobile.png",
+        "width": 1024,
+        "height": 506
+      },
+      "at": "2026-02-18T12:28:01.859Z"
+    },
+    "tablet": {
+      "slug": "sanctuary-runners-selected",
+      "mode": "tablet",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "crop": {
+        "width": 998,
+        "height": 150
+      },
+      "diffPixels": 47896,
+      "totalPixels": 149700,
+      "diffRatio": 0.31994655978623915,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-selected/figma.tablet.png",
+        "width": 1024,
+        "height": 506
+      },
+      "at": "2026-02-18T12:28:09.454Z"
+    },
+    "desktop": {
+      "slug": "sanctuary-runners-selected",
+      "mode": "desktop",
+      "viewport": {
+        "width": 1024,
+        "height": 900
+      },
+      "crop": {
+        "width": 998,
+        "height": 150
+      },
+      "diffPixels": 62559,
+      "totalPixels": 149700,
+      "diffRatio": 0.4178957915831663,
+      "pass": false,
+      "compare": {
+        "threshold": 0.1,
+        "includeAA": true,
+        "passDiffRatio": 0.03
+      },
+      "screenshot": {
+        "selectorUsed": "#cmp_root"
+      },
+      "figma": {
+        "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/sanctuary-runners-selected/figma.desktop.png",
+        "width": 1024,
+        "height": 506
+      },
+      "at": "2026-02-18T12:28:14.945Z"
+    }
+  }
+}

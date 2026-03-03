@@ -2,6 +2,7 @@
 // ------------------------------------------------------------
 // Semantics helpers: decide tags/labels/links in a deterministic way.
 // ------------------------------------------------------------
+import { resolveInteractiveIntent } from "../interactiveIntent.js";
 
 export function aiTagFor(node, semantics) {
   const found = semantics?.[node.id];
@@ -36,12 +37,11 @@ export function aiTagFor(node, semantics) {
 }
 
 export function aiHrefFor(node, semantics) {
+  const intent = resolveInteractiveIntent(node, { semantics });
+  if (intent.href) return intent.href;
   const found = semantics?.[node.id];
-  if (!found) return null;
-
-  const href = found.href || found.url;
-  if (href && typeof href === "string" && href.trim()) return href.trim();
-  return null;
+  const href = found?.href || found?.url;
+  return href && typeof href === "string" && href.trim() ? href.trim() : null;
 }
 
 export function aiLabelFor(node, semantics) {
@@ -92,11 +92,16 @@ export function isClickable(node) {
   return !!node?.actions?.openUrl || !!node?.actions?.isClickable;
 }
 
+export function isTextLinkLike(node) {
+  return resolveInteractiveIntent(node, { semantics: null }).interactiveStyle === "text_link";
+}
+
 /**
  * Decide if a node should be rendered as <a> or <button>.
  *
  * Deterministic rule:
  * - If openUrl exists => ALWAYS <a>
+ * - If node is text-link variant => ALWAYS <a> (href defaults to "#")
  * - Else name hints can imply link/button
  * - Else clickability of INSTANCE implies button
  */
@@ -132,35 +137,14 @@ function hasRenderableChildren(node) {
  */
 export function shouldRenderAsLinkOrButton(node) {
   if (!node) return null;
-
-  // If this node has children, it is a container. Do not auto-promote.
-  // The only exception is if the container itself has explicit actions.
-  const container = hasRenderableChildren(node);
-
-  if (!hasOwnClickAction(node)) {
-    // No explicit action: only allow leaf-style nodes to be treated as interactive
-    // if your semantics map explicitly says so (handled by aiTagFor elsewhere).
-    return null;
+  const intent = resolveInteractiveIntent(node, { semantics: null });
+  if (intent.interactiveType === "link") return "a";
+  if (intent.interactiveType === "button") {
+    const container = hasRenderableChildren(node);
+    const isInstance = String(node?.type || "").toUpperCase() === "INSTANCE";
+    const hasAutoLayout = node?.auto && node.auto.layout && node.auto.layout !== "NONE";
+    if (container && isInstance && hasAutoLayout && !hasOwnClickAction(node)) return null;
+    if (!container || isProbablyLeafInteractive(node) || hasOwnClickAction(node)) return "button";
   }
-
-  // Explicit actions exist
-  if (node.actions?.openUrl) return "a";
-
-  // Avoid turning large auto-layout INSTANCE cards into <button> when they have no URL.
-  const isInstance = String(node.type || "").toUpperCase() === "INSTANCE";
-  const hasAutoLayout =
-    node.auto && node.auto.layout && node.auto.layout !== "NONE";
-  if (isInstance && hasAutoLayout && !node.actions?.openUrl) {
-    // Render as non-interactive container (<div>); inner content can still be interactive.
-    return null;
-  }
-
-  // Only allow <button> for:
-  // - clickable leaf nodes
-  // - clickable containers IF they are "rasterized CTA instances" (rare) — but we keep it strict.
-  if (!container || isProbablyLeafInteractive(node)) return "button";
-
-  // Container with action: still avoid turning an entire layout frame into a button.
-  // Render it as a div and let inner CTAs be the interactive elements.
   return null;
 }

@@ -30,14 +30,16 @@ export function viewportScript({ designW }) {
       const ovImg = document.getElementById("ov_img");
       const bgLayer = document.getElementById("bg_layer");
 
-      // NEW: content iframe (enables real Tailwind breakpoints)
-      const vpIframe = document.getElementById("vp_iframe");
+      function getIframe(){
+        return document.getElementById("vp_iframe");
+      }
 
       // In embed mode there is no toolbar; bail cleanly
       if (!frame || !rail || !thumb || !readout || !btnM || !btnT || !btnD) return;
 
       const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
       const minW = 320;
+      const MIN_IFRAME_HEIGHT = 1;
 
       const bpMobileMax = Number(resp?.breakpoints?.mobileMax) || 768;
       const bpTabletMax = Number(resp?.breakpoints?.tabletMax) || 1084;
@@ -160,21 +162,32 @@ export function viewportScript({ designW }) {
 
       // NEW: keep iframe height tidy (optional, but prevents huge blank space)
       function setIframeWidth(w){
-        if (!vpIframe) return;
-        vpIframe.style.width = w + "px";
+        const iframe = getIframe();
+        if (!iframe) return;
+        iframe.style.width = w + "px";
+      }
+
+      function sectionHeightFromDoc(doc){
+        if (!doc) return 0;
+        const root = doc.querySelector('[data-key="root"]');
+        const section = (root && root.closest("section")) || doc.querySelector("section") || root || doc.body || null;
+        if (!section) return 0;
+        const rectH = Number(section.getBoundingClientRect?.().height || 0);
+        const scrollH = Number(section.scrollHeight || 0);
+        const offsetH = Number(section.offsetHeight || 0);
+        return Math.max(rectH, scrollH, offsetH, 0);
       }
 
       function tryAutoIframeHeight(){
-        // If same-origin srcdoc is used, we can read scrollHeight
-        if (!vpIframe) return;
+        const iframe = getIframe();
+        if (!iframe) return;
         try {
-          const doc = vpIframe.contentDocument;
+          const doc = iframe.contentDocument;
           if (!doc) return;
-          const h = Math.max(
-            doc.documentElement?.scrollHeight || 0,
-            doc.body?.scrollHeight || 0
-          );
-          if (h > 0) vpIframe.style.height = h + "px";
+          const sectionH = sectionHeightFromDoc(doc);
+          const docH = Math.max(doc.documentElement?.scrollHeight || 0, doc.body?.scrollHeight || 0);
+          const h = Math.max(sectionH, docH);
+          if (h > 0) iframe.style.height = Math.max(MIN_IFRAME_HEIGHT, Math.ceil(h)) + "px";
         } catch {
           // ignore cross-origin
         }
@@ -208,6 +221,7 @@ export function viewportScript({ designW }) {
         // Try to keep iframe height correct after width changes (content reflows)
         setTimeout(tryAutoIframeHeight, 0);
         setTimeout(tryAutoIframeHeight, 60);
+        setTimeout(tryAutoIframeHeight, 180);
       }
 
       const presets = { mobile: wMobile, tablet: wTablet, desktop: wDesktop };
@@ -267,11 +281,25 @@ export function viewportScript({ designW }) {
       frame.style.transform = "none";
       frame.style.zoom = "1";
 
-      // If iframe exists, set an initial height once it loads
-      if (vpIframe) {
-        vpIframe.addEventListener("load", () => {
+      // Allow external callers (reload/QA flows) to resync viewport sizing.
+      window.__previewViewportSync = function(opts = {}){
+        const nextW = Number(opts.width || state.w || 0);
+        if (Number.isFinite(nextW) && nextW > 0) {
+          setWidth(nextW, null);
+          return;
+        }
+        setTimeout(tryAutoIframeHeight, 0);
+        setTimeout(tryAutoIframeHeight, 60);
+        setTimeout(tryAutoIframeHeight, 180);
+      };
+
+      // If iframe exists, set an initial height once it loads.
+      const iframeInit = getIframe();
+      if (iframeInit) {
+        iframeInit.addEventListener("load", () => {
           tryAutoIframeHeight();
           setTimeout(tryAutoIframeHeight, 80);
+          setTimeout(tryAutoIframeHeight, 220);
         });
       }
     })();

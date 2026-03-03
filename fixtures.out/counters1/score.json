@@ -1,0 +1,30 @@
+{
+  "slug": "counters1",
+  "mode": "desktop",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1254,
+    "height": 150
+  },
+  "diffPixels": 44772,
+  "totalPixels": 188100,
+  "diffRatio": 0.23802232854864433,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/counters1/figma.desktop.png",
+    "width": 1280,
+    "height": 512
+  },
+  "at": "2026-02-20T15:53:45.304Z"
+}

@@ -1,0 +1,393 @@
+{
+  "slug": "creativity-delivers-results",
+  "type": "flexi_block",
+  "frame": {
+    "w": 1280,
+    "h": 563
+  },
+  "tree": {
+    "id": "418:8132",
+    "name": "creativity delivers results",
+    "type": "INSTANCE",
+    "w": 1280,
+    "h": 563,
+    "children": [
+      {
+        "id": "I418:8132;84:368",
+        "name": "Section Creativity",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 48,
+          "padT": 80,
+          "padR": 80,
+          "padB": 80,
+          "padL": 80
+        }
+      },
+      {
+        "id": "I418:8132;127:1787",
+        "name": "H2",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [
+          {
+            "id": "I418:8132;127:1787;127:2091",
+            "name": "H2",
+            "type": "FRAME",
+            "w": 0,
+            "h": 0,
+            "children": [],
+            "auto": {
+              "layout": "VERTICAL",
+              "itemSpacing": 24
+            }
+          },
+          {
+            "id": "I418:8132;127:1787;126:1676",
+            "name": "I418:8132;127:1787;126:1676",
+            "type": "TEXT",
+            "w": 0,
+            "h": 0,
+            "children": [],
+            "text": {
+              "raw": "Creativity delivers results"
+            }
+          },
+          {
+            "id": "I418:8132;127:1787;126:1677",
+            "name": "DecorativeBarHorizontal",
+            "type": "FRAME",
+            "w": 71,
+            "h": 0,
+            "children": [
+              {
+                "id": "I418:8132;127:1787;126:1677;7543:2626",
+                "name": "I418:8132;127:1787;126:1677;7543:2626",
+                "type": "FRAME",
+                "w": 0,
+                "h": 5,
+                "children": [],
+                "auto": {
+                  "layout": "HORIZONTAL"
+                }
+              },
+              {
+                "id": "I418:8132;127:1787;126:1677;7543:2622",
+                "name": "I418:8132;127:1787;126:1677;7543:2622",
+                "type": "FRAME",
+                "w": 0,
+                "h": 5,
+                "children": [],
+                "auto": {
+                  "layout": "HORIZONTAL"
+                }
+              },
+              {
+                "id": "I418:8132;127:1787;126:1677;7543:2624",
+                "name": "I418:8132;127:1787;126:1677;7543:2624",
+                "type": "FRAME",
+                "w": 0,
+                "h": 5,
+                "children": [],
+                "auto": {
+                  "layout": "HORIZONTAL"
+                }
+              },
+              {
+                "id": "I418:8132;127:1787;126:1677;7543:2625",
+                "name": "I418:8132;127:1787;126:1677;7543:2625",
+                "type": "FRAME",
+                "w": 0,
+                "h": 5,
+                "children": [],
+                "auto": {
+                  "layout": "HORIZONTAL"
+                }
+              }
+            ],
+            "auto": {
+              "layout": "HORIZONTAL"
+            }
+          }
+        ],
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 0
+        }
+      },
+      {
+        "id": "I418:8132;84:378",
+        "name": "Points",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "HORIZONTAL",
+          "itemSpacing": 32
+        }
+      },
+      {
+        "id": "I418:8132;84:379",
+        "name": "1",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 0,
+          "padT": 16,
+          "padR": 16,
+          "padB": 16,
+          "padL": 16
+        }
+      },
+      {
+        "id": "I418:8132;84:381",
+        "name": "I418:8132;84:381",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 16
+        }
+      },
+      {
+        "id": "I418:8132;105:1742",
+        "name": "I418:8132;105:1742",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "HORIZONTAL"
+        }
+      },
+      {
+        "id": "I418:8132;84:382",
+        "name": "I418:8132;84:382",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": ">19"
+        }
+      },
+      {
+        "id": "I418:8132;84:670",
+        "name": "I418:8132;84:670",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "years of experience",
+          "fontSize": 24,
+          "lineHeightPx": 26,
+          "align": "center"
+        }
+      },
+      {
+        "id": "I418:8132;84:383",
+        "name": "I418:8132;84:383",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "We are a boutique practice, offering professional bespoke services to property owners from more than 19 years.",
+          "fontSize": 16,
+          "lineHeightPx": 26,
+          "fontWeight": 400,
+          "align": "center"
+        }
+      },
+      {
+        "id": "I418:8132;84:639",
+        "name": "2",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "HORIZONTAL",
+          "itemSpacing": 0,
+          "padT": 16,
+          "padR": 16,
+          "padB": 16,
+          "padL": 16
+        }
+      },
+      {
+        "id": "I418:8132;84:641",
+        "name": "I418:8132;84:641",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 16
+        }
+      },
+      {
+        "id": "I418:8132;105:1750",
+        "name": "I418:8132;105:1750",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "HORIZONTAL"
+        }
+      },
+      {
+        "id": "I418:8132;105:1751",
+        "name": "I418:8132;105:1751",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "8"
+        }
+      },
+      {
+        "id": "I418:8132;84:671",
+        "name": "I418:8132;84:671",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "weeks for closing a deal",
+          "fontSize": 24,
+          "lineHeightPx": 26,
+          "align": "center"
+        }
+      },
+      {
+        "id": "I418:8132;84:643",
+        "name": "I418:8132;84:643",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "We are a boutique practice, offering professional bespoke services to property owners from more than 19 years.",
+          "fontSize": 16,
+          "lineHeightPx": 26,
+          "fontWeight": 400,
+          "align": "center"
+        }
+      },
+      {
+        "id": "I418:8132;84:650",
+        "name": "3",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "HORIZONTAL",
+          "itemSpacing": 0,
+          "padT": 16,
+          "padR": 16,
+          "padB": 16,
+          "padL": 16
+        }
+      },
+      {
+        "id": "I418:8132;84:652",
+        "name": "I418:8132;84:652",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "VERTICAL",
+          "itemSpacing": 16
+        }
+      },
+      {
+        "id": "I418:8132;105:1764",
+        "name": "I418:8132;105:1764",
+        "type": "FRAME",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "auto": {
+          "layout": "HORIZONTAL"
+        }
+      },
+      {
+        "id": "I418:8132;105:1765",
+        "name": "I418:8132;105:1765",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "104"
+        }
+      },
+      {
+        "id": "I418:8132;84:672",
+        "name": "I418:8132;84:672",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "properties sold",
+          "fontSize": 24,
+          "lineHeightPx": 26,
+          "align": "center"
+        }
+      },
+      {
+        "id": "I418:8132;84:654",
+        "name": "I418:8132;84:654",
+        "type": "TEXT",
+        "w": 0,
+        "h": 0,
+        "children": [],
+        "text": {
+          "raw": "We are a boutique practice, offering professional bespoke services to property owners from more than 19 years.",
+          "fontSize": 16,
+          "lineHeightPx": 26,
+          "fontWeight": 400,
+          "align": "center"
+        }
+      }
+    ],
+    "auto": {
+      "layout": "HORIZONTAL"
+    },
+    "bb": {
+      "x": 0,
+      "y": 1307,
+      "w": 1280,
+      "h": 563
+    }
+  },
+  "slots": {},
+  "meta": {
+    "schema": "figma-ast-mcp",
+    "version": 1,
+    "exportedAt": "2026-02-18T11:08:46.340Z",
+    "figma": {
+      "frameName": "creativity delivers results"
+    },
+    "variables": "{\"alias/color/text/default\":\"#0a1119\",\"alias/typescale/letterSpacing/headline/2\":\"-0.1599999964237213\",\"global/font/fontWeight/semiBold\":\"Semi Bold\",\"global/font/fontFamily/serif\":\"Playfair\",\"alias/typescale/lineHeight/headline/2\":\"40\",\"alias/font/headline/2 serif\":\"Font(family: \\\"global/font/fontFamily/serif\\\", style: global/font/fontWeight/semiBold, size: 34, weight: 600, lineHeight: alias/typescale/lineHeight/headline/2, letterSpacing: alias/typescale/letterSpacing/headline/2)\",\"alias/color/primary/decorative03\":\"#ef7b10\",\"alias/color/primary/decorative01\":\"#0098d8\",\"alias/color/primary/decorative04\":\"#b6c0cb\",\"alias/color/primary/decorative02\":\"#74af27\",\"alias/spacing/lg\":\"24\",\"alias/border/width/md\":\"4\",\"alias/typescale/letterSpacing/display/1\":\"-0.1599999964237213\",\"alias/typescale/fontSize/display/1\":\"80\",\"alias/typescale/fontWeight/display/1\":\"Bold\",\"alias/typescale/fontFamily/display/1\":\"Montserrat\",\"alias/typescale/lineHeight/display/1\":\"92\",\"alias/font/display/1\":\"Font(family: \\\"alias/typescale/fontFamily/display/1\\\", style: alias/typescale/fontWeight/display/1, size: alias/typescale/fontSize/display/1, weight: 700, lineHeight: alias/typescale/lineHeight/display/1, letterSpacing: alias/typescale/letterSpacing/display/1)\",\"alias/border/width/lg\":\"8\",\"alias/typescale/letterSpacing/headline/3\":\"-0.1599999964237213\",\"alias/typescale/lineHeight/headline/3\":\"26\",\"alias/font/headline/3 serif\":\"Font(family: \\\"global/font/fontFamily/serif\\\", style: global/font/fontWeight/semiBold, size: 24, weight: 600, lineHeight: alias/typescale/lineHeight/headline/3, letterSpacing: alias/typescale/letterSpacing/headline/3)\",\"alias/typescale/letterSpacing/body/long\":\"0\",\"alias/typescale/fontSize/body/long\":\"16\",\"alias/typescale/fontWeight/body/long\":\"Regular\",\"alias/typescale/fontFamily/body/long\":\"Montserrat\",\"alias/typescale/lineHeight/body/long\":\"26\",\"alias/font/body/long\":\"Font(family: \\\"alias/typescale/fontFamily/body/long\\\", style: alias/typescale/fontWeight/body/long, size: alias/typescale/fontSize/body/long, weight: 400, lineHeight: alias/typescale/lineHeight/body/long, letterSpacing: alias/typescale/letterSpacing/body/long)\",\"alias/spacing/md\":\"16\",\"alias/spacing/xl\":\"32\",\"alias/spacing/2xl\":\"48\",\"alias/spacing/5xl\":\"80\",\"alias/breakpoints/desktop-min\":\"1280\",\"alias/color/background/highEmphasis\":\"#ededed\"}"
+  }
+}

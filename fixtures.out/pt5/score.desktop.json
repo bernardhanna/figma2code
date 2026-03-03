@@ -1,0 +1,30 @@
+{
+  "slug": "pt5",
+  "mode": "desktop",
+  "viewport": {
+    "width": 1280,
+    "height": 900
+  },
+  "crop": {
+    "width": 1254,
+    "height": 150
+  },
+  "diffPixels": 44242,
+  "totalPixels": 188100,
+  "diffRatio": 0.2352046783625731,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/pt5/figma.desktop.png",
+    "width": 1280,
+    "height": 632
+  },
+  "at": "2026-02-18T12:43:34.874Z"
+}

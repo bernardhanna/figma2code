@@ -10,6 +10,12 @@
 import { cls, num, pos, rem, remTypo, spacingClass } from "./precision.js";
 import { escAttr } from "./escape.js";
 import { twFontClassForFamily } from "./fonts.js";
+import { resolveInteractiveIntent } from "../interactiveIntent.js";
+import {
+  buildLayoutModelForNode,
+  normalizeSizingIntent,
+  resolveAxisIntentsFromLayoutModel,
+} from "../layoutModel.js";
 
 import {
   aiTagFor,
@@ -41,7 +47,10 @@ import { refineCtaClasses } from "./ctaRefine.js";
 
 import { resolveCtaInnerHtml, resolveCtaLabel } from "./ctaLabel.js";
 import { renderSvgLeaf } from "./svgRender.js";
-import { isCtaNode } from "./interactiveRules.js";
+import {
+  applyTextLinkClassContract,
+} from "./textLinkContract.js";
+import { renderTextLinkSimplifiedBody } from "../../contracts/textLinkSimplifier.contract.js";
 
 /* ------------------ tag helpers ------------------ */
 
@@ -55,7 +64,21 @@ function openTag(tag, classes = "", attrs = "", node, ctx) {
 
   const injectedFromNode = node?.tw ? String(node.tw) : "";
 
-  const finalClasses = cls(classes, injectedFromNode, injectedFromCtx);
+  let finalClasses = cls(classes, injectedFromNode, injectedFromCtx);
+  const isRootLikeTextLink =
+    node?.intent?.interactiveStyle === "text_link" &&
+    node?.intent?.interactiveType === "link" &&
+    (tag === "a" || tag === "button");
+  const isTextLinkNode = isRootLikeTextLink;
+  if (isTextLinkNode) {
+    finalClasses = applyTextLinkClassContract({
+      node,
+      classString: finalClasses,
+      role: "root",
+      hasIcon: true,
+      strictWidth: false,
+    });
+  }
 
   return `<${tag}${nodeId}${attrs}${finalClasses ? ` class="${finalClasses}"` : ""}>`;
 }
@@ -74,14 +97,258 @@ function attrsFromMap(attrs) {
     .join("");
 }
 
+function stripIconClassAttrsInInteractiveInner(html) {
+  const s = String(html || "");
+  if (!s.trim()) return s;
+  let out = s
+    .replace(/<img\b([^>]*?)\sclass="[^"]*"([^>]*?)\/?>/gi, (m, pre, post) => {
+      const selfClose = /\/>$/.test(m);
+      return `<img${pre}${post}${selfClose ? " />" : ">"}`;
+    })
+    .replace(/<svg\b([^>]*?)\sclass="[^"]*"([^>]*?)>/gi, (_m, pre, post) => {
+      return `<svg${pre}${post}>`;
+    });
+  // Strip classes from icon-only wrapper spans/divs.
+  out = out
+    .replace(
+      /<(span|div)\b([^>]*?)\sclass="[^"]*"([^>]*?)>(\s*(?:<(?:span|div)\b[^>]*>\s*<\/(?:span|div)>\s*)?(?:<svg[\s\S]*?<\/svg>|<img\b[^>]*\/?>)\s*)<\/\1>/gi,
+      (_m, tag, pre, post, inner) => `<${tag}${pre}${post}>${inner}</${tag}>`
+    )
+    .replace(
+      /<(span|div)\b([^>]*?)\sclass="[^"]*"([^>]*?)>\s*<\/\1>/gi,
+      (_m, tag, pre, post) => `<${tag}${pre}${post}></${tag}>`
+    );
+  return out;
+}
+
+function ctaTypographyClasses(node, ctx) {
+  const textNodes = collectTextNodesDeep(node, []);
+  const firstText = textNodes[0] || null;
+  const textTypo = firstText?.typography || {};
+  const textLeaf = firstText?.text || {};
+  const recoveredFromText = {
+    family: textTypo.family || textLeaf.fontFamily || textLeaf.family || textLeaf.fontName?.family || "",
+    sizePx:
+      typeof textTypo.sizePx === "number"
+        ? textTypo.sizePx
+        : typeof textLeaf.fontSize === "number"
+          ? textLeaf.fontSize
+          : null,
+    lineHeightPx:
+      typeof textTypo.lineHeightPx === "number"
+        ? textTypo.lineHeightPx
+        : typeof textLeaf.lineHeightPx === "number"
+          ? textLeaf.lineHeightPx
+          : null,
+    letterSpacingPx:
+      typeof textTypo.letterSpacingPx === "number"
+        ? textTypo.letterSpacingPx
+        : typeof textLeaf.letterSpacingPx === "number"
+          ? textLeaf.letterSpacingPx
+          : 0,
+    weight:
+      typeof textTypo.weight === "number"
+        ? textTypo.weight
+        : typeof textLeaf.fontWeight === "number"
+          ? textLeaf.fontWeight
+          : null,
+    italic: !!(textTypo.italic || textLeaf.italic),
+    uppercase: !!(textTypo.uppercase || textLeaf.uppercase),
+    decoration: textTypo.decoration || textLeaf.decoration || "",
+    colorHex: textTypo.colorHex || textLeaf.colorHex || textLeaf.fillHex || "",
+  };
+  const t = node?.cta?.typography || recoveredFromText || {};
+  if (!t || typeof t !== "object") return "";
+
+  const family = String(t.family || "").trim();
+  const ffClass = family ? twFontClassForFamily(family, ctx?.fontMap) : "";
+  const fs = typeof t.sizePx === "number" ? `text-[${remTypo(t.sizePx)}]` : "";
+  const lh =
+    typeof t.lineHeightPx === "number" && t.lineHeightPx > 0
+      ? `leading-[${remTypo(t.lineHeightPx)}]`
+      : "";
+  const ls =
+    typeof t.letterSpacingPx === "number" && t.letterSpacingPx !== 0
+      ? `tracking-[${remTypo(t.letterSpacingPx)}]`
+      : "";
+  const fw = typeof t.weight === "number" ? `font-[${t.weight}]` : "";
+  const ital = t.italic ? "italic" : "";
+  const tt = t.uppercase ? "uppercase" : "";
+  const decoText =
+    t.decoration === "underline"
+      ? "underline"
+      : t.decoration === "line-through"
+        ? "line-through"
+        : "";
+  const colorHex = typeof t.colorHex === "string" ? t.colorHex.trim() : "";
+  const color = colorHex ? `text-[${colorHex}]` : "";
+
+  return cls(fs, lh, ls, fw, color, ffClass, ital, decoText, tt);
+}
+
+function hasMeaningfulActionUrl(value) {
+  const v = String(value || "").trim();
+  if (!v) return false;
+  if (v === "#") return false;
+  if (/^javascript:\s*void\(0\)\s*;?$/i.test(v)) return false;
+  return true;
+}
+
+function isTimelineRailNode(node) {
+  const key = String(node?.key || "").toLowerCase();
+  const name = String(node?.name || "").toLowerCase();
+  const children = Array.isArray(node?.children) ? node.children : [];
+  const eventChildren = children.filter((c) => {
+    const ck = String(c?.key || "").toLowerCase();
+    const cn = String(c?.name || "").toLowerCase();
+    return ck.includes("frame:event") || /\bevent\b/.test(cn);
+  });
+  const lineLikeChild = children.some((c) => {
+    const w = Number(c?.w);
+    const ck = String(c?.key || "").toLowerCase();
+    const cn = String(c?.name || "").toLowerCase();
+    return (Number.isFinite(w) && w > 0 && w <= 2) || ck.includes("rectangle") || cn.includes("rectangle");
+  });
+  return (key.includes("frame:time") || /\btime|timeline\b/.test(name)) && eventChildren.length >= 3 && lineLikeChild;
+}
+
+function shouldRelaxTinyInteractiveWidth(node) {
+  const w = Number(node?.w);
+  if (!Number.isFinite(w) || w <= 0 || w > 32) return false;
+  const textNodes = collectTextNodesDeep(node, []);
+  return textNodes.some((t) => String(t?.text?.raw || "").trim().length > 0);
+}
+
+function isNumericMetricTextNode(node) {
+  const raw = String(node?.text?.raw || "").trim();
+  if (!raw) return false;
+  // Typical stat labels like "43+", "10K+", "92%"
+  return /^\d[\d.,]*(?:\+|%|k\+|m\+)?$/i.test(raw);
+}
+
+function looksLikeMetricPairNode(node) {
+  const kids = Array.isArray(node?.children) ? node.children : [];
+  if (kids.length !== 2) return false;
+  if (!kids[0]?.text || !kids[1]?.text) return false;
+  const headingLike = isNumericMetricTextNode(kids[0]);
+  const descRaw = String(kids[1]?.text?.raw || "").trim();
+  const descLooksCopy = descRaw.length >= 8;
+  return headingLike && descLooksCopy;
+}
+
+function hasMetricPairDescendant(node) {
+  const seen = new Set();
+  const queue = Array.isArray(node?.children) ? [...node.children] : [];
+  while (queue.length) {
+    const cur = queue.shift();
+    if (!cur || typeof cur !== "object" || seen.has(cur)) continue;
+    seen.add(cur);
+    if (looksLikeMetricPairNode(cur)) return true;
+    if (Array.isArray(cur.children)) queue.push(...cur.children);
+  }
+  return false;
+}
+
+function isCounterRootCenterCandidate(node) {
+  const key = String(node?.key || "").toLowerCase();
+  if (key !== "root") return false;
+  const kids = Array.isArray(node?.children) ? node.children : [];
+  if (kids.length !== 2) return false;
+  const hasMediaChild = kids.some((c) => {
+    const ck = String(c?.key || "").toLowerCase();
+    return ck.includes("frame:image") || ck.includes("frame:hero");
+  });
+  const textChild = kids.find((c) => String(c?.key || "").toLowerCase().includes("frame:text"));
+  return hasMediaChild && !!textChild && hasMetricPairDescendant(textChild);
+}
+
+function isHeroMediaSlotNode(node) {
+  const name = String(node?.name || "").toLowerCase();
+  const key = String(node?.key || "").toLowerCase();
+  const w = Number(node?.w);
+  const haystack = `${name} ${key}`;
+  const looksHeroMedia = /\b(hero|image|video|media)\b/.test(haystack);
+  const textLike = /\b(text|headline|title|copy|paragraph)\b/.test(haystack);
+  if (!looksHeroMedia) return false;
+  if (textLike) return false;
+  if (Number.isFinite(w) && w >= 220) return true;
+  if (key.includes("frame:image") || key.includes("frame:hero")) return true;
+  return false;
+}
+
+function hasSurfacePaint(node) {
+  const fills = Array.isArray(node?.fills) ? node.fills : [];
+  const strokes = Array.isArray(node?.strokes) ? node.strokes : [];
+  return (
+    fills.some((f) => String(f?.kind || "").toLowerCase() !== "none") ||
+    strokes.length > 0 ||
+    !!node?.img?.src
+  );
+}
+
+function hasRenderablePayload(node) {
+  if (!node || typeof node !== "object") return false;
+  if (node.text && String(node.text.raw || "").trim()) return true;
+  if (node.img?.src) return true;
+  if (hasSurfacePaint(node)) return true;
+  return Array.isArray(node.children) && node.children.length > 0;
+}
+
+function isImageFill(fill) {
+  const kind = String(fill?.kind || "").toLowerCase();
+  const type = String(fill?.type || fill?.fillType || "").toUpperCase();
+  return kind === "image" || type === "IMAGE" || type === "IMAGE_FILL";
+}
+
+function isVideoFill(fill) {
+  const kind = String(fill?.kind || "").toLowerCase();
+  const type = String(fill?.type || fill?.fillType || "").toUpperCase();
+  return kind === "video" || type === "VIDEO" || type === "VIDEO_FILL";
+}
+
+function mediaPayloadFromNode(node) {
+  const imgSrc = String(node?.img?.src || "").trim();
+  if (imgSrc) return { kind: "image", src: imgSrc };
+
+  const fills = Array.isArray(node?.fills) ? node.fills : Array.isArray(node?.fill) ? node.fill : [];
+  for (const f of fills) {
+    if (isVideoFill(f)) {
+      const src = String(f?.src || f?.url || f?.video?.src || "").trim();
+      const poster = String(f?.poster || f?.posterUrl || f?.poster?.src || "").trim();
+      if (src || poster) return { kind: "video", src, poster };
+    }
+    if (isImageFill(f)) {
+      const src = String(f?.src || f?.url || f?.image?.src || f?.asset?.src || "").trim();
+      if (src) return { kind: "image", src };
+    }
+  }
+  return null;
+}
+
 function normalizeIntent(raw) {
-  const intent = String(raw || "").toUpperCase();
-  if (intent === "FILL" || intent === "FIXED" || intent === "HUG") return intent.toLowerCase();
+  return normalizeSizingIntent(raw);
+}
+
+function layoutTypeToAxis(layoutType) {
+  const t = String(layoutType || "").toLowerCase();
+  if (t === "row") return "HORIZONTAL";
+  if (t === "col") return "VERTICAL";
+  if (t === "grid") return "GRID";
+  return "";
+}
+
+function axisToParentSizingKey(axis) {
+  const a = String(axis || "").toUpperCase();
+  if (a === "HORIZONTAL") return "horizontal";
+  if (a === "VERTICAL") return "vertical";
+  if (a === "GRID") return "grid";
   return "";
 }
 
 function heightIntentRawFromNode(node, parentLayout) {
   const parent = String(parentLayout || "").toUpperCase();
+  const sizing = resolveAxisIntentsFromLayoutModel(node, axisToParentSizingKey(parent));
+  if (sizing?.heightIntent) return sizing.heightIntent;
 
   // IMPORTANT:
   // In a GRID context, do NOT infer height intent from "counter" like a flex row.
@@ -383,7 +650,10 @@ function fixedSizeClassesForCta(node) {
 
   if (!w || !h) return "";
 
+  const modelSizing = node?.__layoutModel?.sizing || {};
   const isFixed =
+    normalizeIntent(modelSizing.widthIntent) === "fixed" ||
+    normalizeIntent(modelSizing.heightIntent) === "fixed" ||
     node?.size?.primary === "FIXED" ||
     node?.size?.counter === "FIXED" ||
     node?.auto?.primarySizing === "FIXED" ||
@@ -542,12 +812,14 @@ export function renderNode(node, parentLayout, isRoot, semantics, ctx = {}) {
   if (stack.has(node)) return "";
   stack.add(node);
 
-  const hintedAxis = String(node?.__layoutHints?.axis || "").toLowerCase();
+  if (!node.__layoutModel) {
+    node.__layoutModel = buildLayoutModelForNode(node, { isRoot: !!isRoot });
+  }
+  const layoutType = String(node?.__layoutModel?.layoutType || "").toLowerCase();
   const isAuto =
-    (node.auto && node.auto.layout && node.auto.layout !== "NONE") ||
-    ((hintedAxis === "horizontal" || hintedAxis === "vertical") &&
-      Array.isArray(node?.children) &&
-      node.children.length > 1);
+    (layoutType === "row" || layoutType === "col" || layoutType === "grid") &&
+    Array.isArray(node?.children) &&
+    node.children.length > 0;
   const out = isAuto
     ? renderAuto(node, isRoot, semantics, parentLayout, ctx)
     : renderLeaf(node, parentLayout, isRoot, semantics, ctx);
@@ -559,24 +831,23 @@ export function renderNode(node, parentLayout, isRoot, semantics, ctx = {}) {
 /* ------------------ auto container ------------------ */
 
 function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
+  const model = node?.__layoutModel || buildLayoutModelForNode(node, { isRoot: !!isRoot });
   const rawAuto = node.auto || {};
-  const hintAxis = String(node?.__layoutHints?.axis || "").toLowerCase();
-  const inferredLayout =
-    rawAuto.layout && rawAuto.layout !== "NONE"
-      ? rawAuto.layout
-      : hintAxis === "horizontal"
-        ? "HORIZONTAL"
-        : "VERTICAL";
+  const inferredLayout = layoutTypeToAxis(model?.layoutType) || "VERTICAL";
   const inferredSpacing =
-    Number.isFinite(Number(rawAuto.itemSpacing))
-      ? Number(rawAuto.itemSpacing)
+    Number.isFinite(Number(model?.priors?.figma?.itemSpacing))
+      ? Number(model.priors.figma.itemSpacing)
+      : Number.isFinite(Number(rawAuto.itemSpacing))
+        ? Number(rawAuto.itemSpacing)
       : Number(node?.__layoutHints?.spacingPx || 0);
+  const layoutGuideGapPx = Number(node?.__layoutHints?.layoutGuideGapPx);
   const al = {
     ...rawAuto,
     layout: inferredLayout,
     itemSpacing: inferredSpacing,
-    primaryAlign: rawAuto.primaryAlign || "MIN",
-    counterAlign: rawAuto.counterAlign || "MIN",
+    layoutWrap: model?.priors?.figma?.wrap || rawAuto.layoutWrap || rawAuto.wrapMode || "",
+    primaryAlign: model?.priors?.figma?.primaryAlign || rawAuto.primaryAlign || "MIN",
+    counterAlign: model?.priors?.figma?.counterAlign || rawAuto.counterAlign || "MIN",
   };
   const children =
     (Array.isArray(node.children) && node.children.length
@@ -584,14 +855,16 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
       : node?.__states?.default?.children) || [];
   const nodeForLayout =
     children === node.children ? node : { ...node, children };
+  const interactiveIntent = resolveInteractiveIntent(node, { semantics });
+  if (!node.intent || node.intent === null) node.intent = interactiveIntent;
 
-  const gap = pos(al.itemSpacing) ? spacingClass("gap", al.itemSpacing) : "";
   const heroLike =
     /\bhero\b/i.test(String(node?.name || "")) ||
     /\bhero\b/i.test(String(node?.key || "")) ||
     String(node?.attrs?.role || "").toLowerCase() === "banner";
   const pad = paddings(al, {
     isHero: heroLike,
+    responsivePlan: node?.__responsivePlan || null,
     onWarning: (msg) => {
       if (!ctx.__warnings) ctx.__warnings = [];
       ctx.__warnings.push(String(msg));
@@ -612,27 +885,87 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   const deco = cls(decoBase);
   const clip = node.clipsContent ? "overflow-hidden" : "";
 
-  const useGrid = shouldUseGrid(nodeForLayout, semantics);
+  const useGrid =
+    String(model?.layoutType || "").toLowerCase() === "grid" || shouldUseGrid(nodeForLayout, semantics);
   const nameLower = String(node?.name || "").toLowerCase();
   const isDecorativeBar =
     nameLower.includes("decorativebar") ||
     (nameLower.includes("decorative") && nameLower.includes("bar"));
 
+  // Prefer inferred grid gap metadata when present.
+  const inferredGapX = Number(
+    node?.__layoutHints?.metadata?.gapX ?? node?.__layoutHints?.layoutMetadata?.gapX
+  );
+  const inferredGapY = Number(
+    node?.__layoutHints?.metadata?.gapY ?? node?.__layoutHints?.layoutMetadata?.gapY
+  );
+  // When frame has Layout guide "Grid Npx", use that for both axes.
+  const gapPx = useGrid && layoutGuideGapPx > 0 ? layoutGuideGapPx : (pos(al.itemSpacing) ? al.itemSpacing : 0);
+  const gridGap = useGrid
+    ? cls(
+        inferredGapX > 0 ? spacingClass("gap-x", inferredGapX) : "",
+        inferredGapY > 0 ? spacingClass("gap-y", inferredGapY) : "",
+        inferredGapX <= 0 && inferredGapY <= 0 && gapPx > 0 ? spacingClass("gap", gapPx) : ""
+      )
+    : "";
+  const gap = gridGap || (gapPx > 0 ? spacingClass("gap", gapPx) : "");
+
   const layoutClasses = useGrid
-    ? gridColsResponsive(gridColsFor(nodeForLayout))
+    ? gridColsResponsive(node?.__responsivePlan?.layout?.gridCols || gridColsFor(nodeForLayout))
     : flexResponsiveClasses(al, children, {
+        node,
         forceRow: isDecorativeBar && al.layout === "HORIZONTAL",
         noWrap: isDecorativeBar,
+        forceMdDir: looksLikeMetricPairNode(node) ? "col" : "",
+        forceMdJustify: isCounterRootCenterCandidate(node) ? "justify-center" : "",
+        forceMdItems: isCounterRootCenterCandidate(node) ? "items-center" : "",
       });
+
+  const hasCtaMeta = !!node.cta;
+
+  const mediaPayload = isHeroMediaSlotNode(node) ? mediaPayloadFromNode(node) : null;
+  const hrefFromAI = aiHrefFor(node, semantics) || interactiveIntent.href;
+  const dataKeyHint = String(node?.key || node?.attrs?.["data-key"] || "").toLowerCase();
+  const nodeNameHint = String(node?.name || "").toLowerCase();
+  const hasExplicitActionEvidence =
+    hasMeaningfulActionUrl(hrefFromAI) ||
+    hasMeaningfulActionUrl(node?.actions?.openUrl) ||
+    hasMeaningfulActionUrl(node?.cta?.href) ||
+    hasMeaningfulActionUrl(node?.cta?.url) ||
+    Boolean(String(node?.actions?.action || node?.actions?.actionId || node?.actions?.onClick || "").trim()) ||
+    Boolean(String(node?.attrs?.["data-action"] || node?.attrs?.["data-click"] || "").trim());
 
   let tag =
     aiTagFor(node, semantics) || shouldRenderAsLinkOrButton(node) || "div";
+  if (interactiveIntent.interactiveType === "link") tag = "a";
+  else if (interactiveIntent.interactiveType === "button") tag = "button";
+  else if (hasCtaMeta && tag === "div") tag = "button";
+  if (mediaPayload || isHeroMediaSlotNode(node)) tag = "div";
 
   // SAFETY: never render auto-layout containers as interactive unless they have explicit actions
   const hasChildren = Array.isArray(children) && children.length > 0;
-  const hasActions = !!(node?.actions?.openUrl || node?.actions?.isClickable === true);
-
-  if (hasChildren && (tag === "a" || tag === "button") && !hasActions) {
+  const isContainerLikeByShape = Array.isArray(children) && children.length !== 1;
+  const looksExplicitButtonFrame =
+    /(?:^|\/)(?:instance:)?button(?:[#/]|$)/i.test(dataKeyHint) ||
+    /\bbutton\b/.test(nodeNameHint);
+  const hasMeaningfulLinkUrl =
+    hasMeaningfulActionUrl(hrefFromAI) ||
+    hasMeaningfulActionUrl(node?.actions?.openUrl) ||
+    hasMeaningfulActionUrl(node?.cta?.href) ||
+    hasMeaningfulActionUrl(node?.cta?.url);
+  if (
+    (tag === "a" || tag === "button") &&
+    !hasExplicitActionEvidence &&
+    (hasChildren || isContainerLikeByShape)
+  ) {
+    tag = "div";
+  }
+  if (
+    (tag === "a" || tag === "button") &&
+    !looksExplicitButtonFrame &&
+    isContainerLikeByShape &&
+    !hasMeaningfulLinkUrl
+  ) {
     tag = "div";
   }
 
@@ -648,53 +981,81 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
   ]);
   if (!containerOk.has(tag)) tag = "div";
 
-  const hrefFromAI = aiHrefFor(node, semantics);
-
   const isButtonTag = tag === "button";
   const isLinkTag = tag === "a";
   const isButtonLikeLink = isLinkTag && (node.actions?.openUrl || hrefFromAI);
 
-  const hasCtaMeta = !!node.cta;
   const isCtaInteractive = hasCtaMeta && (isButtonTag || isButtonLikeLink);
 
-  const refined = hasCtaMeta ? refineCtaClasses(node) : null;
+  const refined =
+    isCtaInteractive && interactiveIntent.interactiveStyle === "button"
+      ? refineCtaClasses(node)
+      : null;
 
-  const ctaFixed = hasCtaMeta ? fixedSizeClassesForCta(node) : "";
+  const ctaFixed =
+    isCtaInteractive && interactiveIntent.interactiveStyle === "button"
+      ? fixedSizeClassesForCta(node)
+      : "";
+  const isTextLinkCta =
+    interactiveIntent.interactiveType === "link" &&
+    interactiveIntent.interactiveStyle === "text_link";
 
-  const ctaBase = hasCtaMeta
+  const ctaBase = isCtaInteractive && interactiveIntent.interactiveStyle === "button"
     ? cls(
       "btn",
-      "inline-flex justify-center items-center gap-2",
+      "inline-flex",
       "whitespace-nowrap",
       "hover:opacity-90 transition-opacity duration-200",
       "focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
       refined?.pad || "",
       refined?.minH || "",
+      ctaTypographyClasses(node, ctx),
       ctaFixed
     )
     : "";
 
   const fixedSize = fixedBoxSize(node, /*allowH=*/ true);
-  const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize);
+  const timelineRailClasses = isTimelineRailNode(node)
+    ? cls(
+        Number.isFinite(Number(node?.w)) && Number(node.w) > 0 ? `w-[${rem(node.w)}]` : "",
+        Number.isFinite(Number(node?.h)) && Number(node.h) > 0 ? `min-h-[${rem(node.h)}]` : "",
+        "shrink-0",
+        "items-center",
+        "justify-between"
+      )
+    : "";
+  const container = cls(layoutClasses, gap, pad, fallbackPx, deco, clip, ctaBase, fixedSize, timelineRailClasses);
 
-  const pieces = children
-    .map((child) => {
-      if (ctx?.suppressBgIds?.has(child.id)) return null;
-
-      const sizing = childSizing(child, useGrid ? "GRID" : al.layout);
-      const self = alignSelf(child);
-
-      // Instead of wrapping in a <div>, inject these onto the child's own root element.
-      if ((sizing || self) && child?.id) {
-        if (!ctx.classInject) ctx.classInject = new Map();
-        const prev = String(ctx.classInject.get(child.id) || "");
-        ctx.classInject.set(child.id, cls(prev, sizing, self));
-      }
-
-      return renderNode(child, useGrid ? "GRID" : al.layout, false, semantics, ctx);
+  const simplifiedTextLinkBody = isTextLinkCta
+    ? renderTextLinkSimplifiedBody({
+      node,
+      semantics,
+      ctx,
+      renderNode,
+      typographyClassesFromTextNode,
+      fallbackLabel: bestCtaLabel(node, semantics),
+      fallbackTypoClass: typographyClassesFromRecovered(node, ctx),
     })
-    .filter(Boolean)
-    .join("\n");
+    : null;
+
+  const pieces = simplifiedTextLinkBody || children
+        .map((child) => {
+          if (ctx?.suppressBgIds?.has(child.id)) return null;
+
+          const sizing = childSizing(child, useGrid ? "GRID" : al.layout);
+          const self = alignSelf(child);
+
+          // Instead of wrapping in a <div>, inject these onto the child's own root element.
+          if ((sizing || self) && child?.id) {
+            if (!ctx.classInject) ctx.classInject = new Map();
+            const prev = String(ctx.classInject.get(child.id) || "");
+            ctx.classInject.set(child.id, cls(prev, sizing, self));
+          }
+
+          return renderNode(child, useGrid ? "GRID" : al.layout, false, semantics, ctx);
+        })
+        .filter(Boolean)
+        .join("\n");
 
   const hrefAttr = isLinkTag
     ? ` href="${escAttr(hrefFromAI || node.actions?.openUrl || "#")}"`
@@ -705,8 +1066,11 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     ? bestCtaLabel(node, semantics)
     : (aiLabelFor(node, semantics) || "").trim();
 
+  const hasVisibleTextLabel = !!bestCtaLabel(node, semantics);
   const aria =
-    isCtaInteractive && label ? ` aria-label="${escAttr(label)}"` : "";
+    isCtaInteractive && label && !hasVisibleTextLabel
+      ? ` aria-label="${escAttr(label)}"`
+      : "";
 
   let body = pieces;
 
@@ -727,6 +1091,28 @@ function renderAuto(node, isRoot, semantics, parentLayout, ctx) {
     }
   } else {
     body = body || "";
+  }
+
+  if (!hasCtaMeta && !String(body || "").trim() && mediaPayload) {
+    const mediaEl =
+      mediaPayload.kind === "video" && mediaPayload.src
+        ? `<video class="w-full h-full object-cover rounded-[inherit]" src="${escAttr(mediaPayload.src)}"${mediaPayload.poster ? ` poster="${escAttr(mediaPayload.poster)}"` : ""} autoplay muted loop playsinline></video>`
+        : mediaPayload.src
+          ? `<img src="${escAttr(mediaPayload.src)}" alt="${escAttr(String(node?.name || "Hero media"))}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[inherit]" />`
+          : "";
+    body = mediaEl || body;
+  }
+
+  if (!hasCtaMeta && !String(body || "").trim() && isHeroMediaSlotNode(node) && !hasSurfacePaint(node)) {
+    const placeholderHeight =
+      Number.isFinite(Number(node?.h)) && Number(node.h) > 0
+        ? `h-[${rem(node.h)}]`
+        : "min-h-[16rem]";
+    body = `<div aria-hidden="true" class="w-full ${placeholderHeight} rounded-[inherit] border border-[rgba(255,255,255,0.35)] bg-[linear-gradient(135deg,_rgba(255,255,255,0.28)_0%,_rgba(255,255,255,0.08)_100%)]"></div>`;
+  }
+
+  if (isCtaInteractive) {
+    body = stripIconClassAttrsInInteractiveInner(body);
   }
 
   return (
@@ -779,6 +1165,8 @@ function renderOptionsFromList(options) {
 }
 
 function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
+  const interactiveIntent = resolveInteractiveIntent(node, { semantics });
+  if (!node.intent || node.intent === null) node.intent = interactiveIntent;
   const svg = renderSvgLeaf(node);
   if (svg) return svg;
 
@@ -786,6 +1174,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
 
   const aiLeafTag = aiTagFor(node, semantics);
   const aiLeafHref = aiHrefFor(node, semantics);
+  const mediaPayload = isHeroMediaSlotNode(node) ? mediaPayloadFromNode(node) : null;
   const aiLeafLabel = aiLabelFor(node, semantics);
 
   if (aiLeafTag === "option") {
@@ -859,7 +1248,13 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
           ? t.letterSpacingPx
           : 0;
 
-    const fs = fontSizePx ? `text-[${remTypo(fontSizePx)}]` : "";
+    const headingScale = node?.__responsivePlan?.typography?.headingScale || null;
+    const fs = headingScale?.basePx
+      ? `text-[${remTypo(headingScale.basePx)}]`
+      : fontSizePx
+        ? `text-[${remTypo(fontSizePx)}]`
+        : "";
+    const fsMd = headingScale?.mdPx ? `md:text-[${remTypo(headingScale.mdPx)}]` : "";
     const lh =
       typeof lineHeightPx === "number" && lineHeightPx > 0
         ? `leading-[${remTypo(lineHeightPx)}]`
@@ -885,6 +1280,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
           ? "line-through"
           : "";
 
+    const relaxTinyWidth = shouldRelaxTinyInteractiveWidth(node);
     const classes = cls(
       baseSize,
       deco,
@@ -893,6 +1289,7 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
       "break-words",
       ta,
       fs,
+      fsMd,
       fw,
       lh,
       ls,
@@ -910,23 +1307,58 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     );
   }
 
-  const forced =
+  let forced =
     aiLeafTag === "a" || aiLeafTag === "button" ? aiLeafTag : shouldRenderAsLinkOrButton(node);
+  if (interactiveIntent.interactiveType === "link") forced = "a";
+  else if (interactiveIntent.interactiveType === "button") forced = "button";
+  if (mediaPayload || isHeroMediaSlotNode(node)) forced = null;
+
+  // Guardrail: an empty hero/media slot should never become an interactive element.
+  // This catches misclassified semantics and avoids shipping empty buttons/anchors.
+  if (
+    (forced === "a" || forced === "button") &&
+    isHeroMediaSlotNode(node) &&
+    !hasRenderablePayload(node)
+  ) {
+    forced = null;
+  }
+
+  if (mediaPayload) {
+    const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ false);
+    const clip = node.clipsContent ? "overflow-hidden" : "";
+    const baseSize = sizeClassForLeaf(node, parentLayout, isRoot, false);
+    const classes = cls(baseSize, deco, clip);
+    const mediaEl =
+      mediaPayload.kind === "video" && mediaPayload.src
+        ? `<video class="w-full h-full object-cover rounded-[inherit]" src="${escAttr(mediaPayload.src)}"${mediaPayload.poster ? ` poster="${escAttr(mediaPayload.poster)}"` : ""} autoplay muted loop playsinline></video>`
+        : mediaPayload.src
+          ? `<img src="${escAttr(mediaPayload.src)}" alt="${escAttr(String(node?.name || "Hero media"))}" loading="lazy" decoding="async" class="w-full h-full object-cover rounded-[inherit]" />`
+          : "";
+    if (mediaEl) {
+      return (
+        openTag("div", classes, attrsForNode(node, "", parentLayout), node, ctx) +
+        mediaEl +
+        `</div>`
+      );
+    }
+  }
 
   if (forced === "a" || forced === "button") {
     const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ false);
     const clip = node.clipsContent ? "overflow-hidden" : "";
     const baseSize = sizeClassForLeaf(node, parentLayout, isRoot, false);
 
-    const refined = refineCtaClasses(node);
+    const refined =
+      interactiveIntent.interactiveStyle === "button" ? refineCtaClasses(node) : null;
 
-    const href = aiLeafHref || node.actions?.openUrl || "";
+    const href = aiLeafHref || interactiveIntent.href || node.actions?.openUrl || "";
     const isLink = forced === "a" || !!href;
     const tag = isLink ? "a" : "button";
 
     const recoveredLabel = (node?.cta?.label || "").trim();
     const label = recoveredLabel || resolveCtaLabel(node, semantics) || "";
-    const aria = label ? ` aria-label="${escAttr(label)}"` : "";
+    const hasVisibleText = !!collectTextNodesDeep(node, []).length;
+    const aria = label && !hasVisibleText ? ` aria-label="${escAttr(label)}"` : "";
 
     let inner = resolveCtaInnerHtml(node, semantics, (c) =>
       renderNode(c, parentLayout, false, semantics, ctx)
@@ -981,15 +1413,26 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
         `</span>`;
     }
 
+    inner = stripIconClassAttrsInInteractiveInner(inner);
+    const relaxTinyWidth = shouldRelaxTinyInteractiveWidth(node);
+
     const classes = cls(
       baseSize,
       deco,
       clip,
-      "flex gap-2 justify-center items-center",
-      "w-fit whitespace-nowrap max-sm:w-full",
+      interactiveIntent.interactiveStyle === "text_link"
+        ? "inline-flex gap-1 justify-start items-center whitespace-nowrap"
+        : "flex gap-2 justify-center items-center",
+      interactiveIntent.interactiveStyle === "text_link" ? "" : "w-fit whitespace-nowrap max-sm:w-full",
       refined?.pad || "",
       refined?.minH || "",
-      "btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+      relaxTinyWidth ? `!w-auto !max-w-none min-w-[${rem(node.w)}]` : "",
+      interactiveIntent.interactiveStyle === "text_link"
+        ? "hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2"
+        : cls(
+            "btn hover:opacity-90 transition-opacity duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+            ctaTypographyClasses(node, ctx)
+          )
     );
 
     const hrefAttr = isLink ? ` href="${escAttr(href || "#")}"` : "";
@@ -1013,10 +1456,37 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
   }
 
   if (node.img?.src) {
-    const deco = boxDeco(node, /*isText=*/ false, /*omitBg=*/ true);
+    const iconishName = /\b(icon|vector|arrow|chevron|caret|glyph|logo|ellipse)\b/i.test(
+      String(node?.name || "")
+    );
+    const iconishSrc = /\/assets\/(?:icon|vector|ellipse)-/i.test(String(node?.img?.src || ""));
+    const isIconLikeImage =
+      !!(node?.__iconComposedImage || node?.__lockedLayout || iconishName || iconishSrc);
+
+    const keepIconBoxDeco = !!(node?.__iconComposedImage && hasOwnBoxDeco(node));
+    const deco =
+      isIconLikeImage && !keepIconBoxDeco
+        ? ""
+        : boxDeco(node, /*isText=*/ false, /*omitBg=*/ !keepIconBoxDeco);
     const clip = node.clipsContent ? "overflow-hidden" : "";
-    const sizeForImg = sizeClassForImg(node, parentLayout);
-    const classes = cls(sizeForImg, deco, clip, "object-cover");
+    const baseImgSize = sizeClassForImg(node, parentLayout);
+    const iw = typeof node?.w === "number" && node.w > 0 ? node.w : node?.img?.w;
+    const ih = typeof node?.h === "number" && node.h > 0 ? node.h : node?.img?.h;
+    const iconSize =
+      isIconLikeImage && iw && ih
+        ? cls(`w-[${rem(iw)}]`, `h-[${rem(ih)}]`, "shrink-0")
+        : "";
+    const sizeForImg = iconSize || baseImgSize;
+    const roundedHint =
+      (node?.__iconComposedImage || node?.__lockedLayout) &&
+      isIconLikeImage &&
+      iw &&
+      ih &&
+      Math.abs(Number(iw) - Number(ih)) <= 0.5
+        ? "rounded-full"
+        : "";
+    const objectMode = isIconLikeImage ? "object-contain" : "object-cover";
+    const classes = cls(sizeForImg, deco, roundedHint, clip, objectMode);
 
     const alt = escAttr(node.name || "Image");
 
@@ -1073,6 +1543,23 @@ function renderLeaf(node, parentLayout, isRoot, semantics, ctx) {
     ? cls("relative", `min-h-[${remPx(absPlan.parent.h)}]`)
     : "";
   const classes = cls(baseSize, deco, clip, fallbackClass);
+  const shouldRenderHeroPlaceholder =
+    !absPlan &&
+    isHeroMediaSlotNode(node) &&
+    !String(inner || "").trim() &&
+    !hasOwnBoxDeco(node);
+  if (shouldRenderHeroPlaceholder) {
+    const placeholderHeight =
+      Number.isFinite(Number(node?.h)) && Number(node.h) > 0
+        ? `h-[${rem(node.h)}]`
+        : "min-h-[16rem]";
+    const placeholder = `<div aria-hidden="true" class="w-full ${placeholderHeight} rounded-[inherit] border border-[rgba(255,255,255,0.35)] bg-[linear-gradient(135deg,_rgba(255,255,255,0.28)_0%,_rgba(255,255,255,0.08)_100%)]"></div>`;
+    return (
+      openTag("div", classes, attrsForNode(node, "", parentLayout), node, ctx) +
+      placeholder +
+      `</div>`
+    );
+  }
   return (
     openTag("div", classes, attrsForNode(node, absPlan ? ' data-layout-fallback="absolute"' : "", parentLayout), node, ctx) +
     (absPlan

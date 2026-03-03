@@ -166,6 +166,23 @@ function shouldForceVectorExport(node) {
     const t = String((node === null || node === void 0 ? void 0 : node.type) || "").toUpperCase();
     return t === "BOOLEAN_OPERATION";
 }
+/** Read Layout guide (e.g. "Grid 10px") from frame. Only FrameNode has layoutGrids. */
+function getLayoutGuide(n) {
+    const grids = n.layoutGrids;
+    if (!Array.isArray(grids) || grids.length === 0)
+        return undefined;
+    const first = grids[0];
+    if (!first || typeof first.pattern !== "string")
+        return undefined;
+    const pattern = String(first.pattern).toUpperCase();
+    if (pattern === "GRID" && typeof first.sectionSize === "number" && first.sectionSize > 0) {
+        return { pattern: "GRID", sectionSize: round(first.sectionSize) };
+    }
+    if ((pattern === "ROWS" || pattern === "COLUMNS") && typeof first.gutterSize === "number" && first.gutterSize >= 0) {
+        return { pattern: pattern, gutterSize: round(first.gutterSize) };
+    }
+    return undefined;
+}
 function getAutoLayout(n) {
     var _a, _b, _c, _d, _e, _f, _g;
     if (!("layoutMode" in n))
@@ -908,6 +925,7 @@ function walkForState(node, parent) {
             mask: maskMeta.mask,
             exportSettings: getExportSettings(node),
             auto: getAutoLayout(node),
+            layoutGuide: getLayoutGuide(node),
             size: undefined,
             r: getRadii(node),
             cornerSmoothing: getCornerSmoothing(node),
@@ -1313,6 +1331,7 @@ function walk(node, parent) {
             blur: getBlur(node),
             clipsContent: node.clipsContent === true,
             actions: getActions(node),
+            layoutGuide: getLayoutGuide(node),
         };
         // NEW: if node has IMAGE fills, export the underlying bitmap(s) and attach fill.src
         if (Array.isArray(base.fills)) {

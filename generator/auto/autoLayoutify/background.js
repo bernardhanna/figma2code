@@ -42,6 +42,7 @@ export function detectSectionBackground(root, ast) {
 
   const bg = cssBackgroundFromPick(root, ast, picked, {
     includeGradient: true,
+    includeImage: String(ast?.__bg?.source || "").trim().toLowerCase() !== "media-slot",
     preferPlaceholder: false,
     allowRealSrc: true,
   });
@@ -105,6 +106,10 @@ function pickVideoPosterFromFills(node) {
 }
 
 function pickBackgroundSource(root, ast) {
+  if (String(ast?.__bg?.source || "").trim().toLowerCase() === "media-slot") {
+    return { src: "", sourceNodeId: null, kind: "none" };
+  }
+
   // 0) Root VIDEO fill (explicit marker from upstream) — section gets data-bg-type="video"
   const videoPick = pickVideoFromFills(root);
   if (videoPick) return videoPick;
@@ -326,6 +331,7 @@ function fillToCssLayer(fill, opts = {}) {
     return { image: g, size: "cover", position: "center", repeat: "no-repeat", blend: cssBlendMode(fill.blendMode) };
   }
   if (kind === "image") {
+    if (opts.includeImage === false) return null;
     const img = pickSrcFromFills({ fills: [fill] });
     if (!img?.src) return null;
     return {
@@ -366,7 +372,7 @@ function cssBackgroundFromPick(node, ast, picked, opts = {}) {
   // If selected source comes from child/ast fallback, append image layer under root fills.
   const realSrc = picked?.src && typeof picked.src === "string" ? picked.src.trim() : "";
   const hasImageLayer = layers.some((l) => String(l.image || "").startsWith("url("));
-  if (opts.allowRealSrc && realSrc && !hasImageLayer) {
+  if (opts.allowRealSrc && opts.includeImage !== false && realSrc && !hasImageLayer) {
     layers.push({
       image: `url('${escCssUrl(realSrc)}')`,
       size: picked?.fit || "cover",

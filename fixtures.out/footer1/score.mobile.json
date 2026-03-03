@@ -1,0 +1,30 @@
+{
+  "slug": "footer1",
+  "mode": "mobile",
+  "viewport": {
+    "width": 1216,
+    "height": 900
+  },
+  "crop": {
+    "width": 1190,
+    "height": 150
+  },
+  "diffPixels": 172433,
+  "totalPixels": 178500,
+  "diffRatio": 0.9660112044817927,
+  "pass": false,
+  "compare": {
+    "threshold": 0.1,
+    "includeAA": true,
+    "passDiffRatio": 0.03
+  },
+  "screenshot": {
+    "selectorUsed": "#cmp_root"
+  },
+  "figma": {
+    "path": "/Users/bernardhanna/Desktop/figma2wp/fixtures.out/footer1/figma.mobile.png",
+    "width": 1216,
+    "height": 325
+  },
+  "at": "2026-02-19T09:17:47.409Z"
+}

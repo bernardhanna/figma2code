@@ -3,6 +3,23 @@ import assert from "node:assert/strict";
 
 import { detectSectionBackground } from "../autoLayoutify/background.js";
 import { autoLayoutify } from "../autoLayoutify/index.js";
+import { gradientToCss } from "../autoLayoutify/paint.js";
+
+test("linear gradient angle is converted from Figma to CSS basis", () => {
+  const css = gradientToCss({
+    kind: "gradient",
+    type: "LINEAR",
+    angle: 136.520773,
+    stops: [
+      { r: 0.0196, g: 0.6157, b: 0.9294, a: 1, pos: 0.2408 },
+      { r: 0.1569, g: 0.698, b: 0.9804, a: 1, pos: 0.63 },
+    ],
+  });
+  assert.ok(css.startsWith("linear-gradient("));
+  assert.ok(css.includes("313.479227deg"));
+  assert.ok(css.includes("24.08%"));
+  assert.ok(css.includes("63%"));
+});
 
 test("detectSectionBackground preserves fill stack with gradient + image + blend", () => {
   const root = {

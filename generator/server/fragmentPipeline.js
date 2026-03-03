@@ -9,6 +9,13 @@ import { decideResponsiveStrategy } from "./variantDecision.js";
 import { mergeResponsiveFragments } from "../auto/mergeResponsiveFragments.js";
 import { variantLinkPass } from "../auto/variantLinkPass.js";
 import { previewFocusPass } from "../auto/previewFocusPass.js";
+import {
+  normalizeHeroLandmarkDriftPass,
+  normalizeMediaSlotInteractivityPass,
+  normalizeBackgroundStylePass,
+  promoteSectionBgToHeroMediaPass,
+  removePhantomInteractivePass,
+} from "../auto/htmlDeterministicPasses.js";
 import { applyContracts } from "../contracts/index.js";
 
 import { parseGroupVariant } from "./variantNaming.js";
@@ -27,6 +34,10 @@ import {
   setVideoBgFromTree,
 } from "./backgroundFallback.js";
 import { layoutIntentV2Pass } from "../auto/layoutIntentV2Pass.js";
+import { responsiveBreakpointInferencePass } from "../auto/responsiveBreakpointInferencePass.js";
+import { iconIsolationPass } from "../passes/iconIsolationPass.js";
+import { svgViewBoxValidationPass } from "../passes/svgViewBoxValidationPass.js";
+import { rasterIconComposePass } from "../passes/rasterIconComposePass.js";
 
 function asObj(v) {
   return v && typeof v === "object" && !Array.isArray(v) ? v : null;
@@ -285,6 +296,9 @@ export function renderOneFragment({
   previewOnly,
 }) {
   let a = maybeAnnotateWithComponentMatch(ast);
+  a = iconIsolationPass(a) || a;
+  a = svgViewBoxValidationPass(a) || a;
+  a = rasterIconComposePass(a) || a;
 
   if (normalizeAst) {
     const r = normalizeAst(a);
@@ -296,6 +310,7 @@ export function renderOneFragment({
     a = learnedRulesPass(a) || a;
   }
   a = layoutIntentV2Pass(a) || a;
+  a = responsiveBreakpointInferencePass(a) || a;
 
   setVideoBgFromTree(a);
 
@@ -350,8 +365,13 @@ export function renderOneFragment({
 
   let phase2Report = null;
   if (semanticAccessiblePass) {
+    fragment = normalizeBackgroundStylePass(fragment);
+    fragment = promoteSectionBgToHeroMediaPass(fragment);
+    fragment = normalizeMediaSlotInteractivityPass(fragment);
+    fragment = removePhantomInteractivePass(fragment);
     const out = semanticAccessiblePass({ html: fragment, ast: renderAst, semantics });
     if (out && typeof out.html === "string") fragment = out.html;
+    fragment = normalizeHeroLandmarkDriftPass(fragment);
     phase2Report = out?.report || null;
   }
 
@@ -434,8 +454,13 @@ export function buildMergedResponsivePreview({
     });
 
     if (semanticAccessiblePass) {
+      html = normalizeBackgroundStylePass(html);
+      html = promoteSectionBgToHeroMediaPass(html);
+      html = normalizeMediaSlotInteractivityPass(html);
+      html = removePhantomInteractivePass(html);
       const out = semanticAccessiblePass({ html, ast: renderAst, semantics });
       if (out && typeof out.html === "string") html = out.html;
+      html = normalizeHeroLandmarkDriftPass(html);
       phase2Reports[label] = out?.report || null;
     }
 

@@ -11,6 +11,9 @@ Figma → **AI Tailwind HTML** → ACF + Frontend PHP (Flexi) → Browser previe
 ## Code it stage (pipeline)
 The **Code it** stage runs deterministic HTML/Tailwind contracts (layout, semantics, section normalization). Contract order, what each does, and what each intentionally does *not* do are described in [docs/codeit-contracts.md](docs/codeit-contracts.md). Each contract is idempotent and reports a fix count in the run summary.
 
+## Environment controls
+All generator/runtime env toggles (including icon fidelity and debug flags) are documented in [docs/env-controls.md](docs/env-controls.md).
+
 ---
 
 ## Folder tree
@@ -105,3 +108,27 @@ foreach (glob($dir . '/*.php') as $file) {
 - **Plugin “editor type dev”** → manifest includes `"figma","dev"`. Or disable Dev Mode.
 - **No AI key** → set `OPENAI_API_KEY`. You can also stub the AI (see `generateSection.js` comment).
 - **Exactness** → increase model quality or implement a visual diff loop with Playwright + pixelmatch (optional enhancement).
+
+---
+
+## Optional Python visual analyzer (SSIM + OpenCV clustering)
+
+Node remains the orchestrator. The Python service is optional and used only when enabled.
+
+### Start service (Docker)
+```bash
+docker compose -f docker-compose.visual-python.yml up --build
+```
+
+### Enable in generator
+```bash
+export VISUAL_PY_ENABLE=1
+export VISUAL_PY_URL=http://127.0.0.1:8091
+```
+
+When enabled and reachable, `/api/compare/:slug` augments diff analysis with:
+- `ssim`
+- OpenCV-based offender rect clustering
+- optional Python diff mask (written as `diff.*.png`)
+
+If service is off/unavailable, compare automatically falls back to existing JS diff behavior.

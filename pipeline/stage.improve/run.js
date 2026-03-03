@@ -1821,6 +1821,11 @@ const run = async ({
     stageConfig.maxProposedTrialsPerNode ??
     2;
   const maxProposedTrialsPerNode = Math.max(0, Number(maxProposedTrialsPerNodeRaw) || 2);
+  const maxTotalTrialsPerRunRaw =
+    process.env.IMPROVE_MAX_TOTAL_TRIALS ??
+    stageConfig.maxTotalTrialsPerRun ??
+    24;
+  const maxTotalTrialsPerRun = Math.max(0, Number(maxTotalTrialsPerRunRaw) || 24);
 
   reporter.succeed(IMPROVE.LOAD_ARTIFACT);
   const inputArtifact = readInputArtifactFn(slug);
@@ -2088,6 +2093,8 @@ const run = async ({
   reporter.succeed(IMPROVE.APPLY_PATCHES);
   let proposedSkippedByCap = 0;
   let rejectedSkippedByCap = 0;
+  let globalSkippedByCap = 0;
+  let totalTrialAttempts = 0;
   const proposedEntries = [];
   const proposedCountByNode = new Map();
   acceptedEntries.forEach((entry) => {
@@ -2124,7 +2131,21 @@ const run = async ({
   if (proposedEntries.length) {
     if (gate.enabled) {
       reporter.log(`Trial-gating ${proposedEntries.length} proposed patch(es) independently...`);
-      for (const entry of proposedEntries) {
+      for (let proposedIndex = 0; proposedIndex < proposedEntries.length; proposedIndex += 1) {
+        const entry = proposedEntries[proposedIndex];
+        if (maxTotalTrialsPerRun > 0 && totalTrialAttempts >= maxTotalTrialsPerRun) {
+          const remainingCount = proposedEntries.length - proposedIndex;
+          const reason = `Global trial cap reached (${maxTotalTrialsPerRun}); skipping remaining trials this run.`;
+          globalSkippedByCap += Math.max(0, remainingCount);
+          rejectedByGate.push({
+            patch: entry.patch,
+            reason,
+            strategyName: entry?.strategyName || "",
+            gateKind: entry?.gateKind || "visual",
+          });
+          reporter.log(`${reason} skipped=${remainingCount}`);
+          break;
+        }
         const nodeId = String(entry.patch?.nodeId || "unknown");
         const priorRejectedCount = Number(rejectedTrialCountByNode.get(nodeId) || 0);
         if (maxRejectedTrialsPerNode > 0 && priorRejectedCount >= maxRejectedTrialsPerNode) {
@@ -2139,6 +2160,7 @@ const run = async ({
           reporter.log(`Skipped patch ${nodeId} (${reason})`);
           continue;
         }
+        totalTrialAttempts += 1;
         const candidateFragment = applyPatchPlan(workingFragment, [entry.patch]);
         if (candidateFragment === workingFragment) {
           const reason = "Score gate: no-op patch (no DOM change).";
@@ -2237,7 +2259,7 @@ const run = async ({
 
   rejectedEntries.push(...rejectedByGate);
   reporter.log(
-    `Trial caps: proposedSkipped=${proposedSkippedByCap}, rejectedSkipped=${rejectedSkippedByCap}`
+    `Trial caps: proposedSkipped=${proposedSkippedByCap}, rejectedSkipped=${rejectedSkippedByCap}, globalSkipped=${globalSkippedByCap}`
   );
   rejectedEntries.forEach((entry) => {
     warnings.push({
@@ -2315,6 +2337,9 @@ const run = async ({
     trialCapStats: {
       proposedSkipped: proposedSkippedByCap,
       rejectedSkipped: rejectedSkippedByCap,
+      globalSkipped: globalSkippedByCap,
+      maxTotalTrialsPerRun,
+      attemptedTrials: totalTrialAttempts,
     },
     zeroCandidatesReason: zeroCandidatesReason || undefined,
   };
@@ -2366,6 +2391,9 @@ const run = async ({
         trialCapStats: {
           proposedSkipped: proposedSkippedByCap,
           rejectedSkipped: rejectedSkippedByCap,
+          globalSkipped: globalSkippedByCap,
+          maxTotalTrialsPerRun,
+          attemptedTrials: totalTrialAttempts,
         },
         zeroCandidatesReason: zeroCandidatesReason || undefined,
       },

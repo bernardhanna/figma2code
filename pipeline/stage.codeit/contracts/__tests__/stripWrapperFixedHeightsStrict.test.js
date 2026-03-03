@@ -57,3 +57,28 @@ test("wrapper with overflow-hidden but first child not img/video => height strip
   assert.ok(!hasToken(tokens, "h-[30rem]"));
   assert.ok(hasToken(tokens, "h-auto"));
 });
+
+test("wrapper with absolute background fill child keeps fixed height", () => {
+  const html = `
+    <div data-key="card" class="relative overflow-hidden h-[20rem] rounded">
+      <div class="absolute inset-0 bg-cover bg-no-repeat bg-center" style="background-image: url('/x.jpg')"></div>
+      <img src="/x.jpg" alt="" class="w-full h-full object-cover" />
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const tokens = getTokens(out.html, "card");
+  assert.ok(hasToken(tokens, "h-[20rem]"));
+  assert.ok(!hasToken(tokens, "h-auto"));
+});
+
+test("wrapper keeps fixed height when absolute bg layer is hinted by data-key", () => {
+  const html = `
+    <div data-key="card2" class="relative overflow-hidden h-[20rem] rounded">
+      <div data-key="frame:item#2/frame:image#1/rectangle:image-11#1" class="absolute inset-0 bg-cover bg-no-repeat bg-center"></div>
+    </div>
+  `;
+  const out = apply({ html, artifact: {}, options: {} });
+  const tokens = getTokens(out.html, "card2");
+  assert.ok(hasToken(tokens, "h-[20rem]"));
+  assert.ok(!hasToken(tokens, "h-auto"));
+});

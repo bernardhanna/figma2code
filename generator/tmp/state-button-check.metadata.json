@@ -1,0 +1,3 @@
+{
+  "content": "<instance id=\"36:1196\" name=\"button\" x=\"0\" y=\"0\" width=\"344\" height=\"52\" />\nIMPORTANT: After you call this tool, you MUST call get_design_context if trying to implement the design, since this tool only returns metadata. If you do not call get_design_context, the agent will not be able to implement the design."
+}
